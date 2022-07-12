@@ -48,10 +48,15 @@ export const CreateTwitterPage = () => {
     cardData[2].content = user.personal_twitter_handle;
     cardData[3].content = user.available_budget;
     cardData[4].content = user.campaign_status;
+    try{
     const response = await APICall("/campaign/twitter-card/", "GET", null, null);
     if (response.data) {
       setTableData(response.data.results);
     }
+  }
+  catch(err) {
+    console.log("/campaign/twitter-card/",err)
+  }
   };
 
   const handleTran = () => {

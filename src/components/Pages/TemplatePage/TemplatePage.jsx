@@ -100,8 +100,13 @@ export const TemplatePage = () => {
       let data = new FormData();
       data.append('media_file', file);
       data.append('media_type', 'image');
+      try{
       const response = await APICall('/campaign/media/', 'POST', {}, data, true);
       setMedia([...media, response.data.id]);
+      }
+      catch(err) {
+        console.error("/campaign/media/:",err)
+      }
 
     }
     else if (media.length < 4 && !fileType.includes('gif') && !gifSelected) {
@@ -110,8 +115,13 @@ export const TemplatePage = () => {
         let data = new FormData();
         data.append('media_file', file);
         data.append('media_type', 'image');
+        try{
         const response = await APICall('/campaign/media/', 'POST', {}, data, true);
         setMedia([...media, response.data.id])
+        }
+      catch(err) {
+        console.error("/campaign/media/:",err)
+      }
       }
       catch (err) {
         console.log(err)

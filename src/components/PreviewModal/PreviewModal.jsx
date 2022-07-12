@@ -62,10 +62,15 @@ const PreviewModal = ({
       "follow_reward": follow,
       "media": media,
     }
-    const response = await APICall("/campaign/twitter-card/", "POST", {}, postData);
-    if (response.data) {
-      // navigate("/create");
-      navigate("/onboarding");
+    try {
+      const response = await APICall("/campaign/twitter-card/", "POST", {}, postData);
+      if (response.data) {
+        // navigate("/create");
+        navigate("/onboarding");
+      }
+    }
+    catch (err) {
+      console.error("campaign/twitter-card/:", err)
     }
   };
 
