@@ -20,12 +20,14 @@ import {
 } from "../../Tables/CreateTable.styles";
 import { APICall } from "../../../APIConfig/APIServices"
 import TopUpModal from "../../PreviewModal/TopUpModal";
+// import {useHashConnect } from "./HashConnectAPIProvider";
 
 export const CreateTwitterPage = () => {
   const [tableData, setTableData] = useState([]);
   const [userData, setUserData] = useState({});
   const [openTopup, setTopUpOpen] = useState(false);
-
+  // const { connect, walletData, installedExtensions } = useHashConnect();
+  // const { accountIds, netWork, id } = walletData;
   // Similar to componentDidMount and componentDidUpdate:
   useEffect(() => {
     let mounted = true;
@@ -46,10 +48,15 @@ export const CreateTwitterPage = () => {
     cardData[2].content = user.personal_twitter_handle;
     cardData[3].content = user.available_budget;
     cardData[4].content = user.campaign_status;
-    const response = await APICall("/campaign/campaign/", "GET", null, null);
+    try{
+    const response = await APICall("/campaign/twitter-card/", "GET", null, null);
     if (response.data) {
       setTableData(response.data.results);
     }
+  }
+  catch(err) {
+    console.log("/campaign/twitter-card/",err)
+  }
   };
 
   const handleTran = () => {
@@ -57,9 +64,16 @@ export const CreateTwitterPage = () => {
   };
 
   const handleButtonClick = (e) => {
-    console.log("---------ee-----", e);
-    if (e === 'Top-Up')
+    if (e === 'Top-Up') {
       setTopUpOpen(true)
+    }
+    else if (e === 'Connect') {
+      // if (installedExtensions) connect();
+      // else
+        alert(
+          "Please install hashconnect wallet extension first. from chrome web store."
+        );
+    }
   };
 
   return (
@@ -75,6 +89,7 @@ export const CreateTwitterPage = () => {
           />
         ))}
       </CardSection>
+      
       <TableSection>
         <CustomTable2 stickyHeader aria-label="simple table">
           <CustomRowHead>

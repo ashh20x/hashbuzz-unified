@@ -17,7 +17,15 @@ export const Wrapper = styled.div`
     flex-direction: column;
   }
 `;
-
+export const IconsWrap = styled.div`
+font-size: 18px;
+display: flex;
+width: 75%;
+justify-content: start;
+img{
+  cursor: pointer;
+}
+`;
 export const LeftSec = styled.div`
   width: 50%;
   height: 100%;

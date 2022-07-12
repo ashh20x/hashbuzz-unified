@@ -14,6 +14,7 @@ const StatusCard = ({ title, content, buttonTag, isButton, buttonClick }) => {
     weight: "300",
   };
   return (
+    
     <CardContainer>
       <Typography theme={TitleTheme}>{title}:</Typography>
       <Typography theme={ContentTheme}>{content}</Typography>
