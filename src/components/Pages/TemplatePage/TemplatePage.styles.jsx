@@ -34,7 +34,7 @@ export const RightSec = styled.div`
   }
 `;
 export const CustomParagraph = styled.textarea`
-  width: 85%;
+  // width: 85%;
   text-align: left;
   font-weight: 400;
   font-size: 18px;
@@ -43,6 +43,9 @@ export const CustomParagraph = styled.textarea`
   word-wrap: break-word;
   border: none;
   resize: none;
+  border: 1px solid gray;
+  min-height: 120px;
+  border-radius: 10px;
   &:focus {
     outline: none;
   }
@@ -114,7 +117,7 @@ export const CustomInput = styled.input`
   border-radius: 4px;
   border: none;
   color: #9d9d9d;
-  margin: 4% 0;
+  margin: 10px 0;
   &:focus {
     outline: none;
   }
@@ -139,4 +142,28 @@ export const CustomIframe = styled.iframe`
     width: 100%;
     height: 30vh;
   }
+`;
+
+export const WordsWrap = styled.div`
+font-size: 18px;
+display: flex;
+width: 100%;
+justify-content: end;
+`;
+
+export const IconsWrap = styled.div`
+font-size: 18px;
+display: flex;
+width: 75%;
+justify-content: start;
+img{
+  cursor: pointer;
+
+}
+`;
+
+export const EmoBtnWrap = styled.div`
+border: none;
+background: none;
+font-size: 16px;
 `;
