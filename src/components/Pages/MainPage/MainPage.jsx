@@ -42,6 +42,7 @@ export const MainPage = () => {
         const string = href.split('token=')[1];
         const token = string.split('&user_id=')[0];
         localStorage.setItem('token', token)
+        // cookies.set('token', token)
         const userId = string.split('&user_id=')[1];
         getUserInfo(userId)
       }
@@ -50,6 +51,7 @@ export const MainPage = () => {
   }, [])
   let navigate = useNavigate();
   const getUserInfo = async (user_id) => {
+    try{
     const response = await APICall("/user/profile/" + user_id + "/", "GET", {}, {});
     if (response.data) {
       localStorage.setItem('user', JSON.stringify(response.data))
@@ -62,6 +64,10 @@ export const MainPage = () => {
       }
     }
   }
+  catch(err){
+    console.error("/user/profile/",err)
+  }
+  }
 
   const submitClick = async() => {
     const userInfo = JSON.parse(localStorage.getItem('user'))
@@ -69,10 +75,15 @@ export const MainPage = () => {
       ...userInfo,
       "consent": true
     }
+    try{
     const response = await APICall("/user/profile/" + userInfo.id + "/", "PATCH", {}, user_data);
     if (response.data) {
       navigate("/create");
     }
+  }
+  catch(err) {
+    console.error("/user/profile/:",err)
+  }
   }
 
   const clickNo = () => {
