@@ -1,8 +1,6 @@
 import { base_URL } from "../Utilities/Constant";
 import axios from 'axios';
-
-export const APICall = async (url, method, header, data, isImage = false) => {
-    const token = localStorage.getItem('token');
+export const APICall = async (url, method, header, data, isImage = false, token) => {
     if (isImage) {
         return await axios({
             url: base_URL + url,

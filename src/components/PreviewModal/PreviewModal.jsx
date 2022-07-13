@@ -1,31 +1,26 @@
-import * as React from "react";
-import Box from "@mui/material/Box";
 import { Dialog } from "@mui/material";
+import * as React from "react";
+import { useCookies } from 'react-cookie';
+import { useNavigate } from "react-router-dom";
+import { APICall } from "../../APIConfig/APIServices";
+import Typography from "../../Typography/Typography";
 import PrimaryButton from "../Buttons/PrimaryButton";
+import ModalTable from "../Tables/ModalTable";
 import {
   BoxCont,
   ButtonWrapPrimary,
   CustomIframe,
-  CustomParagraph,
-  LeftSec,
+  CustomParagraph, IconsWrap, LeftSec,
   RightSec,
   TableSection,
   TextWrap,
-  Wrapper,
-  IconsWrap
+  Wrapper
 } from "./PreviewModal.styles";
-import { TemplateTable } from "../Tables/TemplateTable";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import Typography from "../../Typography/Typography";
-import ModalTable from "../Tables/ModalTable";
-import { APICall, APIAuthCall } from "../../APIConfig/APIServices"
 
 const PreviewModal = ({
   open,
   setOpen,
   Text,
-  buttonTags,
   reply,
   retweet,
   like,
@@ -37,6 +32,8 @@ const PreviewModal = ({
   media
 }) => {
   let navigate = useNavigate();
+  const [cookies, setCookie] = useCookies(['token']);
+
   const handleClose = () => setOpen(false);
   const theme = {
     weight: 500,
@@ -63,7 +60,7 @@ const PreviewModal = ({
       "media": media,
     }
     try {
-      const response = await APICall("/campaign/twitter-card/", "POST", {}, postData);
+      const response = await APICall("/campaign/twitter-card/", "POST", {}, postData, false, cookies.token);
       if (response.data) {
         // navigate("/create");
         navigate("/onboarding");
