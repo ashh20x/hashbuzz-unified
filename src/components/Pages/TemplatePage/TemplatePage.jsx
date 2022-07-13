@@ -1,33 +1,30 @@
-import React, { useEffect, useRef } from 'react'
+import Picker from 'emoji-picker-react';
+import React, { useState } from 'react';
+import { useCookies } from 'react-cookie';
+import { useNavigate } from "react-router-dom";
+import { APICall } from '../../../APIConfig/APIServices';
 import Typography from "../../../Typography/Typography";
+import PrimaryButton from "../../Buttons/PrimaryButton";
+import SecondaryButton from "../../Buttons/SecondaryButton";
 import { ContainerStyled } from "../../ContainerStyled/ContainerStyled";
+import PreviewModal from "../../PreviewModal/PreviewModal";
+import { TemplateTable } from "../../Tables/TemplateTable";
+// import "emoji-mart/css/emoji-mart.css"; 
+import { ImageIcon } from "./ImageIcon";
 import {
   ButtonWrap,
   ButtonWrapPrimary,
   ContentWrap,
   CustomIframe,
   CustomInput,
-  CustomParagraph,
-  LeftSec,
+  CustomParagraph, EmoBtnWrap,
+  IconsWrap, LeftSec,
   RightSec,
   TableSection,
-  TextWrap,
-  Wrapper,
-  WordsWrap,
-  EmoBtnWrap,
-  IconsWrap
+  TextWrap, WordsWrap, Wrapper
 } from "./TemplatePage.styles";
-import PrimaryButton from "../../Buttons/PrimaryButton";
-import SecondaryButton from "../../Buttons/SecondaryButton";
-import { TemplateTable } from "../../Tables/TemplateTable";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import PreviewModal from "../../PreviewModal/PreviewModal";
-import Picker from 'emoji-picker-react';
-// import "emoji-mart/css/emoji-mart.css"; 
-import { ImageIcon } from "./ImageIcon";
 import { YoutubeIcon } from "./YoutubeIcon";
-import { APICall } from '../../../APIConfig/APIServices';
+
 export const TemplatePage = () => {
   let navigate = useNavigate();
   const [srcLink, setSrcLink] = useState(
@@ -48,12 +45,9 @@ export const TemplatePage = () => {
   const [media, setMedia] = useState([]);
   const [displayMedia, setDisplayMedia] = useState([]);
   const [gifSelected, setGifSelect] = useState(false);
+  const [cookies, setCookie] = useCookies(['token']);
 
 
-
-  // useEffect(() => {
-  //   new Picker({ data})
-  // }, [])
 
 
   const theme = {
@@ -100,12 +94,12 @@ export const TemplatePage = () => {
       let data = new FormData();
       data.append('media_file', file);
       data.append('media_type', 'image');
-      try{
-      const response = await APICall('/campaign/media/', 'POST', {}, data, true);
-      setMedia([...media, response.data.id]);
+      try {
+        const response = await APICall('/campaign/media/', 'POST', {}, data, true, cookies.token);
+        setMedia([...media, response.data.id]);
       }
-      catch(err) {
-        console.error("/campaign/media/:",err)
+      catch (err) {
+        console.error("/campaign/media/:", err)
       }
 
     }
@@ -115,13 +109,13 @@ export const TemplatePage = () => {
         let data = new FormData();
         data.append('media_file', file);
         data.append('media_type', 'image');
-        try{
-        const response = await APICall('/campaign/media/', 'POST', {}, data, true);
-        setMedia([...media, response.data.id])
+        try {
+          const response = await APICall('/campaign/media/', 'POST', {}, data, true, cookies.token);
+          setMedia([...media, response.data.id])
         }
-      catch(err) {
-        console.error("/campaign/media/:",err)
-      }
+        catch (err) {
+          console.error("/campaign/media/:", err)
+        }
       }
       catch (err) {
         console.log(err)

@@ -21,14 +21,13 @@ import {
 import { APICall } from "../../../APIConfig/APIServices"
 import TopUpModal from "../../PreviewModal/TopUpModal";
 // import {useHashConnect } from "./HashConnectAPIProvider";
-
+import { useCookies } from 'react-cookie';
 export const CreateTwitterPage = () => {
   const [tableData, setTableData] = useState([]);
   const [userData, setUserData] = useState({});
   const [openTopup, setTopUpOpen] = useState(false);
-  // const { connect, walletData, installedExtensions } = useHashConnect();
-  // const { accountIds, netWork, id } = walletData;
-  // Similar to componentDidMount and componentDidUpdate:
+  const [cookies, setCookie] = useCookies(['token']);
+
   useEffect(() => {
     let mounted = true;
     if (mounted) {
@@ -45,11 +44,11 @@ export const CreateTwitterPage = () => {
     setUserData(user);
     cardData[0].content = user.hedera_wallet_id;
     cardData[1].content = user.business_twitter_handle;
-    cardData[2].content = user.personal_twitter_handle;
+    cardData[2].content = user.personal_twitter_handle ?user.personal_twitter_handle:'' + ' hbars rewarded';
     cardData[3].content = user.available_budget;
     cardData[4].content = user.campaign_status;
     try{
-    const response = await APICall("/campaign/twitter-card/", "GET", null, null);
+    const response = await APICall("/campaign/twitter-card/", "GET", null, null,false,cookies.token);
     if (response.data) {
       setTableData(response.data.results);
     }
