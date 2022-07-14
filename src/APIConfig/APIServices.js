@@ -46,13 +46,15 @@ export const APICall = async (url, method, header, data, isImage = false, token)
     }
 }
 
-export const APIAuthCall = async (url, method, header, data) => {
+export const APIAuthCall = async (url, method, header, data,token) => {
+    let headers = {
+        Authorization: `Token ${token}`
+    }
     if (method === 'GET') {
         return await axios({
             url: base_URL + url,
             method: method,
-            headers: {
-            },
+            headers: token?headers:{},
             "mode": "cors"
         });
     }
