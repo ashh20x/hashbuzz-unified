@@ -30,7 +30,7 @@ export const ContentBox = () => {
   let navigate = useNavigate();
 
   const handleStart = () => {
-    navigate('/create');   
+    navigate('/dashboard');   
   }
   return (
     <ContainerStyled>

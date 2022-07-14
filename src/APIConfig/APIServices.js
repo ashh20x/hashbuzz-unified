@@ -1,8 +1,6 @@
 import { base_URL } from "../Utilities/Constant";
 import axios from 'axios';
-
-export const APICall = async (url, method, header, data, isImage = false) => {
-    const token = localStorage.getItem('token');
+export const APICall = async (url, method, header, data, isImage = false, token) => {
     if (isImage) {
         return await axios({
             url: base_URL + url,
@@ -48,13 +46,15 @@ export const APICall = async (url, method, header, data, isImage = false) => {
     }
 }
 
-export const APIAuthCall = async (url, method, header, data) => {
+export const APIAuthCall = async (url, method, header, data,token) => {
+    let headers = {
+        Authorization: `Token ${token}`
+    }
     if (method === 'GET') {
         return await axios({
             url: base_URL + url,
             method: method,
-            headers: {
-            },
+            headers: token?headers:{},
             "mode": "cors"
         });
     }
