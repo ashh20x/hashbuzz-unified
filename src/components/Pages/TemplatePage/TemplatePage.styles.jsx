@@ -60,7 +60,7 @@ export const ButtonWrap = styled.div`
   scrollbar-width: none;
   width: fit-content;
   flex-wrap: wrap;
-  margin-top: 4%;
+  // margin-top: 4%;
   button {
     margin: 10px;
   }
@@ -77,6 +77,7 @@ export const ButtonWrapPrimary = styled.div`
   flex-direction: row;
   width: 70%;
   justify-content: center;
+  margin-top:12px;
   button {
     margin-right: 50px;
     margin-bottom: 0;
@@ -166,4 +167,5 @@ export const EmoBtnWrap = styled.div`
 border: none;
 background: none;
 font-size: 16px;
+cursor:pointer
 `;

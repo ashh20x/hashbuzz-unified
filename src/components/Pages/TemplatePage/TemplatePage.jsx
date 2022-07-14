@@ -1,37 +1,34 @@
-import React, { useEffect, useRef } from 'react'
+import Picker from 'emoji-picker-react';
+import React, { useState } from 'react';
+import { useCookies } from 'react-cookie';
+import { useNavigate } from "react-router-dom";
+import { APICall } from '../../../APIConfig/APIServices';
 import Typography from "../../../Typography/Typography";
+import PrimaryButton from "../../Buttons/PrimaryButton";
+import SecondaryButton from "../../Buttons/SecondaryButton";
 import { ContainerStyled } from "../../ContainerStyled/ContainerStyled";
+import PreviewModal from "../../PreviewModal/PreviewModal";
+import { TemplateTable } from "../../Tables/TemplateTable";
+// import "emoji-mart/css/emoji-mart.css"; 
+import { ImageIcon } from "./ImageIcon";
 import {
   ButtonWrap,
   ButtonWrapPrimary,
   ContentWrap,
   CustomIframe,
   CustomInput,
-  CustomParagraph,
-  LeftSec,
+  CustomParagraph, EmoBtnWrap,
+  IconsWrap, LeftSec,
   RightSec,
   TableSection,
-  TextWrap,
-  Wrapper,
-  WordsWrap,
-  EmoBtnWrap,
-  IconsWrap
+  TextWrap, WordsWrap, Wrapper
 } from "./TemplatePage.styles";
-import PrimaryButton from "../../Buttons/PrimaryButton";
-import SecondaryButton from "../../Buttons/SecondaryButton";
-import { TemplateTable } from "../../Tables/TemplateTable";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import PreviewModal from "../../PreviewModal/PreviewModal";
-import Picker from 'emoji-picker-react';
-// import "emoji-mart/css/emoji-mart.css"; 
-import { ImageIcon } from "./ImageIcon";
 import { YoutubeIcon } from "./YoutubeIcon";
-import { APICall } from '../../../APIConfig/APIServices';
+
 export const TemplatePage = () => {
   let navigate = useNavigate();
   const [srcLink, setSrcLink] = useState(
-    "https://www.youtube.com/embed/hm7jiV5dXcE"
+    "https://www.youtube.com/embed/1lzba8D4FCU"
   );
 
   const [buttonTags, setButtonTags] = useState([]);
@@ -48,12 +45,11 @@ export const TemplatePage = () => {
   const [media, setMedia] = useState([]);
   const [displayMedia, setDisplayMedia] = useState([]);
   const [gifSelected, setGifSelect] = useState(false);
+  const [cookies, setCookie] = useCookies(['token']);
+  const [videoTitle, setVideoTitle] = useState(false);
 
 
 
-  // useEffect(() => {
-  //   new Picker({ data})
-  // }, [])
 
 
   const theme = {
@@ -82,10 +78,12 @@ export const TemplatePage = () => {
     navigate("/onboarding");
   };
   const handleText = (event) => {
+    if (271 - Text?.length === 0) {
+      console.log("message for reached text enter limit!")
+    }
     const textInput = event.target.value;
     let x = textInput.split(" ").filter((item) => item[0] === "#");
     setButtonTags(x);
-    // if(Text.length<270)
     setText(textInput)
   };
 
@@ -100,12 +98,12 @@ export const TemplatePage = () => {
       let data = new FormData();
       data.append('media_file', file);
       data.append('media_type', 'image');
-      try{
-      const response = await APICall('/campaign/media/', 'POST', {}, data, true);
-      setMedia([...media, response.data.id]);
+      try {
+        const response = await APICall('/campaign/media/', 'POST', {}, data, true, cookies.token);
+        setMedia([...media, response.data.id]);
       }
-      catch(err) {
-        console.error("/campaign/media/:",err)
+      catch (err) {
+        console.error("/campaign/media/:", err)
       }
 
     }
@@ -115,13 +113,13 @@ export const TemplatePage = () => {
         let data = new FormData();
         data.append('media_file', file);
         data.append('media_type', 'image');
-        try{
-        const response = await APICall('/campaign/media/', 'POST', {}, data, true);
-        setMedia([...media, response.data.id])
+        try {
+          const response = await APICall('/campaign/media/', 'POST', {}, data, true, cookies.token);
+          setMedia([...media, response.data.id])
         }
-      catch(err) {
-        console.error("/campaign/media/:",err)
-      }
+        catch (err) {
+          console.error("/campaign/media/:", err)
+        }
       }
       catch (err) {
         console.log(err)
@@ -133,8 +131,8 @@ export const TemplatePage = () => {
   };
 
   const handleYouTubeClick = (event) => {
-    console.log(event)
-    setYoutube(true)
+    const collapseYoutube = !isYoutube;
+    setYoutube(collapseYoutube);
   };
 
   const checking = (urls) => {
@@ -153,7 +151,17 @@ export const TemplatePage = () => {
     } else {
       setSrcLink("https://www.youtube.com/embed/" + videoId);
     }
+    getYouTubeTitleAndDes(videoId)
   };
+
+
+  const getYouTubeTitleAndDes = (videoId) => {
+    const vidurl = 'https://www.youtube.com/watch?v=' + videoId;
+
+    fetch(`https://noembed.com/embed?dataType=json&url=${vidurl}`)
+      .then(res => res.json())
+      .then(data => setVideoTitle(data.title))
+  }
   const handleLink = (event) => {
     checking(event.target.value);
     setMedia([]);
@@ -180,41 +188,41 @@ export const TemplatePage = () => {
     setFollow(e.target.value);
   };
   const onEmojiClick = (event, emojiObject) => {
-    // if(Text.length<270)
-    setText([Text + ' ' + emojiObject.emoji]);
+    if (271 - Text?.length >= 2)
+      setText(Text + '' + emojiObject.emoji);
   };
 
   return (
     <ContainerStyled>
-      {console.log(media)}
-      <Typography theme={theme}>Template</Typography>
+      <Typography theme={theme}>Campaign</Typography>
       <Wrapper>
         <LeftSec>
           <CustomInput
-            placeholder="Enter name"
+            placeholder="Enter campaign title"
             onChange={handleName}
           />
           <CustomParagraph
             onChange={handleText}
             value={Text}
             type="textarea"
-            placeholder="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus a finibus nisl, ut porta felis. Etiam vitae mollis purus. isl, ut porta felis. Etiam vitae mollis purus."
+            maxLength={271}
+            placeholder="Start typing your tweet campaign"
           />
           <WordsWrap>
-            <EmoBtnWrap className="button" onClick={() => setShowEmojis(!showEmojis)}>😊 </EmoBtnWrap>
-            <div>{272 - Text?.length || 272}</div>
+            <EmoBtnWrap className="button" onClick={() => setShowEmojis(!showEmojis)}>😊 &nbsp;</EmoBtnWrap>
+
+            {271 - Text?.length == 0 ? 0 : <div>{271 - Text?.length || 271}</div>}
           </WordsWrap>
           {showEmojis && (
             <div>
               <Picker native={true} onEmojiClick={onEmojiClick} pickerStyle={{ width: '100%' }} />
-
             </div>
           )}
           <ButtonWrap>
             {buttonTags.slice(0, 2).map((item) => (
               <SecondaryButton text={item.replace(item[0], "")} />
             ))}
-            {/* <SecondaryButton text="hashbuzz" /> */}
+            <SecondaryButton text="hashbuzz" />
           </ButtonWrap>
           <TableSection>
             <TemplateTable
@@ -262,7 +270,7 @@ export const TemplatePage = () => {
                 title="video"
               ></CustomIframe>
           }
-          <ContentWrap>
+          {/* <ContentWrap>
             <TextWrap>
               <Typography theme={main}>Reward scheme: </Typography>
               <Typography theme={body}>xk reply yk Retweet</Typography>
@@ -275,7 +283,7 @@ export const TemplatePage = () => {
               <Typography theme={main}>Campaign status:</Typography>{" "}
               <Typography theme={body}> Running</Typography>
             </TextWrap>
-          </ContentWrap>
+          </ContentWrap> */}
           <ButtonWrapPrimary>
             <PrimaryButton
               text="Preview"
@@ -291,7 +299,7 @@ export const TemplatePage = () => {
       <PreviewModal
         open={open}
         setOpen={setOpen}
-        Text={Text}
+        Text={'#hashbuzz ' + Text}
         buttonTags={buttonTags}
         reply={reply}
         retweet={retweet}
@@ -303,6 +311,7 @@ export const TemplatePage = () => {
         media={media}
         displayMedia={displayMedia}
         isYoutube={isYoutube}
+        videoTitle={videoTitle}
       />
 
     </ContainerStyled>

@@ -1,27 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useCookies } from 'react-cookie';
 import { useNavigate } from "react-router-dom";
+import { APIAuthCall, APICall } from "../../../APIConfig/APIServices";
 import TwitterSVG from "../../../SVGR/Twitter";
-import WalletSVG from "../../../SVGR/Wallet";
 import Typography from "../../../Typography/Typography";
-import PrimaryButton from "../../Buttons/PrimaryButton";
 import Card from "../../Card/Card";
-import CheckBox from "../../CheckBox/CheckBox";
 import { ContainerStyled } from "../../ContainerStyled/ContainerStyled";
-import { APICall, APIAuthCall } from "../../../APIConfig/APIServices"
+import ConsentModal from "../../PreviewModal/ConsentPreviewModal";
 import {
-  Brand,
-  CardWrap,
-  CheckboxWrap,
   Connect,
   ContentHeaderText,
-  Row,
-  Seperator,
-  Wallet,
+  Row, Wallet,
+  CardContainer
 } from "./MainPage.styles";
-import ConsentModal from "../../PreviewModal/ConsentPreviewModal";
 export const MainPage = () => {
   const [open, setOpen] = useState(false);
-
+  const [cookies, setCookie] = useCookies(['token']);
   const theme = {
     color: "#696969",
     size: "18px",
@@ -41,8 +35,7 @@ export const MainPage = () => {
       if (href.includes('token=')) {
         const string = href.split('token=')[1];
         const token = string.split('&user_id=')[0];
-        localStorage.setItem('token', token)
-        // cookies.set('token', token)
+        setCookie('token', token)
         const userId = string.split('&user_id=')[1];
         getUserInfo(userId)
       }
@@ -51,39 +44,39 @@ export const MainPage = () => {
   }, [])
   let navigate = useNavigate();
   const getUserInfo = async (user_id) => {
-    try{
-    const response = await APICall("/user/profile/" + user_id + "/", "GET", {}, {});
-    if (response.data) {
-      localStorage.setItem('user', JSON.stringify(response.data))
-      const { consent } = response.data;
-      if (consent) {
-        navigate("/create");
-      }
-      else {
-        setOpen(true);
+    try {
+      const response = await APICall("/user/profile/" + user_id + "/", "GET", {}, null,false, cookies.token);
+      if (response.data) {
+        localStorage.setItem('user', JSON.stringify(response.data))
+        const { consent } = response.data;
+        if (consent) {
+          navigate("/dashboard");
+        }
+        else {
+          setOpen(true);
+        }
       }
     }
-  }
-  catch(err){
-    console.error("/user/profile/",err)
-  }
+    catch (err) {
+      console.error("/user/profile/", err)
+    }
   }
 
-  const submitClick = async() => {
+  const submitClick = async () => {
     const userInfo = JSON.parse(localStorage.getItem('user'))
     const user_data = {
       ...userInfo,
       "consent": true
     }
-    try{
-    const response = await APICall("/user/profile/" + userInfo.id + "/", "PATCH", {}, user_data);
-    if (response.data) {
-      navigate("/create");
+    try {
+      const response = await APICall("/user/profile/" + userInfo.id + "/", "PATCH", {}, user_data,false,cookies.token);
+      if (response.data) {
+        navigate("/dashboard");
+      }
     }
-  }
-  catch(err) {
-    console.error("/user/profile/:",err)
-  }
+    catch (err) {
+      console.error("/user/profile/:", err)
+    }
   }
 
   const clickNo = () => {
@@ -98,10 +91,7 @@ export const MainPage = () => {
         if (response.data) {
           const { url } = response.data;
           window.location.href = url
-          // localStorage.setItem('token', token)
-          // localStorage.setItem('user', JSON.stringify(user))
-          // console.log(token)
-          // navigate("/create");
+         
         }
       } catch (error) {
         console.error("error===", error);
@@ -110,32 +100,20 @@ export const MainPage = () => {
     })();
   }
 
-  // const authHandler = (err, data) => {
-  //   console.log(err, data);
-  // };
 
   return (
     <ContainerStyled>
       <ContentHeaderText>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc eu iaculis
-        urna, nec vestibulum elit. Praesent quam risus, varius vel venenatis
-        non, elementum at sapien. Maecenas feugiat dictum tortor, in tincidunt
-        metus dignissim eget. Pellentesque quis tincidunt quam. Integer a nibh
-        nec ante imperdiet vehicula. Duis ac velit vel nulla pellentesque porta
-        vel vel massa. Quisque tellus ante, ultricies vel ipsum id, bibendum
-        suscipit mi. Nunc ullamcorper dolor tortor, vitae bibendum lectus
-        elementum convallis. Praesent quam nisl, pellentesque ac massa placerat,
-        tempus fermentum ligula. Nulla facilisi. Praesent consectetur dapibus
-        interdum.
+        _
       </ContentHeaderText>
 
       <Connect>
         <Wallet>
-          <Typography theme={theme}>Connect your wallet</Typography>
+          <Typography theme={theme}>Let us get started</Typography>
           <Row />
-          <div onClick={() => login()}>
-            <Card title="Connect Twitter" icon={<TwitterSVG />} />
-          </div>
+          <CardContainer onClick={() => login()}>
+            <Card title="Log in with Twitter" icon={<TwitterSVG />} />
+          </CardContainer>
           {/* <Card title="Connect HashPack" icon={<WalletSVG />} /> */}
         </Wallet>
         {/* <Seperator /> */}

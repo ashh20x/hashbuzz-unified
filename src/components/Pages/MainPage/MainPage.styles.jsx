@@ -106,3 +106,6 @@ export const CheckboxWrap = styled.div`
     margin: 8px 0;
   }
 `;
+export const CardContainer = styled.div`
+cursor: pointer;
+`;
