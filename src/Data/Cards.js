@@ -8,7 +8,7 @@ export const cardData = [
   {
     title: "Brand Twitter Handle",
     content: "",
-    buttonTag: ["Reconnect"],
+    buttonTag: ["Connect"],
     isButton: true,
   },
   {

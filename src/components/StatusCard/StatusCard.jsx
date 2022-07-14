@@ -1,8 +1,8 @@
 import Typography from "../../Typography/Typography";
 import SecondaryButton from "../Buttons/SecondaryButton";
-import { CardContainer, ButtonSection } from "./StatusCard.styles";
+import { CardContainer, ButtonSection,Paragraph } from "./StatusCard.styles";
 
-const StatusCard = ({ title, content, buttonTag, isButton, buttonClick }) => {
+const StatusCard = ({ title, content, buttonTag, isButton, buttonClick,text }) => {
   const TitleTheme = {
     color: "#000",
     size: "16px",
@@ -24,6 +24,7 @@ const StatusCard = ({ title, content, buttonTag, isButton, buttonClick }) => {
             <SecondaryButton text={item} variant="contained" width="91px" margin="5%" onclick={()=>buttonClick(item)}/>
           ))}
       </ButtonSection>
+      <Paragraph>{text}</Paragraph>
     </CardContainer>
   );
 };

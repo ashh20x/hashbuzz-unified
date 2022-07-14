@@ -15,8 +15,8 @@ function App() {
       <Theme>
         <Routes>
           <Route path="/" exact element={<Main />} />
-          <Route path="/create" exact element={<CreateTwitterCard />} />
-          <Route path="/template" exact element={<Template />} />
+          <Route path="/dashboard" exact element={<CreateTwitterCard />} />
+          <Route path="/campaign" exact element={<Template />} />
           <Route path="/invoice" exact element={<Invoice />} />
           <Route path="/onboarding" exact element={<OnBoarding />} />
         </Routes>

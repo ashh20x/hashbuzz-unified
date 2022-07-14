@@ -1,7 +1,7 @@
 export const tableHeadRow = [
   { id: "cardNo", label: "Card No.", width: 60, align: "center" },
   { id: "name", label: "Campaign Name", width: 85, align: "center" },
-  { id: "stats", label: "Tweet Stats", width: 85, align: "center" },
+  { id: "stats", label: "Campaign stats", width: 85, align: "center" },
   { id: "spent", label: "Amount Spent", width: 85, align: "center" },
   { id: "claimed", label: "Amount Claimed", width: 80, align: "center" },
   { id: "actions", label: "Actions", width: 60, align: "center" },

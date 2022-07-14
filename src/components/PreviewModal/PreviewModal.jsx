@@ -29,7 +29,8 @@ const PreviewModal = ({
   srcLink,
   name,
   displayMedia,
-  media
+  media,
+  videoTitle
 }) => {
   let navigate = useNavigate();
   const [cookies, setCookie] = useCookies(['token']);
@@ -57,13 +58,13 @@ const PreviewModal = ({
       "like_reward": like,
       "like_downloaded_reward": download,
       "follow_reward": follow,
-      "media": media,
+      "media": [],
     }
     try {
       const response = await APICall("/campaign/twitter-card/", "POST", {}, postData, false, cookies.token);
       if (response.data) {
-        // navigate("/create");
-        navigate("/onboarding");
+        navigate("/dashboard");
+        // navigate("/onboarding");
       }
     }
     catch (err) {
@@ -89,10 +90,10 @@ const PreviewModal = ({
       }}
     >
       <BoxCont>
-        <Typography theme={theme}>Twitter card preview</Typography>
+        <Typography theme={theme}>Tweet campaign preview</Typography>
         <Wrapper>
           <LeftSec>
-            <CustomParagraph>{name}</CustomParagraph>
+            {/* <CustomParagraph>{name}</CustomParagraph> */}
             <CustomParagraph>{Text}</CustomParagraph>
             {/* <CustomIframe
               src={srcLink}
@@ -120,13 +121,13 @@ const PreviewModal = ({
                 ></CustomIframe>
             }
             <TextWrap>
-              <Typography theme={body}>Video Tiltle here</Typography>
+              <Typography theme={body}>{videoTitle}</Typography>
             </TextWrap>
-            <CustomParagraph>
+            {/* <CustomParagraph>
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus a
               finibus nisl, ut porta felis. Etiam vitae mollis purus. isl, ut
               porta felis. Etiam vitae mollis purus.
-            </CustomParagraph>
+            </CustomParagraph> */}
           </LeftSec>
           <RightSec>
             <TableSection>
@@ -139,9 +140,7 @@ const PreviewModal = ({
               />
             </TableSection>
             <CustomParagraph>
-              As per twitter low you couldn't edit twitter's twwet. So before
-              posting this card to twitter read it carefully and then submit
-              to the twiter.
+            Warning: you will not be able to edit this tweet if you click submit as this feature is not available in Twitter yet, we recommend you read your tweet information and reward table carefully before submitting your campaign.
             </CustomParagraph>
             <ButtonWrapPrimary>
               <PrimaryButton

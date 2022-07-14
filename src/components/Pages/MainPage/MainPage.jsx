@@ -10,7 +10,8 @@ import ConsentModal from "../../PreviewModal/ConsentPreviewModal";
 import {
   Connect,
   ContentHeaderText,
-  Row, Wallet
+  Row, Wallet,
+  CardContainer
 } from "./MainPage.styles";
 export const MainPage = () => {
   const [open, setOpen] = useState(false);
@@ -35,7 +36,6 @@ export const MainPage = () => {
         const string = href.split('token=')[1];
         const token = string.split('&user_id=')[0];
         setCookie('token', token)
-        // cookies.set('token', token)
         const userId = string.split('&user_id=')[1];
         getUserInfo(userId)
       }
@@ -45,13 +45,12 @@ export const MainPage = () => {
   let navigate = useNavigate();
   const getUserInfo = async (user_id) => {
     try {
-      console.log("------",cookies.token)
       const response = await APICall("/user/profile/" + user_id + "/", "GET", {}, null,false, cookies.token);
       if (response.data) {
         localStorage.setItem('user', JSON.stringify(response.data))
         const { consent } = response.data;
         if (consent) {
-          navigate("/create");
+          navigate("/dashboard");
         }
         else {
           setOpen(true);
@@ -70,9 +69,9 @@ export const MainPage = () => {
       "consent": true
     }
     try {
-      const response = await APICall("/user/profile/" + userInfo.id + "/", "PATCH", {}, user_data);
+      const response = await APICall("/user/profile/" + userInfo.id + "/", "PATCH", {}, user_data,false,cookies.token);
       if (response.data) {
-        navigate("/create");
+        navigate("/dashboard");
       }
     }
     catch (err) {
@@ -101,32 +100,20 @@ export const MainPage = () => {
     })();
   }
 
-  // const authHandler = (err, data) => {
-  //   console.log(err, data);
-  // };
 
   return (
     <ContainerStyled>
       <ContentHeaderText>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc eu iaculis
-        urna, nec vestibulum elit. Praesent quam risus, varius vel venenatis
-        non, elementum at sapien. Maecenas feugiat dictum tortor, in tincidunt
-        metus dignissim eget. Pellentesque quis tincidunt quam. Integer a nibh
-        nec ante imperdiet vehicula. Duis ac velit vel nulla pellentesque porta
-        vel vel massa. Quisque tellus ante, ultricies vel ipsum id, bibendum
-        suscipit mi. Nunc ullamcorper dolor tortor, vitae bibendum lectus
-        elementum convallis. Praesent quam nisl, pellentesque ac massa placerat,
-        tempus fermentum ligula. Nulla facilisi. Praesent consectetur dapibus
-        interdum.
+        _
       </ContentHeaderText>
 
       <Connect>
         <Wallet>
-          <Typography theme={theme}>Connect your wallet</Typography>
+          <Typography theme={theme}>Let us get started</Typography>
           <Row />
-          <div onClick={() => login()}>
-            <Card title="Connect Twitter" icon={<TwitterSVG />} />
-          </div>
+          <CardContainer onClick={() => login()}>
+            <Card title="Log in with Twitter" icon={<TwitterSVG />} />
+          </CardContainer>
           {/* <Card title="Connect HashPack" icon={<WalletSVG />} /> */}
         </Wallet>
         {/* <Seperator /> */}

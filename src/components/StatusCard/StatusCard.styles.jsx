@@ -21,4 +21,10 @@ export const ButtonSection = styled.div`
     margin-top: 3%;
     display: flex;
     justify-content: space-around;
+`;
+export const Paragraph = styled.p`
+    width: 120%;
+    margin-top: 3%;
+    display: flex;
+    justify-content: space-around;
 `

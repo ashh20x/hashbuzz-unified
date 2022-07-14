@@ -18,7 +18,7 @@ import {
   CustomTableBodyCell,
   CustomTableHeadCell,
 } from "../../Tables/CreateTable.styles";
-import { APICall } from "../../../APIConfig/APIServices"
+import { APICall, APIAuthCall } from "../../../APIConfig/APIServices"
 import TopUpModal from "../../PreviewModal/TopUpModal";
 // import {useHashConnect } from "./HashConnectAPIProvider";
 import { useCookies } from 'react-cookie';
@@ -37,58 +37,80 @@ export const CreateTwitterPage = () => {
   }, [])
   let navigate = useNavigate();
   const handleTemplate = () => {
-    navigate("/template");
+    navigate("/campaign");
   };
   const getCampaignList = async () => {
-    const user = localStorage.getItem('user');
+    const user = JSON.parse(localStorage.getItem('user'));
     setUserData(user);
+    if (user.business_twitter_handle) {
+      cardData[1].buttonTag = ["Reconnect"]
+    }
     cardData[0].content = user.hedera_wallet_id;
     cardData[1].content = user.business_twitter_handle;
-    cardData[2].content = user.personal_twitter_handle ?user.personal_twitter_handle:'' + ' hbars rewarded';
-    cardData[3].content = user.available_budget;
+    cardData[2].content = '@' + user.personal_twitter_handle;
+    cardData[2].text = 0 + ' hbars rewarded';
+    cardData[3].content = user.available_budget ? user.available_budget + ' h' : 0 + ' h';
     cardData[4].content = user.campaign_status;
-    try{
-    const response = await APICall("/campaign/twitter-card/", "GET", null, null,false,cookies.token);
-    if (response.data) {
-      setTableData(response.data.results);
+    try {
+      const response = await APICall("/campaign/twitter-card/", "GET", null, null, false, cookies.token);
+      if (response.data) {
+        setTableData(response.data.results);
+      }
     }
-  }
-  catch(err) {
-    console.log("/campaign/twitter-card/",err)
-  }
+    catch (err) {
+      console.log("/campaign/twitter-card/", err)
+    }
   };
 
   const handleTran = () => {
     navigate("/invoice");
   };
 
-  const handleButtonClick = (e) => {
+
+  const handleButtonClick = (e, i) => {
     if (e === 'Top-Up') {
       setTopUpOpen(true)
     }
-    else if (e === 'Connect') {
+    else if (i === 0) {
       // if (installedExtensions) connect();
       // else
-        alert(
-          "Please install hashconnect wallet extension first. from chrome web store."
-        );
+      alert(
+        "Please install hashconnect wallet extension first. from chrome web store."
+      );
+    }
+    else if (i === 1) {
+      (async () => {
+
+        try {
+          const response = await APIAuthCall("/user/profile/request-brand-twitter-connect", "GET", {}, {}, cookies.token);
+          if (response.data) {
+            const { url } = response.data;
+            window.location.href = url
+
+          }
+        } catch (error) {
+          console.error("error===", error);
+        }
+
+      })();
     }
   };
 
   return (
     <ContainerStyled align="center" justify="space-between">
       <CardSection>
-        {cardData.map((item) => (
+        {cardData.map((item, i) => (
           <StatusCard
             title={item.title}
             content={item.content}
             buttonTag={item.buttonTag}
             isButton={item.isButton}
-            buttonClick={(e) => handleButtonClick(e)}
+            text={item.text}
+            buttonClick={(e) => handleButtonClick(e, i)}
           />
         ))}
       </CardSection>
-      
+
       <TableSection>
         <CustomTable2 stickyHeader aria-label="simple table">
           <CustomRowHead>
@@ -133,11 +155,10 @@ export const CreateTwitterPage = () => {
         </CustomTable2>
       </TableSection>
       <StatusSection>
-        we charge one time X hbars per twitter card campaign (unlimited free
-        topups).
+        A 10% charge is applied for every top up (you can run unlimited number of campaigns for the escrowed budget).
       </StatusSection>
       <PrimaryButton
-        text="Create Twitter Card"
+        text="CREATE CAMPAIGN"
         variant="contained"
         onclick={handleTemplate}
       />
