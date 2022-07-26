@@ -11,6 +11,7 @@ const SecondaryButton = ({
   radius,
   inverse,
   margin,
+  disabled,
   ...props
 }) => {
   return (
@@ -22,6 +23,7 @@ const SecondaryButton = ({
       radius={radius}
       inverse={inverse}
       margin={margin}
+      disabled={disabled}
     >
       {text}
     </SecondaryStyledButton>

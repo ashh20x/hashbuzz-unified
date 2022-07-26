@@ -25,7 +25,7 @@ export const cardData = [
   },
   {
     title: "Status",
-    content: "Running",
+    content: "",
     buttonTag: ["Top-Up", "Reimburse"],
     isButton: false,
   },

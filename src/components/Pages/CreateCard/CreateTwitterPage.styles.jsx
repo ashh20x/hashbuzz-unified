@@ -31,3 +31,8 @@ export const StatusSection = styled.p`
   line-height: 21px;
   color: #696969;
 `;
+
+export const LinkContainer = styled.div`
+  text-align: right;
+  width: 100%;
+`;

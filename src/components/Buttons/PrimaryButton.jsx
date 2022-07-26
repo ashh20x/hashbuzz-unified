@@ -12,6 +12,10 @@ const PrimaryButton = ({
   inverse,
   border,
   colors,
+  position,
+  right,
+  top,
+  disabled,
   ...props
 }) => {
   return (
@@ -24,6 +28,10 @@ const PrimaryButton = ({
       inverse={inverse}
       border={border}
       colors={colors}
+      position={position}
+      top={top}
+      right={right}
+      disabled={disabled}
     >
       {text}
     </StyledButton>
@@ -40,6 +48,9 @@ const StyledButton = styled(Button)`
     background-color: ${({ inverse }) => (inverse ? "#fff" : "#2546EB")};
     color: ${({ colors }) => (colors ? colors : "#fff")};
     border: ${({ border }) => border};
+    position: ${({ position }) => (position ? position : "none")};
+    right: ${({ right  }) => (right ? right : "10px")};
+    top: ${({ top  }) => (top ? top : "10px")};
     font-size: 15px;
     font-weight: 500;
     font-family: Poppins;
