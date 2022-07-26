@@ -1,7 +1,7 @@
 import Picker from 'emoji-picker-react';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCookies } from 'react-cookie';
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { APICall } from '../../../APIConfig/APIServices';
 import Typography from "../../../Typography/Typography";
 import PrimaryButton from "../../Buttons/PrimaryButton";
@@ -15,16 +15,21 @@ import {
   ButtonWrap,
   ButtonWrapPrimary,
   ContentWrap,
+  TextWrap,
+  ErrorTextWrap,
   CustomIframe,
   CustomInput,
   CustomParagraph, EmoBtnWrap,
   IconsWrap, LeftSec,
   RightSec,
   TableSection,
-  TextWrap, WordsWrap, Wrapper
+  CustomCheckboxInput, WordsWrap, Wrapper,
+  ImgWrap,
+  SimpleDiv
 } from "./TemplatePage.styles";
 import { YoutubeIcon } from "./YoutubeIcon";
-
+import Image from "../../../IconsPng/arrow-symbol.png"
+import { ShowImage } from "./ShowImage"
 export const TemplatePage = () => {
   let navigate = useNavigate();
   const [srcLink, setSrcLink] = useState(
@@ -34,11 +39,11 @@ export const TemplatePage = () => {
   const [buttonTags, setButtonTags] = useState([]);
   const [Text, setText] = useState('');
   const [name, setName] = useState('');
-  const [reply, setReply] = useState(10);
-  const [retweet, setRetweet] = useState(30);
-  const [like, setLike] = useState(100);
-  const [download, setDownload] = useState(1000);
-  const [follow, setFollow] = useState(2000);
+  const [reply, setReply] = useState(0);
+  const [retweet, setRetweet] = useState(0);
+  const [like, setLike] = useState(0);
+  const [download, setDownload] = useState(0);
+  const [follow, setFollow] = useState(0);
   const [open, setOpen] = useState(false);
   const [showEmojis, setShowEmojis] = useState(false);
   const [isYoutube, setYoutube] = useState(false);
@@ -47,10 +52,20 @@ export const TemplatePage = () => {
   const [gifSelected, setGifSelect] = useState(false);
   const [cookies, setCookie] = useCookies(['token']);
   const [videoTitle, setVideoTitle] = useState(false);
+  const [addMedia, setAddMedia] = useState(false);
+  const [budgetMessage, setBudgetMessage] = useState("");
+  const [budget, setBudget] = useState(0);
+  const [buttonDisabled, setButtonDisabled] = useState(false);
+  const [userData, setUserData] = useState({});
 
-
-
-
+  useEffect(() => {
+    let mounted = true;
+    if (mounted) {
+      const user = JSON.parse(localStorage.getItem('user'));
+      setUserData(user);
+    }
+    return () => mounted = false;
+  }, [])
 
   const theme = {
     weight: 500,
@@ -167,9 +182,28 @@ export const TemplatePage = () => {
     setMedia([]);
     setDisplayMedia([]);
   };
+  const handleClose = (event) => {
+
+  }
 
   const handleName = (event) => {
     setName(event.target.value);
+  };
+
+  const handleBudget = (event) => {
+    if (event.target.value <= userData.available_budget) {
+      setBudget(event.target.value);
+      setBudgetMessage("");
+      setButtonDisabled(false);
+    }
+    else {
+      setBudgetMessage("Wrong entry! Should be less then budget.");
+      setButtonDisabled(true);
+    }
+  };
+
+  const handleAddMedia = (event) => {
+    setAddMedia(event.target.value);
   };
 
   const handleReply = (e) => {
@@ -192,13 +226,29 @@ export const TemplatePage = () => {
       setText(Text + '' + emojiObject.emoji);
   };
 
+  const handleBack = () => {
+    navigate('/dashboard');
+  }
+
+  const setremoveImage = (index) => {
+    displayMedia.splice(index, 1);
+    media.splice(index, 1);
+    const imagesArr = displayMedia.length === 0 ? [] : [...displayMedia];
+    const mediaArr = media.length === 0 ? [] : [...media];
+    setMedia(mediaArr)
+    setDisplayMedia(imagesArr);
+  }
+
   return (
     <ContainerStyled>
+      <ImgWrap onClick={handleBack}>
+        <img width={30} src={Image} alt="" />
+      </ImgWrap>
       <Typography theme={theme}>Campaign</Typography>
       <Wrapper>
         <LeftSec>
           <CustomInput
-            placeholder="Enter campaign title"
+            placeholder="Enter Campaign title"
             onChange={handleName}
           />
           <CustomParagraph
@@ -240,9 +290,27 @@ export const TemplatePage = () => {
           </TableSection>
         </LeftSec>
         <RightSec>
+          <CustomInput
+            onKeyPress={(event) => {
+              if (!/[0-9]/.test(event.key)) {
+                event.preventDefault();
+              }
+            }}
+            type="number"
+            placeholder="Enter campaign budget"
+            onChange={handleBudget}
+          />
+          <ErrorTextWrap >{budgetMessage}</ErrorTextWrap>
+          <IconsWrap>
+            <CustomCheckboxInput
+              type="checkbox"
+              onChange={handleAddMedia}
+            />
+            Do you want to add media?
+          </IconsWrap>
           <IconsWrap>
             <label for="file"><span> <ImageIcon /></span></label>
-            <CustomInput type="file" alt="" id="file" style={{ display: 'none' }} accept="image/png, image/gif, image/jpeg" onChange={handleImageChange} />
+            <CustomInput type="file" alt="" id="file" style={{ display: 'none' }} accept="image/png, image/gif, image/jpeg,image/jpg, video/*" onChange={handleImageChange} />
             <label onClick={handleYouTubeClick}><span>
               <YoutubeIcon />
             </span></label>
@@ -253,14 +321,32 @@ export const TemplatePage = () => {
               onChange={handleLink}
             />
             : null}
+
           {
             displayMedia.length > 0 ?
-              <IconsWrap>
-                {displayMedia[0] ? <img width={100} src={displayMedia[0]} alt="" /> : null}
-                {displayMedia[1] ? <img width={100} src={displayMedia[1]} alt="" /> : null}
-                {displayMedia[2] ? <img width={100} src={displayMedia[2]} alt="" /> : null}
-                {displayMedia[3] ? <img width={100} src={displayMedia[3]} alt="" /> : null}
-              </IconsWrap>
+              displayMedia.length === 3 ?
+                <IconsWrap>
+                  <div>
+                    {displayMedia[0] ? <SimpleDiv>
+                      <ShowImage ind={0} setremoveImage={() => setremoveImage} src={displayMedia[0]} alt="" /><br /></SimpleDiv> : null}
+                    {displayMedia[1] ? <SimpleDiv><ShowImage ind={1} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[1]} alt="" /> </SimpleDiv> : null}
+                  </div>
+
+                  <IconsWrap>
+                    {displayMedia[2] ? <SimpleDiv><ShowImage ind={2} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[2]} alt="" /></SimpleDiv> : null}
+                  </IconsWrap>
+                </IconsWrap>
+                : <>
+                  <IconsWrap>
+                    {displayMedia[0] ? <SimpleDiv><ShowImage ind={0} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[0]} alt="" /><br /></SimpleDiv> : null}
+                    {displayMedia[1] ? <SimpleDiv><ShowImage ind={1} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[1]} alt="" /><br /> </SimpleDiv> : null}
+                  </IconsWrap>
+
+                  <IconsWrap>
+                    {displayMedia[2] ? <SimpleDiv><ShowImage ind={2} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[2]} alt="" /><br /></SimpleDiv> : null}
+                    {displayMedia[3] ? <SimpleDiv><ShowImage ind={3} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[3]} alt="" /></SimpleDiv> : null}
+                  </IconsWrap>
+                </>
               :
               <CustomIframe
                 src={srcLink}
@@ -291,6 +377,7 @@ export const TemplatePage = () => {
               onclick={handlePreview}
               colors="#2546EB"
               border="1px solid #2546EB"
+              disabled={buttonDisabled || !budget}
             />
             {/* <PrimaryButton text="Submit" onclick={handleSubmit} /> */}
           </ButtonWrapPrimary>
@@ -299,7 +386,7 @@ export const TemplatePage = () => {
       <PreviewModal
         open={open}
         setOpen={setOpen}
-        Text={'#hashbuzz ' + Text}
+        Text={Text + ' #hashbuzz'}
         buttonTags={buttonTags}
         reply={reply}
         retweet={retweet}
@@ -312,6 +399,9 @@ export const TemplatePage = () => {
         displayMedia={displayMedia}
         isYoutube={isYoutube}
         videoTitle={videoTitle}
+        addMedia={addMedia}
+        budget={budget}
+
       />
 
     </ContainerStyled>
