@@ -152,7 +152,6 @@ export const TemplatePage = () => {
 
   const checking = (urls) => {
     let url = urls.trim();
-    console.log(url);
     let videoId = "";
     if (url.indexOf("youtube") !== -1) {
       let urlParts = url.split("?v=");

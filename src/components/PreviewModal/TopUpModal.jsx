@@ -33,7 +33,6 @@ const TopUpModal = ({
     // };
 
     const handleChange = (e) => {
-        console.log(e.target.value)
         const percent = (parseInt(e.target.value)*10)/100 | 0;
         setfee(percent)
     };

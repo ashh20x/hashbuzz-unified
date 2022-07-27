@@ -30,7 +30,6 @@ export const MainPage = () => {
   useEffect(() => {
     let mounted = true;
     if (mounted) {
-      console.log("main component------------");
       const href = window.location.href;
       if (href.includes('token=')) {
         const string = href.split('token=')[1];
