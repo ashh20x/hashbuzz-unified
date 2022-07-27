@@ -30,7 +30,6 @@ export const TemplateTable = ({
   const [editIdx, setEditIdx] = useState(-1);
 
   const startEditing = (i) => {
-    console.log("editing");
     setEditIdx(i);
   };
   const stopEditing = () => {
@@ -60,21 +59,21 @@ export const TemplateTable = ({
               {!editIdx ? (
                 <NumberInput name="reply" onChange={(e) => handleReply(e)} placeholder={reply} />
               ) : (
-                reply + "h"
+                reply + "ℏ"
               )}
             </BorderlessCell>
             <BorderlessCell>
               {!editIdx ? (
                 <NumberInput name="retweet" onChange={(e) => handleRetweet(e)} placeholder={retweet} />
               ) : (
-                retweet + "h"
+                retweet + "ℏ"
               )}
             </BorderlessCell>
             <BorderlessCell>
               {!editIdx ? (
                 <NumberInput name="like" onChange={(e) => handleLike(e)} placeholder={like} />
               ) : (
-                like + "h"
+                like + "ℏ"
               )}
             </BorderlessCell>
             <BorderlessCell>
@@ -85,14 +84,14 @@ export const TemplateTable = ({
                   placeholder={download}
                 />
               ) : (
-                download + "h"
+                download + "ℏ"
               )}
             </BorderlessCell>
             <BorderlessCell>
               {!editIdx ? (
                 <NumberInput name="follow" onChange={(e) => handleFollow(e)} placeholder={follow} />
               ) : (
-                follow + "h"
+                follow + "ℏ"
               )}
             </BorderlessCell>
 
