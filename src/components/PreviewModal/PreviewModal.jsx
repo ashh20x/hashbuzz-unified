@@ -30,7 +30,9 @@ const PreviewModal = ({
   name,
   displayMedia,
   media,
-  videoTitle
+  videoTitle,
+  addMedia,
+  budget
 }) => {
   let navigate = useNavigate();
   const [cookies, setCookie] = useCookies(['token']);
@@ -95,22 +97,30 @@ const PreviewModal = ({
           <LeftSec>
             {/* <CustomParagraph>{name}</CustomParagraph> */}
             <CustomParagraph>{Text}</CustomParagraph>
-            {/* <CustomIframe
-              src={srcLink}
-              id="tutorial"
-              frameborder="0"
-              allow="autoplay; encrypted-media"
-              title="video"
-            ></CustomIframe> */}
-
             {
-              displayMedia.length > 0 ?
+              displayMedia.length > 0 && addMedia ?
+              displayMedia.length === 3 ?
+              <IconsWrap>
+                <div>
+                  {displayMedia[0] ? <><img width={150} src={displayMedia[0]} alt="" /><br/></> : null}
+                  {displayMedia[1] ? <img width={150} src={displayMedia[1]} alt="" /> : null}
+                </div>
+
                 <IconsWrap>
-                  {displayMedia[0] ? <img width={100} src={displayMedia[0]} alt="" /> : null}
-                  {displayMedia[1] ? <img width={100} src={displayMedia[1]} alt="" /> : null}
-                  {displayMedia[2] ? <img width={100} src={displayMedia[2]} alt="" /> : null}
-                  {displayMedia[3] ? <img width={100} src={displayMedia[3]} alt="" /> : null}
+                  {displayMedia[2] ? <img width={200} src={displayMedia[2]} alt="" /> : null}
                 </IconsWrap>
+              </IconsWrap>
+              : <IconsWrap>
+                 <div>
+                  {displayMedia[0] ? <><img width={150} src={displayMedia[0]} alt="" /><br/></> : null}
+                  {displayMedia[1] ? <img width={150} src={displayMedia[1]} alt="" /> : null}
+                </div>
+               
+                <div>
+                  {displayMedia[2] ? <><img width={150} src={displayMedia[2]} alt="" /><br/></> : null}
+                  {displayMedia[3] ? <img width={150} src={displayMedia[3]} alt="" /> : null}
+                </div>
+              </IconsWrap>
                 :
                 <CustomIframe
                   src={srcLink}
@@ -123,6 +133,8 @@ const PreviewModal = ({
             <TextWrap>
               <Typography theme={body}>{videoTitle}</Typography>
             </TextWrap>
+
+            <CustomParagraph>Campaign Budget: {budget}</CustomParagraph>
             {/* <CustomParagraph>
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus a
               finibus nisl, ut porta felis. Etiam vitae mollis purus. isl, ut

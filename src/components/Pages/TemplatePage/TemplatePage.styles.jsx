@@ -108,7 +108,16 @@ export const TextWrap = styled.div`
   div {
     margin-right: 10px;
     white-space: nowrap;
-    margin: 2%;
+    // margin: 2%;
+  }
+`;
+export const ErrorTextWrap = styled.div`
+  display: flex;
+  color:red;
+  div {
+    margin-right: 10px;
+    white-space: nowrap;
+    // margin: 2%;
   }
 `;
 export const CustomInput = styled.input`
@@ -144,6 +153,10 @@ export const CustomIframe = styled.iframe`
     height: 30vh;
   }
 `;
+export const CustomCheckboxInput = styled.input`
+width:16px;
+margin-right:8px;
+`;
 
 export const WordsWrap = styled.div`
 font-size: 18px;
@@ -155,8 +168,22 @@ justify-content: end;
 export const IconsWrap = styled.div`
 font-size: 18px;
 display: flex;
-width: 75%;
+width: 71%;
 justify-content: start;
+padding:2px;
+img{
+  cursor: pointer;
+
+}
+`;
+
+export const ImgWrap = styled.div`
+// font-size: 18px;
+// display: flex;
+// width: 75%;
+// justify-content: start;
+// padding:2px;
+position: absolute;
 img{
   cursor: pointer;
 
@@ -168,4 +195,35 @@ border: none;
 background: none;
 font-size: 16px;
 cursor:pointer
+`;
+
+export const DivWrapper = styled.div`
+display: flex;
+justify-content: center;
+margin: 3px 3px 3px 3px;
+`;
+
+export const ContentDiv = styled.div`
+position: relative;
+width: max-content;
+img {
+  display: block;
+}
+`;
+
+export const CloseDiv = styled.div`
+position: absolute;
+top: -4px;
+right: -4px;
+border-radius: 50%;
+color: #fff;
+border-color: #fff;
+background: red;
+width: 22px;
+height: 27px;
+cursor: pointer;
+`;
+
+export const SimpleDiv = styled.div`
+// margin: 3px 3px 3px 3px;
 `;

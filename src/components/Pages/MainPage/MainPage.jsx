@@ -30,22 +30,23 @@ export const MainPage = () => {
   useEffect(() => {
     let mounted = true;
     if (mounted) {
-      console.log("main component------------");
       const href = window.location.href;
       if (href.includes('token=')) {
         const string = href.split('token=')[1];
         const token = string.split('&user_id=')[0];
         setCookie('token', token)
         const userId = string.split('&user_id=')[1];
-        getUserInfo(userId)
+        // setTimeout(() => {
+        getUserInfo(userId, token);
+        // }, 200);
       }
     }
     return () => mounted = false;
   }, [])
   let navigate = useNavigate();
-  const getUserInfo = async (user_id) => {
+  const getUserInfo = async (user_id, token) => {
     try {
-      const response = await APICall("/user/profile/" + user_id + "/", "GET", {}, null,false, cookies.token);
+      const response = await APICall("/user/profile/" + user_id + "/", "GET", {}, null, false, token);
       if (response.data) {
         localStorage.setItem('user', JSON.stringify(response.data))
         const { consent } = response.data;
@@ -69,7 +70,7 @@ export const MainPage = () => {
       "consent": true
     }
     try {
-      const response = await APICall("/user/profile/" + userInfo.id + "/", "PATCH", {}, user_data,false,cookies.token);
+      const response = await APICall("/user/profile/" + userInfo.id + "/", "PATCH", {}, user_data, false, cookies.token);
       if (response.data) {
         navigate("/dashboard");
       }
@@ -91,7 +92,7 @@ export const MainPage = () => {
         if (response.data) {
           const { url } = response.data;
           window.location.href = url
-         
+
         }
       } catch (error) {
         console.error("error===", error);
