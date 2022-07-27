@@ -30,7 +30,6 @@ export const TemplateTable = ({
   const [editIdx, setEditIdx] = useState(-1);
 
   const startEditing = (i) => {
-    console.log("editing");
     setEditIdx(i);
   };
   const stopEditing = () => {

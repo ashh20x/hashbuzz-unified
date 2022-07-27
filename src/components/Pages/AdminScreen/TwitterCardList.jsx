@@ -83,8 +83,6 @@ export const TwitterCardScreen = () => {
   }
 
   const handleAction = (element, item) => {
-    console.log(element)
-    console.log(item)
     const updateData = {
       "card_id": item.id,
       "card_status": element === "Approved" ? "Running" : "Rejected"

@@ -106,8 +106,6 @@ export const CreateTwitterPage = () => {
   };
 
   const handleAction = (element, item) => {
-    console.log(element)
-    console.log(item)
     const updateData = {
       "card_id": item.id,
       "card_status": element === "Stop" ? "Completed" : "Running"
@@ -119,7 +117,6 @@ export const CreateTwitterPage = () => {
   };
 
   const linkClick = (item) => {
-    console.log("item:", item);
     setSelectedCampaign(item)
     setOpen(true);
     // navigate("/invoice");
@@ -131,8 +128,6 @@ export const CreateTwitterPage = () => {
       setTopUpOpen(true)
     }
     else if (i === 0) {
-      // if (installedExtensions) connect();
-      // else
       alert(
         "Please install hashconnect wallet extension first. from chrome web store."
       );
