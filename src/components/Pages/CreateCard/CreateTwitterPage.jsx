@@ -152,7 +152,7 @@ export const CreateTwitterPage = () => {
 
   return (
     <ContainerStyled align="center" justify="space-between">
-      {userData.username === "ashh20x" ? <LinkContainer><Link to="/admin"><p>Admin Panel</p></Link></LinkContainer> : null}
+      {userData?.username === "ashh20x" ? <LinkContainer><Link to="/admin"><p>Admin Panel</p></Link></LinkContainer> : null}
       <CardSection>
         {cardData.map((item, i) => (
           <StatusCard
