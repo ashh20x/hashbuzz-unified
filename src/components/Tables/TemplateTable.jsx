@@ -24,6 +24,7 @@ export const TemplateTable = ({
   like,
   download,
   follow,
+  quote
 }) => {
   
 
@@ -55,20 +56,7 @@ export const TemplateTable = ({
       </CustomRowHead>
       <TableBody>
           <CustomTableRow selectable={false} >
-            <BorderlessCell>
-              {!editIdx ? (
-                <NumberInput name="reply" onChange={(e) => handleReply(e)} placeholder={reply} />
-              ) : (
-                reply + "ℏ"
-              )}
-            </BorderlessCell>
-            <BorderlessCell>
-              {!editIdx ? (
-                <NumberInput name="retweet" onChange={(e) => handleRetweet(e)} placeholder={retweet} />
-              ) : (
-                retweet + "ℏ"
-              )}
-            </BorderlessCell>
+            
             <BorderlessCell>
               {!editIdx ? (
                 <NumberInput name="like" onChange={(e) => handleLike(e)} placeholder={like} />
@@ -78,22 +66,37 @@ export const TemplateTable = ({
             </BorderlessCell>
             <BorderlessCell>
               {!editIdx ? (
+                <NumberInput name="retweet" onChange={(e) => handleRetweet(e)} placeholder={retweet} />
+              ) : (
+                retweet + "ℏ"
+              )}
+            </BorderlessCell>
+           
+            <BorderlessCell>
+              {!editIdx ? (
                 <NumberInput
-                  name="download"
+                  name="quote"
                   onChange={(e) => handleDownload(e)}
                   placeholder={download}
                 />
               ) : (
-                download + "ℏ"
+                quote + "ℏ"
               )}
             </BorderlessCell>
             <BorderlessCell>
+              {!editIdx ? (
+                <NumberInput name="comment" onChange={(e) => handleReply(e)} placeholder={reply} />
+              ) : (
+                reply + "ℏ"
+              )}
+            </BorderlessCell>
+            {/* <BorderlessCell>
               {!editIdx ? (
                 <NumberInput name="follow" onChange={(e) => handleFollow(e)} placeholder={follow} />
               ) : (
                 follow + "ℏ"
               )}
-            </BorderlessCell>
+            </BorderlessCell> */}
 
             <BorderlessCell>
               {editIdx ? (
