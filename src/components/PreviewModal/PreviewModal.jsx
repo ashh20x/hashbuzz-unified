@@ -1,5 +1,5 @@
 import { Dialog } from "@mui/material";
-import * as React from "react";
+import React, { useState, useEffect } from 'react';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from "react-router-dom";
 import { APICall } from "../../APIConfig/APIServices";
@@ -16,7 +16,8 @@ import {
   TextWrap,
   Wrapper
 } from "./PreviewModal.styles";
-
+import { Loader } from "../Loader/Loader";
+import notify from "../Toaster/toaster";
 const PreviewModal = ({
   open,
   setOpen,
@@ -24,7 +25,6 @@ const PreviewModal = ({
   reply,
   retweet,
   like,
-  download,
   follow,
   srcLink,
   name,
@@ -32,10 +32,12 @@ const PreviewModal = ({
   media,
   videoTitle,
   addMedia,
-  budget
+  budget,
+  quote
 }) => {
   let navigate = useNavigate();
   const [cookies, setCookie] = useCookies(['token']);
+  const [showLoading, setShowLoading] = useState(false);
 
   const handleClose = () => setOpen(false);
   const theme = {
@@ -52,25 +54,29 @@ const PreviewModal = ({
   };
 
   const handleSubmit = async () => {
+    setShowLoading(true)
     const postData = {
       "name": name,
       "tweet_text": Text,
       "replay_reward": reply,
       "retweet_reward": retweet,
       "like_reward": like,
-      "like_downloaded_reward": download,
+      "like_downloaded_reward": quote,
       "follow_reward": follow,
       "media": [],
     }
     try {
       const response = await APICall("/campaign/twitter-card/", "POST", {}, postData, false, cookies.token);
       if (response.data) {
+        setShowLoading(false)
         navigate("/dashboard");
         // navigate("/onboarding");
       }
     }
     catch (err) {
       console.error("campaign/twitter-card/:", err)
+      setShowLoading(false)
+      notify("Something went wrong! Please try again later")
     }
   };
 
@@ -99,36 +105,36 @@ const PreviewModal = ({
             <CustomParagraph>{Text}</CustomParagraph>
             {
               displayMedia.length > 0 && addMedia ?
-              displayMedia.length === 3 ?
-              <IconsWrap>
-                <div>
-                  {displayMedia[0] ? <><img width={150} src={displayMedia[0]} alt="" /><br/></> : null}
-                  {displayMedia[1] ? <img width={150} src={displayMedia[1]} alt="" /> : null}
-                </div>
+                displayMedia.length === 3 ?
+                  <IconsWrap>
+                    <div>
+                      {displayMedia[0] ? <><img width={150} src={displayMedia[0]} alt="" /><br /></> : null}
+                      {displayMedia[1] ? <img width={150} src={displayMedia[1]} alt="" /> : null}
+                    </div>
 
-                <IconsWrap>
-                  {displayMedia[2] ? <img width={200} src={displayMedia[2]} alt="" /> : null}
-                </IconsWrap>
-              </IconsWrap>
-              : <IconsWrap>
-                 <div>
-                  {displayMedia[0] ? <><img width={150} src={displayMedia[0]} alt="" /><br/></> : null}
-                  {displayMedia[1] ? <img width={150} src={displayMedia[1]} alt="" /> : null}
-                </div>
-               
-                <div>
-                  {displayMedia[2] ? <><img width={150} src={displayMedia[2]} alt="" /><br/></> : null}
-                  {displayMedia[3] ? <img width={150} src={displayMedia[3]} alt="" /> : null}
-                </div>
-              </IconsWrap>
+                    <IconsWrap>
+                      {displayMedia[2] ? <img width={200} src={displayMedia[2]} alt="" /> : null}
+                    </IconsWrap>
+                  </IconsWrap>
+                  : <IconsWrap>
+                    <div>
+                      {displayMedia[0] ? <><img width={150} src={displayMedia[0]} alt="" /><br /></> : null}
+                      {displayMedia[1] ? <img width={150} src={displayMedia[1]} alt="" /> : null}
+                    </div>
+
+                    <div>
+                      {displayMedia[2] ? <><img width={150} src={displayMedia[2]} alt="" /><br /></> : null}
+                      {displayMedia[3] ? <img width={150} src={displayMedia[3]} alt="" /> : null}
+                    </div>
+                  </IconsWrap>
                 :
-                <CustomIframe
+                addMedia ? <CustomIframe
                   src={srcLink}
                   id="tutorial"
                   frameborder="0"
                   allow="autoplay; encrypted-media"
                   title="video"
-                ></CustomIframe>
+                ></CustomIframe> : null
             }
             <TextWrap>
               <Typography theme={body}>{videoTitle}</Typography>
@@ -147,12 +153,11 @@ const PreviewModal = ({
                 reply={reply}
                 retweet={retweet}
                 like={like}
-                download={download}
-                follow={follow}
+                quote={quote}
               />
             </TableSection>
             <CustomParagraph>
-            Warning: you will not be able to edit this tweet if you click submit as this feature is not available in Twitter yet, we recommend you read your tweet information and reward table carefully before submitting your campaign.
+              Warning: you will not be able to edit this tweet if you click submit as this feature is not available in Twitter yet, we recommend you read your tweet information and reward table carefully before submitting your campaign.
             </CustomParagraph>
             <ButtonWrapPrimary>
               <PrimaryButton
@@ -167,6 +172,7 @@ const PreviewModal = ({
           </RightSec>
         </Wrapper>
       </BoxCont>
+      <Loader open={showLoading} />
     </Dialog>
   );
 };
