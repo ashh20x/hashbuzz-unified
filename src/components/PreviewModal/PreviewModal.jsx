@@ -58,11 +58,12 @@ const PreviewModal = ({
     const postData = {
       "name": name,
       "tweet_text": Text,
-      "replay_reward": reply,
+      "comment_reward": reply,
       "retweet_reward": retweet,
       "like_reward": like,
-      "like_downloaded_reward": quote,
+      "quote_reward": quote,
       "follow_reward": follow,
+      "campaign_budget":budget,
       "media": [],
     }
     try {
