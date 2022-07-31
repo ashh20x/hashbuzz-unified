@@ -63,7 +63,7 @@ export const TwitterCardScreen = () => {
     try {
       setShowLoading(true);
       await APICall("/campaign/twitter-card/card_status/", "POST", null, data, false, cookies.token);
-      notify(data.card_status);
+      notify(data.card_status === "Running"? "Approved": data.card_status);
       getCampaignList();
     }
     catch (err) {
@@ -98,7 +98,6 @@ export const TwitterCardScreen = () => {
   };
 
   const linkClick = (item) => {
-    console.log("item:", item);
     setOpen(true);
     // navigate("/invoice");
   };

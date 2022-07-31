@@ -59,14 +59,17 @@ export const TemplateTable = ({
             
             <BorderlessCell>
               {!editIdx ? (
-                <NumberInput name="like" onChange={(e) => handleLike(e)} placeholder={like} />
+                <NumberInput type='number'
+                step="0.1"
+                name="like" onChange={(e) => handleLike(e)} placeholder={like} />
               ) : (
                 like + "ℏ"
               )}
             </BorderlessCell>
             <BorderlessCell>
               {!editIdx ? (
-                <NumberInput name="retweet" onChange={(e) => handleRetweet(e)} placeholder={retweet} />
+                <NumberInput type='number'
+                step="0.1" name="retweet" onChange={(e) => handleRetweet(e)} placeholder={retweet} />
               ) : (
                 retweet + "ℏ"
               )}
@@ -75,9 +78,11 @@ export const TemplateTable = ({
             <BorderlessCell>
               {!editIdx ? (
                 <NumberInput
+                type='number'
+                step="0.1"
                   name="quote"
                   onChange={(e) => handleDownload(e)}
-                  placeholder={download}
+                  placeholder={quote}
                 />
               ) : (
                 quote + "ℏ"
@@ -85,7 +90,8 @@ export const TemplateTable = ({
             </BorderlessCell>
             <BorderlessCell>
               {!editIdx ? (
-                <NumberInput name="comment" onChange={(e) => handleReply(e)} placeholder={reply} />
+                <NumberInput type='number'
+                step="0.1" name="comment" onChange={(e) => handleReply(e)} placeholder={reply} />
               ) : (
                 reply + "ℏ"
               )}

@@ -72,10 +72,12 @@ export const CreateTwitterPage = () => {
           if (results.length > 0) {
             cardData[4].content = results[0].card_status === "Pending" ? "Pending Approval" : results[0].card_status
             results[0].card_status === "Pending" ? setButtonDisabled(true) : setButtonDisabled(false)
+            setButtonDisabled(true)
           }
           else if (resultsRunning.length > 0) {
             cardData[4].content = resultsRunning[0].card_status === "Pending" ? "Pending Approval" : resultsRunning[0].card_status
             resultsRunning[0].card_status === "Running" ? setButtonDisabled(true) : setButtonDisabled(false)
+            setButtonDisabled(true)
           }
           else {
             cardData[4].content = "Completed"
@@ -218,7 +220,7 @@ export const CreateTwitterPage = () => {
                 </CustomTableBodyCell>
                 <CustomTableBodyCell>{item.name}</CustomTableBodyCell>
                 <CustomTableBodyCell><a href='#' onClick={() => linkClick(item)}>Link</a></CustomTableBodyCell>
-                <CustomTableBodyCell>{item.amount_spent}</CustomTableBodyCell>
+                <CustomTableBodyCell>{item.campaign_budget}</CustomTableBodyCell>
                 <CustomTableBodyCell>{item.amount_spent}</CustomTableBodyCell>
                 <CustomTableBodyCell>{item.amount_claimed}</CustomTableBodyCell>
                 <CustomTableBodyCell>
@@ -245,6 +247,7 @@ export const CreateTwitterPage = () => {
         onclick={handleTemplate}
         disabled={buttonDisabled || (userData?.available_budget === 0 || userData?.available_budget === null)}
       />
+      {/* (userData?.available_budget === 0 || userData?.available_budget === null) */}
       <TopUpModal
         open={openTopup}
         setOpen={setTopUpOpen}
