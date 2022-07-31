@@ -87,8 +87,10 @@ export const CreateTwitterPage = () => {
         }
         else {
           setCardData(cardData);
+          setButtonDisabled(false)
         }
         setShowLoading(false);
+
       }
       else {
         setButtonDisabled(false)
