@@ -24,6 +24,8 @@ import TopUpModal from "../../PreviewModal/TopUpModal";
 // import {useHashConnect } from "./HashConnectAPIProvider";
 import { useCookies } from 'react-cookie';
 import DisplayTableModal from '../../PreviewModal/DisplayTableModal';
+import { Loader } from "../../Loader/Loader"
+import notify from '../../Toaster/toaster';
 export const CreateTwitterPage = () => {
   const [tableData, setTableData] = useState([]);
   const [userData, setUserData] = useState({});
@@ -33,10 +35,12 @@ export const CreateTwitterPage = () => {
   const [selectedCampaign, setSelectedCampaign] = useState({});
   const [cardDataArr, setCardData] = useState([]);
   const [buttonDisabled, setButtonDisabled] = useState(true);
+  const [showLoading, setShowLoading] = useState(false);
 
   useEffect(() => {
     let mounted = true;
     if (mounted) {
+      setShowLoading(true);
       getCampaignList();
     }
     return () => mounted = false;
@@ -48,22 +52,35 @@ export const CreateTwitterPage = () => {
   const getCampaignList = async () => {
     const user = JSON.parse(localStorage.getItem('user'));
     setUserData(user);
-    if (user.business_twitter_handle) {
+    if (user && user.business_twitter_handle) {
       cardData[1].buttonTag = ["Reconnect"]
     }
-    cardData[0].content = user.hedera_wallet_id;
-    cardData[1].content = user.business_twitter_handle;
-    cardData[2].content = '@' + user.personal_twitter_handle;
+    cardData[0].content = user?.hedera_wallet_id;
+    cardData[1].content = user?.business_twitter_handle;
+    cardData[2].content = user?.personal_twitter_handle ? '@' + user?.personal_twitter_handle : '';
     cardData[2].text = 0 + ' ℏ bars rewarded';
-    cardData[3].content = user.available_budget ? user.available_budget + ' ℏ' : 0 + ' ℏ';
-    // cardData[4].content = user.campaign_status;
+    cardData[3].content = user?.available_budget ? user?.available_budget + ' ℏ' : 0 + ' ℏ';
+    cardData[4].content = "";
+
     try {
       const response = await APICall("/campaign/twitter-card/", "GET", null, null, false, cookies.token);
       if (response.data) {
         setTableData(response.data.results);
         if (response.data.results.length > 0) {
-          cardData[4].content = response.data.results[0].card_status;
-          if (response.data.results[0].card_status !== "Running") {
+          let results = response.data.results.filter(data => data.card_status === 'Pending')
+          let resultsRunning = response.data.results.filter(data => data.card_status === 'Running')
+          if (results.length > 0) {
+            cardData[4].content = results[0].card_status === "Pending" ? "Pending Approval" : results[0].card_status
+            results[0].card_status === "Pending" ? setButtonDisabled(true) : setButtonDisabled(false)
+            setButtonDisabled(true)
+          }
+          else if (resultsRunning.length > 0) {
+            cardData[4].content = resultsRunning[0].card_status === "Pending" ? "Pending Approval" : resultsRunning[0].card_status
+            resultsRunning[0].card_status === "Running" ? setButtonDisabled(true) : setButtonDisabled(false)
+            setButtonDisabled(true)
+          }
+          else {
+            cardData[4].content = "Completed"
             setButtonDisabled(false)
           }
           setCardData(cardData);
@@ -71,11 +88,16 @@ export const CreateTwitterPage = () => {
         else {
           setCardData(cardData);
         }
-
+        setShowLoading(false);
+      }
+      else {
+        setButtonDisabled(false)
+        setShowLoading(false);
       }
     }
     catch (err) {
       console.log("/campaign/twitter-card/", err)
+      setShowLoading(false);
     }
   };
 
@@ -97,11 +119,15 @@ export const CreateTwitterPage = () => {
   }
   const updateCampaignItem = async (data) => {
     try {
+      setShowLoading(true);
       await APICall("/campaign/twitter-card/card_status/", "POST", null, data, false, cookies.token);
       getCampaignList();
+      notify("Status updated!")
     }
     catch (err) {
       console.log("/campaign/twitter-card/card_status/:", err)
+      setShowLoading(false);
+      notify("Something went wrong! Please try again later")
     }
   };
 
@@ -123,6 +149,8 @@ export const CreateTwitterPage = () => {
   };
 
 
+
+
   const handleButtonClick = (e, i) => {
     if (e === 'Top-Up') {
       setTopUpOpen(true)
@@ -139,8 +167,7 @@ export const CreateTwitterPage = () => {
           const response = await APIAuthCall("/user/profile/request-brand-twitter-connect", "GET", {}, {}, cookies.token);
           if (response.data) {
             const { url } = response.data;
-            window.location.href = url
-
+            window.location.href = url;
           }
         } catch (error) {
           console.error("error===", error);
@@ -152,9 +179,9 @@ export const CreateTwitterPage = () => {
 
   return (
     <ContainerStyled align="center" justify="space-between">
-      {userData?.username === "ashh20x" ? <LinkContainer><Link to="/admin"><p>Admin Panel</p></Link></LinkContainer> : null}
+      {userData && userData?.username?.toLowerCase() === "ashh20x" ? <LinkContainer><Link to="/admin"><p>Admin Panel</p></Link></LinkContainer> : null}
       <CardSection>
-        {cardData.map((item, i) => (
+        {cardDataArr.map((item, i) => (
           <StatusCard
             title={item.title}
             content={item.content}
@@ -189,18 +216,19 @@ export const CreateTwitterPage = () => {
                   align={item.align}
                   style={{ minWidth: item.minWidth, width: item.width }}
                 >
-                  {index + 1}
+                  {tableData.length - index}
                 </CustomTableBodyCell>
                 <CustomTableBodyCell>{item.name}</CustomTableBodyCell>
                 <CustomTableBodyCell><a href='#' onClick={() => linkClick(item)}>Link</a></CustomTableBodyCell>
-                <CustomTableBodyCell>{item.amount_spent}</CustomTableBodyCell>
+                <CustomTableBodyCell>{item.campaign_budget}</CustomTableBodyCell>
                 <CustomTableBodyCell>{item.amount_spent}</CustomTableBodyCell>
                 <CustomTableBodyCell>{item.amount_claimed}</CustomTableBodyCell>
                 <CustomTableBodyCell>
                   {!item.isbutton && item.card_status !== "Completed" ? (
-                    handleActionButon(item.card_status).map((element) => (
-                      <SecondaryButton text={element} margin="5%" onclick={() => handleAction(element, item)} />
-                    ))
+                    item.card_status == "Rejected" ? "Rejected" :
+                      handleActionButon(item.card_status).map((element) => (
+                        <SecondaryButton text={element} margin="5%" onclick={() => handleAction(element, item)} />
+                      ))
                   ) : (
                     "Promotion ended"
                   )}
@@ -217,8 +245,9 @@ export const CreateTwitterPage = () => {
         text="CREATE CAMPAIGN"
         variant="contained"
         onclick={handleTemplate}
-        disabled={!buttonDisabled}
+        disabled={buttonDisabled || (userData?.available_budget === 0 || userData?.available_budget === null)}
       />
+      {/* (userData?.available_budget === 0 || userData?.available_budget === null) */}
       <TopUpModal
         open={openTopup}
         setOpen={setTopUpOpen}
@@ -228,6 +257,7 @@ export const CreateTwitterPage = () => {
         setOpen={setOpen}
         item={selectedCampaign}
       ></DisplayTableModal> : null}
+      <Loader open={showLoading} />
     </ContainerStyled>
   );
 };

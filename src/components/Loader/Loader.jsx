@@ -1,11 +1,19 @@
 import React from "react";
-import { ContainerWrapper } from "./LoaderStyle";
 import Image from "./ZZ5H.gif"
-
-export const Loader = () => {
+import { Dialog } from "@mui/material";
+export const Loader = ({ open }) => {
   return (
-    <ContainerWrapper>
-      <img src={Image} alt="Loading" />
-    </ContainerWrapper>
+    <Dialog
+      open={open}
+      PaperProps={{
+        style: {
+          borderRadius: 11,
+          padding: "5px",
+          scrollbarWidth: "none",
+        },
+      }}
+    >
+      <img src={Image} width="50px;" alt="Loading" />
+    </Dialog>
   );
 };

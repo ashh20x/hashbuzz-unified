@@ -16,6 +16,7 @@ const PrimaryButton = ({
   right,
   top,
   disabled,
+  margin,
   ...props
 }) => {
   return (
@@ -31,6 +32,7 @@ const PrimaryButton = ({
       position={position}
       top={top}
       right={right}
+      margin={margin}
       disabled={disabled}
     >
       {text}
@@ -43,6 +45,7 @@ export default PrimaryButton;
 const StyledButton = styled(Button)`
   && {
     width: ${({ width }) => (width ? width : "215px")};
+    margin: ${({ margin }) => (margin ? margin : "0px")};
     height: ${({ height }) => (height ? height : "56px")};
     border-radius: ${({ radius }) => (radius ? radius : "8px")};
     background-color: ${({ inverse }) => (inverse ? "#fff" : "#2546EB")};

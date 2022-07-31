@@ -42,7 +42,7 @@ export const TemplatePage = () => {
   const [reply, setReply] = useState(0);
   const [retweet, setRetweet] = useState(0);
   const [like, setLike] = useState(0);
-  const [download, setDownload] = useState(0);
+  const [quote, setQuote] = useState(0);
   const [follow, setFollow] = useState(0);
   const [open, setOpen] = useState(false);
   const [showEmojis, setShowEmojis] = useState(false);
@@ -196,13 +196,13 @@ export const TemplatePage = () => {
       setButtonDisabled(false);
     }
     else {
-      setBudgetMessage("Wrong entry! Should be less then budget.");
+      setBudgetMessage(`You have exceeded the total budget of ${userData.available_budget} ℏ`);
       setButtonDisabled(true);
     }
   };
 
   const handleAddMedia = (event) => {
-    setAddMedia(event.target.value);
+    setAddMedia(!addMedia);
   };
 
   const handleReply = (e) => {
@@ -214,8 +214,8 @@ export const TemplatePage = () => {
   const handleLike = (e) => {
     setLike(e.target.value);
   };
-  const handleDownload = (e) => {
-    setDownload(e.target.value);
+  const handleQuote = (e) => {
+    setQuote(e.target.value);
   };
   const handleFollow = (e) => {
     setFollow(e.target.value);
@@ -278,13 +278,12 @@ export const TemplatePage = () => {
               handleReply={handleReply}
               handleRetweet={handleRetweet}
               handleLike={handleLike}
-              handleDownload={handleDownload}
-              handleFollow={handleFollow}
+              handleDownload={handleQuote}
+              
               reply={reply}
               retweet={retweet}
               like={like}
-              download={download}
-              follow={follow}
+              quote={quote}
             />
           </TableSection>
         </LeftSec>
@@ -307,14 +306,14 @@ export const TemplatePage = () => {
             />
             Do you want to add media?
           </IconsWrap>
-          <IconsWrap>
+         {addMedia? <IconsWrap>
             <label for="file"><span> <ImageIcon /></span></label>
             <CustomInput type="file" alt="" id="file" style={{ display: 'none' }} accept="image/png, image/gif, image/jpeg,image/jpg, video/*" onChange={handleImageChange} />
             <label onClick={handleYouTubeClick}><span>
               <YoutubeIcon />
             </span></label>
-          </IconsWrap>
-          {isYoutube ?
+          </IconsWrap>:null}
+          {isYoutube  ?
             <CustomInput
               placeholder="http/123/reward/taskbar"
               onChange={handleLink}
@@ -347,13 +346,13 @@ export const TemplatePage = () => {
                   </IconsWrap>
                 </>
               :
-              <CustomIframe
+              addMedia ?<CustomIframe
                 src={srcLink}
                 id="tutorial"
                 frameborder="0"
                 allow="autoplay; encrypted-media"
                 title="video"
-              ></CustomIframe>
+              ></CustomIframe>:null
           }
           {/* <ContentWrap>
             <TextWrap>
@@ -376,7 +375,7 @@ export const TemplatePage = () => {
               onclick={handlePreview}
               colors="#2546EB"
               border="1px solid #2546EB"
-              disabled={buttonDisabled || !budget}
+              disabled={buttonDisabled}
             />
             {/* <PrimaryButton text="Submit" onclick={handleSubmit} /> */}
           </ButtonWrapPrimary>
@@ -390,7 +389,6 @@ export const TemplatePage = () => {
         reply={reply}
         retweet={retweet}
         like={like}
-        download={download}
         follow={follow}
         srcLink={srcLink}
         name={name}
@@ -400,7 +398,7 @@ export const TemplatePage = () => {
         videoTitle={videoTitle}
         addMedia={addMedia}
         budget={budget}
-
+        quote={quote}
       />
 
     </ContainerStyled>
