@@ -63,7 +63,7 @@ const PreviewModal = ({
       "like_reward": like,
       "quote_reward": quote,
       "follow_reward": follow,
-      "campaign_budget":budget,
+      "campaign_budget":budget == ""? 0:budget,
       "media": [],
     }
     try {
