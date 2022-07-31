@@ -13,18 +13,17 @@ import {
   Row, Wallet,
   CardContainer
 } from "./MainPage.styles";
+import { Loader } from '../../Loader/Loader';
 export const MainPage = () => {
   const [open, setOpen] = useState(false);
   const [cookies, setCookie] = useCookies(['token']);
+  const [userData, setUserData] = useState({});
+  const [showLoading, setShowLoading] = useState(false);
+
   const theme = {
     color: "#696969",
     size: "18px",
     weight: "600",
-  };
-  const secondaryTheme = {
-    color: "#696969",
-    size: "14px",
-    weight: "500",
   };
 
   useEffect(() => {
@@ -36,34 +35,39 @@ export const MainPage = () => {
         const token = string.split('&user_id=')[0];
         setCookie('token', token)
         const userId = string.split('&user_id=')[1];
-        // setTimeout(() => {
         getUserInfo(userId, token);
-        // }, 200);
       }
     }
     return () => mounted = false;
-  }, [])
+  }, [userData])
   let navigate = useNavigate();
   const getUserInfo = async (user_id, token) => {
     try {
+      setShowLoading(true)
       const response = await APICall("/user/profile/" + user_id + "/", "GET", {}, null, false, token);
       if (response.data) {
         localStorage.setItem('user', JSON.stringify(response.data))
+        setUserData(response.data)
         const { consent } = response.data;
-        if (consent) {
+        if (consent === true) {
+          setShowLoading(false)
           navigate("/dashboard");
         }
         else {
+          setShowLoading(false)
           setOpen(true);
         }
       }
     }
     catch (err) {
       console.error("/user/profile/", err)
+      setShowLoading(false)
+
     }
   }
 
   const submitClick = async () => {
+    setShowLoading(true)
     const userInfo = JSON.parse(localStorage.getItem('user'))
     const user_data = {
       ...userInfo,
@@ -72,11 +76,14 @@ export const MainPage = () => {
     try {
       const response = await APICall("/user/profile/" + userInfo.id + "/", "PATCH", {}, user_data, false, cookies.token);
       if (response.data) {
+        setShowLoading(false)
         navigate("/dashboard");
       }
     }
     catch (err) {
       console.error("/user/profile/:", err)
+      setShowLoading(false)
+
     }
   }
 
@@ -86,7 +93,7 @@ export const MainPage = () => {
 
   const login = () => {
     (async () => {
-
+      setShowLoading(true)
       try {
         const response = await APIAuthCall("/user/twitter-login/", "GET", {}, {});
         if (response.data) {
@@ -96,6 +103,7 @@ export const MainPage = () => {
         }
       } catch (error) {
         console.error("error===", error);
+        setShowLoading(false)
       }
 
     })();
@@ -166,6 +174,7 @@ export const MainPage = () => {
         submit={submitClick}
         noClick={clickNo}
       />
+      <Loader open={showLoading} />
     </ContainerStyled>
 
   );

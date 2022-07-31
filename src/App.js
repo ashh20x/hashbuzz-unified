@@ -10,21 +10,26 @@ import { AdminPanel } from "./components/screens/AdminPanel";
 import { Template } from "./components/screens/Template";
 import { Invoice } from "./components/screens/Invoice";
 import { ProtectedRoute } from "./APIConfig/AuthGuard";
+import { ToastContainer, toast } from 'react-toastify';
 function App() {
 
   return (
-    <Router>
-      <Theme>
-        <Routes>
-          <Route path="/" exact element={<ProtectedRoute><Main /></ProtectedRoute>} />
-          <Route path="/dashboard" exact element={<ProtectedRoute><CreateTwitterCard /></ProtectedRoute>} />
-          <Route path="/campaign" exact element={<ProtectedRoute><Template /></ProtectedRoute>} />
-          <Route path="/invoice" exact element={<ProtectedRoute><Invoice /></ProtectedRoute>} />
-          <Route path="/onboarding" exact element={<ProtectedRoute><OnBoarding /></ProtectedRoute>} />
-          <Route path="/admin" exact element={<ProtectedRoute><AdminPanel /></ProtectedRoute>} />
-        </Routes>
-      </Theme>
-    </Router>
+    <>
+      <ToastContainer />
+
+      <Router>
+        <Theme>
+          <Routes>
+            <Route path="/" exact element={<ProtectedRoute><Main /></ProtectedRoute>} />
+            <Route path="/dashboard" exact element={<ProtectedRoute><CreateTwitterCard /></ProtectedRoute>} />
+            <Route path="/campaign" exact element={<ProtectedRoute><Template /></ProtectedRoute>} />
+            <Route path="/invoice" exact element={<ProtectedRoute><Invoice /></ProtectedRoute>} />
+            <Route path="/onboarding" exact element={<ProtectedRoute><OnBoarding /></ProtectedRoute>} />
+            <Route path="/admin" exact element={<ProtectedRoute><AdminPanel /></ProtectedRoute>} />
+          </Routes>
+        </Theme>
+      </Router>
+    </>
   );
 }
 

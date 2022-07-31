@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import { cardData } from "../../../Data/Cards";
-
 import SecondaryButton from "../../Buttons/SecondaryButton";
 import { ContainerStyled } from "../../ContainerStyled/ContainerStyled";
-
+import notify from "../../Toaster/toaster";
 import {
   TableSection,
   WrappeText
@@ -19,7 +18,7 @@ import {
   
 } from "../../Tables/CreateTable.styles";
 import { APICall, APIAuthCall } from "../../../APIConfig/APIServices";
-
+import {Loader} from "../../Loader/Loader"
 import { useCookies } from 'react-cookie';
 
 export const TwitterCardScreen = () => {
@@ -28,11 +27,13 @@ export const TwitterCardScreen = () => {
   const [cookies, setCookie] = useCookies(['token']);
   const [open, setOpen] = useState(false);
   const [noData, setNoData] = useState(false);
+  const [showLoading, setShowLoading] = useState(false);
 
 
   useEffect(() => {
     let mounted = true;
     if (mounted) {
+      setShowLoading(true);
       getCampaignList();
     }
     return () => mounted = false;
@@ -47,8 +48,11 @@ export const TwitterCardScreen = () => {
         setNoData(false);
       }
       else {
+        setTableData([]);
         setNoData(true);
       }
+      setShowLoading(false);
+
     }
     catch (err) {
       console.log("/campaign/twitter-card/pending_cards:", err)
@@ -57,11 +61,14 @@ export const TwitterCardScreen = () => {
 
   const updateCampaignItem = async (data) => {
     try {
+      setShowLoading(true);
       await APICall("/campaign/twitter-card/card_status/", "POST", null, data, false, cookies.token);
+      notify(data.card_status === "Running"? "Approved": data.card_status);
       getCampaignList();
     }
     catch (err) {
       console.log("/campaign/twitter-card/card_status/:", err)
+      setShowLoading(false);
     }
   };
 
@@ -91,43 +98,12 @@ export const TwitterCardScreen = () => {
   };
 
   const linkClick = (item) => {
-    console.log("item:", item);
     setOpen(true);
     // navigate("/invoice");
   };
 
-
-  const handleButtonClick = (e, i) => {
-    if (e === 'Top-Up') {
-    }
-    else if (i === 0) {
-      // if (installedExtensions) connect();
-      // else
-      alert(
-        "Please install hashconnect wallet extension first. from chrome web store."
-      );
-    }
-    else if (i === 1) {
-      (async () => {
-
-        try {
-          const response = await APIAuthCall("/user/profile/request-brand-twitter-connect", "GET", {}, {}, cookies.token);
-          if (response.data) {
-            const { url } = response.data;
-            window.location.href = url
-
-          }
-        } catch (error) {
-          console.error("error===", error);
-        }
-
-      })();
-    }
-  };
-
   return (
     <ContainerStyled align="center" padding="5px" margin="12px" justify="space-between">
-
       <TableSection>
         <CustomTable2 stickyHeader aria-label="simple table">
           <CustomRowHead>
@@ -175,6 +151,7 @@ export const TwitterCardScreen = () => {
         
       </TableSection>
       {noData?<WrappeText>No Data found!</WrappeText>:null}
+      <Loader open={showLoading} />
     </ContainerStyled>
   );
 };
