@@ -231,7 +231,7 @@ export const CreateTwitterPage = () => {
           if (response.data) {
             const { url } = response.data;
             setTwitterLoginURL(url)
-            if (e !== "Connect") {
+            if (e === "Connect") {
               setConfirmModel(true)
             }
             else {
