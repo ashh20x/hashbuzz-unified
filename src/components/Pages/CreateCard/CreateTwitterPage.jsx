@@ -26,6 +26,10 @@ import { useCookies } from 'react-cookie';
 import DisplayTableModal from '../../PreviewModal/DisplayTableModal';
 import { Loader } from "../../Loader/Loader"
 import notify from '../../Toaster/toaster';
+import ConsentModal from "../../PreviewModal/ConsentPreviewModal";
+import ConfirmModal from "../../PreviewModal/ConfirmModal";
+
+
 export const CreateTwitterPage = () => {
   const [tableData, setTableData] = useState([]);
   const [userData, setUserData] = useState({});
@@ -36,12 +40,17 @@ export const CreateTwitterPage = () => {
   const [cardDataArr, setCardData] = useState([]);
   const [buttonDisabled, setButtonDisabled] = useState(true);
   const [showLoading, setShowLoading] = useState(false);
+  const [openConsent, setConsentOpen] = useState(false);
+  const [openConfirmModel, setConfirmModel] = useState(false);
+  const [twitterLoginURL, setTwitterLoginURL] = useState("");
+
+
 
   useEffect(() => {
     let mounted = true;
     if (mounted) {
       setShowLoading(true);
-      getCampaignList();
+      getUserInfo();
     }
     return () => mounted = false;
   }, [])
@@ -49,6 +58,33 @@ export const CreateTwitterPage = () => {
   const handleTemplate = () => {
     navigate("/campaign");
   };
+  const getUserInfo = async () => {
+    try {
+      const user_id = localStorage.getItem('user_id');
+      // const user_id =user.id
+      setShowLoading(true)
+      const response = await APICall("/user/profile/" + user_id + "/", "GET", {}, null, false, cookies.token);
+      if (response.data) {
+        localStorage.setItem('user', JSON.stringify(response.data));
+        getCampaignList();
+        setUserData(response.data)
+        const { consent } = response.data;
+        if (consent === true) {
+          // setShowLoading(false)
+
+        }
+        else {
+          setShowLoading(false)
+          setConsentOpen(true);
+        }
+      }
+    }
+    catch (err) {
+      console.error("/user/profile/", err)
+      setShowLoading(false)
+
+    }
+  }
   const getCampaignList = async () => {
     const user = JSON.parse(localStorage.getItem('user'));
     setUserData(user);
@@ -119,6 +155,30 @@ export const CreateTwitterPage = () => {
         return []
     }
   }
+
+  const submitClick = async () => {
+    setShowLoading(true)
+    const userInfo = JSON.parse(localStorage.getItem('user'))
+    const user_data = {
+      ...userInfo,
+      "consent": true
+    }
+    try {
+      const response = await APICall("/user/profile/" + userInfo.id + "/", "PATCH", {}, user_data, false, cookies.token);
+      if (response.data) {
+        setShowLoading(false)
+        setConsentOpen(false);
+
+        // navigate("/dashboard");
+      }
+    }
+    catch (err) {
+      console.error("/user/profile/:", err)
+      setShowLoading(false)
+
+    }
+  }
+
   const updateCampaignItem = async (data) => {
     try {
       setShowLoading(true);
@@ -133,15 +193,16 @@ export const CreateTwitterPage = () => {
     }
   };
 
+  const clickNo = () => {
+    // Alert('You need to Accept consent!');
+  }
+
   const handleAction = (element, item) => {
     const updateData = {
       "card_id": item.id,
       "card_status": element === "Stop" ? "Completed" : "Running"
     }
     updateCampaignItem(updateData);
-  };
-  const handleTran = () => {
-    navigate("/invoice");
   };
 
   const linkClick = (item) => {
@@ -169,7 +230,13 @@ export const CreateTwitterPage = () => {
           const response = await APIAuthCall("/user/profile/request-brand-twitter-connect", "GET", {}, {}, cookies.token);
           if (response.data) {
             const { url } = response.data;
-            window.location.href = url;
+            setTwitterLoginURL(url)
+            if (e === "Connect") {
+              setConfirmModel(true)
+            }
+            else {
+              window.location.href = url + "&force_login=true";
+            }
           }
         } catch (error) {
           console.error("error===", error);
@@ -178,6 +245,15 @@ export const CreateTwitterPage = () => {
       })();
     }
   };
+
+  const confirmClick = () => {
+    window.location.href = twitterLoginURL;
+  }
+
+  const cancelClick = () => {
+    window.location.href = twitterLoginURL+ "&force_login=true";
+  }
+  
 
   return (
     <ContainerStyled align="center" justify="space-between">
@@ -259,6 +335,18 @@ export const CreateTwitterPage = () => {
         setOpen={setOpen}
         item={selectedCampaign}
       ></DisplayTableModal> : null}
+      <ConsentModal
+        open={openConsent}
+        setOpen={setConsentOpen}
+        submit={() => submitClick()}
+        noClick={() => clickNo()}
+      />
+      <ConfirmModal
+        open={openConfirmModel}
+        setOpen={setConfirmModel}
+        confirmClick={() => confirmClick()}
+        cancelClick={() => cancelClick()}
+      />
       <Loader open={showLoading} />
     </ContainerStyled>
   );
