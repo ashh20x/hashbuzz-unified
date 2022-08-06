@@ -6,7 +6,6 @@ import TwitterSVG from "../../../SVGR/Twitter";
 import Typography from "../../../Typography/Typography";
 import Card from "../../Card/Card";
 import { ContainerStyled } from "../../ContainerStyled/ContainerStyled";
-import ConsentModal from "../../PreviewModal/ConsentPreviewModal";
 import {
   Connect,
   ContentHeaderText,
@@ -14,6 +13,7 @@ import {
   CardContainer
 } from "./MainPage.styles";
 import { Loader } from '../../Loader/Loader';
+import Cookies from 'universal-cookie';
 export const MainPage = () => {
   const [open, setOpen] = useState(false);
   const [cookies, setCookie] = useCookies(['token']);
@@ -25,6 +25,7 @@ export const MainPage = () => {
     size: "18px",
     weight: "600",
   };
+  let navigate = useNavigate();
 
   useEffect(() => {
     let mounted = true;
@@ -35,70 +36,25 @@ export const MainPage = () => {
         const token = string.split('&user_id=')[0];
         setCookie('token', token)
         const userId = string.split('&user_id=')[1];
-        getUserInfo(userId, token);
+        localStorage.setItem("user_id",userId)
+        // getUserInfo(userId, token);
+        navigate("/dashboard");
       }
     }
     return () => mounted = false;
   }, [userData])
-  let navigate = useNavigate();
-  const getUserInfo = async (user_id, token) => {
-    try {
-      setShowLoading(true)
-      const response = await APICall("/user/profile/" + user_id + "/", "GET", {}, null, false, token);
-      if (response.data) {
-        localStorage.setItem('user', JSON.stringify(response.data))
-        setUserData(response.data)
-        const { consent } = response.data;
-        if (consent === true) {
-          setShowLoading(false)
-          navigate("/dashboard");
-        }
-        else {
-          setShowLoading(false)
-          setOpen(true);
-        }
-      }
-    }
-    catch (err) {
-      console.error("/user/profile/", err)
-      setShowLoading(false)
 
-    }
-  }
-
-  const submitClick = async () => {
-    setShowLoading(true)
-    const userInfo = JSON.parse(localStorage.getItem('user'))
-    const user_data = {
-      ...userInfo,
-      "consent": true
-    }
-    try {
-      const response = await APICall("/user/profile/" + userInfo.id + "/", "PATCH", {}, user_data, false, cookies.token);
-      if (response.data) {
-        setShowLoading(false)
-        navigate("/dashboard");
-      }
-    }
-    catch (err) {
-      console.error("/user/profile/:", err)
-      setShowLoading(false)
-
-    }
-  }
-
-  const clickNo = () => {
-    // Alert('You need to Accept consent!');
-  }
 
   const login = () => {
     (async () => {
       setShowLoading(true)
       try {
+        const cookies = new Cookies();   
+        console.log(cookies.getAll());          // object
         const response = await APIAuthCall("/user/twitter-login/", "GET", {}, {});
         if (response.data) {
           const { url } = response.data;
-          window.location.href = url
+          window.location.href = url;
 
         }
       } catch (error) {
@@ -168,12 +124,7 @@ export const MainPage = () => {
         /> */}
         {/* <PrimaryButton text="Start" variant="contained" onclick={login} /> */}
       </div>
-      <ConsentModal
-        open={open}
-        setOpen={setOpen}
-        submit={submitClick}
-        noClick={clickNo}
-      />
+      
       <Loader open={showLoading} />
     </ContainerStyled>
 
