@@ -141,7 +141,6 @@ const PreviewModal = ({
               <Typography theme={body}>{videoTitle}</Typography>
             </TextWrap>
 
-            <CustomParagraph>Campaign Budget: {budget}</CustomParagraph>
             {/* <CustomParagraph>
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus a
               finibus nisl, ut porta felis. Etiam vitae mollis purus. isl, ut
@@ -157,6 +156,7 @@ const PreviewModal = ({
                 quote={quote}
               />
             </TableSection>
+            <CustomParagraph>Campaign Budget: {budget}</CustomParagraph>
             <CustomParagraph>
               Warning: you will not be able to edit this tweet if you click submit as this feature is not available in Twitter yet, we recommend you read your tweet information and reward table carefully before submitting your campaign.
             </CustomParagraph>
