@@ -10,6 +10,7 @@
 
 # production
 /build
+/certificate
 
 # misc
 .DS_Store
