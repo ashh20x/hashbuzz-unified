@@ -2,15 +2,14 @@ import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
 import "./index.css";
-// import { HashConnectProvider } from "hashconnect/dist/provider/provider";
-import HashConnectProvider from "./HashConnect/HashConnectAPIProvider";
+import {HashConnectAPIProvider} from "./HashConnect/HashConnectAPIProvider";
 import { NETWORK } from "./Utilities/Constant";
 
 
 
 ReactDOM.render(
   <React.StrictMode>
-     <HashConnectProvider
+     <HashConnectAPIProvider
         metaData={{
           name: "Taskbar",
           description: "Allow your extension to connect with taskbar dApp",
@@ -20,7 +19,7 @@ ReactDOM.render(
         debug
       >
       <App />
-    </HashConnectProvider>
+    </HashConnectAPIProvider>
   </React.StrictMode>,
 
   document.getElementById("root")
