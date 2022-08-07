@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
 import { Dialog } from "@mui/material";
+import React from 'react';
+import Typography from "../../Typography/Typography";
 import PrimaryButton from "../Buttons/PrimaryButton";
 import {
     BoxCont,
     ButtonWrapPrimary,
     CustomParagraph
 } from "./PreviewModal.styles";
-import Typography from "../../Typography/Typography";
 
 
 const ConfirmModal = ({

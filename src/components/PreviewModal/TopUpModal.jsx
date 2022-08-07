@@ -1,16 +1,13 @@
-import React, { useState } from 'react';
 import { Dialog } from "@mui/material";
+import React, { useState } from 'react';
+import { useNavigate } from "react-router-dom";
+import Typography from "../../Typography/Typography";
 import PrimaryButton from "../Buttons/PrimaryButton";
 import {
     BoxCont,
-    ButtonWrapPrimary,
-    CustomParagraph,
-    CustomInput,
-    Label,
+    ButtonWrapPrimary, CustomInput, CustomParagraph, Label,
     Row
 } from "./PreviewModal.styles";
-import { useNavigate } from "react-router-dom";
-import Typography from "../../Typography/Typography";
 
 
 const TopUpModal = ({
