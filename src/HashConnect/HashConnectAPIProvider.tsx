@@ -1,70 +1,22 @@
 import { HashConnect, HashConnectTypes, MessageTypes } from "hashconnect";
 import React, { useCallback, useEffect, useState } from "react";
+import {SaveData , HashConnectProviderAPI , InitialStateData , PropsType} from './types'
+import {INITIAL_STATE_DATA , HashConnectAPIContext} from './hashconnectAPIContext'
+
+
+//initialize hashconnect
 const hashConnect = new HashConnect(true);
 
-//Type declarations
-interface SaveData {
-  topic: string;
-  pairingString: string;
-  privateKey: string;
-  pairedWalletData: HashConnectTypes.WalletMetadata | null;
-  pairedAccounts: string[];
-  netWork?: string;
-  id?: string;
-  accountIds?: string[];
-}
 
-type Networks = "testnet" | "mainnet" | "previewnet";
-
-interface PropsType {
-  children: React.ReactNode;
-  netWork: Networks;
-  metaData?: HashConnectTypes.AppMetadata;
-  debug?: boolean;
-}
-
-export interface HashConnectProviderAPI {
-  hashConnect: HashConnect | null;
-  walletData: SaveData;
-  netWork: Networks;
-  debug?: boolean;
-  installedExtensions?: null | HashConnectTypes.WalletMetadata;
-  resetSaveData?: () => void;
-  transactionResponse?: MessageTypes.TransactionResponse | null;
-  handleTransaction?: (data: Uint8Array, accountId: string) => void;
-  resetTransactionResponse?: () => void;
-  connect?: () => void;
-  disConnect?: () => void;
-  acknowledge?: MessageTypes.Acknowledge | null;
-  resetAcknowledge?: () => void;
-  status?: string;
-  loading?: boolean;
-}
-
-interface InitialStateData {
-  saveData: SaveData;
-  installedExtensions: HashConnectTypes.WalletMetadata | null;
-  transactionResponse: MessageTypes.TransactionResponse | null;
-  acknowledge: MessageTypes.Acknowledge | null;
-  loading: boolean;
-  status: string;
-}
-
-const INITIAL_STATE_DATA: InitialStateData = {
-  saveData: { topic: "", pairingString: "", privateKey: "", pairedAccounts: [], pairedWalletData: null },
-  installedExtensions: null,
-  acknowledge: null,
-  transactionResponse: null,
-  loading: false,
-  status: "Initial",
-};
-
+//Intial App config
 let APP_CONFIG: HashConnectTypes.AppMetadata = {
   name: "dApp Example",
   description: "An example hedera dApp",
   icon: "https://absolute.url/to/icon.png",
 };
 
+
+//saving into localdata
 export const loadLocalData = (): null | SaveData => {
   let foundData = localStorage.getItem("hashconnectData");
   if (foundData) {
@@ -75,14 +27,9 @@ export const loadLocalData = (): null | SaveData => {
   }
 };
 
-export const HashConnectAPIContext = React.createContext<HashConnectProviderAPI>({
-  hashConnect: null,
-  debug: false,
-  netWork: "testnet",
-  walletData: INITIAL_STATE_DATA.saveData,
-});
 
-export default function HashConnectProvider({ children, metaData, netWork, debug }: PropsType) {
+
+export const HashConnectAPIProvider = ({ children, metaData, netWork, debug }: PropsType) => {
   const localData = loadLocalData();
 
   const [stateData, setStateData] = useState<InitialStateData>(INITIAL_STATE_DATA);
@@ -245,7 +192,7 @@ const defaultProps: Partial<PropsType> = {
   debug: false,
 };
 
-HashConnectProvider.defaultProps = defaultProps;
+HashConnectAPIProvider.defaultProps = defaultProps;
 
 // export const HashConnectProvider = React.memo(HashConnectProviderWarped);
 

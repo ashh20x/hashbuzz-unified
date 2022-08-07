@@ -1,1 +1,2 @@
-export * from './HashConnectAPIProvider'
+export * from './HashConnectAPIProvider';
+export * from './types'
