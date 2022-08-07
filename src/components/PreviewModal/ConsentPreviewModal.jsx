@@ -1,17 +1,11 @@
-import * as React from "react";
-import Box from "@mui/material/Box";
 import { Dialog } from "@mui/material";
+import * as React from "react";
+import { useNavigate } from "react-router-dom";
+import Typography from "../../Typography/Typography";
 import PrimaryButton from "../Buttons/PrimaryButton";
 import {
-    BoxCont,
-    Border,
-    ButtonWrapPrimary
+    Border, BoxCont, ButtonWrapPrimary
 } from "./PreviewModal.styles";
-import { TemplateTable } from "../Tables/TemplateTable";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import Typography from "../../Typography/Typography";
-import ModalTable from "../Tables/ModalTable";
 
 
 const ConsentModal = ({

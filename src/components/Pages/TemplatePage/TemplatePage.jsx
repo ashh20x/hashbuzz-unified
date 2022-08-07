@@ -1,7 +1,7 @@
 import Picker from 'emoji-picker-react';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { APICall } from '../../../APIConfig/APIServices';
 import Typography from "../../../Typography/Typography";
 import PrimaryButton from "../../Buttons/PrimaryButton";
@@ -10,26 +10,17 @@ import { ContainerStyled } from "../../ContainerStyled/ContainerStyled";
 import PreviewModal from "../../PreviewModal/PreviewModal";
 import { TemplateTable } from "../../Tables/TemplateTable";
 // import "emoji-mart/css/emoji-mart.css"; 
+import Image from "../../../IconsPng/arrow-symbol.png";
 import { ImageIcon } from "./ImageIcon";
+import { ShowImage } from "./ShowImage";
 import {
   ButtonWrap,
-  ButtonWrapPrimary,
-  ContentWrap,
-  TextWrap,
-  ErrorTextWrap,
-  CustomIframe,
+  ButtonWrapPrimary, CustomCheckboxInput, CustomIframe,
   CustomInput,
-  CustomParagraph, EmoBtnWrap,
-  IconsWrap, LeftSec,
-  RightSec,
-  TableSection,
-  CustomCheckboxInput, WordsWrap, Wrapper,
-  ImgWrap,
-  SimpleDiv
+  CustomParagraph, EmoBtnWrap, ErrorTextWrap, IconsWrap, ImgWrap, LeftSec,
+  RightSec, SimpleDiv, TableSection, WordsWrap, Wrapper
 } from "./TemplatePage.styles";
 import { YoutubeIcon } from "./YoutubeIcon";
-import Image from "../../../IconsPng/arrow-symbol.png"
-import { ShowImage } from "./ShowImage"
 export const TemplatePage = () => {
   let navigate = useNavigate();
   const [srcLink, setSrcLink] = useState(
