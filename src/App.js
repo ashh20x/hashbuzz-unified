@@ -3,20 +3,19 @@ import Theme from "./theme/Theme";
 
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { Main } from "./components/screens/Main";
-import { CreateTwitterCard } from "./components/screens/CreateTwitterCard";
-import { OnBoarding } from "./components/screens/OnBoarding";
-import { AdminPanel } from "./components/screens/AdminPanel";
-import { Template } from "./components/screens/Template";
-import { Invoice } from "./components/screens/Invoice";
+import { Main } from "./screens/Main";
+import { CreateTwitterCard } from "./screens/CreateTwitterCard";
+import { OnBoarding } from "./screens/OnBoarding";
+import { AdminPanel } from "./screens/AdminPanel";
+import { Template } from "./screens/Template";
+import { Invoice } from "./screens/Invoice";
 import { ProtectedRoute } from "./APIConfig/AuthGuard";
-import { ToastContainer, toast } from 'react-toastify';
-function App() {
+import { ToastContainer } from 'react-toastify';
+
+const App =() => {
 
   return (
     <>
-      <ToastContainer />
-
       <Router>
         <Theme>
           <Routes>
@@ -29,6 +28,7 @@ function App() {
           </Routes>
         </Theme>
       </Router>
+      <ToastContainer />
     </>
   );
 }

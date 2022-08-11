@@ -1,11 +1,5 @@
 export const cardData = [
   {
-    title: "Hedera Account ID",
-    content: "",
-    buttonTag: ["Connect"],
-    isButton: true,
-  },
-  {
     title: "Brand Twitter Handle",
     content: "",
     buttonTag: ["Connect"],
