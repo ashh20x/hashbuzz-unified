@@ -1,3 +1,4 @@
 // require('dotenv').config();
 
-export const base_URL='https://sea-lion-app-dhl7x.ondigitalocean.app';
+export const base_URL=process.env.REACT_APP_BASE_URL;
+export const NETWORK = process.env.REACT_APP_NETWORK;

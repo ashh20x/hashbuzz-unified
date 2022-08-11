@@ -1,4 +1,4 @@
-import { TableBody, TableHead, TableRow } from "@mui/material";
+import { TableBody, TableRow } from "@mui/material";
 import { templateHeadRow } from "../../Data/Template";
 import {
   BorderlessCell,
@@ -6,11 +6,11 @@ import {
   CustomRowHead,
   CustomTable,
   CustomTableRow,
-  NumberInput,
+  NumberInput
 } from "./CreateTable.styles";
 
-import EditIcon from "@mui/icons-material/Edit";
 import CheckIcon from "@mui/icons-material/Check";
+import EditIcon from "@mui/icons-material/Edit";
 import { useState } from "react";
 
 export const TemplateTable = ({

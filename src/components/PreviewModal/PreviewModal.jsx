@@ -1,11 +1,13 @@
 import { Dialog } from "@mui/material";
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from "react-router-dom";
 import { APICall } from "../../APIConfig/APIServices";
 import Typography from "../../Typography/Typography";
 import PrimaryButton from "../Buttons/PrimaryButton";
+import { Loader } from "../Loader/Loader";
 import ModalTable from "../Tables/ModalTable";
+import notify from "../Toaster/toaster";
 import {
   BoxCont,
   ButtonWrapPrimary,
@@ -16,8 +18,6 @@ import {
   TextWrap,
   Wrapper
 } from "./PreviewModal.styles";
-import { Loader } from "../Loader/Loader";
-import notify from "../Toaster/toaster";
 const PreviewModal = ({
   open,
   setOpen,

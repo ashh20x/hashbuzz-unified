@@ -1,31 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { Dialog } from "@mui/material";
-import PrimaryButton from "../Buttons/PrimaryButton";
-import { APICall, APIAuthCall } from "../../APIConfig/APIServices";
-import {
-    BoxCont,
-    ButtonWrapPrimary,
-    CustomParagraph,
-    CustomInput,
-    Label,
-    Row
-} from "./PreviewModal.styles";
-import { useNavigate } from "react-router-dom";
+import { Dialog, TableBody, TableRow } from "@mui/material";
+import React, { useEffect, useState } from 'react';
+import { useCookies } from 'react-cookie';
+import { APICall } from "../../APIConfig/APIServices";
+import { displayTableHeadRow } from "../../Data/TwitterTable";
 import Typography from "../../Typography/Typography";
+import PrimaryButton from "../Buttons/PrimaryButton";
+import {
+    TableSection
+} from "../Pages/CreateCard/CreateTwitterPage.styles";
 import {
     CustomRowHead,
     CustomTable2,
     CustomTableBodyCell,
-    CustomTableHeadCell,
+    CustomTableHeadCell
 } from "../Tables/CreateTable.styles";
 import {
-    CardSection,
-    TableSection,
-    StatusSection,
-} from "../Pages/CreateCard/CreateTwitterPage.styles";
-import { TableRow, TableBody } from "@mui/material";
-import { displayTableHeadRow } from "../../Data/TwitterTable"
-import { useCookies } from 'react-cookie';
+    BoxCont
+} from "./PreviewModal.styles";
 
 const DisplayTableModal = ({
     open,

@@ -11,9 +11,9 @@ COPY . /app/
 RUN npm install
 #RUN npm install react-scripts@3.2.0 -g
 # We want the production version
-ENV REACT_APP_ENVIRONMENT "staging"
-#ENV REACT_APP_API_URL "https://api-dev.mytask.bar"
-#ENV REACT_APP_NETWORK "testnet"
+
+ENV REACT_APP_NETWORK "testnet"
+ENV REACT_APP_BASE_URL "https://sea-lion-app-dhl7x.ondigitalocean.app"
 
 RUN npm run build
 

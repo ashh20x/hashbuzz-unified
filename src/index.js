@@ -1,15 +1,25 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { HashConnect } from "hashconnect";
-import "./index.css";
 import App from "./App";
-// import HashConnectProvider from "./components/Pages/CreateCard/HashConnectAPIProvider";
-const hashConnect = new HashConnect(true);
+import "./index.css";
+import {HashConnectAPIProvider} from "./HashConnect/HashConnectAPIProvider";
+import { NETWORK } from "./Utilities/Constant";
+
+
+
 ReactDOM.render(
   <React.StrictMode>
-    {/* <HashConnectProvider hashConnect={hashConnect} debug> */}
+     <HashConnectAPIProvider
+        metaData={{
+          name: "Taskbar",
+          description: "Allow your extension to connect with taskbar dApp",
+          icon: "https://mytaskbar.io/images/apple-icon-114x114.png",
+        }}
+        netWork={NETWORK}
+        debug
+      >
       <App />
-    {/* </HashConnectProvider> */}
+    </HashConnectAPIProvider>
   </React.StrictMode>,
 
   document.getElementById("root")
