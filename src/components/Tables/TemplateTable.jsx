@@ -59,8 +59,13 @@ export const TemplateTable = ({
             
             <BorderlessCell>
               {!editIdx ? (
-                <NumberInput type='number'
+                <NumberInput type='number' onKeyPress={(event) => {
+                  if (event.code === 'Minus') {
+                    event.preventDefault();
+                  }
+                }}
                 step="0.1"
+                min="0"
                 name="like" onChange={(e) => handleLike(e)} placeholder={like} />
               ) : (
                 like + "ℏ"
@@ -68,7 +73,11 @@ export const TemplateTable = ({
             </BorderlessCell>
             <BorderlessCell>
               {!editIdx ? (
-                <NumberInput type='number'
+                <NumberInput type='number' min="0" onKeyPress={(event) => {
+                  if (event.code === 'Minus') {
+                    event.preventDefault();
+                  }
+                }}
                 step="0.1" name="retweet" onChange={(e) => handleRetweet(e)} placeholder={retweet} />
               ) : (
                 retweet + "ℏ"
@@ -78,7 +87,11 @@ export const TemplateTable = ({
             <BorderlessCell>
               {!editIdx ? (
                 <NumberInput
-                type='number'
+                type='number' min="0" onKeyPress={(event) => {
+                  if (event.code === 'Minus') {
+                    event.preventDefault();
+                  }
+                }}
                 step="0.1"
                   name="quote"
                   onChange={(e) => handleDownload(e)}
@@ -90,7 +103,11 @@ export const TemplateTable = ({
             </BorderlessCell>
             <BorderlessCell>
               {!editIdx ? (
-                <NumberInput type='number'
+                <NumberInput type='number' min="0" onKeyPress={(event) => {
+                  if (event.code === 'Minus') {
+                    event.preventDefault();
+                  }
+                }}
                 step="0.1" name="comment" onChange={(e) => handleReply(e)} placeholder={reply} />
               ) : (
                 reply + "ℏ"

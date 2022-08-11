@@ -12,6 +12,9 @@ export const ProtectedRoute = ({ route, children }) => {
     else if(localUser?.username?.toLowerCase() === "ashh20x" && location.pathname === '/admin'){
         return children;
     }
+    else if((localUser?.available_budget === 0 || localUser?.available_budget === null) && location.pathname === '/campaign'){
+        return <Navigate to="/dashboard" />;
+    }
     else if(cookies.token && localUser && (location.pathname === '/' || location.pathname === '/admin')) {
         return <Navigate to="/dashboard" />;
     }
