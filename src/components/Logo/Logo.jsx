@@ -9,8 +9,8 @@ export const Logo = () => {
     navigate('/');   
   }
   return (
-    <LogoContainer onClick={handleMain}>
-      <LogoSVG />
+    <LogoContainer >
+      <LogoSVG onClick={handleMain}/>
     </LogoContainer>
   );
 };
