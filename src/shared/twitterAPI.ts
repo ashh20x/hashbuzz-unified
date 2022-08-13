@@ -31,7 +31,7 @@ export const getAllUsersByEngagement = async (tweetId: string, engagement: "like
   }
 };
 
-export const getEngagedUsers = async (tweetId: string) => {
+export const getEngagementOnCard = async (tweetId: string) => {
   const data = await Promise.all([
     await getAllUsersByEngagement(tweetId, "like"),
     await getAllUsersByEngagement(tweetId, "retweet"),

@@ -23,7 +23,7 @@ export const allActiveTwitterCard = async () => {
   return allActiveCards;
 };
 
-const twitterCardStatus = async (cardId: bigint) => {
+const twitterCardStats = async (cardId: bigint) => {
   console.info("twitterCardStatus::Start");
   const cardStatus = await prisma.campaign_tweetstats.findUnique({
     where: {
@@ -41,7 +41,7 @@ const updateTwitterCardStats = async (body: TwitterStats, cardId: bigint | numbe
     data: {
       like_count:body.like_count??0,
       quote_count:body.quote_count??0,
-      retweet_count:body.retweet_count??0
+      retweet_count:body.retweet_count??0,
     },
   });
   return update.id
@@ -62,11 +62,22 @@ const addNewCardStats = async(body:TwitterStats , cardId: bigint | number) => {
   })
 
   return addNewStats;
-} 
+}
+
+const updateTotalSpentAmount = (id:number|bigint,amount_spent:number) => {
+  const updateTotalSpentBudget = prisma.campaign_twittercard.update({
+    where:{id},
+    data:{
+    amount_spent
+    }
+  })
+  return updateTotalSpentBudget
+}
 
 export default {
   allActiveTwitterCard,
-  twitterCardStatus,
+  twitterCardStats,
   updateTwitterCardStats,
-  addNewCardStats
+  addNewCardStats,
+  updateTotalSpentAmount
 } as const;
