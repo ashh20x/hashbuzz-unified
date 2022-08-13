@@ -4,16 +4,14 @@ import { calculateTotalSpent } from "@shared/functions";
 
 const manageTwitterCardStatus = async () => {
   console.info("manageTwitterCardStatus::start");
-
-  const campaignStats: TwitterStats = {};
-  let total_spent = 0;
-
   //? get all active cards from DB
   const allActiveCard = await twitterCardService.allActiveTwitterCard();
 
   //! looping through each card
   await Promise.all(
     allActiveCard.map(async (card) => {
+      let total_spent = 0;
+      const campaignStats: TwitterStats = {};
       // refactor card object
       const { tweet_id, retweet_reward, like_reward, quote_reward, id, name } = card;
 
@@ -25,11 +23,11 @@ const manageTwitterCardStatus = async () => {
       const _retweetCount = retweet?.meta.result_count;
 
       //?  get card count status from DB.
-      const cardStats = await twitterCardService.twitterCardStats(id);
+      const CurrCardStats = await twitterCardService.twitterCardStats(id);
 
-      if (cardStats) {
+      if (CurrCardStats) {
         //! compare counts with existing record and then update
-        const { like_count, retweet_count, quote_count } = cardStats;
+        const { like_count, retweet_count, quote_count } = CurrCardStats;
 
         //!  if count changes update the data.
 
@@ -40,9 +38,9 @@ const manageTwitterCardStatus = async () => {
         if (retweet_reward && like_reward && quote_reward) {
           total_spent = calculateTotalSpent(
             {
-              like_count: campaignStats.like_count ?? 0,
-              quote_count: campaignStats.quote_count ?? 0,
-              retweet_count: campaignStats.retweet_count ?? 0,
+              like_count: _likeCount ?? 0,
+              quote_count: _qoteCount ?? 0,
+              retweet_count:_retweetCount ?? 0,
             },
             {
               retweet_reward,
@@ -51,14 +49,18 @@ const manageTwitterCardStatus = async () => {
             }
           );
         } else {
-          console.log(`Rewards basis for the campaign card with id ${id} and name:- ${name ?? ""}`);
+          console.log(
+            `Rewards basis for the campaign card with id ${id} and name:- ${
+              name ?? ""
+            } is not defined`
+          );
         }
 
         //? update stats to DB
         await Promise.all([
           await twitterCardService.updateTwitterCardStats(campaignStats, id),
-          await twitterCardService.updateTotalSpentAmount(id , total_spent)
-        ])
+          await twitterCardService.updateTotalSpentAmount(id, total_spent),
+        ]);
       } else {
         //!! if not available in db then update the DB by adding new record.
         await twitterCardService.addNewCardStats(

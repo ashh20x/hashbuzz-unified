@@ -9,8 +9,10 @@ export interface TwitterStats {
   quote_count?: number;
 }
 
-export interface RewardCatalog{
-  retweet_reward:number, like_reward:number, quote_reward:number
+export interface RewardCatalog {
+  retweet_reward: number;
+  like_reward: number;
+  quote_reward: number;
 }
 
 export const allActiveTwitterCard = async () => {
@@ -34,50 +36,59 @@ const twitterCardStats = async (cardId: bigint) => {
 };
 
 const updateTwitterCardStats = async (body: TwitterStats, cardId: bigint | number) => {
-  console.info("updateTwitterCardStats::start");
+  console.info("updateTwitterCardStats::withData", JSON.stringify(body));
 
-  const update = await prisma.campaign_tweetstats.update({
-    where: { twitter_card_id: cardId },
-    data: {
-      like_count:body.like_count??0,
-      quote_count:body.quote_count??0,
-      retweet_count:body.retweet_count??0,
-    },
-  });
-  return update.id
+  const data: any = {};
+  if (body.like_count) data["like_count"] = body.like_count;
+  if (body.quote_count) data["quote_count"] = body.quote_count;
+  if (body.retweet_count) data["retweet_count"] = body.retweet_count;
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  if(Object.keys(data).length > 0){
+    const update = await prisma.campaign_tweetstats.update({
+      where: { twitter_card_id: cardId },
+      data: {
+        ...data,
+      },
+    });
+    return update.id;
+  } 
+  return false
 };
 
-const addNewCardStats = async(body:TwitterStats , cardId: bigint | number) => {
+const addNewCardStats = async (body: TwitterStats, cardId: bigint | number) => {
+  console.info("addNewCardStats::start::withData", JSON.stringify(body));
 
-  console.info("addNewCardStats::start");
+  const data: any = {};
+  if (body.like_count) data["like_count"] = body.like_count;
+  if (body.quote_count) data["quote_count"] = body.quote_count;
+  if (body.retweet_count) data["retweet_count"] = body.retweet_count;
 
   const addNewStats = prisma.campaign_tweetstats.create({
-    data:{
-      twitter_card_id:cardId,
-      like_count:body.like_count??0,
-      quote_count:body.quote_count??0,
-      retweet_count:body.retweet_count??0,
-      last_update: new Date().toISOString()
-    }
-  })
+    data: {
+      ...data,
+      twitter_card_id: cardId,
+      last_update: new Date().toISOString(),
+    },
+  });
 
   return addNewStats;
-}
+};
 
-const updateTotalSpentAmount = (id:number|bigint,amount_spent:number) => {
+const updateTotalSpentAmount = (id: number | bigint, amount_spent: number) => {
   const updateTotalSpentBudget = prisma.campaign_twittercard.update({
-    where:{id},
-    data:{
-    amount_spent
-    }
-  })
-  return updateTotalSpentBudget
-}
+    where: { id },
+    data: {
+      amount_spent,
+    },
+  });
+  return updateTotalSpentBudget;
+};
 
 export default {
   allActiveTwitterCard,
   twitterCardStats,
   updateTwitterCardStats,
   addNewCardStats,
-  updateTotalSpentAmount
+  updateTotalSpentAmount,
 } as const;
