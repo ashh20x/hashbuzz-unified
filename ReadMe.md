@@ -22,3 +22,5 @@ Description of the environment variable required here for creating all the detai
     JET_LOGGER_FILEPATH=jet-logger.log
     JET_LOGGER_TIMESTAMP=TRUE
     JET_LOGGER_FORMAT=LINE
+
+    TWITTER_APP_USER_TOKEN=tweeter app APi auth token Auth2
