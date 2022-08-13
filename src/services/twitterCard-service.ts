@@ -9,6 +9,10 @@ export interface TwitterStats {
   quote_count?: number;
 }
 
+export interface RewardCatalog{
+  retweet_reward:number, like_reward:number, quote_reward:number
+}
+
 export const allActiveTwitterCard = async () => {
   console.info("allActiveTwitterCard::start");
   const allActiveCards = await prisma.campaign_twittercard.findMany({
