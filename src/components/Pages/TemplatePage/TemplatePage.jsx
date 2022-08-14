@@ -281,11 +281,12 @@ export const TemplatePage = () => {
         <RightSec>
           <CustomInput
             onKeyPress={(event) => {
-              if (!/[0-9]/.test(event.key)) {
+              if (!/[0-9]/.test(event.key) || event.code === 'Minus') {
                 event.preventDefault();
               }
             }}
             type="number"
+            min="1"
             placeholder="Enter campaign budget"
             onChange={handleBudget}
           />
@@ -366,7 +367,7 @@ export const TemplatePage = () => {
               onclick={handlePreview}
               colors="#2546EB"
               border="1px solid #2546EB"
-              disabled={buttonDisabled || !budget}
+              disabled={buttonDisabled || !budget || budget<1}
             />
             {/* <PrimaryButton text="Submit" onclick={handleSubmit} /> */}
           </ButtonWrapPrimary>

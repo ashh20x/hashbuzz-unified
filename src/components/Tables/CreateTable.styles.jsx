@@ -6,7 +6,7 @@ import { TableHead } from "@mui/material";
 
 export const CustomTable = styled(Table)({
   "&&&": {
-    border: "1px solid #BEBEBE",
+    // border: "1px solid #BEBEBE",
     boxSizing: "border-box",
     borderRadius: "8px",
     borderCollapse: "separate",
@@ -14,7 +14,7 @@ export const CustomTable = styled(Table)({
 });
 export const CustomTable2 = styled(Table)({
   "&&&": {
-    border: "1px solid #BEBEBE",
+    border: "none",
     boxSizing: "border-box",
     borderRadius: "8px",
     borderCollapse: "separate",
@@ -41,6 +41,9 @@ export const CustomRowHead = styled(TableHead)({
   }
 });
 export const CustomTableHeadCell = styled(TableCell)({
+  '&:first-child': {
+    borderLeft: "none !important",
+  },
   "&&&": {
     borderLeft: "1px solid #BEBEBE",
     whiteSpace: "nowrap",
@@ -51,6 +54,9 @@ export const CustomTableHeadCell = styled(TableCell)({
   },
 });
 export const CustomTableBodyCell = styled(TableCell)({
+  '&:first-child': {
+    borderLeft: "none !important",
+  },
   "&&&": {
     borderLeft: "1px solid #BEBEBE",
     borderBottom: "none",
@@ -60,6 +66,7 @@ export const CustomTableBodyCell = styled(TableCell)({
     color: '#696969',
     textAlign: "center",    
   },
+ 
 });
 
 export const CustomTableRow = styled(TableRow)({
