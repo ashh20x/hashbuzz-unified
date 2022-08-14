@@ -91,22 +91,25 @@ export const ButtonWrapPrimary = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-around;
-  width: 100%;
+  width: 95%;
   button {
     /* margin-right: 10px; */
     margin-bottom: 0;
   }
   @media screen and (max-width: 960px) {
     flex-direction: column;
-    width: 100%;
+    width: 75%;
+    margin:auto;
     button {
       margin-right: 0px;
-      margin-bottom: 5%;
+      margin-bottom: 5% !important;
     }
   }
 `;
 export const TableSection = styled.div`
   display: flex;
+  border-radius: 10px;
+  border:1px solid #bebebe;
   width: 95%;
   overflow-y: scroll;
   scrollbar-width: none;

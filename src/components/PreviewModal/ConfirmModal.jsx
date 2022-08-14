@@ -33,7 +33,7 @@ const ConfirmModal = ({
                     borderRadius: 11,
                     padding: 0,
                     width: "50%",
-                    height: "30%",
+                    height: "35%",
                     maxWidth: 1010,
                     scrollbarWidth: "none",
                 },

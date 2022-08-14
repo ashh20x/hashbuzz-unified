@@ -12,6 +12,8 @@ export const CardSection = styled.div`
 `;
 export const TableSection = styled.div`
   display: flex;
+  border: 1px solid #BEBEBE;
+  border-radius: 8px;
   width: 80%;
   height: 300px;
   overflow-y: scroll;
@@ -34,5 +36,10 @@ export const StatusSection = styled.p`
 
 export const LinkContainer = styled.div`
   text-align: right;
-  width: 100%;
+  // width: 100%;
+  a{
+    position: absolute;
+    right: 55px;
+    top: 35px;
+  }
 `;

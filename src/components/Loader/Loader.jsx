@@ -8,12 +8,12 @@ export const Loader = ({ open }) => {
       PaperProps={{
         style: {
           borderRadius: 11,
-          padding: "5px",
+          padding: "0px",
           scrollbarWidth: "none",
         },
       }}
     >
-      <img src={Image} width="50px;" alt="Loading" />
+      <img src={Image} width="80px;" alt="Loading" />
     </Dialog>
   );
 };

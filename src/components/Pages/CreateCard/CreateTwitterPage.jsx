@@ -261,7 +261,8 @@ export const CreateTwitterPage = () => {
 
   const cancelClick = () => {
     window.location.href = twitterLoginURL + "&force_login=true";
-  };
+  }
+
 
   return (
     <ContainerStyled align="center" justify="space-between">
@@ -288,6 +289,7 @@ export const CreateTwitterPage = () => {
             content={item.content}
             buttonTag={item.buttonTag}
             isButton={item.isButton}
+            isDisable={i === 1 ? buttonDisabled : false}
             text={item.text}
             buttonClick={(e) => handleButtonClick(e, i)}
           />
@@ -295,7 +297,7 @@ export const CreateTwitterPage = () => {
       </CardSection>
 
       <TableSection>
-        <CustomTable2 stickyHeader aria-label="simple table">
+        <CustomTable2 stickyHeader>
           <CustomRowHead>
             <TableRow>
               {tableHeadRow.map((item) => (
