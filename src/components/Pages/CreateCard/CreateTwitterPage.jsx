@@ -41,6 +41,7 @@ export const CreateTwitterPage = () => {
   //Hashpack hook init
   const {
     connect,
+    disConnect,
     handleTransaction: transferHbar,
     installedExtensions,
     walletData: { accountIds },
@@ -280,7 +281,10 @@ export const CreateTwitterPage = () => {
           buttonTag={[`${accountIds ? "Disconnect":"Connect"}`]}
           isButton={true}
           text={""}
-          buttonClick={(e) => connectHashpack()}
+          buttonClick={(e) => {
+            if(accountIds) disConnect();
+            else connectHashpack();
+          }}
         />
         {cardDataArr.map((item, i) => (
           <StatusCard
