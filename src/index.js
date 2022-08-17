@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
 import "./index.css";
-import {HashConnectAPIProvider} from "./HashConnect/HashConnectAPIProvider";
+import { HashConnectAPIProvider } from "./HashConnect";
 import { NETWORK } from "./Utilities/Constant";
 
 
@@ -16,7 +16,7 @@ ReactDOM.render(
           icon: "https://mytaskbar.io/images/apple-icon-114x114.png",
         }}
         netWork={NETWORK}
-        debug
+        debug={true}
       >
       <App />
     </HashConnectAPIProvider>
