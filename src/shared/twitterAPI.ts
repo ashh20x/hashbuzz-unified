@@ -77,3 +77,8 @@ export const getPublicMetrics = async (tweetIds: string | string[]) => {
 
   return publicMetrics;
 };
+
+/****
+ * @description Get all users who is commented on the twitter card.
+
+ */
