@@ -1,5 +1,4 @@
 import { prisma } from "@shared/prisma";
-import logger from "jet-logger";
 
 //types
 
@@ -7,12 +6,14 @@ export interface TwitterStats {
   like_count?: number;
   retweet_count?: number;
   quote_count?: number;
+  reply_count?:number
 }
 
 export interface RewardCatalog {
   retweet_reward: number;
   like_reward: number;
   quote_reward: number;
+  reply_reward:number
 }
 
 export const allActiveTwitterCard = async () => {

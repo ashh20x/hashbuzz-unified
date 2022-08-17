@@ -25,7 +25,8 @@
     "@services": "dist/services",
     "@shared": "dist/shared",
     "@server": "dist/server",
-    "@routes": "dist/routes"
+    "@routes": "dist/routes",
+    "@middleware":"dist/middleware"
   },
   "eslintConfig": {
     "parser": "@typescript-eslint/parser",
@@ -44,7 +45,7 @@
       "max-len": [
         "error",
         {
-          "code": 100
+          "code": 160
         }
       ],
       "no-console": 1,
@@ -67,6 +68,7 @@
   "author": "hashbuzz-dev",
   "license": "ISC",
   "dependencies": {
+    "@hashgraph/sdk": "^2.17.1",
     "@prisma/client": "^4.1.1",
     "command-line-args": "^5.2.1",
     "cookie-parser": "^1.4.6",
