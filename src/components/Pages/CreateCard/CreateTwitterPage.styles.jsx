@@ -42,4 +42,10 @@ export const LinkContainer = styled.div`
     right: 55px;
     top: 35px;
   }
+  @media screen and (max-width: 960px) {
+    a{
+      position: inherit;
+      right: 55px;
+      top: 35px;
+    }  }
 `;

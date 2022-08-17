@@ -93,7 +93,7 @@ export const ButtonWrapPrimary = styled.div`
 `;
 export const TableSection = styled.div`
   display: flex;
-  width: 95%;
+  width: 95%;  
   overflow-y: scroll;
   scrollbar-width: none;
   &::-webkit-scrollbar {
@@ -101,6 +101,7 @@ export const TableSection = styled.div`
   }
   @media screen and (max-width: 960px) {
     overflow: scroll;
+    
   }
 `;
 export const TextWrap = styled.div`
@@ -178,15 +179,9 @@ img{
 `;
 
 export const ImgWrap = styled.div`
-// font-size: 18px;
-// display: flex;
-// width: 75%;
-// justify-content: start;
-// padding:2px;
 position: absolute;
 img{
   cursor: pointer;
-
 }
 `;
 

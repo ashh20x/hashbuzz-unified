@@ -4,9 +4,13 @@ import { cardData } from "../../../Data/Cards";
 import SecondaryButton from "../../Buttons/SecondaryButton";
 import { ContainerStyled } from "../../ContainerStyled/ContainerStyled";
 import notify from "../../Toaster/toaster";
+import Image from "../../../IconsPng/arrow-symbol.png";
+import Typography from "../../../Typography/Typography";
+
 import {
   TableSection,
-  WrappeText
+  WrappeText,
+  ImgWrap
 } from "./TwitterCardList.styles";
 import { TableRow, TableBody } from "@mui/material";
 import { adminTableHeadRow } from "../../../Data/TwitterTable";
@@ -15,13 +19,15 @@ import {
   CustomTable2,
   CustomTableBodyCell,
   CustomTableHeadCell,
-  
+
 } from "../../Tables/CreateTable.styles";
 import { APICall, APIAuthCall } from "../../../APIConfig/APIServices";
-import {Loader} from "../../Loader/Loader"
+import { Loader } from "../../Loader/Loader"
 import { useCookies } from 'react-cookie';
 
 export const TwitterCardScreen = () => {
+  let navigate = useNavigate();
+
   const [tableData, setTableData] = useState([]);
 
   const [cookies, setCookie] = useCookies(['token']);
@@ -43,7 +49,7 @@ export const TwitterCardScreen = () => {
   const getCampaignList = async () => {
     try {
       const response = await APICall("/campaign/twitter-card/pending_cards", "GET", null, null, false, cookies.token);
-      if (response.data.length>0) {
+      if (response.data.length > 0) {
         setTableData(response.data);
         setNoData(false);
       }
@@ -63,7 +69,7 @@ export const TwitterCardScreen = () => {
     try {
       setShowLoading(true);
       await APICall("/campaign/twitter-card/card_status/", "POST", null, data, false, cookies.token);
-      notify(data.card_status === "Running"? "Approved": data.card_status);
+      notify(data.card_status === "Running" ? "Approved" : data.card_status);
       getCampaignList();
     }
     catch (err) {
@@ -89,6 +95,13 @@ export const TwitterCardScreen = () => {
     }
   }
 
+  const theme = {
+    weight: 500,
+    size: "36px",
+    color: "#000000",
+    sizeRes: "28px",
+  };
+
   const handleAction = (element, item) => {
     const updateData = {
       "card_id": item.id,
@@ -97,13 +110,27 @@ export const TwitterCardScreen = () => {
     updateCampaignItem(updateData);
   };
 
-  const linkClick = (item) => {
-    setOpen(true);
-    // navigate("/invoice");
-  };
+  const handleBack = () => {
+    navigate('/dashboard');
+  }
+
+  const getOwnerName = (user_id) => {
+    try {
+      // const response = await APICall("/user/profile/" + user_id + "/", "GET", {}, null, false, cookies.token);
+      // console.log("-------", response);
+      return user_id
+    }
+    catch (err) {
+      console.log("error---", err)
+    }
+  }
 
   return (
     <ContainerStyled align="center" padding="5px" margin="12px" justify="space-between">
+      <ImgWrap onClick={handleBack}>
+        <img width={30} src={Image} alt="" />
+      </ImgWrap>
+      <Typography theme={theme}>Campaign List</Typography>
       <TableSection>
         <CustomTable2 stickyHeader aria-label="simple table">
           <CustomRowHead>
@@ -133,7 +160,7 @@ export const TwitterCardScreen = () => {
                 {/* <CustomTableBodyCell><a href='#' onClick={() => linkClick(item)}>Link</a></CustomTableBodyCell> */}
                 <CustomTableBodyCell><p>{item.tweet_text}</p></CustomTableBodyCell>
                 <CustomTableBodyCell>{item.campaign_budget}</CustomTableBodyCell>
-                {/* <CustomTableBodyCell>{item.amount_claimed}</CustomTableBodyCell> */}
+                <CustomTableBodyCell>{getOwnerName(item.owner)}</CustomTableBodyCell>
                 <CustomTableBodyCell>
                   {!item.isbutton && item.card_status !== "Completed" ? (
                     handleActionButon(item.card_status).map((element) => (
@@ -146,11 +173,11 @@ export const TwitterCardScreen = () => {
               </TableRow>
             ))}
           </TableBody>
-          
+
         </CustomTable2>
-        
+
       </TableSection>
-      {noData?<WrappeText>No Data found!</WrappeText>:null}
+      {noData ? <WrappeText>No Data found!</WrappeText> : null}
       <Loader open={showLoading} />
     </ContainerStyled>
   );

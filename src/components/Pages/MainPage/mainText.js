@@ -1,0 +1,2 @@
+export const mainText1 = `Fast forward --> imagine a world where we can safely propagate meaningful information on social media via the vetting process that enables incentives local communities to verify pieces of information from the source. `
+export const mainText2 = `Fast reverse to today <-- this Proof of Concept (PoC) is a building block towards the bigger vision whereby a campaigner can run a Twitter promotion and reward organic influencers in $hbar (as a way to illustrate how web2 and Web3 are orchestrated to deliver instant action-based rewarding mechanism).`
