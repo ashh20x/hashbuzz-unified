@@ -160,7 +160,7 @@ export const TwitterCardScreen = () => {
                 {/* <CustomTableBodyCell><a href='#' onClick={() => linkClick(item)}>Link</a></CustomTableBodyCell> */}
                 <CustomTableBodyCell><p>{item.tweet_text}</p></CustomTableBodyCell>
                 <CustomTableBodyCell>{item.campaign_budget}</CustomTableBodyCell>
-                <CustomTableBodyCell>{getOwnerName(item.owner)}</CustomTableBodyCell>
+                <CustomTableBodyCell></CustomTableBodyCell>
                 <CustomTableBodyCell>
                   {!item.isbutton && item.card_status !== "Completed" ? (
                     handleActionButon(item.card_status).map((element) => (
