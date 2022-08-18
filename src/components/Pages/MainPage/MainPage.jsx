@@ -14,6 +14,7 @@ import {
 } from "./MainPage.styles";
 import { Loader } from '../../Loader/Loader';
 import Cookies from 'universal-cookie';
+import {mainText1,mainText2} from './mainText'
 export const MainPage = () => {
   const [open, setOpen] = useState(false);
   const [cookies, setCookie] = useCookies(['token']);
@@ -69,9 +70,14 @@ export const MainPage = () => {
   return (
     <ContainerStyled>
       <ContentHeaderText>
-        _
+      {mainText1}
       </ContentHeaderText>
-
+      <ContentHeaderText>
+      {mainText2}
+      </ContentHeaderText>
+      <ContentHeaderText>
+      Learn how to use the PoC: <a href="https://www.canva.com/design/DAFJatuk_Vg/sXVBbx-8NFTybj3E7fa00g/view?utm_content=DAFJatuk_Vg&utm_campaign=designshare&utm_medium=link&utm_source=publishpresent" target="_blank">hashbuzz user manual</a> 
+      </ContentHeaderText>
       <Connect>
         <Wallet>
           <Typography theme={theme}>Let us get started</Typography>

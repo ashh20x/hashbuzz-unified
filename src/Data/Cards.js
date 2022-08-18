@@ -20,7 +20,7 @@ export const cardData = [
   {
     title: "Status",
     content: "",
-    buttonTag: ["Top-Up", "Reimburse"],
+    buttonTag: [],
     isButton: false,
   },
 ];

@@ -73,18 +73,18 @@ const DisplayTableModal = ({
         >
 
             <BoxCont>
-                <PrimaryButton
+                {/* <PrimaryButton
                     text="X"
-                    width="20px"
+                    width="15px"
                     height="30px"
                     inverse={true}
                     onclick={handleClose}
                     colors="#EF5A22"
-                    border="1px solid #EF5A22"
+                    border="0px solid #EF5A22"
                     position="absolute"
                     top="10px"
-                    right="10px"
-                />
+                    right="5px"
+                /> */}
                 <Typography theme={theme}>Campaign statistics</Typography>
                 <TableSection>
                     <CustomTable2 stickyHeader aria-label="simple table">
