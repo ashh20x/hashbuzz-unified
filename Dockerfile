@@ -7,10 +7,12 @@ WORKDIR /app
 COPY package*.json ./
 
 # Copy the node App to the container
-COPY . .
+COPY . /app/
 
 # Prepare the container for building node app
 RUN npm install
+
+ENV NODE_ENV = "docker"
 
 ENV DATABASE_URL "postgresql://doadmin:PLACEHOLDER_SECRET@db-postgresql-nyc3-65715-do-user-11423548-0.b.db.ondigitalocean.com:25060/defaultdb?schema=public"
 
