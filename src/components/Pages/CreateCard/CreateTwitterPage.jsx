@@ -135,15 +135,15 @@ export const CreateTwitterPage = () => {
           let results = response.data.results.filter((data) => data.card_status === "Pending");
           let resultsRunning = response.data.results.filter((data) => data.card_status === "Running");
           if (results.length > 0) {
-            cardData[4].content = results[0].card_status === "Pending" ? "Pending Approval" : results[0].card_status;
+            cardData[3].content = results[0].card_status === "Pending" ? "Pending Approval" : results[0].card_status;
             results[0].card_status === "Pending" ? setButtonDisabled(true) : setButtonDisabled(false);
             setButtonDisabled(true);
           } else if (resultsRunning.length > 0) {
-            cardData[4].content = resultsRunning[0].card_status === "Pending" ? "Pending Approval" : resultsRunning[0].card_status;
+            cardData[3].content = resultsRunning[0].card_status === "Pending" ? "Pending Approval" : resultsRunning[0].card_status;
             resultsRunning[0].card_status === "Running" ? setButtonDisabled(true) : setButtonDisabled(false);
             setButtonDisabled(true);
           } else {
-            cardData[4].content = "Completed";
+            cardData[3].content = "Completed";
             setButtonDisabled(false);
           }
           setCardData(cardData);

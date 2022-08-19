@@ -6,7 +6,7 @@ export const Logo = () => {
   let navigate = useNavigate();
 
   const handleMain = () => {
-    navigate('/');   
+    // navigate('/');   
   }
   return (
     <LogoContainer >

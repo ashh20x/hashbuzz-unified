@@ -62,7 +62,7 @@ const StyledButton = styled(Button)`
       background-color: ${({ inverse }) => (inverse ? "#fff" : "#2555EB")};
     }
     @media (max-width: 960px) {
-      width: 100%;
+      width: ${({ width }) => (width ? width : "100%")};
     }
   }
 `;
