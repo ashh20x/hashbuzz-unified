@@ -21,6 +21,6 @@ export const adminTableHeadRow = [
   // { id: "stats", label: "Campaign stats", width: 80, align: "center" },
   { id: "tweet_text", label: "Tweet Text", width: 100, align: "center" },
   { id: "budget", label: "Campaign Budget", width: 80, align: "center" },
-  // { id: "claimed", label: "Amount Claimed", width: 80, align: "center" },
+  { id: "brand_handle", label: "Brand Handle", width: 80, align: "center" },
   { id: "actions", label: "Actions", width: 60, align: "center" },
 ];

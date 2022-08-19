@@ -10,8 +10,17 @@ export const CardSection = styled.div`
     flex-direction: column;
   }
 `;
+export const ImgWrap = styled.div`
+position: absolute;
+left: 50px;
+img{
+  cursor: pointer;
+}
+`;
 export const TableSection = styled.div`
   display: flex;
+  border-radius: 10px;
+  border:1px solid #BEBEBE;
   width: 95%;
 //   height: 300px;
   overflow-y: scroll;

@@ -7,6 +7,6 @@ export const LogoContainer = styled.div`
   justify-content: center;
 
   & svg:hover {
-		cursor: pointer;
+		// cursor: pointer;
 	}
 `;
