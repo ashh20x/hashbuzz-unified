@@ -1,1 +1,1 @@
-export * from './HashConnectAPIProvider';
+export * from './hashconnectService';

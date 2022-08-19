@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { APIAuthCall, APICall } from "../../../APIConfig/APIServices";
 import { cardData } from "../../../Data/Cards";
 import { tableHeadRow } from "../../../Data/TwitterTable";
-import { useHashConnect } from "../../../HashConnect";
+import {useHashconnectService } from "../../../HashConnect";
 import PrimaryButton from "../../Buttons/PrimaryButton";
 import SecondaryButton from "../../Buttons/SecondaryButton";
 import { ContainerStyled } from "../../ContainerStyled/ContainerStyled";
@@ -40,7 +40,7 @@ export const CreateTwitterPage = () => {
   const isDeviceIsSm = useMediaQuery(theme.breakpoints.down("sm"));
 
   //Hashpack hook init
-  const { connectToExtension, disconnect, availableExtension, state, pairingData } = useHashConnect();
+  const { connectToExtension, disconnect, availableExtension, state, pairingData } = useHashconnectService();
   //Hashpack Effects
   useEffect(() => {
     if (pairingData && state === HashConnectConnectionState.Connected) toast.success("Wallet connected successfully");
