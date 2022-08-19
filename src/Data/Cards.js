@@ -2,11 +2,11 @@ export const cardData = [
   {
     title: "Brand Twitter Handle",
     content: "",
-    buttonTag: ["Connect"],
+    buttonTag: ["ReConnect"],
     isButton: true,
   },
   {
-    title: "Twitter Handle",
+    title: "Personal Twitter Handle",
     content: "",
     buttonTag: "",
     isButton: false,
