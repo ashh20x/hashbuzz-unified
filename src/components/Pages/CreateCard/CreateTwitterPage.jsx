@@ -34,6 +34,7 @@ export const CreateTwitterPage = () => {
   const [openConsent, setConsentOpen] = useState(false);
   const [openConfirmModel, setConfirmModel] = useState(false);
   const [twitterLoginURL, setTwitterLoginURL] = useState("");
+  const [isTopUp, setisTopUp] = useState(false);
 
   //check is device is small
   const theme = useTheme();
@@ -221,7 +222,12 @@ export const CreateTwitterPage = () => {
   };
 
   const handleButtonClick = (e, i) => {
-    if (e === "Top-Up") {
+    if (i === 2) {
+      if (e === "Top-Up")
+        setisTopUp(true);
+      else
+        setisTopUp(false)
+
       setTopUpOpen(true);
     } else if (i === 0) {
       (async () => {
@@ -231,7 +237,8 @@ export const CreateTwitterPage = () => {
             const { url } = response.data;
             setTwitterLoginURL(url);
             if (e === "Connect") {
-              setConfirmModel(true);
+              // setConfirmModel(true);
+              window.location.href = url
             } else {
               window.location.href = url + "&force_login=true";
             }
@@ -279,7 +286,7 @@ export const CreateTwitterPage = () => {
             content={item.content}
             buttonTag={item.buttonTag}
             isButton={item.isButton}
-            isDisable={i === 1 ? buttonDisabled : false}
+            isDisable={i === 0 ? buttonDisabled : false}
             text={item.text}
             buttonClick={(e) => handleButtonClick(e, i)}
           />
@@ -317,8 +324,8 @@ export const CreateTwitterPage = () => {
                     ? item.card_status == "Rejected"
                       ? "Rejected"
                       : handleActionButon(item.card_status).map((element) => (
-                          <SecondaryButton text={element} margin="5%" onclick={() => handleAction(element, item)} />
-                        ))
+                        <SecondaryButton text={element} margin="5%" onclick={() => handleAction(element, item)} />
+                      ))
                     : "Promotion ended"}
                 </CustomTableBodyCell>
               </TableRow>
@@ -326,7 +333,7 @@ export const CreateTwitterPage = () => {
           </TableBody>
         </CustomTable2>
       </TableSection>
-      <StatusSection>A 10% charge is applied for every top up (you can run unlimited number of campaigns for the escrowed budget).</StatusSection>
+      <StatusSection>At the moment you can only run one campaign at a time, and the topped up budget can be used across unlimited number of campaigns.</StatusSection>
       <PrimaryButton
         text="CREATE CAMPAIGN"
         variant="contained"
@@ -334,7 +341,7 @@ export const CreateTwitterPage = () => {
         disabled={buttonDisabled || userData?.available_budget === 0 || userData?.available_budget === null}
       />
       {/* (userData?.available_budget === 0 || userData?.available_budget === null) */}
-      <TopUpModal open={openTopup} setOpen={setTopUpOpen} />
+      <TopUpModal open={openTopup} setOpen={setTopUpOpen} isTopUp={isTopUp} />
       {open ? <DisplayTableModal open={open} setOpen={setOpen} item={selectedCampaign}></DisplayTableModal> : null}
       <ConsentModal open={openConsent} setOpen={setConsentOpen} submit={() => submitClick()} noClick={() => clickNo()} />
       <ConfirmModal open={openConfirmModel} setOpen={setConfirmModel} confirmClick={() => confirmClick()} cancelClick={() => cancelClick()} />
