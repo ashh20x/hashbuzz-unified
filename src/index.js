@@ -2,14 +2,14 @@ import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
 import "./index.css";
-import {HashConnectAPIProvider} from "./HashConnect";
+import {HashconnectAPIProvider} from "./HashConnect";
 import { NETWORK } from "./Utilities/Constant";
 
 
 
 ReactDOM.render(
   <React.StrictMode>
-     <HashConnectAPIProvider
+     <HashconnectAPIProvider
         metaData={{
           name: "Hashbuzz",
           description: "Allow your extension to connect with hashbuzz dApp",
@@ -19,7 +19,7 @@ ReactDOM.render(
         debug={true}
       >
       <App />
-    </HashConnectAPIProvider>
+    </HashconnectAPIProvider>
   </React.StrictMode>,
 
   document.getElementById("root")
