@@ -1,12 +1,11 @@
 import { HashConnect, HashConnectTypes, MessageTypes } from "hashconnect";
 import React, { useCallback, useEffect, useState } from "react";
-import {SaveData , HashConnectProviderAPI , InitialStateData , PropsType} from './types'
-import {INITIAL_STATE_DATA , HashConnectAPIContext} from './hashconnectAPIContext'
-
+import { HashConnectAPIContext, INITIAL_STATE_DATA } from "./hashconnectAPIContext";
+import { InitialStateData, PropsType, SaveData } from "./types";
+import { useCookies } from "react-cookie";
 
 //initialize hashconnect
 const hashConnect = new HashConnect(true);
-
 
 //Intial App config
 let APP_CONFIG: HashConnectTypes.AppMetadata = {
@@ -15,27 +14,28 @@ let APP_CONFIG: HashConnectTypes.AppMetadata = {
   icon: "https://absolute.url/to/icon.png",
 };
 
-
 //saving into localdata
-export const loadLocalData = (): null | SaveData => {
-  let foundData = localStorage.getItem("hashconnectData");
-  if (foundData) {
-    const saveData: SaveData = JSON.parse(foundData);
-    return saveData;
-  } else {
-    return null;
-  }
-};
-
-
+// export const loadLocalData = (): null | SaveData => {
+//   let foundData = hashconnectData as any as SaveData;
+//   if (hashConnect) {
+//     const saveData: SaveData = foundData;
+//     return saveData;
+//   } else {
+//     return null;
+//   }
+// };
 
 export const HashConnectAPIProvider = ({ children, metaData, netWork, debug }: PropsType) => {
-  const localData = loadLocalData();
-
+  const [cookies, setCookie, removeCookie] = useCookies(["hashconnectData"]);
   const [stateData, setStateData] = useState<InitialStateData>(INITIAL_STATE_DATA);
 
+  const localData = cookies.hashconnectData as any as SaveData;
+
   const resetSaveData = useCallback(() => {
-    setStateData((iniData) => ({ ...iniData, saveData: { topic: "", pairingString: "", privateKey: "", pairedAccounts: [], pairedWalletData: null } }));
+    setStateData((iniData) => ({
+      ...iniData,
+      saveData: { topic: "", pairingString: "", privateKey: "", pairedAccounts: [], pairedWalletData: null },
+    }));
   }, []);
 
   const resetTransactionResponse = useCallback(() => {
@@ -45,6 +45,7 @@ export const HashConnectAPIProvider = ({ children, metaData, netWork, debug }: P
   //initialise the thing
   const initializeHashConnect = useCallback(async () => {
     const saveData = INITIAL_STATE_DATA.saveData;
+    localStorage.removeItem("hashconnectData");
     try {
       if (!localData) {
         if (debug) console.log("===Local data not found.=====");
@@ -83,17 +84,24 @@ export const HashConnectAPIProvider = ({ children, metaData, netWork, debug }: P
     [debug]
   );
 
-  const saveDataInLocalStorage =  useCallback((data: MessageTypes.ApprovePairing) => {
-    if (debug) console.info("===============Saving to localstorage::=============");
-    let dataToSave = JSON.stringify({ ...stateData.saveData, ...data, update: "yes" });
-    localStorage.setItem("hashconnectData", dataToSave);
-  },[debug, stateData.saveData]);
+  const saveDataInLocalStorage = useCallback(
+    (data: MessageTypes.ApprovePairing) => {
+      if (debug) console.info("===============Saving to localstorage::=============");
+      let dataToSave = { ...stateData.saveData, ...data, update: "yes" };
+      localStorage.setItem("hashconnectData", JSON.stringify(dataToSave));
+      setCookie("hashconnectData", dataToSave, { path: "/" });
+    },
+    [debug, setCookie, stateData.saveData]
+  );
 
-  const pairingEventHandler = useCallback((data: MessageTypes.ApprovePairing) => {
-    if (debug) console.log("===Wallet connected=====", data);
-    setStateData((iniData) => ({ ...iniData, saveData: { ...iniData.saveData, ...data } }));
-    saveDataInLocalStorage(data);
-  }, [debug, saveDataInLocalStorage]);
+  const pairingEventHandler = useCallback(
+    (data: MessageTypes.ApprovePairing) => {
+      if (debug) console.log("===Wallet connected=====", data);
+      setStateData((iniData) => ({ ...iniData, saveData: { ...iniData.saveData, ...data } }));
+      saveDataInLocalStorage(data);
+    },
+    [debug, saveDataInLocalStorage]
+  );
 
   const transactionResponseHandler = useCallback(
     (data: MessageTypes.TransactionResponse) => {
@@ -127,11 +135,14 @@ export const HashConnectAPIProvider = ({ children, metaData, netWork, debug }: P
     [stateData.saveData]
   );
 
-  const connect = useCallback(() => {
+  const connect = useCallback(async () => {
     try {
       const { saveData } = stateData;
-      if (stateData.installedExtensions) {
+      if (stateData.installedExtensions && saveData.pairingString) {
         if (debug) console.log("Pairing String::", saveData.pairingString);
+        hashConnect.connectToLocalWallet(saveData?.pairingString);
+      } else if (!saveData.pairingString) {
+        await initializeHashConnect();
         hashConnect.connectToLocalWallet(saveData?.pairingString);
       } else {
         if (debug) console.log("====No Extension is not in browser====");
@@ -140,12 +151,13 @@ export const HashConnectAPIProvider = ({ children, metaData, netWork, debug }: P
     } catch (error) {
       if (debug) console.log("====Error while connect execution", error);
     }
-  }, [debug, stateData]);
+  }, [debug, initializeHashConnect, stateData]);
 
   const disConnect = useCallback(() => {
-    localStorage.removeItem("hashconnectData");
+    // localStorage.removeItem("hashconnectData");
+    removeCookie("hashconnectData");
     if (resetSaveData) resetSaveData();
-  }, [resetSaveData]);
+  }, [removeCookie, resetSaveData]);
 
   const resetAcknowledge = useCallback(() => {
     setStateData((iniData) => ({ ...iniData, acknowledge: null }));
@@ -177,10 +189,25 @@ export const HashConnectAPIProvider = ({ children, metaData, netWork, debug }: P
 
   //Setting up values
   const { saveData, ...restData } = stateData;
-  const value = React.useMemo(() => ({ hashConnect, debug, netWork, walletData: saveData, resetSaveData, handleTransaction, resetTransactionResponse, connect, disConnect, resetAcknowledge, ...restData }), [hashConnect, stateData]);
+  const value = React.useMemo(
+    () => ({
+      hashConnect,
+      debug,
+      netWork,
+      walletData: saveData,
+      resetSaveData,
+      handleTransaction,
+      resetTransactionResponse,
+      connect,
+      disConnect,
+      resetAcknowledge,
+      ...restData,
+    }),
+    [connect, debug, disConnect, handleTransaction, netWork, resetAcknowledge, resetSaveData, resetTransactionResponse, restData, saveData]
+  );
 
   return <HashConnectAPIContext.Provider value={value}>{children}</HashConnectAPIContext.Provider>;
-}
+};
 
 const defaultProps: Partial<PropsType> = {
   metaData: {
