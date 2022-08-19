@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { APIAuthCall, APICall } from "../../../APIConfig/APIServices";
 import { cardData } from "../../../Data/Cards";
 import { tableHeadRow } from "../../../Data/TwitterTable";
-import {useHashconnectService } from "../../../HashConnect";
+import { useHashconnectService } from "../../../HashConnect";
 import PrimaryButton from "../../Buttons/PrimaryButton";
 import SecondaryButton from "../../Buttons/SecondaryButton";
 import { ContainerStyled } from "../../ContainerStyled/ContainerStyled";
@@ -113,7 +113,7 @@ export const CreateTwitterPage = () => {
     // cardData[0].content = user?.hedera_wallet_id;
     cardData[0].content = user?.business_twitter_handle;
     cardData[1].content = user?.personal_twitter_handle ? "@" + user?.personal_twitter_handle : "";
-    cardData[1].text = 0 + " ℏ bars rewarded";
+    cardData[1].text = 0 + " ℏ rewarded";
     cardData[2].content = user?.available_budget ? user?.available_budget + " ℏ" : 0 + " ℏ";
     cardData[3].content = "";
 
@@ -236,12 +236,7 @@ export const CreateTwitterPage = () => {
           if (response.data) {
             const { url } = response.data;
             setTwitterLoginURL(url);
-            if (e === "Connect") {
-              // setConfirmModel(true);
-              window.location.href = url
-            } else {
-              window.location.href = url + "&force_login=true";
-            }
+            window.location.href = url + "&force_login=true";
           }
         } catch (error) {
           console.error("error===", error);
@@ -271,7 +266,7 @@ export const CreateTwitterPage = () => {
         <StatusCard
           title={"Hedera Account ID"}
           content={pairingData?.accountIds[0].toString()}
-          buttonTag={[`${pairingData? "Disconnect" : "Connect"}`]}
+          buttonTag={[`${pairingData ? "Disconnect" : "Connect"}`]}
           isButton={true}
           text={""}
           buttonClick={(e) => {
