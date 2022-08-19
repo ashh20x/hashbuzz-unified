@@ -1,11 +1,24 @@
 import { HashConnect, HashConnectTypes, MessageTypes } from "hashconnect";
+import { HashConnectConnectionState } from "hashconnect/dist/types";
 import React, { useCallback, useEffect, useState } from "react";
-import { HashConnectAPIContext, INITIAL_STATE_DATA } from "./hashconnectAPIContext";
-import { InitialStateData, PropsType, SaveData } from "./types";
 import { useCookies } from "react-cookie";
 
 //initialize hashconnect
 const hashConnect = new HashConnect(true);
+
+
+export interface SavedPairingData {
+  metadata: HashConnectTypes.AppMetadata | HashConnectTypes.WalletMetadata;
+  pairingData: MessageTypes.ApprovePairing;
+  privKey?: string;
+}
+
+export interface PropsType {
+  children: React.ReactNode;
+  network:  "testnet" | "mainnet" | "previewnet";
+  metaData?: HashConnectTypes.AppMetadata;
+  debug?: boolean;
+}
 
 //Intial App config
 let APP_CONFIG: HashConnectTypes.AppMetadata = {
@@ -14,37 +27,35 @@ let APP_CONFIG: HashConnectTypes.AppMetadata = {
   icon: "https://absolute.url/to/icon.png",
 };
 
-//saving into localdata
-// export const loadLocalData = (): null | SaveData => {
-//   let foundData = hashconnectData as any as SaveData;
-//   if (hashConnect) {
-//     const saveData: SaveData = foundData;
-//     return saveData;
-//   } else {
-//     return null;
-//   }
-// };
 
-export const HashConnectAPIProvider = ({ children, metaData, netWork, debug }: PropsType) => {
-  const [cookies, setCookie, removeCookie] = useCookies(["hashconnectData"]);
-  const [stateData, setStateData] = useState<InitialStateData>(INITIAL_STATE_DATA);
 
-  const localData = cookies.hashconnectData as any as SaveData;
+export interface HashconnectContextAPI {
+  availableExtension: HashConnectTypes.WalletMetadata;
+  state: HashConnectConnectionState;
+  topic: string;
+  privKey?: string;
+  pairingString: string;
+  pairingData: MessageTypes.ApprovePairing | null;
+  acknowledgeData: MessageTypes.Acknowledge;
+}
 
-  const resetSaveData = useCallback(() => {
-    setStateData((iniData) => ({
-      ...iniData,
-      saveData: { topic: "", pairingString: "", privateKey: "", pairedAccounts: [], pairedWalletData: null },
-    }));
-  }, []);
+export const HashConnectAPIContext = React.createContext<
+  Partial<
+    HashconnectContextAPI & {
+      setState: React.Dispatch<React.SetStateAction<Partial<HashconnectContextAPI>>>;
+      network: "testnet" | "mainnet" | "previewnet";
+    }
+  >
+>({state: HashConnectConnectionState.Disconnected});
 
-  const resetTransactionResponse = useCallback(() => {
-    setStateData((iniData) => ({ ...iniData, transactionResponse: null }));
-  }, []);
+export const HashConnectAPIProvider = ({ children, metaData, network, debug }: PropsType) => {
+  const [cookies, setCookie] = useCookies(["hashconnectData"]);
+  const [stateData, setState] = useState<Partial<HashconnectContextAPI>>({});
+
+  const localData = cookies.hashconnectData as any as SavedPairingData;
 
   //initialise the thing
   const initializeHashConnect = useCallback(async () => {
-    const saveData = INITIAL_STATE_DATA.saveData;
     localStorage.removeItem("hashconnectData");
     try {
       if (!localData) {
@@ -52,34 +63,38 @@ export const HashConnectAPIProvider = ({ children, metaData, netWork, debug }: P
 
         //first init and store the private for later
         let initData = await hashConnect.init(metaData ?? APP_CONFIG);
-        saveData.privateKey = initData.privKey;
+        const privateKey = initData.privKey;
 
         //then connect, storing the new topic for later
         const state = await hashConnect.connect();
-        saveData.topic = state.topic;
+        hashConnect.findLocalWallets();
+
+        const topic = state.topic;
 
         //generate a pairing string, which you can display and generate a QR code from
-        saveData.pairingString = hashConnect.generatePairingString(state, netWork, debug ?? false);
-
-        //find any supported local wallets
-        hashConnect.findLocalWallets();
+        const pairingString = hashConnect.generatePairingString(state, network, debug ?? false);
+        setState((exState) => ({
+          ...exState,
+          topic,
+          privKey: privateKey,
+          pairingString,
+          state: HashConnectConnectionState.Disconnected
+        }));
       } else {
         if (debug) console.log("====Local data found====", localData);
         //use loaded data for initialization + connection
-        await hashConnect.init(metaData ?? APP_CONFIG, localData?.privateKey);
-        await hashConnect.connect(localData?.topic, localData?.pairedWalletData ?? metaData);
+        await hashConnect.init(metaData ?? APP_CONFIG, localData?.privKey);
+        await hashConnect.connect(localData?.pairingData.topic, localData?.pairingData.metadata ?? metaData);
       }
     } catch (error) {
       console.log(error);
-    } finally {
-      setStateData((iniData) => ({ ...iniData, saveData: { ...iniData.saveData, ...(localData ?? saveData) } }));
     }
-  }, [debug, localData, metaData, netWork]);
+  }, [debug, localData, metaData, network]);
 
   const foundExtensionEventHandler = useCallback(
     (data: HashConnectTypes.WalletMetadata) => {
       if (debug) console.log("====foundExtensionEvent====", data);
-      setStateData((iniData) => ({ ...iniData, installedExtensions: data }));
+      setState((exState) => ({ ...exState, availableExtension: data }));
     },
     [debug]
   );
@@ -87,126 +102,55 @@ export const HashConnectAPIProvider = ({ children, metaData, netWork, debug }: P
   const saveDataInLocalStorage = useCallback(
     (data: MessageTypes.ApprovePairing) => {
       if (debug) console.info("===============Saving to localstorage::=============");
-      let dataToSave = { ...stateData.saveData, ...data, update: "yes" };
-      localStorage.setItem("hashconnectData", JSON.stringify(dataToSave));
+      const dataToSave: SavedPairingData = {
+        metadata: stateData.availableExtension!,
+        privKey: stateData.privKey!,
+        pairingData: stateData.pairingData!,
+      };
       setCookie("hashconnectData", dataToSave, { path: "/" });
     },
-    [debug, setCookie, stateData.saveData]
+    [debug]
   );
 
   const pairingEventHandler = useCallback(
     (data: MessageTypes.ApprovePairing) => {
       if (debug) console.log("===Wallet connected=====", data);
-      setStateData((iniData) => ({ ...iniData, saveData: { ...iniData.saveData, ...data } }));
+      setState((exState) => ({ ...exState, pairingData: data }));
       saveDataInLocalStorage(data);
     },
     [debug, saveDataInLocalStorage]
   );
 
-  const transactionResponseHandler = useCallback(
-    (data: MessageTypes.TransactionResponse) => {
-      if (debug) console.log("::Transaction Response::", data);
-      setStateData((iniData) => ({ ...iniData, transactionResponse: data }));
-    },
-    [debug]
-  );
-
-  //? transaction Handler
-  const handleTransaction = useCallback(
-    async (transactionBytes: Uint8Array, accountId: string) => {
-      try {
-        const saveData = stateData.saveData;
-        const transaction: MessageTypes.Transaction = {
-          topic: saveData.topic,
-          byteArray: transactionBytes,
-
-          metadata: {
-            accountToSign: accountId,
-            returnTransaction: false,
-          },
-        };
-
-        console.log("transactionData", transaction);
-        await hashConnect.sendTransaction(saveData.topic, transaction);
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    [stateData.saveData]
-  );
-
-  const connect = useCallback(async () => {
-    try {
-      const { saveData } = stateData;
-      if (stateData.installedExtensions && saveData.pairingString) {
-        if (debug) console.log("Pairing String::", saveData.pairingString);
-        hashConnect.connectToLocalWallet(saveData?.pairingString);
-      } else if (!saveData.pairingString) {
-        await initializeHashConnect();
-        hashConnect.connectToLocalWallet(saveData?.pairingString);
-      } else {
-        if (debug) console.log("====No Extension is not in browser====");
-        return "wallet not installed";
-      }
-    } catch (error) {
-      if (debug) console.log("====Error while connect execution", error);
-    }
-  }, [debug, initializeHashConnect, stateData]);
-
-  const disConnect = useCallback(() => {
-    // localStorage.removeItem("hashconnectData");
-    removeCookie("hashconnectData");
-    if (resetSaveData) resetSaveData();
-  }, [removeCookie, resetSaveData]);
-
-  const resetAcknowledge = useCallback(() => {
-    setStateData((iniData) => ({ ...iniData, acknowledge: null }));
-  }, []);
-
   const acknowledgeEventHandler = useCallback(
     (data: MessageTypes.Acknowledge) => {
       if (debug) console.log("====::acknowledgeData::====", data);
-      setStateData((iniData) => ({ ...iniData, acknowledge: data }));
+      setState((iniData) => ({ ...iniData, acknowledgeData: data }));
     },
     [debug]
   );
 
-  console.log("Rerender::localData::");
+  const onStatusChange = (state: HashConnectConnectionState) => {
+    console.log("hashconnect state change event", state);
+    setState((exState) => ({ ...exState, state }));
+  };
 
   useEffect(() => {
     initializeHashConnect();
+  }, []);
+
+  useEffect(() => {
     hashConnect.foundExtensionEvent.on(foundExtensionEventHandler);
     hashConnect.pairingEvent.on(pairingEventHandler);
-    // hashConnect.transactionResponseEvent.on(transactionResponseHandler);
     hashConnect.acknowledgeMessageEvent.on(acknowledgeEventHandler);
+    hashConnect.connectionStatusChange.on(onStatusChange);
     return () => {
       hashConnect.foundExtensionEvent.off(foundExtensionEventHandler);
       hashConnect.pairingEvent.off(pairingEventHandler);
-      // hashConnect.transactionResponseEvent.off(transactionResponseHandler);
       hashConnect.acknowledgeMessageEvent.off(acknowledgeEventHandler);
     };
   }, []);
 
-  //Setting up values
-  const { saveData, ...restData } = stateData;
-  const value = React.useMemo(
-    () => ({
-      hashConnect,
-      debug,
-      netWork,
-      walletData: saveData,
-      resetSaveData,
-      handleTransaction,
-      resetTransactionResponse,
-      connect,
-      disConnect,
-      resetAcknowledge,
-      ...restData,
-    }),
-    [connect, debug, disConnect, handleTransaction, netWork, resetAcknowledge, resetSaveData, resetTransactionResponse, restData, saveData]
-  );
-
-  return <HashConnectAPIContext.Provider value={value}>{children}</HashConnectAPIContext.Provider>;
+  return <HashConnectAPIContext.Provider value={{ ...stateData, setState , network }}>{children}</HashConnectAPIContext.Provider>;
 };
 
 const defaultProps: Partial<PropsType> = {
@@ -215,7 +159,7 @@ const defaultProps: Partial<PropsType> = {
     description: "An example hedera dApp",
     icon: "https://absolute.url/to/icon.png",
   },
-  netWork: "testnet",
+  network: "testnet",
   debug: false,
 };
 
@@ -223,9 +167,36 @@ HashConnectAPIProvider.defaultProps = defaultProps;
 
 // export const HashConnectProvider = React.memo(HashConnectProviderWarped);
 
-export function useHashConnect() {
+export const useHashConnect = () => {
+  const [cookies, setCookie, removeCookie] = useCookies(["hashconnectData"]);
   const value = React.useContext(HashConnectAPIContext);
-  return value;
-}
+  const { topic, pairingString, setState } = value;
+
+  const connectToExtension = async () => {
+    //this will automatically pop up a pairing request in the HashPack extension
+    hashConnect.connectToLocalWallet(pairingString!);
+  };
+
+  const sendTransaction = async (trans: Uint8Array, acctToSign: string, return_trans: boolean = false, hideNfts: boolean = false) => {
+    const transaction: MessageTypes.Transaction = {
+      topic: topic!,
+      byteArray: trans,
+
+      metadata: {
+        accountToSign: acctToSign,
+        returnTransaction: return_trans,
+      },
+    };
+
+    return await hashConnect.sendTransaction(topic!, transaction);
+  };
+
+  const disconnect = () => {
+    removeCookie("hashconnectData");
+    setState!((exData) => ({ ...exData, pairingData: null }));
+  };
+
+  return { ...value, connectToExtension, sendTransaction, disconnect };
+};
 
 // export default HashConnectProvider;

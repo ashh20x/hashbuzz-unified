@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
 import "./index.css";
-import { HashConnectAPIProvider } from "./HashConnect";
+import {HashConnectAPIProvider} from "./HashConnect";
 import { NETWORK } from "./Utilities/Constant";
 
 
@@ -11,11 +11,11 @@ ReactDOM.render(
   <React.StrictMode>
      <HashConnectAPIProvider
         metaData={{
-          name: "Taskbar",
-          description: "Allow your extension to connect with taskbar dApp",
-          icon: "https://mytaskbar.io/images/apple-icon-114x114.png",
+          name: "Hashbuzz",
+          description: "Allow your extension to connect with hashbuzz dApp",
+          icon: "https://pbs.twimg.com/profile_images/1485974523325595648/7vVwVfdC_400x400.jpg",
         }}
-        netWork={NETWORK}
+        network={NETWORK}
         debug={true}
       >
       <App />

@@ -19,6 +19,7 @@ import StatusCard from "../../StatusCard/StatusCard";
 import { CustomRowHead, CustomTable2, CustomTableBodyCell, CustomTableHeadCell } from "../../Tables/CreateTable.styles";
 import notify from "../../Toaster/toaster";
 import { CardSection, LinkContainer, StatusSection, TableSection } from "./CreateTwitterPage.styles";
+import { HashConnectConnectionState } from "hashconnect/dist/types";
 
 export const CreateTwitterPage = () => {
   const [tableData, setTableData] = useState([]);
@@ -39,33 +40,21 @@ export const CreateTwitterPage = () => {
   const isDeviceIsSm = useMediaQuery(theme.breakpoints.down("sm"));
 
   //Hashpack hook init
-  const {
-    connect,
-    disConnect,
-    handleTransaction: transferHbar,
-    installedExtensions,
-    walletData: { accountIds },
-    transactionResponse,
-    resetTransactionResponse,
-    acknowledge,
-    resetAcknowledge,
-  } = useHashConnect();
-
+  const { connectToExtension, disconnect, availableExtension, state, pairingData } = useHashConnect();
   //Hashpack Effects
   useEffect(() => {
-    if (acknowledge) toast.warning("Wallet Connected", "You can pay now!");
-    if (resetAcknowledge) resetAcknowledge();
-  }, [acknowledge, resetAcknowledge]);
+    if (pairingData && state === HashConnectConnectionState.Connected) toast.success("Wallet connected successfully");
+  }, [state, pairingData]);
 
   //Hashpack functions
   const connectHashpack = async () => {
     try {
       if (isDeviceIsSm) {
-        toast.warning("Please connect with HashPack extension on your desktop to make a payment")
+        toast.warning("Please connect with HashPack extension on your desktop to make a payment");
         return alert("Please connect with HashPack extension on your desktop to make a payment");
       }
-      if (installedExtensions) {
-        connect();
+      if (availableExtension) {
+        connectToExtension();
       } else {
         // await sendMarkOFwalletInstall();
         // Taskbar Alert - Hashpack browser extension not installed, please click on <Go> to visit HashPack website and install their wallet on your browser
@@ -262,8 +251,7 @@ export const CreateTwitterPage = () => {
 
   const cancelClick = () => {
     window.location.href = twitterLoginURL + "&force_login=true";
-  }
-
+  };
 
   return (
     <ContainerStyled align="center" justify="space-between">
@@ -277,12 +265,12 @@ export const CreateTwitterPage = () => {
       <CardSection>
         <StatusCard
           title={"Hedera Account ID"}
-          content={accountIds ?? ""}
-          buttonTag={[`${accountIds ? "Disconnect":"Connect"}`]}
+          content={pairingData?.accountIds[0].toString()}
+          buttonTag={[`${pairingData? "Disconnect" : "Connect"}`]}
           isButton={true}
           text={""}
           buttonClick={(e) => {
-            if(accountIds) disConnect();
+            if (pairingData) disconnect();
             else connectHashpack();
           }}
         />
