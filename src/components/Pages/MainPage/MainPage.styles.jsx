@@ -17,7 +17,7 @@ export const ContentBoxContainer = styled.div`
 export const ContentHeaderText = styled.span`
   color: ${({ theme: { colors } }) => colors.dimgrey};
   font-size: 18px;
-  margin-bottom: 7%;
+  margin-bottom: 12px;
 `;
 export const Connect = styled.div`
   display: flex;

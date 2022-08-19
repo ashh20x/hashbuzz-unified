@@ -12,7 +12,8 @@ import {
 
 const TopUpModal = ({
     open,
-    setOpen
+    setOpen,
+    isTopUp
 }) => {
     const [fee, setfee] = useState(0);
 
@@ -30,7 +31,7 @@ const TopUpModal = ({
     // };
 
     const handleChange = (e) => {
-        const percent = (parseInt(e.target.value)*10)/100 | 0;
+        const percent = (parseInt(e.target.value) * 10) / 100 | 0;
         setfee(percent)
     };
 
@@ -47,7 +48,7 @@ const TopUpModal = ({
                     borderRadius: 11,
                     padding: 0,
                     width: "85%",
-                    height: "80%",
+                    height: "88%",
                     maxWidth: 1010,
                     scrollbarWidth: "none",
                 },
@@ -55,26 +56,45 @@ const TopUpModal = ({
         >
 
             <BoxCont>
-
-                <Typography theme={theme}>TopUp account</Typography>
+                <Typography theme={theme}>{isTopUp ? 'TopUp' : 'Reimburse'} account</Typography>
                 <Row>
                     <>
-
                         <Label>Amount in HBAR</Label>
                     </>
                     <>
                         <CustomInput
                             placeholder=""
-                            onChange={(e)=>handleChange(e)}
+                            onChange={(e) => handleChange(e)}
                         />
                     </>
                     <>
-                        <Label>+ {fee}</Label>
+                        {isTopUp ? <Label>+ {fee}</Label> : <Label></Label>}
                     </>
 
                 </Row>
-                <CustomParagraph>Note 1: the price excludes Hedera network fee</CustomParagraph>
-                <CustomParagraph>Note 2: the budget can be used over multiple campaigns</CustomParagraph>
+                {isTopUp ?
+                    <>
+                        <CustomParagraph>
+                            Note1: the specified amount excludes Hedera network fee
+                        </CustomParagraph>
+                        <CustomParagraph>
+                            Note2: the specified amount can be used over multiple campaigns
+                        </CustomParagraph>
+                        <CustomParagraph>
+                            Note3: hashbuzz applies 10% charge fee on top of the speUcified amount
+                        </CustomParagraph>
+                    </>
+                    :
+                    <>
+                        <CustomParagraph>
+                            Note1: the specified amount excludes Hedera network fee
+                        </CustomParagraph>
+                        <CustomParagraph>
+                            Note2: reimbursements are free of charge
+                        </CustomParagraph>
+                    </>
+                }
+
             </BoxCont>
 
             <ButtonWrapPrimary>
@@ -85,7 +105,7 @@ const TopUpModal = ({
                     colors="#EF5A22"
                     border="1px solid #EF5A22"
                 />
-                <PrimaryButton text="PAY" onclick={submit} />
+                <PrimaryButton text={isTopUp ? "PAY" : "Reimburse"} onclick={submit} />
             </ButtonWrapPrimary>
             <div style={{ marginBottom: 30 }}></div>
         </Dialog>
