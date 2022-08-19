@@ -76,9 +76,10 @@ export const MainPage = () => {
       {mainText2}
       </ContentHeaderText>
       <ContentHeaderText>
-      Learn how to use the PoC: &nbsp;&nbsp;<a href="https://www.canva.com/design/DAFJatuk_Vg/sXVBbx-8NFTybj3E7fa00g/view?utm_content=DAFJatuk_Vg&utm_campaign=designshare&utm_medium=link&utm_source=publishpresent" target="_blank">User Manual</a> 
-      &nbsp;&nbsp;&nbsp;&nbsp;<a href="https://bit.ly/HbuzzDC" target="_blank">Discord</a> 
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://twitter.com/hbuzzs" target="_blank">Twitter</a> 
+      Useful links:
+ &nbsp;&nbsp;<a href="https://www.canva.com/design/DAFJatuk_Vg/sXVBbx-8NFTybj3E7fa00g/view?utm_content=DAFJatuk_Vg&utm_campaign=designshare&utm_medium=link&utm_source=publishpresent" target="_blank">User Manual</a> 
+      &nbsp;&nbsp;-&nbsp;&nbsp;<a href="https://bit.ly/HbuzzDC" target="_blank">Discord</a> 
+      &nbsp;&nbsp;-&nbsp;&nbsp;<a href="https://twitter.com/hbuzzs" target="_blank">Twitter</a> 
       </ContentHeaderText>
       <Connect>
         <Wallet>
