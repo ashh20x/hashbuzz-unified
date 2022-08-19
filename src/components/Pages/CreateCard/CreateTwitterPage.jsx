@@ -224,8 +224,6 @@ export const CreateTwitterPage = () => {
     if (e === "Top-Up") {
       setTopUpOpen(true);
     } else if (i === 0) {
-      alert("Please install hashconnect wallet extension first. from chrome web store.");
-    } else if (i === 1) {
       (async () => {
         try {
           const response = await APIAuthCall("/user/profile/request-brand-twitter-connect", "GET", {}, {}, cookies.token);
