@@ -81,7 +81,7 @@ const TopUpModal = ({
                             Note2: the specified amount can be used over multiple campaigns
                         </CustomParagraph>
                         <CustomParagraph>
-                            Note3: hashbuzz applies 10% charge fee on top of the speUcified amount
+                            Note3: hashbuzz applies 10% charge fee on top of the specified amount
                         </CustomParagraph>
                     </>
                     :

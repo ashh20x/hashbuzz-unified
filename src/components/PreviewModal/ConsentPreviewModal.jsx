@@ -50,7 +50,7 @@ const ConsentModal = ({
                 <BoxCont>
 
                     <Typography theme={theme}>Consent</Typography>
-                    I authorise hashbuzz to Direct Message (DM) me on need basis to inform me of unclaimed rewards updates or campaign statuses.
+                    I authorise hashbuzz to Direct Message (DM) me on need basis to inform me of unclaimed reward or campaign status.
                 </BoxCont>
             </Border>
             <ButtonWrapPrimary>

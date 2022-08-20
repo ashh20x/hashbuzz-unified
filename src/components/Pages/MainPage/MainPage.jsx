@@ -54,6 +54,7 @@ export const MainPage = () => {
         console.log(cookies.getAll());          // object
         const response = await APIAuthCall("/user/twitter-login/", "GET", {}, {});
         if (response.data) {
+          localStorage.setItem('firstTime',true)
           const { url } = response.data;
           window.location.href = url;
 
