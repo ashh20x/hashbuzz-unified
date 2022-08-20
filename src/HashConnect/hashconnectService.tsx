@@ -137,5 +137,5 @@ export const useHashconnectService = () => {
     setState!((exState) => ({ ...exState, pairingData: null }));
   };
 
-  return { ...value, connectToExtension, sendTransaction, disconnect, requestAccountInfo, clearPairings };
+  return { ...value, connectToExtension, sendTransaction, disconnect, requestAccountInfo, clearPairings , hashconnect };
 };
