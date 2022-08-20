@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { APIAuthCall, APICall } from "../../../APIConfig/APIServices";
 import { cardData } from "../../../Data/Cards";
 import { tableHeadRow } from "../../../Data/TwitterTable";
-import {useHashconnectService } from "../../../HashConnect";
+import { useHashconnectService } from "../../../HashConnect";
 import PrimaryButton from "../../Buttons/PrimaryButton";
 import SecondaryButton from "../../Buttons/SecondaryButton";
 import { ContainerStyled } from "../../ContainerStyled/ContainerStyled";
@@ -20,6 +20,7 @@ import { CustomRowHead, CustomTable2, CustomTableBodyCell, CustomTableHeadCell }
 import notify from "../../Toaster/toaster";
 import { CardSection, LinkContainer, StatusSection, TableSection } from "./CreateTwitterPage.styles";
 import { HashConnectConnectionState } from "hashconnect/dist/types";
+import { useDappAPICall } from "../../../APIConfig/dAppApiServices";
 
 export const CreateTwitterPage = () => {
   const [tableData, setTableData] = useState([]);
@@ -35,6 +36,8 @@ export const CreateTwitterPage = () => {
   const [openConfirmModel, setConfirmModel] = useState(false);
   const [twitterLoginURL, setTwitterLoginURL] = useState("");
 
+  const { dAppAPICall } = useDappAPICall();
+
   //check is device is small
   const theme = useTheme();
   const isDeviceIsSm = useMediaQuery(theme.breakpoints.down("sm"));
@@ -45,6 +48,24 @@ export const CreateTwitterPage = () => {
   useEffect(() => {
     if (pairingData && state === HashConnectConnectionState.Connected) toast.success("Wallet connected successfully");
   }, [state, pairingData]);
+
+  useEffect(() => {
+    if (pairingData?.accountIds) {
+      (async () => {
+        try {
+          await dAppAPICall({
+            method: "PUT",
+            url: "users/update/wallet",
+            data: {
+              walletId: pairingData?.accountIds[0],
+            },
+          });
+        } catch (error) {
+          console.log(error);
+        }
+      })();
+    }
+  }, [pairingData]);
 
   //Hashpack functions
   const connectHashpack = async () => {
@@ -264,7 +285,7 @@ export const CreateTwitterPage = () => {
         <StatusCard
           title={"Hedera Account ID"}
           content={pairingData?.accountIds[0].toString()}
-          buttonTag={[`${pairingData? "Disconnect" : "Connect"}`]}
+          buttonTag={[`${pairingData ? "Disconnect" : "Connect"}`]}
           isButton={true}
           text={""}
           buttonClick={(e) => {

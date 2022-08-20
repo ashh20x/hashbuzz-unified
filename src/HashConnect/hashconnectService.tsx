@@ -30,13 +30,27 @@ const HashconectServiceContext = React.createContext<
   Partial<
     HashconnectContextAPI & {
       network: "testnet" | "mainnet" | "previewnet";
-      setState: React.Dispatch<React.SetStateAction<Partial<HashconnectContextAPI>>>;
+      setState: React.Dispatch<
+        React.SetStateAction<
+          Partial<
+            HashconnectContextAPI & {
+              connectCallBack?: Function;
+            }
+          >
+        >
+      >;
     }
   >
 >({});
 
 export const HashconnectAPIProvider = ({ children, metaData, network, debug }: ProviderProps) => {
-  const [state, setState] = React.useState<Partial<HashconnectContextAPI>>({});
+  const [state, setState] = React.useState<
+    Partial<
+      HashconnectContextAPI & {
+        connectCallBack?: Function;
+      }
+    >
+  >({});
 
   const initHashconnect = async () => {
     //initialize and use returned data
@@ -56,6 +70,7 @@ export const HashconnectAPIProvider = ({ children, metaData, network, debug }: P
 
   const onParingEvent = (data: MessageTypes.ApprovePairing) => {
     console.log("Paired with wallet", data);
+    if(state.connectCallBack) state.connectCallBack();
     setState((exState) => ({ ...exState, pairingData: data.pairingData }));
   };
 
@@ -88,7 +103,8 @@ export const useHashconnectService = () => {
   const value = React.useContext(HashconectServiceContext);
   const { topic, pairingData, network, setState } = value;
 
-  const connectToExtension = async () => {
+  const connectToExtension = async (_callbackFunction?: Function) => {
+    if (_callbackFunction) setState!((prevState) => ({ ...prevState, connectCallBack: _callbackFunction }));
     //this will automatically pop up a pairing request in the HashPack extension
     hashconnect.connectToLocalWallet();
   };
@@ -130,4 +146,3 @@ export const useHashconnectService = () => {
 
   return { ...value, connectToExtension, sendTransaction, disconnect, requestAccountInfo, clearPairings };
 };
-
