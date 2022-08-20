@@ -106,12 +106,13 @@ export const CreateTwitterPage = () => {
   };
   const getCampaignList = async () => {
     const user = JSON.parse(localStorage.getItem("user"));
+    const isDirectLogin = localStorage.getItem('firstTime')
     setUserData(user);
     if (user && user.business_twitter_handle) {
       cardData[0].buttonTag = ["Reconnect"];
     }
     // cardData[0].content = user?.hedera_wallet_id;
-    cardData[0].content = user?.business_twitter_handle;
+    cardData[0].content = isDirectLogin? user?.personal_twitter_handle : user?.business_twitter_handle;
     cardData[1].content = user?.personal_twitter_handle ? "@" + user?.personal_twitter_handle : "";
     cardData[1].text = 0 + " ℏ rewarded";
     cardData[2].content = user?.available_budget ? user?.available_budget + " ℏ" : 0 + " ℏ";
@@ -232,14 +233,19 @@ export const CreateTwitterPage = () => {
     } else if (i === 0) {
       (async () => {
         try {
+          setShowLoading(true);
           const response = await APIAuthCall("/user/profile/request-brand-twitter-connect", "GET", {}, {}, cookies.token);
           if (response.data) {
+          setShowLoading(false);
             const { url } = response.data;
+            localStorage.setItem('firstTime',false)
             setTwitterLoginURL(url);
             window.location.href = url + "&force_login=true";
           }
         } catch (error) {
           console.error("error===", error);
+          setShowLoading(false);
+
         }
       })();
     }
