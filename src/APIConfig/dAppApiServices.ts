@@ -5,7 +5,7 @@ import { dAppApiURL } from "../Utilities/Constant";
 interface APIProps {
   method: Method;
   url: string;
-  data: any;
+  data?: any;
 }
 
 export const useDappAPICall = () => {
@@ -22,7 +22,7 @@ export const useDappAPICall = () => {
         "Content-type": "application/json",
       },
     });
-    return request;
+    return request.data;
   };
 
   return { dAppAPICall };
