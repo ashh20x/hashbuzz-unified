@@ -24,7 +24,12 @@ const TopUpModal = ({ open, setOpen }) => {
     // console.log(e);
     //handleSmartContractTransaction
     const amountTotopup = (parseFloat(amount) + parseFloat(amount) * 0.1).toFixed(8);
-    await topUpAccount(parseFloat(amountTotopup), pairingData.accountIds[0]);
+    const transaction = await topUpAccount(parseFloat(amountTotopup), pairingData.accountIds[0]);
+    if (transaction.success) {
+      setAmount(0);
+      setOpen(false);
+      console.log(transaction);
+    }
   };
 
   return (
