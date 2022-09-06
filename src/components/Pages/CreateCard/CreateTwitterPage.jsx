@@ -35,6 +35,7 @@ export const CreateTwitterPage = () => {
   const [openConsent, setConsentOpen] = useState(false);
   const [openConfirmModel, setConfirmModel] = useState(false);
   const [twitterLoginURL, setTwitterLoginURL] = useState("");
+  const [isTopUp, setisTopUp] = useState(false);
 
   const { dAppAPICall } = useDappAPICall();
 
@@ -126,14 +127,15 @@ export const CreateTwitterPage = () => {
   };
   const getCampaignList = async () => {
     const user = JSON.parse(localStorage.getItem("user"));
+    const isDirectLogin = localStorage.getItem('firstTime')
     setUserData(user);
     if (user && user.business_twitter_handle) {
       cardData[0].buttonTag = ["Reconnect"];
     }
     // cardData[0].content = user?.hedera_wallet_id;
-    cardData[0].content = user?.business_twitter_handle;
+    cardData[0].content = isDirectLogin? user?.personal_twitter_handle : user?.business_twitter_handle;
     cardData[1].content = user?.personal_twitter_handle ? "@" + user?.personal_twitter_handle : "";
-    cardData[1].text = 0 + " ℏ bars rewarded";
+    cardData[1].text = 0 + " ℏ rewarded";
     cardData[2].content = user?.available_budget ? user?.available_budget + " ℏ" : 0 + " ℏ";
     cardData[3].content = "";
 
@@ -242,23 +244,29 @@ export const CreateTwitterPage = () => {
   };
 
   const handleButtonClick = (e, i) => {
-    if (e === "Top-Up") {
+    if (i === 2) {
+      if (e === "Top-Up")
+        setisTopUp(true);
+      else
+        setisTopUp(false)
+
       setTopUpOpen(true);
     } else if (i === 0) {
       (async () => {
         try {
+          setShowLoading(true);
           const response = await APIAuthCall("/user/profile/request-brand-twitter-connect", "GET", {}, {}, cookies.token);
           if (response.data) {
+          setShowLoading(false);
             const { url } = response.data;
+            localStorage.setItem('firstTime',false)
             setTwitterLoginURL(url);
-            if (e === "Connect") {
-              setConfirmModel(true);
-            } else {
-              window.location.href = url + "&force_login=true";
-            }
+            window.location.href = url + "&force_login=true";
           }
         } catch (error) {
           console.error("error===", error);
+          setShowLoading(false);
+
         }
       })();
     }
@@ -300,7 +308,7 @@ export const CreateTwitterPage = () => {
             content={item.content}
             buttonTag={item.buttonTag}
             isButton={item.isButton}
-            isDisable={i === 1 ? buttonDisabled : false}
+            isDisable={i === 0 ? buttonDisabled : false}
             text={item.text}
             buttonClick={(e) => handleButtonClick(e, i)}
           />
@@ -338,8 +346,8 @@ export const CreateTwitterPage = () => {
                     ? item.card_status == "Rejected"
                       ? "Rejected"
                       : handleActionButon(item.card_status).map((element) => (
-                          <SecondaryButton text={element} margin="5%" onclick={() => handleAction(element, item)} />
-                        ))
+                        <SecondaryButton text={element} margin="5%" onclick={() => handleAction(element, item)} />
+                      ))
                     : "Promotion ended"}
                 </CustomTableBodyCell>
               </TableRow>
@@ -347,7 +355,7 @@ export const CreateTwitterPage = () => {
           </TableBody>
         </CustomTable2>
       </TableSection>
-      <StatusSection>A 10% charge is applied for every top up (you can run unlimited number of campaigns for the escrowed budget).</StatusSection>
+      <StatusSection>At the moment you can only run one campaign at a time, and the topped up budget can be used across unlimited number of campaigns.</StatusSection>
       <PrimaryButton
         text="CREATE CAMPAIGN"
         variant="contained"
@@ -355,7 +363,7 @@ export const CreateTwitterPage = () => {
         disabled={buttonDisabled || userData?.available_budget === 0 || userData?.available_budget === null}
       />
       {/* (userData?.available_budget === 0 || userData?.available_budget === null) */}
-      <TopUpModal open={openTopup} setOpen={setTopUpOpen} />
+      <TopUpModal open={openTopup} setOpen={setTopUpOpen} isTopUp={isTopUp} />
       {open ? <DisplayTableModal open={open} setOpen={setOpen} item={selectedCampaign}></DisplayTableModal> : null}
       <ConsentModal open={openConsent} setOpen={setConsentOpen} submit={() => submitClick()} noClick={() => clickNo()} />
       <ConfirmModal open={openConfirmModel} setOpen={setConfirmModel} confirmClick={() => confirmClick()} cancelClick={() => cancelClick()} />

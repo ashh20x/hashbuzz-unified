@@ -50,7 +50,7 @@ const ConsentModal = ({
                 <BoxCont>
 
                     <Typography theme={theme}>Consent</Typography>
-                    As per twitter low you couldn't edit twitter's tweet. So before posting this card to twitter read it carefully and then submit to the twiter.
+                    I authorise hashbuzz to Direct Message (DM) me on need basis to inform me of unclaimed reward or campaign status.
                 </BoxCont>
             </Border>
             <ButtonWrapPrimary>
