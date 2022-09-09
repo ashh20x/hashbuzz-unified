@@ -1,4 +1,4 @@
-import { AccountId, ContractExecuteTransaction, ContractFunctionParameters, TransactionId } from "@hashgraph/sdk";
+import { AccountId, ContractExecuteTransaction, ContractFunctionParameters, Hbar, TransactionId } from "@hashgraph/sdk";
 import { toast } from "react-toastify";
 import { useDappAPICall } from "../APIConfig/dAppApiServices";
 import { useHashconnectService } from "./hashconnectService";
@@ -11,35 +11,25 @@ export const useSmartContractServices = () => {
 
   const topUpAccount = async (amount: number, accountId: string) => {
     try {
-      const getContractDetails = await dAppAPICall({ url: "transaction/activeContractId", method: "POST", data: { accountId } });
-      const address = AccountId.fromString(accountId).toSolidityAddress();
-      const deposit = true;
+      const transactionBytes = await dAppAPICall({
+        url: "transaction/create-topup-transaction",
+        method: "POST",
+        data: { accountId, amount: parseFloat(amount.toFixed(8)) },
+      });
 
-      const { contract_id } = getContractDetails as any as { contract_id: string; contractAddress: string };
+      const UpdateBalanceTransaction = await sendTransaction(transactionBytes, pairingData?.accountIds[0]!, false, false);
 
-      const nodeId = [new AccountId(3)];
-      const transId = TransactionId.generate(accountId);
+      if (UpdateBalanceTransaction.success)
+        await dAppAPICall({
+          url: "transaction/top-up",
+          method: "POST",
+          data: {
+            amount: parseFloat(amount.toFixed(8)),
+            accountId,
+          },
+        });
 
-      //initiate new contract params
-      const contractParams = new ContractFunctionParameters();
-
-      contractParams.addAddress(address);
-      contractParams.addUint256(amount * Math.pow(10, 8));
-      contractParams.addBool(deposit);
-
-      let contractExBalTx = new ContractExecuteTransaction()
-        .setContractId(contract_id)
-        .setGas(1000000)
-        .setPayableAmount(amount)
-        .setFunction("updateBalance", contractParams)
-        .setTransactionMemo("Hashconnect update balance call")
-        .setGas(100000);
-
-      contractExBalTx.setNodeAccountIds(nodeId);
-      contractExBalTx.setTransactionId(transId);
-      contractExBalTx = contractExBalTx.freeze();
-      const transactionBytes: Uint8Array = contractExBalTx.toBytes();
-      return await sendTransaction(transactionBytes, pairingData?.accountIds[0]!, false, false);
+      return UpdateBalanceTransaction;
     } catch (err) {
       console.log(err);
       //@ts-ignore
