@@ -137,8 +137,10 @@ export const CustomInput = styled.input`
   background: #f3f3f3;
   border-radius: 4px;
   border: none;
-  color: #9d9d9d;
+  color: #000000;
   margin: 4% 0;
+  font-size: 1.25rem;
+  padding: 0 12px;
   &:focus {
     outline: none;
   }
