@@ -14,6 +14,7 @@ RUN npm install
 
 ENV REACT_APP_NETWORK "testnet"
 ENV REACT_APP_BASE_URL "https://sea-lion-app-dhl7x.ondigitalocean.app"
+ENV REACT_APP_DAPP_API "https://dapp-backend9-ws9ps.ondigitalocean.app/api/"
 
 RUN npm run build
 
