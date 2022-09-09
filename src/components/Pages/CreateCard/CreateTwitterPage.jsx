@@ -127,16 +127,16 @@ export const CreateTwitterPage = () => {
   };
   const getCampaignList = async () => {
     const user = JSON.parse(localStorage.getItem("user"));
-    const isDirectLogin = localStorage.getItem('firstTime')
+    const isDirectLogin = localStorage.getItem("firstTime");
     setUserData(user);
     if (user && user.business_twitter_handle) {
       cardData[0].buttonTag = ["Reconnect"];
     }
     // cardData[0].content = user?.hedera_wallet_id;
-    cardData[0].content = isDirectLogin? user?.personal_twitter_handle : user?.business_twitter_handle;
+    cardData[0].content = isDirectLogin ? user?.personal_twitter_handle : user?.business_twitter_handle;
     cardData[1].content = user?.personal_twitter_handle ? "@" + user?.personal_twitter_handle : "";
     cardData[1].text = 0 + " ℏ rewarded";
-    cardData[2].content = user?.available_budget ? user?.available_budget + " ℏ" : 0 + " ℏ";
+    cardData[2].content = user?.available_budget ? parseInt(user?.available_budget) / Math.pow(10, 8) + " ℏ" : 0 + " ℏ";
     cardData[3].content = "";
 
     try {
@@ -245,10 +245,8 @@ export const CreateTwitterPage = () => {
 
   const handleButtonClick = (e, i) => {
     if (i === 2) {
-      if (e === "Top-Up")
-        setisTopUp(true);
-      else
-        setisTopUp(false)
+      if (e === "Top-Up") setisTopUp(true);
+      else setisTopUp(false);
 
       setTopUpOpen(true);
     } else if (i === 0) {
@@ -257,16 +255,15 @@ export const CreateTwitterPage = () => {
           setShowLoading(true);
           const response = await APIAuthCall("/user/profile/request-brand-twitter-connect", "GET", {}, {}, cookies.token);
           if (response.data) {
-          setShowLoading(false);
+            setShowLoading(false);
             const { url } = response.data;
-            localStorage.setItem('firstTime',false)
+            localStorage.setItem("firstTime", false);
             setTwitterLoginURL(url);
             window.location.href = url + "&force_login=true";
           }
         } catch (error) {
           console.error("error===", error);
           setShowLoading(false);
-
         }
       })();
     }
@@ -346,8 +343,8 @@ export const CreateTwitterPage = () => {
                     ? item.card_status == "Rejected"
                       ? "Rejected"
                       : handleActionButon(item.card_status).map((element) => (
-                        <SecondaryButton text={element} margin="5%" onclick={() => handleAction(element, item)} />
-                      ))
+                          <SecondaryButton text={element} margin="5%" onclick={() => handleAction(element, item)} />
+                        ))
                     : "Promotion ended"}
                 </CustomTableBodyCell>
               </TableRow>
@@ -355,7 +352,9 @@ export const CreateTwitterPage = () => {
           </TableBody>
         </CustomTable2>
       </TableSection>
-      <StatusSection>At the moment you can only run one campaign at a time, and the topped up budget can be used across unlimited number of campaigns.</StatusSection>
+      <StatusSection>
+        At the moment you can only run one campaign at a time, and the topped up budget can be used across unlimited number of campaigns.
+      </StatusSection>
       <PrimaryButton
         text="CREATE CAMPAIGN"
         variant="contained"
