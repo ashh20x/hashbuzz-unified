@@ -18,13 +18,13 @@ export const Wrapper = styled.div`
   }
 `;
 export const IconsWrap = styled.div`
-font-size: 18px;
-display: flex;
-width: 75%;
-justify-content: start;
-img{
-  cursor: pointer;
-}
+  font-size: 18px;
+  display: flex;
+  width: 75%;
+  justify-content: start;
+  img {
+    cursor: pointer;
+  }
 `;
 export const LeftSec = styled.div`
   width: 50%;
@@ -99,7 +99,7 @@ export const ButtonWrapPrimary = styled.div`
   @media screen and (max-width: 960px) {
     flex-direction: column;
     width: 75%;
-    margin:auto;
+    margin: auto;
     button {
       margin-right: 0px;
       margin-bottom: 5% !important;
@@ -109,7 +109,7 @@ export const ButtonWrapPrimary = styled.div`
 export const TableSection = styled.div`
   display: flex;
   border-radius: 10px;
-  border:1px solid #bebebe;
+  border: 1px solid #bebebe;
   width: 95%;
   overflow-y: scroll;
   scrollbar-width: none;
@@ -169,17 +169,16 @@ export const CustomIframe = styled.iframe`
 
 export const Border = styled.div`
   border-radius: 10px;
-  border:1px solid gray;
-  height:100%;
-  margin:30px
- 
+  border: 1px solid gray;
+  height: 100%;
+  margin: 30px;
 `;
 
 export const Label = styled.div`
   weight: 500;
   size: "25px";
   color: "#000000";
-  sizeRes: "28px";
+  sizeres: "28px";
   width: 100%;
   text-align: center;
 `;
@@ -187,7 +186,21 @@ export const Label = styled.div`
 export const Row = styled.div`
   display: flex;
   align-items: center;
-  width: 100%
-  
+  width: 100%;
+
   // height: 5vh;
+`;
+
+export const OverlayBox = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(3px) opacity(0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  color: red;
 `;

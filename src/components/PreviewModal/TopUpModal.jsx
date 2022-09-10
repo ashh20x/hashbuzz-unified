@@ -1,16 +1,19 @@
 import { Dialog } from "@mui/material";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { useHashconnectService } from "../../HashConnect";
 import { useSmartContractServices } from "../../HashConnect/smartcontractService";
 import Typography from "../../Typography/Typography";
+import { delay } from "../../Utilities/Constant";
 import PrimaryButton from "../Buttons/PrimaryButton";
-import { BoxCont, ButtonWrapPrimary, CustomInput, CustomParagraph, Label, Row } from "./PreviewModal.styles";
+import { BoxCont, ButtonWrapPrimary, CustomInput, CustomParagraph, Label, OverlayBox, Row } from "./PreviewModal.styles";
 
 const TopUpModal = ({ open, setOpen }) => {
   const [amount, setAmount] = useState(0);
+  const [paymentStatus, setPaymentStatus] = useState(null);
   const { topUpAccount } = useSmartContractServices();
-  const { pairingData } = useHashconnectService();
+  const { pairingData, connectToExtension } = useHashconnectService();
 
   let navigate = useNavigate();
   const handleClose = () => setOpen(false);
@@ -20,15 +23,41 @@ const TopUpModal = ({ open, setOpen }) => {
     color: "#000000",
     sizeRes: "28px",
   };
+
+  const hbarTotinuHbar = (amount = 0) => {
+    const topUpAmount = Math.round(amount * Math.pow(10, 8));
+    const fee = Math.round(topUpAmount * 0.1);
+    const total = topUpAmount + fee;
+    return { topUpAmount, fee, total };
+  };
+
   const submit = async (e) => {
-    // console.log(e);
-    //handleSmartContractTransaction
-    const amountTotopup = (parseFloat(amount) + parseFloat(amount) * 0.1).toFixed(8);
-    const transaction = await topUpAccount(parseFloat(amountTotopup), pairingData.accountIds[0]);
-    if (transaction.success) {
+    if (!pairingData) {
+      setPaymentStatus("Wallet not connected...");
+      await connectToExtension();
+      setPaymentStatus("Connecting to wallet...");
+      await delay(3000);
+    }
+
+    // const amountTotopup = (parseFloat(amount) + parseFloat(amount) * 0.1).toFixed(8);
+    try {
+      setPaymentStatus("Payment initialized keep waiting for popup...");
+      const amounts = hbarTotinuHbar(amount);
+      const transaction = await topUpAccount({ ...amounts }, pairingData.accountIds[0]);
+      if (transaction.success) {
+        setPaymentStatus("Payment Done");
+        setAmount(0);
+        setOpen(false);
+        console.log(transaction);
+      }
+    } catch (err) {
+      setPaymentStatus("Payment Error");
       setAmount(0);
       setOpen(false);
-      console.log(transaction);
+      console.log(err);
+      toast.error(err.message);
+    } finally {
+      setPaymentStatus(null);
     }
   };
 
@@ -54,9 +83,9 @@ const TopUpModal = ({ open, setOpen }) => {
 
           <CustomInput placeholder="Amount in hbar" value={amount} onChange={(e) => setAmount(e.target.value)} />
 
-          <Label>+ {(parseFloat(amount) * 0.1).toFixed(8) ?? 0}</Label>
+          <Label>+ {(hbarTotinuHbar(amount).fee / Math.pow(10, 8)).toFixed(3)}</Label>
           <Label>=</Label>
-          <Label>{(parseFloat(amount) + parseFloat(amount) * 0.1).toFixed(8) ?? 0}</Label>
+          <Label>{(hbarTotinuHbar(amount).total / Math.pow(10, 8)).toFixed(3)}</Label>
         </Row>
         <CustomParagraph>Note 1: the price excludes Hedera network fee</CustomParagraph>
         <CustomParagraph>Note 2: the budget can be used over multiple campaigns</CustomParagraph>
@@ -67,6 +96,11 @@ const TopUpModal = ({ open, setOpen }) => {
         <PrimaryButton text="PAY" onclick={submit} />
       </ButtonWrapPrimary>
       <div style={{ marginBottom: 30 }}></div>
+      {paymentStatus && (
+        <OverlayBox>
+          <div className="overlay">{paymentStatus}</div>
+        </OverlayBox>
+      )}
     </Dialog>
   );
 };

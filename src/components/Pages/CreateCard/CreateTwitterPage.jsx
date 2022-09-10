@@ -21,6 +21,7 @@ import notify from "../../Toaster/toaster";
 import { CardSection, LinkContainer, StatusSection, TableSection } from "./CreateTwitterPage.styles";
 import { HashConnectConnectionState } from "hashconnect/dist/types";
 import { useDappAPICall } from "../../../APIConfig/dAppApiServices";
+import { useStore } from "../../../Providers/StoreProvider";
 
 export const CreateTwitterPage = () => {
   const [tableData, setTableData] = useState([]);
@@ -38,6 +39,7 @@ export const CreateTwitterPage = () => {
   const [isTopUp, setisTopUp] = useState(false);
 
   const { dAppAPICall } = useDappAPICall();
+  const { state: store, setStore } = useStore();
 
   //check is device is small
   const theme = useTheme();
@@ -66,7 +68,7 @@ export const CreateTwitterPage = () => {
         }
       })();
     }
-  }, [pairingData]);
+  }, [dAppAPICall, pairingData]);
 
   //Hashpack functions
   const connectHashpack = async () => {
@@ -112,6 +114,7 @@ export const CreateTwitterPage = () => {
         localStorage.setItem("user", JSON.stringify(response.data));
         getCampaignList();
         setUserData(response.data);
+        setStore((ps) => ({ ...ps, available_budget: response.data.available_budget, user: response.data }));
         const { consent } = response.data;
         if (consent === true) {
           // setShowLoading(false)
