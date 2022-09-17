@@ -185,7 +185,7 @@ export const TemplatePage = () => {
 
   const handleBudget = (event) => {
     // 1habr = Math.pow(10,8) tinyhabrs;
-    if (Math.round(parseInt(event.target.value) * Math.pow(10, 8)) <= state.available_budget) {
+    if (Math.round(event.target.value * Math.pow(10, 8)) <= state.available_budget) {
       setBudget(event.target.value);
       setBudgetMessage("");
       setButtonDisabled(false);
