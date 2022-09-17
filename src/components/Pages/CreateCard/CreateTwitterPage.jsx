@@ -267,7 +267,7 @@ export const CreateTwitterPage = () => {
 
   return (
     <ContainerStyled align="center" justify="space-between">
-      {userData && userData?.username?.toLowerCase() === "ashh20x" ? (
+      {store && store?.user?.username?.toLowerCase() === "ashh20x" ? (
         <LinkContainer>
           <Link to="/admin">
             <p>Admin Panel</p>
@@ -373,7 +373,7 @@ export const CreateTwitterPage = () => {
         text="CREATE CAMPAIGN"
         variant="contained"
         onclick={handleTemplate}
-        disabled={buttonDisabled || !store.available_budget || !store?.user?.hedera_wallet_id}
+        disabled={buttonDisabled || !store.available_budget || !store?.user?.hedera_wallet_id || !store?.user?.business_twitter_handle}
       />
       {/* (userData?.available_budget === 0 || userData?.available_budget === null) */}
       <TopUpModal open={openTopup} setOpen={setTopUpOpen} isTopUp={isTopUp} />
