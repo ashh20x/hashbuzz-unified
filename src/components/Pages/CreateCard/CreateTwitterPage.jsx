@@ -50,12 +50,8 @@ export const CreateTwitterPage = () => {
   const { connectToExtension, disconnect, availableExtension, state, pairingData } = useHashconnectService();
   //Hashpack Effects
   useEffect(() => {
-    if (pairingData && state === HashConnectConnectionState.Connected) toast.success("Wallet connected successfully");
-  }, [state, pairingData]);
-
-  //uSER WALLET UPDATE CALL
-  useEffect(() => {
-    if (pairingData?.accountIds) {
+    if (pairingData && state === HashConnectConnectionState.Connected) {
+      toast.success("Wallet connected successfully !!");
       (async () => {
         try {
           await dAppAPICall({
@@ -71,7 +67,9 @@ export const CreateTwitterPage = () => {
         }
       })();
     }
-  }, []);
+  }, [state, pairingData]);
+
+  //useEffectForUpdateStoreWithWalletId
 
   //Hashpack functions
   const connectHashpack = async () => {
@@ -100,27 +98,13 @@ export const CreateTwitterPage = () => {
       const response = await APICall("/campaign/twitter-card/", "GET", null, null, false, cookies.token);
       if (response.data) {
         setTableData(response.data.results);
-        //   if (response.data.results.length > 0) {
-        //     let results = response.data.results.filter((data) => data.card_status === "Pending");
-        //     let resultsRunning = response.data.results.filter((data) => data.card_status === "Running");
-        //     if (results.length > 0) {
-        //       cardData[3].content = results[0].card_status === "Pending" ? "Pending Approval" : results[0].card_status;
-        //       results[0].card_status === "Pending" ? setButtonDisabled(true) : setButtonDisabled(false);
-        //       setButtonDisabled(true);
-        //     } else if (resultsRunning.length > 0) {
-        //       cardData[3].content = resultsRunning[0].card_status === "Pending" ? "Pending Approval" : resultsRunning[0].card_status;
-        //       resultsRunning[0].card_status === "Running" ? setButtonDisabled(true) : setButtonDisabled(false);
-        //       setButtonDisabled(true);
-        //     } else {
-        //       cardData[3].content = "Completed";
-        //       setButtonDisabled(false);
-        //     }
-        //     setCardData(cardData);
-        //   } else {
-        //     setCardData(cardData);
-        //     setButtonDisabled(false);
-        //   }
-        // }
+        let pendingResult = response.data.results.find((data) => data.card_status === "Pending");
+        let runningResult = response.data.results.find((data) => data.card_status === "Running");
+        if(pendingResult || runningResult || !store.user.hedera_wallet_id || !store.available_budget) setButtonDisabled(true)
+        else setButtonDisabled(false);
+
+        if(pendingResult) setStore(d => ({...d , currentStatus:"Pending Approval"}));
+        if(runningResult) setStore(d => ({...d , currentStatus:"Running"}));
       }
     } catch (err) {
       console.log("/campaign/twitter-card/", err);
@@ -145,7 +129,7 @@ export const CreateTwitterPage = () => {
         setStore((ps) => ({ ...ps, available_budget: response.data.available_budget, user: response.data }));
 
         //!! get all the active campaign details...
-        console.log("passed from hre")
+        console.log("passed from hre");
         await getCampaignList();
       }
     } catch (err) {
@@ -167,7 +151,6 @@ export const CreateTwitterPage = () => {
   };
 
   //Provide status of the account
-
 
   const handleActionButon = (key) => {
     switch (key) {
@@ -238,30 +221,37 @@ export const CreateTwitterPage = () => {
     // navigate("/invoice");
   };
 
-  const handleButtonClick = (e, i) => {
-    if (i === 2) {
-      if (e === "Top-Up") setisTopUp(true);
-      else setisTopUp(false);
-
-      setTopUpOpen(true);
-    } else if (i === 0) {
-      (async () => {
-        try {
-          // setShowLoading(true);
-          const response = await APIAuthCall("/user/profile/request-brand-twitter-connect", "GET", {}, {}, cookies.token);
-          if (response.data) {
+  const handleButtonClick = (e) => {
+    switch (e) {
+      case "Top-Up":
+        setisTopUp(true);
+        setTopUpOpen(true);
+        break;
+      case "Reimburse":
+        setisTopUp(false);
+        setTopUpOpen(true);
+        break;
+      case "Connect brand handle":
+        (async () => {
+          try {
+            // setShowLoading(true);
+            const response = await APIAuthCall("/user/profile/request-brand-twitter-connect", "GET", {}, {}, cookies.token);
+            if (response.data) {
+              // setShowLoading(false);
+              const { url } = response.data;
+              localStorage.setItem("firstTime", false);
+              setTwitterLoginURL(url);
+              window.location.href = url + "&force_login=true";
+            }
+          } catch (error) {
+            console.error("error===", error);
             // setShowLoading(false);
-            const { url } = response.data;
-            localStorage.setItem("firstTime", false);
-            setTwitterLoginURL(url);
-            window.location.href = url + "&force_login=true";
           }
-        } catch (error) {
-          console.error("error===", error);
-          // setShowLoading(false);
-        }
-      })();
-    }
+        })();
+        break;
+      default:
+        break;
+      }
   };
 
   const confirmClick = () => {
@@ -299,10 +289,8 @@ export const CreateTwitterPage = () => {
           buttonTag={["Top-Up", "Reimburse"]}
           isButton={true}
           text={""}
-          isDisable={store?.user?.hedera_wallet_id}
-          buttonClick={(e) => {
-            console.log(e);
-          }}
+          isDisable={!store?.user?.hedera_wallet_id}
+          buttonClick={(e) => handleButtonClick(e)}
         />
         <StatusCard
           title={"Brand Twitter Handle"}
@@ -310,9 +298,7 @@ export const CreateTwitterPage = () => {
           buttonTag={[!store?.user?.business_twitter_handle ? "Connect brand handle" : ""]}
           isButton={!store?.user?.business_twitter_handle}
           text={""}
-          buttonClick={(e) => {
-            console.log(e);
-          }}
+          buttonClick={(e) => handleButtonClick(e)}
         />
         <StatusCard
           title={"Personal Twitter Handle"}
@@ -321,10 +307,7 @@ export const CreateTwitterPage = () => {
           isButton={false}
           text={"Total 0 ℏ rewarded"}
         />
-        {tableData.length > 0 ?  <StatusCard
-          title={"Status"}
-          content={""}
-        /> : null }
+        {tableData.length > 0 ? <StatusCard title={"Status"} content={store?.currentStatus} /> : null}
         {/* {cardDataArr.map((item, i) => (
           <StatusCard
             key={item.title}
