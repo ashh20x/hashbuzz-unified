@@ -94,7 +94,7 @@ export const TwitterCardScreen = () => {
   const updateBalancesForCampaign = async (card_id) => {
     try {
       await dAppAPICall({
-        url: "transaction/allotFundForCampaign",
+        url: "transaction/add-campaign",
         method: "POST",
         data: {
           campaignId: card_id,
