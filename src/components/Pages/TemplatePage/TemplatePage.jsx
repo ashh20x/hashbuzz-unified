@@ -1,35 +1,45 @@
-import Picker from 'emoji-picker-react';
-import React, { useEffect, useState } from 'react';
-import { useCookies } from 'react-cookie';
+import Picker from "emoji-picker-react";
+import React, { useEffect, useState } from "react";
+import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
-import { APICall } from '../../../APIConfig/APIServices';
+import { APICall } from "../../../APIConfig/APIServices";
 import Typography from "../../../Typography/Typography";
 import PrimaryButton from "../../Buttons/PrimaryButton";
 import SecondaryButton from "../../Buttons/SecondaryButton";
 import { ContainerStyled } from "../../ContainerStyled/ContainerStyled";
 import PreviewModal from "../../PreviewModal/PreviewModal";
 import { TemplateTable } from "../../Tables/TemplateTable";
-// import "emoji-mart/css/emoji-mart.css"; 
+// import "emoji-mart/css/emoji-mart.css";
 import Image from "../../../IconsPng/arrow-symbol.png";
 import { ImageIcon } from "./ImageIcon";
 import { ShowImage } from "./ShowImage";
 import {
   ButtonWrap,
-  ButtonWrapPrimary, CustomCheckboxInput, CustomIframe,
+  ButtonWrapPrimary,
+  CustomCheckboxInput,
+  CustomIframe,
   CustomInput,
-  CustomParagraph, EmoBtnWrap, ErrorTextWrap, IconsWrap, ImgWrap, LeftSec,
-  RightSec, SimpleDiv, TableSection, WordsWrap, Wrapper
+  CustomParagraph,
+  EmoBtnWrap,
+  ErrorTextWrap,
+  IconsWrap,
+  ImgWrap,
+  LeftSec,
+  RightSec,
+  SimpleDiv,
+  TableSection,
+  WordsWrap,
+  Wrapper,
 } from "./TemplatePage.styles";
 import { YoutubeIcon } from "./YoutubeIcon";
+import { useStore } from "../../../Providers/StoreProvider";
 export const TemplatePage = () => {
   let navigate = useNavigate();
-  const [srcLink, setSrcLink] = useState(
-    "https://www.youtube.com/embed/1lzba8D4FCU"
-  );
+  const [srcLink, setSrcLink] = useState("https://www.youtube.com/embed/1lzba8D4FCU");
 
   const [buttonTags, setButtonTags] = useState([]);
-  const [Text, setText] = useState('');
-  const [name, setName] = useState('');
+  const [Text, setText] = useState("");
+  const [name, setName] = useState("");
   const [reply, setReply] = useState(0);
   const [retweet, setRetweet] = useState(0);
   const [like, setLike] = useState(0);
@@ -41,7 +51,7 @@ export const TemplatePage = () => {
   const [media, setMedia] = useState([]);
   const [displayMedia, setDisplayMedia] = useState([]);
   const [gifSelected, setGifSelect] = useState(false);
-  const [cookies, setCookie] = useCookies(['token']);
+  const [cookies, setCookie] = useCookies(["token"]);
   const [videoTitle, setVideoTitle] = useState(false);
   const [addMedia, setAddMedia] = useState(false);
   const [budgetMessage, setBudgetMessage] = useState("");
@@ -49,14 +59,16 @@ export const TemplatePage = () => {
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [userData, setUserData] = useState({});
 
+  const { state } = useStore();
+
   useEffect(() => {
     let mounted = true;
     if (mounted) {
-      const user = JSON.parse(localStorage.getItem('user'));
+      const user = JSON.parse(localStorage.getItem("user"));
       setUserData(user);
     }
-    return () => mounted = false;
-  }, [])
+    return () => (mounted = false);
+  }, []);
 
   const theme = {
     weight: 500,
@@ -85,12 +97,12 @@ export const TemplatePage = () => {
   // };
   const handleText = (event) => {
     if (271 - Text?.length === 0) {
-      console.log("message for reached text enter limit!")
+      console.log("message for reached text enter limit!");
     }
     const textInput = event.target.value;
     let x = textInput.split(" ").filter((item) => item[0] === "#");
     setButtonTags(x);
-    setText(textInput)
+    setText(textInput);
   };
 
   const handleImageChange = async (event) => {
@@ -98,41 +110,35 @@ export const TemplatePage = () => {
     let url = URL.createObjectURL(file);
     const fileType = file.type;
     setYoutube(false);
-    if (media.length === 0 && fileType.includes('gif')) {
-      setDisplayMedia([...displayMedia, url])
+    if (media.length === 0 && fileType.includes("gif")) {
+      setDisplayMedia([...displayMedia, url]);
       setGifSelect(true);
       let data = new FormData();
-      data.append('media_file', file);
-      data.append('media_type', 'image');
+      data.append("media_file", file);
+      data.append("media_type", "image");
       try {
-        const response = await APICall('/campaign/media/', 'POST', {}, data, true, cookies.token);
+        const response = await APICall("/campaign/media/", "POST", {}, data, true, cookies.token);
         setMedia([...media, response.data.id]);
+      } catch (err) {
+        console.error("/campaign/media/:", err);
       }
-      catch (err) {
-        console.error("/campaign/media/:", err)
-      }
-
-    }
-    else if (media.length < 4 && !fileType.includes('gif') && !gifSelected) {
+    } else if (media.length < 4 && !fileType.includes("gif") && !gifSelected) {
       try {
-        setDisplayMedia([...displayMedia, url])
+        setDisplayMedia([...displayMedia, url]);
         let data = new FormData();
-        data.append('media_file', file);
-        data.append('media_type', 'image');
+        data.append("media_file", file);
+        data.append("media_type", "image");
         try {
-          const response = await APICall('/campaign/media/', 'POST', {}, data, true, cookies.token);
-          setMedia([...media, response.data.id])
+          const response = await APICall("/campaign/media/", "POST", {}, data, true, cookies.token);
+          setMedia([...media, response.data.id]);
+        } catch (err) {
+          console.error("/campaign/media/:", err);
         }
-        catch (err) {
-          console.error("/campaign/media/:", err)
-        }
+      } catch (err) {
+        console.log(err);
       }
-      catch (err) {
-        console.log(err)
-      }
-    }
-    else {
-      console.log('Max 4 file or gif');
+    } else {
+      console.log("Max 4 file or gif");
     }
   };
 
@@ -156,38 +162,35 @@ export const TemplatePage = () => {
     } else {
       setSrcLink("https://www.youtube.com/embed/" + videoId);
     }
-    getYouTubeTitleAndDes(videoId)
+    getYouTubeTitleAndDes(videoId);
   };
 
-
   const getYouTubeTitleAndDes = (videoId) => {
-    const vidurl = 'https://www.youtube.com/watch?v=' + videoId;
+    const vidurl = "https://www.youtube.com/watch?v=" + videoId;
 
     fetch(`https://noembed.com/embed?dataType=json&url=${vidurl}`)
-      .then(res => res.json())
-      .then(data => setVideoTitle(data.title))
-  }
+      .then((res) => res.json())
+      .then((data) => setVideoTitle(data.title));
+  };
   const handleLink = (event) => {
     checking(event.target.value);
     setMedia([]);
     setDisplayMedia([]);
   };
-  const handleClose = (event) => {
-
-  }
+  const handleClose = (event) => {};
 
   const handleName = (event) => {
     setName(event.target.value);
   };
 
   const handleBudget = (event) => {
-    if (event.target.value <= userData.available_budget) {
+    // 1habr = Math.pow(10,8) tinyhabrs;
+    if (Math.round(event.target.value * Math.pow(10, 8)) <= state.available_budget) {
       setBudget(event.target.value);
       setBudgetMessage("");
       setButtonDisabled(false);
-    }
-    else {
-      setBudgetMessage(`You have exceeded the total budget of ${userData.available_budget} ℏ`);
+    } else {
+      setBudgetMessage(`You have exceeded the total budget of ${userData.available_budget / Math.pow(10, 8)} ℏ`);
       setButtonDisabled(true);
     }
   };
@@ -212,22 +215,21 @@ export const TemplatePage = () => {
     setFollow(e.target.value);
   };
   const onEmojiClick = (event, emojiObject) => {
-    if (271 - Text?.length >= 2)
-      setText(Text + '' + emojiObject.emoji);
+    if (271 - Text?.length >= 2) setText(Text + "" + emojiObject.emoji);
   };
 
   const handleBack = () => {
-    navigate('/dashboard');
-  }
+    navigate("/dashboard");
+  };
 
   const setremoveImage = (index) => {
     displayMedia.splice(index, 1);
     media.splice(index, 1);
     const imagesArr = displayMedia.length === 0 ? [] : [...displayMedia];
     const mediaArr = media.length === 0 ? [] : [...media];
-    setMedia(mediaArr)
+    setMedia(mediaArr);
     setDisplayMedia(imagesArr);
-  }
+  };
 
   return (
     <ContainerStyled>
@@ -237,25 +239,18 @@ export const TemplatePage = () => {
       <Typography theme={theme}>Campaign</Typography>
       <Wrapper>
         <LeftSec>
-          <CustomInput
-            placeholder="Enter Campaign title"
-            onChange={handleName}
-          />
-          <CustomParagraph
-            onChange={handleText}
-            value={Text}
-            type="textarea"
-            maxLength={271}
-            placeholder="Start typing your tweet campaign"
-          />
+          <CustomInput placeholder="Enter Campaign title" onChange={handleName} />
+          <CustomParagraph onChange={handleText} value={Text} type="textarea" maxLength={271} placeholder="Start typing your tweet campaign" />
           <WordsWrap>
-            <EmoBtnWrap className="button" onClick={() => setShowEmojis(!showEmojis)}>😊 &nbsp;</EmoBtnWrap>
+            <EmoBtnWrap className="button" onClick={() => setShowEmojis(!showEmojis)}>
+              😊 &nbsp;
+            </EmoBtnWrap>
 
             {271 - Text?.length == 0 ? 0 : <div>{271 - Text?.length || 271}</div>}
           </WordsWrap>
           {showEmojis && (
             <div>
-              <Picker native={true} onEmojiClick={onEmojiClick} pickerStyle={{ width: '100%' }} />
+              <Picker native={true} onEmojiClick={onEmojiClick} pickerStyle={{ width: "100%" }} />
             </div>
           )}
           <ButtonWrap>
@@ -270,7 +265,6 @@ export const TemplatePage = () => {
               handleRetweet={handleRetweet}
               handleLike={handleLike}
               handleDownload={handleQuote}
-              
               reply={reply}
               retweet={retweet}
               like={like}
@@ -281,7 +275,7 @@ export const TemplatePage = () => {
         <RightSec>
           <CustomInput
             onKeyPress={(event) => {
-              if (!/[0-9]/.test(event.key) || event.code === 'Minus') {
+              if (!/[0-9]/.test(event.key) || event.code === "Minus") {
                 event.preventDefault();
               }
             }}
@@ -290,62 +284,96 @@ export const TemplatePage = () => {
             placeholder="Enter campaign budget"
             onChange={handleBudget}
           />
-          <ErrorTextWrap >{budgetMessage}</ErrorTextWrap>
+          <ErrorTextWrap>{budgetMessage}</ErrorTextWrap>
           <IconsWrap>
-            <CustomCheckboxInput
-              type="checkbox"
-              onChange={handleAddMedia}
-            />
+            <CustomCheckboxInput type="checkbox" onChange={handleAddMedia} />
             Do you want to add media?
           </IconsWrap>
-         {addMedia? <IconsWrap>
-            <label for="file"><span> <ImageIcon /></span></label>
-            <CustomInput type="file" alt="" id="file" style={{ display: 'none' }} accept="image/png, image/gif, image/jpeg,image/jpg, video/*" onChange={handleImageChange} />
-            <label onClick={handleYouTubeClick}><span>
-              <YoutubeIcon />
-            </span></label>
-          </IconsWrap>:null}
-          {isYoutube  ?
-            <CustomInput
-              placeholder="http/123/reward/taskbar"
-              onChange={handleLink}
-            />
-            : null}
+          {addMedia ? (
+            <IconsWrap>
+              <label for="file">
+                <span>
+                  {" "}
+                  <ImageIcon />
+                </span>
+              </label>
+              <CustomInput
+                type="file"
+                alt=""
+                id="file"
+                style={{ display: "none" }}
+                accept="image/png, image/gif, image/jpeg,image/jpg, video/*"
+                onChange={handleImageChange}
+              />
+              <label onClick={handleYouTubeClick}>
+                <span>
+                  <YoutubeIcon />
+                </span>
+              </label>
+            </IconsWrap>
+          ) : null}
+          {isYoutube ? <CustomInput placeholder="http/123/reward/taskbar" onChange={handleLink} /> : null}
 
-          {
-            displayMedia.length > 0 ?
-              displayMedia.length === 3 ?
+          {displayMedia.length > 0 ? (
+            displayMedia.length === 3 ? (
+              <IconsWrap>
+                <div>
+                  {displayMedia[0] ? (
+                    <SimpleDiv>
+                      <ShowImage ind={0} setremoveImage={() => setremoveImage} src={displayMedia[0]} alt="" />
+                      <br />
+                    </SimpleDiv>
+                  ) : null}
+                  {displayMedia[1] ? (
+                    <SimpleDiv>
+                      <ShowImage ind={1} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[1]} alt="" />{" "}
+                    </SimpleDiv>
+                  ) : null}
+                </div>
+
                 <IconsWrap>
-                  <div>
-                    {displayMedia[0] ? <SimpleDiv>
-                      <ShowImage ind={0} setremoveImage={() => setremoveImage} src={displayMedia[0]} alt="" /><br /></SimpleDiv> : null}
-                    {displayMedia[1] ? <SimpleDiv><ShowImage ind={1} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[1]} alt="" /> </SimpleDiv> : null}
-                  </div>
-
-                  <IconsWrap>
-                    {displayMedia[2] ? <SimpleDiv><ShowImage ind={2} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[2]} alt="" /></SimpleDiv> : null}
-                  </IconsWrap>
+                  {displayMedia[2] ? (
+                    <SimpleDiv>
+                      <ShowImage ind={2} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[2]} alt="" />
+                    </SimpleDiv>
+                  ) : null}
                 </IconsWrap>
-                : <>
-                  <IconsWrap>
-                    {displayMedia[0] ? <SimpleDiv><ShowImage ind={0} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[0]} alt="" /><br /></SimpleDiv> : null}
-                    {displayMedia[1] ? <SimpleDiv><ShowImage ind={1} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[1]} alt="" /><br /> </SimpleDiv> : null}
-                  </IconsWrap>
+              </IconsWrap>
+            ) : (
+              <>
+                <IconsWrap>
+                  {displayMedia[0] ? (
+                    <SimpleDiv>
+                      <ShowImage ind={0} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[0]} alt="" />
+                      <br />
+                    </SimpleDiv>
+                  ) : null}
+                  {displayMedia[1] ? (
+                    <SimpleDiv>
+                      <ShowImage ind={1} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[1]} alt="" />
+                      <br />{" "}
+                    </SimpleDiv>
+                  ) : null}
+                </IconsWrap>
 
-                  <IconsWrap>
-                    {displayMedia[2] ? <SimpleDiv><ShowImage ind={2} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[2]} alt="" /><br /></SimpleDiv> : null}
-                    {displayMedia[3] ? <SimpleDiv><ShowImage ind={3} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[3]} alt="" /></SimpleDiv> : null}
-                  </IconsWrap>
-                </>
-              :
-              addMedia ?<CustomIframe
-                src={srcLink}
-                id="tutorial"
-                frameborder="0"
-                allow="autoplay; encrypted-media"
-                title="video"
-              ></CustomIframe>:null
-          }
+                <IconsWrap>
+                  {displayMedia[2] ? (
+                    <SimpleDiv>
+                      <ShowImage ind={2} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[2]} alt="" />
+                      <br />
+                    </SimpleDiv>
+                  ) : null}
+                  {displayMedia[3] ? (
+                    <SimpleDiv>
+                      <ShowImage ind={3} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[3]} alt="" />
+                    </SimpleDiv>
+                  ) : null}
+                </IconsWrap>
+              </>
+            )
+          ) : addMedia ? (
+            <CustomIframe src={srcLink} id="tutorial" frameborder="0" allow="autoplay; encrypted-media" title="video"></CustomIframe>
+          ) : null}
           {/* <ContentWrap>
             <TextWrap>
               <Typography theme={main}>Reward scheme: </Typography>
@@ -367,7 +395,7 @@ export const TemplatePage = () => {
               onclick={handlePreview}
               colors="#2546EB"
               border="1px solid #2546EB"
-              disabled={buttonDisabled || !budget || budget<1}
+              disabled={buttonDisabled || !budget || budget < 1}
             />
             {/* <PrimaryButton text="Submit" onclick={handleSubmit} /> */}
           </ButtonWrapPrimary>
@@ -376,7 +404,7 @@ export const TemplatePage = () => {
       <PreviewModal
         open={open}
         setOpen={setOpen}
-        Text={Text + ' #hashbuzz'}
+        Text={Text + " #hashbuzz"}
         buttonTags={buttonTags}
         reply={reply}
         retweet={retweet}
@@ -392,7 +420,6 @@ export const TemplatePage = () => {
         budget={budget}
         quote={quote}
       />
-
     </ContainerStyled>
   );
 };
