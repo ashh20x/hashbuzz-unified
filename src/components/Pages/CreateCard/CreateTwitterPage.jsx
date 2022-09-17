@@ -295,10 +295,11 @@ export const CreateTwitterPage = () => {
         <StatusCard
           title={"Brand Twitter Handle"}
           content={store?.user?.business_twitter_handle ? "@" + store?.user?.business_twitter_handle : ""}
-          buttonTag={[!store?.user?.business_twitter_handle ? "Connect brand handle" : ""]}
+          buttonTag={[!store?.user?.business_twitter_handle ? "Connect brand handle" : "Reconnect"]}
           isButton={!store?.user?.business_twitter_handle}
           text={""}
           buttonClick={(e) => handleButtonClick(e)}
+          isDisable={store?.currentStatus}
         />
         <StatusCard
           title={"Personal Twitter Handle"}
