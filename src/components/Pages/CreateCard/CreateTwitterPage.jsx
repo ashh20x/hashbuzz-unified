@@ -31,7 +31,7 @@ export const CreateTwitterPage = () => {
   const [open, setOpen] = useState(false);
   const [selectedCampaign, setSelectedCampaign] = useState({});
   const [cardDataArr, setCardData] = useState([]);
-  const [buttonDisabled, setButtonDisabled] = useState(true);
+  const [buttonDisabled, setButtonDisabled] = useState(false);
   const [showLoading, setShowLoading] = useState(false);
   const [openConsent, setConsentOpen] = useState(false);
   const [openConfirmModel, setConfirmModel] = useState(false);
@@ -50,7 +50,7 @@ export const CreateTwitterPage = () => {
   const { connectToExtension, disconnect, availableExtension, state, pairingData } = useHashconnectService();
   //Hashpack Effects
   useEffect(() => {
-    if (pairingData && state === HashConnectConnectionState.Connected) {
+    if (pairingData && pairingData.accountIds.length > 0) {
       toast.success("Wallet connected successfully !!");
       (async () => {
         try {
