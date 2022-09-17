@@ -1,21 +1,20 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { cardData } from "../../../Data/Cards";
+import { useDappAPICall } from "../../../APIConfig/dAppApiServices";
+import Image from "../../../IconsPng/arrow-symbol.png";
+import Typography from "../../../Typography/Typography";
 import SecondaryButton from "../../Buttons/SecondaryButton";
 import { ContainerStyled } from "../../ContainerStyled/ContainerStyled";
 import notify from "../../Toaster/toaster";
-import Image from "../../../IconsPng/arrow-symbol.png";
-import Typography from "../../../Typography/Typography";
-import { useDappAPICall } from "../../../APIConfig/dAppApiServices";
 
-import { TableSection, WrappeText, ImgWrap } from "./TwitterCardList.styles";
-import { TableRow, TableBody } from "@mui/material";
-import { adminTableHeadRow } from "../../../Data/TwitterTable";
-import { CustomRowHead, CustomTable2, CustomTableBodyCell, CustomTableHeadCell } from "../../Tables/CreateTable.styles";
-import { APICall, APIAuthCall } from "../../../APIConfig/APIServices";
-import { Loader } from "../../Loader/Loader";
+import { TableBody, TableRow } from "@mui/material";
 import { useCookies } from "react-cookie";
 import { toast } from "react-toastify";
+import { APICall } from "../../../APIConfig/APIServices";
+import { adminTableHeadRow } from "../../../Data/TwitterTable";
+import { Loader } from "../../Loader/Loader";
+import { CustomRowHead, CustomTable2, CustomTableBodyCell, CustomTableHeadCell } from "../../Tables/CreateTable.styles";
+import { ImgWrap, TableSection, WrappeText } from "./TwitterCardList.styles";
 
 export const TwitterCardScreen = () => {
   let navigate = useNavigate();
