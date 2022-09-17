@@ -100,7 +100,9 @@ export const CreateTwitterPage = () => {
         setTableData(response.data.results);
         let pendingResult = response.data.results.find((data) => data.card_status === "Pending");
         let runningResult = response.data.results.find((data) => data.card_status === "Running");
-        if(pendingResult || runningResult || !store.user.hedera_wallet_id || !store.available_budget) setButtonDisabled(true)
+        if(pendingResult || runningResult) {
+          setButtonDisabled(true)
+        }
         else setButtonDisabled(false);
 
         if(pendingResult) setStore(d => ({...d , currentStatus:"Pending Approval"}));
@@ -370,7 +372,7 @@ export const CreateTwitterPage = () => {
         text="CREATE CAMPAIGN"
         variant="contained"
         onclick={handleTemplate}
-        disabled={buttonDisabled || userData?.available_budget === 0 || userData?.available_budget === null}
+        disabled={buttonDisabled || !store.available_budget || !store?.user?.hedera_wallet_id}
       />
       {/* (userData?.available_budget === 0 || userData?.available_budget === null) */}
       <TopUpModal open={openTopup} setOpen={setTopUpOpen} isTopUp={isTopUp} />
