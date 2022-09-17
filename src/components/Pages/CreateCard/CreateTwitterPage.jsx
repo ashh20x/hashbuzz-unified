@@ -40,6 +40,7 @@ export const CreateTwitterPage = () => {
 
   const { dAppAPICall } = useDappAPICall();
   const { state: store, setStore } = useStore();
+  const navigate = useNavigate();
 
   //check is device is small
   const theme = useTheme();
@@ -52,6 +53,7 @@ export const CreateTwitterPage = () => {
     if (pairingData && state === HashConnectConnectionState.Connected) toast.success("Wallet connected successfully");
   }, [state, pairingData]);
 
+  //uSER WALLET UPDATE CALL
   useEffect(() => {
     if (pairingData?.accountIds) {
       (async () => {
@@ -63,12 +65,13 @@ export const CreateTwitterPage = () => {
               walletId: pairingData?.accountIds[0],
             },
           });
+          setStore((p) => ({ ...p, user: { ...p.user, hedera_wallet_id: pairingData?.accountIds[0] } }));
         } catch (error) {
           console.log(error);
         }
       })();
     }
-  }, [dAppAPICall, pairingData]);
+  }, []);
 
   //Hashpack functions
   const connectHashpack = async () => {
@@ -92,90 +95,79 @@ export const CreateTwitterPage = () => {
     }
   };
 
-  useEffect(() => {
-    let mounted = true;
-    if (mounted) {
-      setShowLoading(true);
-      getUserInfo();
-    }
-    return () => (mounted = false);
-  }, []);
-  let navigate = useNavigate();
-  const handleTemplate = () => {
-    navigate("/campaign");
-  };
-  const getUserInfo = async () => {
-    try {
-      const user_id = localStorage.getItem("user_id");
-      // const user_id =user.id
-      setShowLoading(true);
-      const response = await APICall("/user/profile/" + user_id + "/", "GET", {}, null, false, cookies.token);
-      if (response.data) {
-        localStorage.setItem("user", JSON.stringify(response.data));
-        getCampaignList();
-        setUserData(response.data);
-        setStore((ps) => ({ ...ps, available_budget: response.data.available_budget, user: response.data }));
-        const { consent } = response.data;
-        if (consent === true) {
-          // setShowLoading(false)
-        } else {
-          setShowLoading(false);
-          setConsentOpen(true);
-        }
-      }
-    } catch (err) {
-      console.error("/user/profile/", err);
-      setShowLoading(false);
-    }
-  };
   const getCampaignList = async () => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    const isDirectLogin = localStorage.getItem("firstTime");
-    setUserData(user);
-    if (user && user.business_twitter_handle) {
-      cardData[0].buttonTag = ["Reconnect"];
-    }
-    // cardData[0].content = user?.hedera_wallet_id;
-    cardData[0].content = isDirectLogin ? user?.personal_twitter_handle : user?.business_twitter_handle;
-    cardData[1].content = user?.personal_twitter_handle ? "@" + user?.personal_twitter_handle : "";
-    cardData[1].text = 0 + " ℏ rewarded";
-    cardData[2].content = user?.available_budget ? parseInt(user?.available_budget) / Math.pow(10, 8) + " ℏ" : 0 + " ℏ";
-    cardData[3].content = "";
-
     try {
       const response = await APICall("/campaign/twitter-card/", "GET", null, null, false, cookies.token);
       if (response.data) {
         setTableData(response.data.results);
-        if (response.data.results.length > 0) {
-          let results = response.data.results.filter((data) => data.card_status === "Pending");
-          let resultsRunning = response.data.results.filter((data) => data.card_status === "Running");
-          if (results.length > 0) {
-            cardData[3].content = results[0].card_status === "Pending" ? "Pending Approval" : results[0].card_status;
-            results[0].card_status === "Pending" ? setButtonDisabled(true) : setButtonDisabled(false);
-            setButtonDisabled(true);
-          } else if (resultsRunning.length > 0) {
-            cardData[3].content = resultsRunning[0].card_status === "Pending" ? "Pending Approval" : resultsRunning[0].card_status;
-            resultsRunning[0].card_status === "Running" ? setButtonDisabled(true) : setButtonDisabled(false);
-            setButtonDisabled(true);
-          } else {
-            cardData[3].content = "Completed";
-            setButtonDisabled(false);
-          }
-          setCardData(cardData);
-        } else {
-          setCardData(cardData);
-          setButtonDisabled(false);
-        }
-        setShowLoading(false);
-      } else {
-        setButtonDisabled(false);
-        setShowLoading(false);
+        //   if (response.data.results.length > 0) {
+        //     let results = response.data.results.filter((data) => data.card_status === "Pending");
+        //     let resultsRunning = response.data.results.filter((data) => data.card_status === "Running");
+        //     if (results.length > 0) {
+        //       cardData[3].content = results[0].card_status === "Pending" ? "Pending Approval" : results[0].card_status;
+        //       results[0].card_status === "Pending" ? setButtonDisabled(true) : setButtonDisabled(false);
+        //       setButtonDisabled(true);
+        //     } else if (resultsRunning.length > 0) {
+        //       cardData[3].content = resultsRunning[0].card_status === "Pending" ? "Pending Approval" : resultsRunning[0].card_status;
+        //       resultsRunning[0].card_status === "Running" ? setButtonDisabled(true) : setButtonDisabled(false);
+        //       setButtonDisabled(true);
+        //     } else {
+        //       cardData[3].content = "Completed";
+        //       setButtonDisabled(false);
+        //     }
+        //     setCardData(cardData);
+        //   } else {
+        //     setCardData(cardData);
+        //     setButtonDisabled(false);
+        //   }
+        // }
       }
     } catch (err) {
       console.log("/campaign/twitter-card/", err);
+    }
+  };
+
+  // Get users details functions;
+  const getUserInfo = async () => {
+    const user_id = localStorage.getItem("user_id");
+    setShowLoading(true);
+    try {
+      // const user_id =user.id
+      const response = await APICall("/user/profile/" + user_id + "/", "GET", {}, null, false, cookies.token);
+      if (response.data) {
+        const { consent } = response.data;
+        if (!consent) setConsentOpen(true);
+
+        //! save data to local storage for further user.
+        localStorage.setItem("user", JSON.stringify(response.data));
+
+        //? Update user object to the context store for.
+        setStore((ps) => ({ ...ps, available_budget: response.data.available_budget, user: response.data }));
+
+        //!! get all the active campaign details...
+        console.log("passed from hre")
+        await getCampaignList();
+      }
+    } catch (err) {
+      console.error("/user/profile/", err);
+    } finally {
       setShowLoading(false);
     }
   };
+
+  // get all the users details on mounting
+  useEffect(() => {
+    (async () => {
+      await getUserInfo();
+    })();
+  }, []);
+
+  const handleTemplate = () => {
+    navigate("/campaign");
+  };
+
+  //Provide status of the account
+
 
   const handleActionButon = (key) => {
     switch (key) {
@@ -195,7 +187,7 @@ export const CreateTwitterPage = () => {
   };
 
   const submitClick = async () => {
-    setShowLoading(true);
+    // setShowLoading(true);
     const userInfo = JSON.parse(localStorage.getItem("user"));
     const user_data = {
       ...userInfo,
@@ -204,26 +196,26 @@ export const CreateTwitterPage = () => {
     try {
       const response = await APICall("/user/profile/" + userInfo.id + "/", "PATCH", {}, user_data, false, cookies.token);
       if (response.data) {
-        setShowLoading(false);
+        // setShowLoading(false);
         setConsentOpen(false);
 
         // navigate("/dashboard");
       }
     } catch (err) {
       console.error("/user/profile/:", err);
-      setShowLoading(false);
+      // setShowLoading(false);
     }
   };
 
   const updateCampaignItem = async (data) => {
     try {
-      setShowLoading(true);
+      // setShowLoading(true);
       await APICall("/campaign/twitter-card/card_status/", "POST", null, data, false, cookies.token);
       getCampaignList();
       notify("Status updated!");
     } catch (err) {
       console.log("/campaign/twitter-card/card_status/:", err);
-      setShowLoading(false);
+      // setShowLoading(false);
       notify("Something went wrong! Please try again later");
     }
   };
@@ -255,10 +247,10 @@ export const CreateTwitterPage = () => {
     } else if (i === 0) {
       (async () => {
         try {
-          setShowLoading(true);
+          // setShowLoading(true);
           const response = await APIAuthCall("/user/profile/request-brand-twitter-connect", "GET", {}, {}, cookies.token);
           if (response.data) {
-            setShowLoading(false);
+            // setShowLoading(false);
             const { url } = response.data;
             localStorage.setItem("firstTime", false);
             setTwitterLoginURL(url);
@@ -266,7 +258,7 @@ export const CreateTwitterPage = () => {
           }
         } catch (error) {
           console.error("error===", error);
-          setShowLoading(false);
+          // setShowLoading(false);
         }
       })();
     }
@@ -292,16 +284,48 @@ export const CreateTwitterPage = () => {
       <CardSection>
         <StatusCard
           title={"Hedera Account ID"}
-          content={pairingData?.accountIds[0].toString()}
-          buttonTag={[`${pairingData ? "Disconnect" : "Connect"}`]}
-          isButton={true}
+          content={store.user.hedera_wallet_id ?? ""}
+          buttonTag={[`${!store.user.hedera_wallet_id ? "Connect" : ""}`]}
+          isButton={!store.user.hedera_wallet_id}
           text={""}
           buttonClick={(e) => {
             if (pairingData) disconnect();
             else connectHashpack();
           }}
         />
-        {cardDataArr.map((item, i) => (
+        <StatusCard
+          title={"Available Budget"}
+          content={(store?.available_budget / Math.pow(10, 8)).toFixed(3) + " ℏ"}
+          buttonTag={["Top-Up", "Reimburse"]}
+          isButton={true}
+          text={""}
+          isDisable={store?.user?.hedera_wallet_id}
+          buttonClick={(e) => {
+            console.log(e);
+          }}
+        />
+        <StatusCard
+          title={"Brand Twitter Handle"}
+          content={store?.user?.business_twitter_handle ? "@" + store?.user?.business_twitter_handle : ""}
+          buttonTag={[!store?.user?.business_twitter_handle ? "Connect brand handle" : ""]}
+          isButton={!store?.user?.business_twitter_handle}
+          text={""}
+          buttonClick={(e) => {
+            console.log(e);
+          }}
+        />
+        <StatusCard
+          title={"Personal Twitter Handle"}
+          content={store?.user?.personal_twitter_handle ? "@" + store?.user?.personal_twitter_handle : ""}
+          buttonTag={["ReConnect"]}
+          isButton={false}
+          text={"Total 0 ℏ rewarded"}
+        />
+        {tableData.length > 0 ?  <StatusCard
+          title={"Status"}
+          content={""}
+        /> : null }
+        {/* {cardDataArr.map((item, i) => (
           <StatusCard
             key={item.title}
             title={item.title}
@@ -312,7 +336,7 @@ export const CreateTwitterPage = () => {
             text={item.text}
             buttonClick={(e) => handleButtonClick(e, i)}
           />
-        ))}
+        ))} */}
       </CardSection>
 
       <TableSection>

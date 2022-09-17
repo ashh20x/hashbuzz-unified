@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { cardData } from "../../../Data/Cards";
 import SecondaryButton from "../../Buttons/SecondaryButton";
@@ -6,35 +6,27 @@ import { ContainerStyled } from "../../ContainerStyled/ContainerStyled";
 import notify from "../../Toaster/toaster";
 import Image from "../../../IconsPng/arrow-symbol.png";
 import Typography from "../../../Typography/Typography";
+import { useDappAPICall } from "../../../APIConfig/dAppApiServices";
 
-import {
-  TableSection,
-  WrappeText,
-  ImgWrap
-} from "./TwitterCardList.styles";
+import { TableSection, WrappeText, ImgWrap } from "./TwitterCardList.styles";
 import { TableRow, TableBody } from "@mui/material";
 import { adminTableHeadRow } from "../../../Data/TwitterTable";
-import {
-  CustomRowHead,
-  CustomTable2,
-  CustomTableBodyCell,
-  CustomTableHeadCell,
-
-} from "../../Tables/CreateTable.styles";
+import { CustomRowHead, CustomTable2, CustomTableBodyCell, CustomTableHeadCell } from "../../Tables/CreateTable.styles";
 import { APICall, APIAuthCall } from "../../../APIConfig/APIServices";
-import { Loader } from "../../Loader/Loader"
-import { useCookies } from 'react-cookie';
+import { Loader } from "../../Loader/Loader";
+import { useCookies } from "react-cookie";
+import { toast } from "react-toastify";
 
 export const TwitterCardScreen = () => {
   let navigate = useNavigate();
 
   const [tableData, setTableData] = useState([]);
 
-  const [cookies, setCookie] = useCookies(['token']);
+  const [cookies, setCookie] = useCookies(["token"]);
   const [open, setOpen] = useState(false);
   const [noData, setNoData] = useState(false);
   const [showLoading, setShowLoading] = useState(false);
-
+  const { dAppAPICall } = useDappAPICall();
 
   useEffect(() => {
     let mounted = true;
@@ -42,9 +34,8 @@ export const TwitterCardScreen = () => {
       setShowLoading(true);
       getCampaignList();
     }
-    return () => mounted = false;
-  }, [])
-
+    return () => (mounted = false);
+  }, []);
 
   const getCampaignList = async () => {
     try {
@@ -52,16 +43,13 @@ export const TwitterCardScreen = () => {
       if (response.data.length > 0) {
         setTableData(response.data);
         setNoData(false);
-      }
-      else {
+      } else {
         setTableData([]);
         setNoData(true);
       }
       setShowLoading(false);
-
-    }
-    catch (err) {
-      console.log("/campaign/twitter-card/pending_cards:", err)
+    } catch (err) {
+      console.log("/campaign/twitter-card/pending_cards:", err);
     }
   };
 
@@ -71,9 +59,8 @@ export const TwitterCardScreen = () => {
       await APICall("/campaign/twitter-card/card_status/", "POST", null, data, false, cookies.token);
       notify(data.card_status === "Running" ? "Approved" : data.card_status);
       getCampaignList();
-    }
-    catch (err) {
-      console.log("/campaign/twitter-card/card_status/:", err)
+    } catch (err) {
+      console.log("/campaign/twitter-card/card_status/:", err);
       setShowLoading(false);
     }
   };
@@ -81,19 +68,19 @@ export const TwitterCardScreen = () => {
   const handleActionButon = (key) => {
     switch (key) {
       case "Running":
-        return ['Pause', "Stop"]
+        return ["Pause", "Stop"];
       case "Pending":
-        return ['Approved', 'Reject']
+        return ["Approved", "Reject"];
       case "Pause":
-        return ['Run', "Stop"]
+        return ["Run", "Stop"];
       case "Completed":
-        return ["Promotion ended"]
+        return ["Promotion ended"];
       case "Rejected":
-        return []
+        return [];
       default:
-        return []
+        return [];
     }
-  }
+  };
 
   const theme = {
     weight: 500,
@@ -102,28 +89,45 @@ export const TwitterCardScreen = () => {
     sizeRes: "28px",
   };
 
-  const handleAction = (element, item) => {
-    const updateData = {
-      "card_id": item.id,
-      "card_status": element === "Approved" ? "Running" : "Rejected"
+  const updateBalancesForCampaign = async (card_id) => {
+    try {
+      await dAppAPICall({
+        url: "transaction/allotFundForCampaign",
+        method: "POST",
+        data: {
+          campaignId: card_id,
+        },
+      });
+    } catch (error) {
+      toast.error(error.message);
+      console.log(error)
     }
-    updateCampaignItem(updateData);
+  };
+
+  const handleAction = async (element, item) => {
+    const updateData = {
+      card_id: item.id,
+      card_status: element === "Approved" ? "Running" : "Rejected",
+    };
+    await updateCampaignItem(updateData);
+    if (element === "Approved") {
+      await updateBalancesForCampaign(item.id);
+    }
   };
 
   const handleBack = () => {
-    navigate('/dashboard');
-  }
+    navigate("/dashboard");
+  };
 
   const getOwnerName = (user_id) => {
     try {
       // const response = await APICall("/user/profile/" + user_id + "/", "GET", {}, null, false, cookies.token);
       // console.log("-------", response);
-      return user_id
+      return user_id;
+    } catch (err) {
+      console.log("error---", err);
     }
-    catch (err) {
-      console.log("error---", err)
-    }
-  }
+  };
 
   return (
     <ContainerStyled align="center" padding="5px" margin="12px" justify="space-between">
@@ -136,11 +140,7 @@ export const TwitterCardScreen = () => {
           <CustomRowHead>
             <TableRow>
               {adminTableHeadRow.map((item) => (
-                <CustomTableHeadCell
-                  key={item.id}
-                  align={item.align}
-                  style={{ minWidth: item.minWidth, width: item.width }}
-                >
+                <CustomTableHeadCell key={item.id} align={item.align} style={{ minWidth: item.minWidth, width: item.width }}>
                   {item.label}
                 </CustomTableHeadCell>
               ))}
@@ -149,33 +149,27 @@ export const TwitterCardScreen = () => {
           <TableBody>
             {tableData.map((item, index) => (
               <TableRow>
-                <CustomTableBodyCell
-                  key={item.id}
-                  align={item.align}
-                  style={{ minWidth: item.minWidth, width: item.width }}
-                >
+                <CustomTableBodyCell key={item.id} align={item.align} style={{ minWidth: item.minWidth, width: item.width }}>
                   {index + 1}
                 </CustomTableBodyCell>
                 <CustomTableBodyCell>{item.name}</CustomTableBodyCell>
                 {/* <CustomTableBodyCell><a href='#' onClick={() => linkClick(item)}>Link</a></CustomTableBodyCell> */}
-                <CustomTableBodyCell><p>{item.tweet_text}</p></CustomTableBodyCell>
+                <CustomTableBodyCell>
+                  <p>{item.tweet_text}</p>
+                </CustomTableBodyCell>
                 <CustomTableBodyCell>{item.campaign_budget}</CustomTableBodyCell>
                 <CustomTableBodyCell></CustomTableBodyCell>
                 <CustomTableBodyCell>
-                  {!item.isbutton && item.card_status !== "Completed" ? (
-                    handleActionButon(item.card_status).map((element) => (
-                      <SecondaryButton text={element} margin="5%" onclick={() => handleAction(element, item)} />
-                    ))
-                  ) : (
-                    "Promotion ended"
-                  )}
+                  {!item.isbutton && item.card_status !== "Completed"
+                    ? handleActionButon(item.card_status).map((element) => (
+                        <SecondaryButton text={element} margin="5%" onclick={() => handleAction(element, item)} />
+                      ))
+                    : "Promotion ended"}
                 </CustomTableBodyCell>
               </TableRow>
             ))}
           </TableBody>
-
         </CustomTable2>
-
       </TableSection>
       {noData ? <WrappeText>No Data found!</WrappeText> : null}
       <Loader open={showLoading} />
