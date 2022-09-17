@@ -52,20 +52,22 @@ export const CreateTwitterPage = () => {
   useEffect(() => {
     if (pairingData && pairingData.accountIds.length > 0) {
       toast.success("Wallet connected successfully !!");
-      (async () => {
-        try {
-          await dAppAPICall({
-            method: "PUT",
-            url: "users/update/wallet",
-            data: {
-              walletId: pairingData?.accountIds[0],
-            },
-          });
-          setStore((p) => ({ ...p, user: { ...p.user, hedera_wallet_id: pairingData?.accountIds[0] } }));
-        } catch (error) {
-          console.log(error);
-        }
-      })();
+      if (!store?.user?.hedera_wallet_id) {
+        (async () => {
+          try {
+            await dAppAPICall({
+              method: "PUT",
+              url: "users/update/wallet",
+              data: {
+                walletId: pairingData?.accountIds[0],
+              },
+            });
+            setStore((p) => ({ ...p, user: { ...p.user, hedera_wallet_id: pairingData?.accountIds[0] } }));
+          } catch (error) {
+            console.log(error);
+          }
+        })();
+      }
     }
   }, [state, pairingData]);
 
@@ -100,13 +102,12 @@ export const CreateTwitterPage = () => {
         setTableData(response.data.results);
         let pendingResult = response.data.results.find((data) => data.card_status === "Pending");
         let runningResult = response.data.results.find((data) => data.card_status === "Running");
-        if(pendingResult || runningResult) {
-          setButtonDisabled(true)
-        }
-        else setButtonDisabled(false);
+        if (pendingResult || runningResult) {
+          setButtonDisabled(true);
+        } else setButtonDisabled(false);
 
-        if(pendingResult) setStore(d => ({...d , currentStatus:"Pending Approval"}));
-        if(runningResult) setStore(d => ({...d , currentStatus:"Running"}));
+        if (pendingResult) setStore((d) => ({ ...d, currentStatus: "Pending Approval" }));
+        if (runningResult) setStore((d) => ({ ...d, currentStatus: "Running" }));
       }
     } catch (err) {
       console.log("/campaign/twitter-card/", err);
@@ -253,7 +254,7 @@ export const CreateTwitterPage = () => {
         break;
       default:
         break;
-      }
+    }
   };
 
   const confirmClick = () => {
@@ -349,7 +350,7 @@ export const CreateTwitterPage = () => {
                   </a>
                 </CustomTableBodyCell>
                 <CustomTableBodyCell>{item.campaign_budget}</CustomTableBodyCell>
-                <CustomTableBodyCell>{item.amount_spent}</CustomTableBodyCell>
+                <CustomTableBodyCell>{(item.amount_spent / Math.pow(10, 8)).toFixed(4)}</CustomTableBodyCell>
                 <CustomTableBodyCell>{item.amount_claimed}</CustomTableBodyCell>
                 <CustomTableBodyCell>
                   {!item.isbutton && item.card_status !== "Completed"
