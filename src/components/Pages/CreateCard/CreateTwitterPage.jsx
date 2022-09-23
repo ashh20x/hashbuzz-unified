@@ -196,7 +196,17 @@ export const CreateTwitterPage = () => {
   const updateCampaignItem = async (data) => {
     try {
       // setShowLoading(true);
-      await APICall("/campaign/twitter-card/card_status/", "POST", null, data, false, cookies.token);
+      if(data.card_status === "Completed")
+        await dAppAPICall({
+          url:"campaign/update-status",
+          method:"POST",
+          data:{
+            card_status:"completed",
+            card_id:data.card_id
+          }
+        })
+      else
+        await APICall("/campaign/twitter-card/card_status/", "POST", null, data, false, cookies.token);
       getCampaignList();
       notify("Status updated!");
     } catch (err) {
