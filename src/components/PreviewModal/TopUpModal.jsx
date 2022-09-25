@@ -1,5 +1,5 @@
 import { Dialog } from "@mui/material";
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useHashconnectService } from "../../HashConnect";
@@ -7,18 +7,9 @@ import { useSmartContractServices } from "../../HashConnect/smartcontractService
 import Typography from "../../Typography/Typography";
 import { delay } from "../../Utilities/Constant";
 import PrimaryButton from "../Buttons/PrimaryButton";
-import {
-  BoxCont,
-  ButtonWrapPrimary, CustomInput, CustomParagraph, Label,
-  Row
-} from "./PreviewModal.styles";
+import { BoxCont, ButtonWrapPrimary, CustomInput, CustomParagraph, Label, Row } from "./PreviewModal.styles";
 
-
-const TopUpModal = ({
-  open,
-  setOpen,
-  isTopUp
-}) => {
+const TopUpModal = ({ open, setOpen, isTopUp }) => {
   const [amount, setAmount] = useState(0);
   const [paymentStatus, setPaymentStatus] = useState(null);
   const { topUpAccount } = useSmartContractServices();
@@ -43,7 +34,9 @@ const TopUpModal = ({
   // const handleSubmit = () => {
   //     navigate("/onboarding");
   // };
-  const submit = async (e) => {
+  const submitReimburse = async (e) => {};
+
+  const submitPay = async (e) => {
     if (!pairingData) {
       setPaymentStatus("Wallet not connected...");
       await connectToExtension();
@@ -73,8 +66,8 @@ const TopUpModal = ({
   };
 
   const handleChange = (e) => {
-    const percent = (parseInt(e.target.value) * 10) / 100 | 0;
-    setfee(percent)
+    const percent = ((parseInt(e.target.value) * 10) / 100) | 0;
+    setfee(percent);
   };
 
   return (
@@ -92,9 +85,8 @@ const TopUpModal = ({
         },
       }}
     >
-
       <BoxCont>
-        <Typography theme={theme}>{isTopUp ? 'TopUp' : 'Reimburse'} account</Typography>
+        <Typography theme={theme}>{isTopUp ? "TopUp" : "Reimburse"} account</Typography>
         <Row>
           <>
             <Label>Amount in HBAR</Label>
@@ -103,48 +95,34 @@ const TopUpModal = ({
             <CustomInput placeholder="Amount in hbar" value={amount} onChange={(e) => setAmount(e.target.value)} />
           </>
           <>
-            {isTopUp ? <>
-              <Label>+ {(hbarTotinuHbar(amount).fee / Math.pow(10, 8)).toFixed(3)}</Label>
-              <Label>=</Label>
-              <Label>{(hbarTotinuHbar(amount).total / Math.pow(10, 8)).toFixed(3)}</Label>
-            </> : <Label></Label>}
+            {isTopUp ? (
+              <>
+                <Label>+ {(hbarTotinuHbar(amount).fee / Math.pow(10, 8)).toFixed(3)}</Label>
+                <Label>=</Label>
+                <Label>{(hbarTotinuHbar(amount).total / Math.pow(10, 8)).toFixed(3)}</Label>
+              </>
+            ) : (
+              <Label></Label>
+            )}
           </>
-
         </Row>
-        {isTopUp ?
+        {isTopUp ? (
           <>
-            <CustomParagraph>
-              Note1: the specified amount excludes Hedera network fee
-            </CustomParagraph>
-            <CustomParagraph>
-              Note2: the specified amount can be used over multiple campaigns
-            </CustomParagraph>
-            <CustomParagraph>
-              Note3: hashbuzz applies 10% charge fee on top of the specified amount
-            </CustomParagraph>
+            <CustomParagraph>Note1: the specified amount excludes Hedera network fee</CustomParagraph>
+            <CustomParagraph>Note2: the specified amount can be used over multiple campaigns</CustomParagraph>
+            <CustomParagraph>Note3: hashbuzz applies 10% charge fee on top of the specified amount</CustomParagraph>
           </>
-          :
+        ) : (
           <>
-            <CustomParagraph>
-              Note1: the specified amount excludes Hedera network fee
-            </CustomParagraph>
-            <CustomParagraph>
-              Note2: reimbursements are free of charge
-            </CustomParagraph>
+            <CustomParagraph>Note1: the specified amount excludes Hedera network fee</CustomParagraph>
+            <CustomParagraph>Note2: reimbursements are free of charge</CustomParagraph>
           </>
-        }
-
+        )}
       </BoxCont>
 
       <ButtonWrapPrimary>
-        <PrimaryButton
-          text="CANCEL"
-          inverse={true}
-          onclick={handleClose}
-          colors="#EF5A22"
-          border="1px solid #EF5A22"
-        />
-        <PrimaryButton text={isTopUp ? "PAY" : "Reimburse"} onclick={submit} />
+        <PrimaryButton text="CANCEL" inverse={true} onclick={handleClose} colors="#EF5A22" border="1px solid #EF5A22" />
+        {isTopUp ? <PrimaryButton text={"PAY"} onclick={submitPay} /> : <PrimaryButton text={"Reimburse"} onclick={submitReimburse} />}
       </ButtonWrapPrimary>
       <div style={{ marginBottom: 30 }}></div>
     </Dialog>
