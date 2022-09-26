@@ -52,13 +52,15 @@ export const TwitterCardScreen = () => {
     }
   };
 
-  const updateCampaignItem = async (data , element) => {
+  const updateCampaignItem = async (data, element) => {
     try {
       setShowLoading(true);
-      await APICall("/campaign/twitter-card/card_status/", "POST", null, data, false, cookies.token);
-      if (element === "Approved") {
-        await updateBalancesForCampaign(data.card_id);
-      }
+      // await APICall("/campaign/twitter-card/card_status/", "POST", null, data, false, cookies.token);
+      await dAppAPICall({
+        url: "campaign/update-status",
+        method: "POST",
+        data,
+      });
       notify(data.card_status === "Running" ? "Approved" : data.card_status);
       getCampaignList();
     } catch (err) {
@@ -102,16 +104,16 @@ export const TwitterCardScreen = () => {
       });
     } catch (error) {
       toast.error(error.message);
-      console.log(error)
+      console.log(error);
     }
   };
 
   const handleAction = async (element, item) => {
     const updateData = {
       card_id: item.id,
-      card_status: element === "Approved" ? "Running" : "Rejected",
+      card_status: element === "Approved" ? "running" : "rejected",
     };
-    await updateCampaignItem(updateData , element);
+    await updateCampaignItem(updateData, element);
   };
 
   const handleBack = () => {
