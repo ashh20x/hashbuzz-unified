@@ -275,10 +275,11 @@ export const TemplatePage = () => {
         <RightSec>
           <CustomInput
             onKeyPress={(event) => {
-              if (!/[0-9]/.test(event.key) || event.code === "Minus") {
+              if (event.code === 'Minus') {
                 event.preventDefault();
               }
             }}
+            step="0.1"
             type="number"
             min="1"
             placeholder="Enter campaign budget"
