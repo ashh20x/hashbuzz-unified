@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useHashconnectService } from "../../HashConnect";
 import { useSmartContractServices } from "../../HashConnect/smartcontractService";
+import { useStore } from "../../Providers/StoreProvider";
 import Typography from "../../Typography/Typography";
 import { delay } from "../../Utilities/Constant";
 import PrimaryButton from "../Buttons/PrimaryButton";
@@ -15,6 +16,7 @@ const TopUpModal = ({ open, setOpen, isTopUp }) => {
   const { topUpAccount } = useSmartContractServices();
   const { pairingData, connectToExtension } = useHashconnectService();
   const [fee, setfee] = useState(0);
+  const {data} = useStore()
 
   let navigate = useNavigate();
   const handleClose = () => setOpen(false);
@@ -47,7 +49,7 @@ const TopUpModal = ({ open, setOpen, isTopUp }) => {
     try {
       setPaymentStatus("Payment initialized keep waiting for popup...");
       const amounts = hbarTotinuHbar(amount);
-      const transaction = await topUpAccount({ ...amounts }, pairingData.accountIds[0]);
+      const transaction = await topUpAccount({ ...amounts }, data?.user?.hedera_wallet_id);
       if (transaction.success) {
         setPaymentStatus("Payment Done");
         setAmount(0);
