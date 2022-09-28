@@ -55,14 +55,14 @@ export const CreateTwitterPage = () => {
       if (!store?.user?.hedera_wallet_id) {
         (async () => {
           try {
-            await dAppAPICall({
+           const updatedUser =  await dAppAPICall({
               method: "PUT",
               url: "users/update/wallet",
               data: {
                 walletId: pairingData?.accountIds[0],
               },
             });
-            setStore((p) => ({ ...p, user: { ...p.user, hedera_wallet_id: pairingData?.accountIds[0] } }));
+            if(updatedUser) setStore((p) => ({ ...p, user: { ...p.user, ...updatedUser} }));
           } catch (error) {
             console.log(error);
           }
@@ -195,18 +195,11 @@ export const CreateTwitterPage = () => {
 
   const updateCampaignItem = async (data) => {
     try {
-      // setShowLoading(true);
-      if(data.card_status === "Completed")
-        await dAppAPICall({
-          url:"campaign/update-status",
-          method:"POST",
-          data:{
-            card_status:"completed",
-            card_id:data.card_id
-          }
-        })
-      else
-        await APICall("/campaign/twitter-card/card_status/", "POST", null, data, false, cookies.token);
+      await dAppAPICall({
+        url: "campaign/update-status",
+        method: "POST",
+        data,
+      });
       getCampaignList();
       notify("Status updated!");
     } catch (err) {
