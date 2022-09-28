@@ -8,7 +8,7 @@ import { useStore } from "../../Providers/StoreProvider";
 import Typography from "../../Typography/Typography";
 import { delay } from "../../Utilities/Constant";
 import PrimaryButton from "../Buttons/PrimaryButton";
-import { BoxCont, ButtonWrapPrimary, CustomInput, CustomParagraph, Label, Row } from "./PreviewModal.styles";
+import { BoxCont, ButtonWrapPrimary, CustomInput, CustomParagraph, Label, Row , OverlayBox } from "./PreviewModal.styles";
 
 const TopUpModal = ({ open, setOpen, isTopUp }) => {
   const [amount, setAmount] = useState(0);
@@ -127,6 +127,11 @@ const TopUpModal = ({ open, setOpen, isTopUp }) => {
         {isTopUp ? <PrimaryButton text={"PAY"} onclick={submitPay} /> : <PrimaryButton text={"Reimburse"} onclick={submitReimburse} />}
       </ButtonWrapPrimary>
       <div style={{ marginBottom: 30 }}></div>
+      {paymentStatus && (
+        <OverlayBox>
+          <div className="overlay">{paymentStatus}</div>
+        </OverlayBox>
+      )}
     </Dialog>
   );
 };
