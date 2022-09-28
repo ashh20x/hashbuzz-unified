@@ -15,7 +15,7 @@ export const useSmartContractServices = () => {
       const transactionBytes = await dAppAPICall({
         url: "transaction/create-topup-transaction",
         method: "POST",
-        data: { accountId, amounts: { topUpAmount, fee, total } },
+        data: { connectedAccountId:pairingData?.accountIds[0]!, amounts: { topUpAmount, fee, total } },
       });
 
       const UpdateBalanceTransaction = await sendTransaction(transactionBytes, pairingData?.accountIds[0]!, false, false);
@@ -26,7 +26,6 @@ export const useSmartContractServices = () => {
           method: "POST",
           data: {
             amounts: { topUpAmount, fee, total },
-            accountId,
           },
         });
         //@ts-ignore
