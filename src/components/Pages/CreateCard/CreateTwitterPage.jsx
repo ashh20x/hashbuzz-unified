@@ -216,7 +216,7 @@ export const CreateTwitterPage = () => {
   const handleAction = (element, item) => {
     const updateData = {
       card_id: item.id,
-      card_status: element === "Stop" ? "Completed" : "Running",
+      card_status: element === "Stop" ? "completed" : "running",
     };
     updateCampaignItem(updateData);
   };
