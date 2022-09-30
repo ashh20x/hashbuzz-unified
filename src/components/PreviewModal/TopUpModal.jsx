@@ -44,6 +44,9 @@ const TopUpModal = ({ open, setOpen, isTopUp }) => {
       await connectToExtension();
       setPaymentStatus("Connecting to wallet...");
       await delay(3000);
+      setAmount(0);
+      setOpen(false);
+      return toast.warning("Connect Your wallet first then try to top-up again.")
     }
     // const amountTotopup = (parseFloat(amount) + parseFloat(amount) * 0.1).toFixed(8);
     try {
