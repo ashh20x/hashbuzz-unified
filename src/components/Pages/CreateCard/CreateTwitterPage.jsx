@@ -354,7 +354,7 @@ export const CreateTwitterPage = () => {
                 </CustomTableBodyCell>
                 <CustomTableBodyCell>{item.campaign_budget}</CustomTableBodyCell>
                 <CustomTableBodyCell>{(item.amount_spent / Math.pow(10, 8)).toFixed(4)}</CustomTableBodyCell>
-                <CustomTableBodyCell>{item.amount_claimed}</CustomTableBodyCell>
+                <CustomTableBodyCell>{(item.amount_claimed / Math.pow(10, 8)).toFixed(4)}</CustomTableBodyCell>
                 <CustomTableBodyCell>
                   {!item.isbutton && item.card_status !== "Completed"
                     ? item.card_status == "Rejected"
