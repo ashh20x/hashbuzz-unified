@@ -195,16 +195,29 @@ export const CreateTwitterPage = () => {
 
   const updateCampaignItem = async (data) => {
     try {
+      setShowLoading(true);
+      // if(data.card_status === "Completed")
+      //   await dAppAPICall({
+      //     url:"campaign/update-status",
+      //     method:"POST",
+      //     data:{
+      //       card_status:"completed",
+      //       card_id:data.card_id
+      //     }
+      //   })
+      // else
+      //   await APICall("/campaign/twitter-card/card_status/", "POST", null, data, false, cookies.token);
       await dAppAPICall({
         url: "campaign/update-status",
         method: "POST",
         data,
       });
       getCampaignList();
+      setShowLoading(false);
       notify("Status updated!");
     } catch (err) {
       console.log("/campaign/twitter-card/card_status/:", err);
-      // setShowLoading(false);
+      setShowLoading(false);
       notify("Something went wrong! Please try again later");
     }
   };
