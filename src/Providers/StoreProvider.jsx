@@ -30,7 +30,7 @@ export const StoreProvider = ({ children }) => {
         url: "users/get-balances",
         method: "POST",
         data: {
-          accountId: localData.hedera_wallet_id,
+          accountId: localData?.hedera_wallet_id,
           contractBal: false,
         },
       });

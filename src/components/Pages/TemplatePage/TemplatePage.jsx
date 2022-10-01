@@ -295,7 +295,7 @@ export const TemplatePage = () => {
               <label for="file">
                 <span>
                   {" "}
-                  <ImageIcon />
+                  {/* <ImageIcon /> */}
                 </span>
               </label>
               <CustomInput
@@ -405,7 +405,7 @@ export const TemplatePage = () => {
       <PreviewModal
         open={open}
         setOpen={setOpen}
-        Text={Text + " #hashbuzz"}
+        Text={Text + " #hashbuzz #TestNet"}
         buttonTags={buttonTags}
         reply={reply}
         retweet={retweet}
