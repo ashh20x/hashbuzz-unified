@@ -4,10 +4,11 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useHashconnectService } from "../../HashConnect";
 import { useSmartContractServices } from "../../HashConnect/smartcontractService";
+import { useStore } from "../../Providers/StoreProvider";
 import Typography from "../../Typography/Typography";
 import { delay } from "../../Utilities/Constant";
 import PrimaryButton from "../Buttons/PrimaryButton";
-import { BoxCont, ButtonWrapPrimary, CustomInput, CustomParagraph, Label, Row } from "./PreviewModal.styles";
+import { BoxCont, ButtonWrapPrimary, CustomInput, CustomParagraph, Label, Row , OverlayBox } from "./PreviewModal.styles";
 
 const TopUpModal = ({ open, setOpen, isTopUp }) => {
   const [amount, setAmount] = useState(0);
@@ -15,6 +16,7 @@ const TopUpModal = ({ open, setOpen, isTopUp }) => {
   const { topUpAccount } = useSmartContractServices();
   const { pairingData, connectToExtension } = useHashconnectService();
   const [fee, setfee] = useState(0);
+  const {data} = useStore()
 
   let navigate = useNavigate();
   const handleClose = () => setOpen(false);
@@ -42,12 +44,15 @@ const TopUpModal = ({ open, setOpen, isTopUp }) => {
       await connectToExtension();
       setPaymentStatus("Connecting to wallet...");
       await delay(3000);
+      setAmount(0);
+      setOpen(false);
+      return toast.warning("Connect Your wallet first then try to top-up again.")
     }
     // const amountTotopup = (parseFloat(amount) + parseFloat(amount) * 0.1).toFixed(8);
     try {
       setPaymentStatus("Payment initialized keep waiting for popup...");
       const amounts = hbarTotinuHbar(amount);
-      const transaction = await topUpAccount({ ...amounts }, pairingData.accountIds[0]);
+      const transaction = await topUpAccount({ ...amounts }, data?.user?.hedera_wallet_id);
       if (transaction.success) {
         setPaymentStatus("Payment Done");
         setAmount(0);
@@ -125,6 +130,11 @@ const TopUpModal = ({ open, setOpen, isTopUp }) => {
         {isTopUp ? <PrimaryButton text={"PAY"} onclick={submitPay} /> : <PrimaryButton text={"Reimburse"} onclick={submitReimburse} />}
       </ButtonWrapPrimary>
       <div style={{ marginBottom: 30 }}></div>
+      {paymentStatus && (
+        <OverlayBox>
+          <div className="overlay">{paymentStatus}</div>
+        </OverlayBox>
+      )}
     </Dialog>
   );
 };
