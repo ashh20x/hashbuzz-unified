@@ -4,9 +4,10 @@ import { useCookies } from "react-cookie";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { APIAuthCall, APICall } from "../../../APIConfig/APIServices";
-import { cardData } from "../../../Data/Cards";
+import { useDappAPICall } from "../../../APIConfig/dAppApiServices";
 import { tableHeadRow } from "../../../Data/TwitterTable";
 import { useHashconnectService } from "../../../HashConnect";
+import { useStore } from "../../../Providers/StoreProvider";
 import PrimaryButton from "../../Buttons/PrimaryButton";
 import SecondaryButton from "../../Buttons/SecondaryButton";
 import { ContainerStyled } from "../../ContainerStyled/ContainerStyled";
@@ -19,9 +20,6 @@ import StatusCard from "../../StatusCard/StatusCard";
 import { CustomRowHead, CustomTable2, CustomTableBodyCell, CustomTableHeadCell } from "../../Tables/CreateTable.styles";
 import notify from "../../Toaster/toaster";
 import { CardSection, LinkContainer, StatusSection, TableSection } from "./CreateTwitterPage.styles";
-import { HashConnectConnectionState } from "hashconnect/dist/types";
-import { useDappAPICall } from "../../../APIConfig/dAppApiServices";
-import { useStore } from "../../../Providers/StoreProvider";
 
 export const CreateTwitterPage = () => {
   const [tableData, setTableData] = useState([]);
@@ -52,24 +50,8 @@ export const CreateTwitterPage = () => {
   useEffect(() => {
     if (pairingData && pairingData.accountIds.length > 0) {
       toast.success("Wallet connected successfully !!");
-      if (!store?.user?.hedera_wallet_id) {
-        (async () => {
-          try {
-           const updatedUser =  await dAppAPICall({
-              method: "PUT",
-              url: "users/update/wallet",
-              data: {
-                walletId: pairingData?.accountIds[0],
-              },
-            });
-            if(updatedUser) setStore((p) => ({ ...p, user: { ...p.user, ...updatedUser} }));
-          } catch (error) {
-            console.log(error);
-          }
-        })();
-      }
     }
-  }, [state, pairingData]);
+  }, [pairingData]);
 
   //useEffectForUpdateStoreWithWalletId
 
