@@ -39,8 +39,8 @@ const HashconectServiceContext = React.createContext<
 
 export const HashconnectAPIProvider = ({ children, metaData, network, debug }: ProviderProps) => {
   const [state, setState] = React.useState<Partial<HashconnectContextAPI>>({});
-  const { state:store , setStore} = useStore();
-  const {dAppAPICall} = useDappAPICall()
+  const { state: store, updateUserData } = useStore();
+  const { dAppAPICall } = useDappAPICall();
 
   const initHashconnect = useCallback(async () => {
     //initialize and use returned data
@@ -65,7 +65,7 @@ export const HashconnectAPIProvider = ({ children, metaData, network, debug }: P
     if (!store?.user?.hedera_wallet_id) {
       (async () => {
         try {
-         const updatedUser =  await dAppAPICall({
+          const updatedUser = await dAppAPICall({
             method: "PUT",
             url: "users/update/wallet",
             data: {
@@ -73,7 +73,7 @@ export const HashconnectAPIProvider = ({ children, metaData, network, debug }: P
             },
           });
           //@ts-ignore
-          if(updatedUser) setStore((p) => ({ ...p, user: { ...p.user, ...updatedUser} }));
+          if (updatedUser) updateUserData(updatedUser);
         } catch (error) {
           console.log(error);
         }
@@ -159,5 +159,5 @@ export const useHashconnectService = () => {
     setState!((exState) => ({ ...exState, pairingData: null }));
   };
 
-  return { ...value, connectToExtension, sendTransaction, disconnect, requestAccountInfo, clearPairings , hashconnect };
+  return { ...value, connectToExtension, sendTransaction, disconnect, requestAccountInfo, clearPairings, hashconnect };
 };
