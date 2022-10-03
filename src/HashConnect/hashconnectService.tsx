@@ -1,6 +1,8 @@
 import { HashConnect, HashConnectTypes, MessageTypes } from "hashconnect";
 import { HashConnectConnectionState } from "hashconnect/dist/types";
 import React, { useCallback } from "react";
+import { useDappAPICall } from "../APIConfig/dAppApiServices";
+import { useStore } from "../Providers/StoreProvider";
 
 //create the hashconnect instance
 const hashconnect = new HashConnect(true);
@@ -37,6 +39,8 @@ const HashconectServiceContext = React.createContext<
 
 export const HashconnectAPIProvider = ({ children, metaData, network, debug }: ProviderProps) => {
   const [state, setState] = React.useState<Partial<HashconnectContextAPI>>({});
+  const { state: store, updateUserData } = useStore();
+  const { dAppAPICall } = useDappAPICall();
 
   const initHashconnect = useCallback(async () => {
     //initialize and use returned data
@@ -57,6 +61,24 @@ export const HashconnectAPIProvider = ({ children, metaData, network, debug }: P
   const onParingEvent = (data: MessageTypes.ApprovePairing) => {
     console.log("Paired with wallet", data);
     setState((exState) => ({ ...exState, pairingData: data.pairingData }));
+    //@ts-ignore
+    if (!store?.user?.hedera_wallet_id) {
+      (async () => {
+        try {
+          const updatedUser = await dAppAPICall({
+            method: "PUT",
+            url: "users/update/wallet",
+            data: {
+              walletId: data?.accountIds[0],
+            },
+          });
+          //@ts-ignore
+          if (updatedUser) updateUserData(updatedUser);
+        } catch (error) {
+          console.log(error);
+        }
+      })();
+    }
   };
 
   const onConnectionChange = (state: HashConnectConnectionState) => {
@@ -137,5 +159,5 @@ export const useHashconnectService = () => {
     setState!((exState) => ({ ...exState, pairingData: null }));
   };
 
-  return { ...value, connectToExtension, sendTransaction, disconnect, requestAccountInfo, clearPairings , hashconnect };
+  return { ...value, connectToExtension, sendTransaction, disconnect, requestAccountInfo, clearPairings, hashconnect };
 };
