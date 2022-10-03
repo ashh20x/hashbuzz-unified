@@ -258,6 +258,7 @@ export const TemplatePage = () => {
               <SecondaryButton text={item.replace(item[0], "")} />
             ))}
             <SecondaryButton text="hashbuzz" />
+            <SecondaryButton text="TestNet" />
           </ButtonWrap>
           <TableSection>
             <TemplateTable

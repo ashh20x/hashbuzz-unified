@@ -183,7 +183,7 @@ export const CreateTwitterPage = () => {
       //     url:"campaign/update-status",
       //     method:"POST",
       //     data:{
-      //       card_status:"completed",
+      //       card_status:"completed", 
       //       card_id:data.card_id
       //     }
       //   })
@@ -307,7 +307,7 @@ export const CreateTwitterPage = () => {
           content={store?.user?.personal_twitter_handle ? "@" + store?.user?.personal_twitter_handle : ""}
           buttonTag={["ReConnect"]}
           isButton={false}
-          text={"Total 0 ℏ rewarded"}
+          text={""}
         />
         {tableData.length > 0 ? <StatusCard title={"Status"} content={store?.currentStatus} /> : null}
         {/* {cardDataArr.map((item, i) => (
