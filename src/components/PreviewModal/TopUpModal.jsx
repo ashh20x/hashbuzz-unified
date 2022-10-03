@@ -41,6 +41,7 @@ const TopUpModal = ({ open, setOpen, isTopUp }) => {
   //     navigate("/onboarding");
   // };
   const submitReimburse = async (e) => { 
+    setPaymentStatus("Requesting for reimbursement...");
     try{
     const response = await dAppAPICall({
       url:"transaction/reimbursement",
@@ -49,10 +50,14 @@ const TopUpModal = ({ open, setOpen, isTopUp }) => {
         amount:Math.round(amount*1e8)
       }
     })
+    setPaymentStatus("Please check your ...")
     updateUserData(response.userData);
     }catch(err){
       console.log(err)
       toast.error(err.message)
+    }finally{
+      setPaymentStatus(null);
+      setOpen(false);
     }
   };
 

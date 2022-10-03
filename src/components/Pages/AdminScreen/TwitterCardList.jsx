@@ -41,7 +41,7 @@ export const TwitterCardScreen = () => {
       // const response = await APICall("/campaign/twitter-card/pending_cards", "GET", null, null, false, cookies.token);
       const response = await dAppAPICall({
         url: "admin/twitter-card?status=Pending",
-        method: "POST",
+        method: "GET",
       });
       if (response.data.length > 0) {
         setTableData(response.data);
