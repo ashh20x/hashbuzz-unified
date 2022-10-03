@@ -43,8 +43,8 @@ export const TwitterCardScreen = () => {
         url: "admin/twitter-card?status=Pending",
         method: "GET",
       });
-      if (response.data.length > 0) {
-        setTableData(response.data);
+      if (response.length > 0) {
+        setTableData(response);
         setNoData(false);
       } else {
         setTableData([]);

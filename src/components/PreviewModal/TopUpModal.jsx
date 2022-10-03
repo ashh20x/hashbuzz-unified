@@ -58,6 +58,7 @@ const TopUpModal = ({ open, setOpen, isTopUp }) => {
     }finally{
       setPaymentStatus(null);
       setOpen(false);
+      window.location.reload();
     }
   };
 
