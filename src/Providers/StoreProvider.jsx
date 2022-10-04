@@ -6,7 +6,7 @@ import { delay } from "../Utilities/Constant";
 const StoreContext = React.createContext({
   state: {},
   setStore: Function,
-  updateUserData:Function,
+  updateUserData: Function,
 });
 
 export const StoreProvider = ({ children }) => {
@@ -48,23 +48,28 @@ export const StoreProvider = ({ children }) => {
     })();
   }, []);
 
-  const updateUserData = useCallback((d) => {
-    if(state.user)
-      setState(_d => ({..._d,user:{..._d.user , ...d}}))
-    else 
-    setState(_d => ({..._d,user:{...d}}))
-  },[state.user])
+  const updateUserData = useCallback(
+    (d) => {
+      if (state.user) setState((_d) => ({ ..._d, user: { ..._d.user, ...d } }));
+      else setState((_d) => ({ ..._d, user: { ...d } }));
+    },
+    [state.user]
+  );
 
   const value = React.useMemo(
     () => ({
       state,
       setState,
-      updateUserData
+      updateUserData,
     }),
-    [state, updateUserData]
+    [state, updateUserData , setState]
   );
 
-  return <StoreContext.Provider value={{ state: value.state, setStore: value.setState , updateUserData:value.updateUserData }}>{children}</StoreContext.Provider>;
+  return (
+    <StoreContext.Provider value={{ state: value.state, setStore: value.setState, updateUserData: value.updateUserData }}>
+      {children}
+    </StoreContext.Provider>
+  );
 };
 
 export const useStore = () => {

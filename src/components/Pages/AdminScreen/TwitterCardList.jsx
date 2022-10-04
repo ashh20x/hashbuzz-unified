@@ -7,7 +7,7 @@ import SecondaryButton from "../../Buttons/SecondaryButton";
 import { ContainerStyled } from "../../ContainerStyled/ContainerStyled";
 import notify from "../../Toaster/toaster";
 
-import { TableBody, TableRow } from "@mui/material";
+import { TableBody, TableRow, Link } from "@mui/material";
 import { useCookies } from "react-cookie";
 import { toast } from "react-toastify";
 import { APICall } from "../../../APIConfig/APIServices";
@@ -38,9 +38,13 @@ export const TwitterCardScreen = () => {
 
   const getCampaignList = async () => {
     try {
-      const response = await APICall("/campaign/twitter-card/pending_cards", "GET", null, null, false, cookies.token);
-      if (response.data.length > 0) {
-        setTableData(response.data);
+      // const response = await APICall("/campaign/twitter-card/pending_cards", "GET", null, null, false, cookies.token);
+      const response = await dAppAPICall({
+        url: "admin/twitter-card?status=Pending",
+        method: "GET",
+      });
+      if (response.length > 0) {
+        setTableData(response);
         setNoData(false);
       } else {
         setTableData([]);
@@ -159,7 +163,11 @@ export const TwitterCardScreen = () => {
                   <p>{item.tweet_text}</p>
                 </CustomTableBodyCell>
                 <CustomTableBodyCell>{item.campaign_budget}</CustomTableBodyCell>
-                <CustomTableBodyCell>{item?.user_user?.business_twitter_handle}</CustomTableBodyCell>
+                <CustomTableBodyCell>
+                  <Link href={`https://twitter.com/${item?.user_user?.business_twitter_handle}`} target="_blank">
+                    {`@${item?.user_user?.business_twitter_handle}`}
+                  </Link>
+                </CustomTableBodyCell>
                 <CustomTableBodyCell>
                   {!item.isbutton && item.card_status !== "Completed"
                     ? handleActionButon(item.card_status).map((element) => (
