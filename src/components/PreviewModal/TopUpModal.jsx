@@ -10,6 +10,7 @@ import { delay } from "../../Utilities/Constant";
 import PrimaryButton from "../Buttons/PrimaryButton";
 import { BoxCont, ButtonWrapPrimary, CustomInput, CustomParagraph, Label, Row, OverlayBox } from "./PreviewModal.styles";
 import { ErrorTextWrap } from '../Pages/TemplatePage/TemplatePage.styles'
+import { useDappAPICall } from "../../APIConfig/dAppApiServices";
 const TopUpModal = ({ open, setOpen, isTopUp }) => {
   const [amount, setAmount] = useState(0);
   const [paymentStatus, setPaymentStatus] = useState(null);
@@ -18,9 +19,8 @@ const TopUpModal = ({ open, setOpen, isTopUp }) => {
   const [fee, setfee] = useState(0);
   const [budgetMessage, setBudgetMessage] = useState("");
   const [buttonDisabled, setButtonDisabled] = useState(false);
-
-  const { data } = useStore()
-  const { state } = useStore();
+  const { state , updateUserData } = useStore();
+  const {dAppAPICall} = useDappAPICall()
 
   let navigate = useNavigate();
   const handleClose = () => setOpen(false);
@@ -40,7 +40,27 @@ const TopUpModal = ({ open, setOpen, isTopUp }) => {
   // const handleSubmit = () => {
   //     navigate("/onboarding");
   // };
-  const submitReimburse = async (e) => { };
+  const submitReimburse = async (e) => { 
+    setPaymentStatus("Requesting for reimbursement...");
+    try{
+    const response = await dAppAPICall({
+      url:"transaction/reimbursement",
+      method:"POST",
+      data:{
+        amount:Math.round(amount*1e8)
+      }
+    })
+    setPaymentStatus("Please check your ...")
+    updateUserData(response.userData);
+    }catch(err){
+      console.log(err)
+      toast.error(err.message)
+    }finally{
+      setPaymentStatus(null);
+      setOpen(false);
+      window.location.reload();
+    }
+  };
 
   const handleBudget = (event) => {
     // 1habr = Math.pow(10,8) tinyhabrs;
@@ -68,7 +88,7 @@ const TopUpModal = ({ open, setOpen, isTopUp }) => {
     try {
       setPaymentStatus("Payment initialized keep waiting for popup...");
       const amounts = hbarTotinuHbar(amount);
-      const transaction = await topUpAccount({ ...amounts }, data?.user?.hedera_wallet_id);
+      const transaction = await topUpAccount({ ...amounts }, state?.user?.hedera_wallet_id);
       if (transaction.success) {
         setPaymentStatus("Payment Done");
         setAmount(0);
