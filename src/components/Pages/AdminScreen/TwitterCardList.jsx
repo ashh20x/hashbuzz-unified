@@ -159,7 +159,7 @@ export const TwitterCardScreen = () => {
                   <p>{item.tweet_text}</p>
                 </CustomTableBodyCell>
                 <CustomTableBodyCell>{item.campaign_budget}</CustomTableBodyCell>
-                <CustomTableBodyCell></CustomTableBodyCell>
+                <CustomTableBodyCell>{item?.user_user?.business_twitter_handle}</CustomTableBodyCell>
                 <CustomTableBodyCell>
                   {!item.isbutton && item.card_status !== "Completed"
                     ? handleActionButon(item.card_status).map((element) => (
