@@ -174,7 +174,7 @@ export const TemplatePage = () => {
   };
   const handleLink = (event) => {
     checking(event.target.value);
-    setMedia([]);
+    setMedia([event.target.value]);
     setDisplayMedia([]);
   };
   const handleClose = (event) => {};
