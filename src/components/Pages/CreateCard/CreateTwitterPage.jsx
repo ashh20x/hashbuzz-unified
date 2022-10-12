@@ -36,7 +36,7 @@ export const CreateTwitterPage = () => {
   const [twitterLoginURL, setTwitterLoginURL] = useState("");
   const [isTopUp, setisTopUp] = useState(false);
 
-  const { dAppAPICall } = useDappAPICall();
+  const { dAppAPICall , dAppAuthAPICall } = useDappAPICall();
   const { state: store, setStore } = useStore();
   const navigate = useNavigate();
 
@@ -236,10 +236,14 @@ export const CreateTwitterPage = () => {
         (async () => {
           try {
             // setShowLoading(true);
-            const response = await APIAuthCall("/user/profile/request-brand-twitter-connect", "GET", {}, {}, cookies.token);
-            if (response.data) {
+            // const response = await APIAuthCall("/user/profile/request-brand-twitter-connect", "GET", {}, {}, cookies.token);
+            const response = await dAppAuthAPICall({
+              url:"brand-handle",
+              method:"GET"
+            })
+            if (response.url) {
               // setShowLoading(false);
-              const { url } = response.data;
+              const { url } = response;
               localStorage.setItem("firstTime", false);
               setTwitterLoginURL(url);
               window.location.href = url + "&force_login=true";
