@@ -102,16 +102,20 @@ export const CreateTwitterPage = () => {
     setShowLoading(true);
     try {
       // const user_id =user.id
-      const response = await APICall("/user/profile/" + user_id + "/", "GET", {}, null, false, cookies.token);
-      if (response.data) {
-        const { consent } = response.data;
+      // const response = await APICall("/user/profile/" + user_id + "/", "GET", {}, null, false, cookies.token);
+      const response = await dAppAPICall({
+        url:"users/current",
+        method:"GET"
+      })
+      if (response) {
+        const { consent } = response;
         if (!consent) setConsentOpen(true);
 
         //! save data to local storage for further user.
-        localStorage.setItem("user", JSON.stringify(response.data));
+        localStorage.setItem("user", JSON.stringify(response));
 
         //? Update user object to the context store for.
-        setStore((ps) => ({ ...ps, available_budget: response.data.available_budget, user: response.data }));
+        setStore((ps) => ({ ...ps, available_budget: response.available_budget, user: response }));
 
         //!! get all the active campaign details...
         console.log("passed from hre");
@@ -162,11 +166,18 @@ export const CreateTwitterPage = () => {
       consent: true,
     };
     try {
-      const response = await APICall("/user/profile/" + userInfo.id + "/", "PATCH", {}, user_data, false, cookies.token);
-      if (response.data) {
+      // const response = await APICall("/user/profile/" + userInfo.id + "/", "PATCH", {}, user_data, false, cookies.token);
+      const response = await dAppAPICall({
+        url:"users/update",
+        method:"PATCH",
+        data:{
+          consent: true,
+        }
+      })
+      if (response) {
         // setShowLoading(false);
         setConsentOpen(false);
-
+        setStore((ps) => ({ ...ps, available_budget: response.available_budget, user: response }));
         // navigate("/dashboard");
       }
     } catch (err) {
