@@ -1,8 +1,8 @@
 import { Dialog } from "@mui/material";
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from "react-router-dom";
-import { APICall } from "../../APIConfig/APIServices";
+import { useDappAPICall } from "../../APIConfig/dAppApiServices";
 import Typography from "../../Typography/Typography";
 import PrimaryButton from "../Buttons/PrimaryButton";
 import { Loader } from "../Loader/Loader";
@@ -38,6 +38,7 @@ const PreviewModal = ({
   let navigate = useNavigate();
   const [cookies, setCookie] = useCookies(['token']);
   const [showLoading, setShowLoading] = useState(false);
+  const {dAppAPICall} = useDappAPICall();
 
   const handleClose = () => setOpen(false);
   const theme = {
@@ -67,8 +68,13 @@ const PreviewModal = ({
       "media": media,
     }
     try {
-      const response = await APICall("/campaign/twitter-card/", "POST", {}, postData, false, cookies.token);
-      if (response.data) {
+      // const response = await APICall("/campaign/twitter-card/", "POST", {}, postData, false, cookies.token);
+      const response = await dAppAPICall({
+        url:"campaign/add-new",
+        method:"POST",
+        data:postData
+      });
+      if (response) {
         setShowLoading(false)
         navigate("/dashboard");
         // navigate("/onboarding");
