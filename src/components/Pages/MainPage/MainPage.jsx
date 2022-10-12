@@ -1,28 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
-import { useNavigate  , useLocation} from "react-router-dom";
-import { APIAuthCall, APICall } from "../../../APIConfig/APIServices";
+import { useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
+import { useDappAPICall } from '../../../APIConfig/dAppApiServices';
 import TwitterSVG from "../../../SVGR/Twitter";
 import Typography from "../../../Typography/Typography";
 import Card from "../../Card/Card";
 import { ContainerStyled } from "../../ContainerStyled/ContainerStyled";
-import {
-  Connect,
-  ContentHeaderText,
-  Row, Wallet,
-  CardContainer
-} from "./MainPage.styles";
 import { Loader } from '../../Loader/Loader';
-import Cookies from 'universal-cookie';
-import {mainText1,mainText2} from './mainText'
-import { useDappAPICall } from '../../../APIConfig/dAppApiServices';
+import {
+  CardContainer, Connect,
+  ContentHeaderText,
+  Row, Wallet
+} from "./MainPage.styles";
+import { mainText1, mainText2 } from './mainText';
 export const MainPage = () => {
   const [open, setOpen] = useState(false);
   const [cookies, setCookie] = useCookies(['token', "refreshToken"]);
   const [userData, setUserData] = useState({});
   const [showLoading, setShowLoading] = useState(false);
   const {dAppAuthAPICall} = useDappAPICall();
-  const location = useLocation();
 
   const theme = {
     color: "#696969",
@@ -34,17 +31,19 @@ export const MainPage = () => {
   useEffect(() => {
     let mounted = true;
     if (mounted) {
-      const token = location.search("token");
-      const refreshToken = location.search("refreshToken");
-      const userId = location.search("user_id");
-      const href = window.location.href;
-      // const {} = location;
-      if (token) {
+      const params = (new URL(document.location)).searchParams;
+      const token = params.get('token'); 
+      const refreshToken = params.get("refreshToken");
+      const userId = params.get("user_id");
+      if (token && refreshToken) {
         setCookie('token', token);
         setCookie('refreshToken', refreshToken);
         localStorage.setItem("user_id",userId)
         // getUserInfo(userId, token);
         navigate("/dashboard");
+      }else{
+        toast.error("Something wrong happens try again");
+        navigate("/")
       }
     }
     return () => mounted = false;
