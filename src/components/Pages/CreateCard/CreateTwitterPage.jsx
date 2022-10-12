@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { APIAuthCall, APICall } from "../../../APIConfig/APIServices";
 import { useDappAPICall } from "../../../APIConfig/dAppApiServices";
 import { tableHeadRow } from "../../../Data/TwitterTable";
 import { useHashconnectService } from "../../../HashConnect";
@@ -79,8 +78,9 @@ export const CreateTwitterPage = () => {
 
   const getCampaignList = async () => {
     try {
-      const response = await APICall("/campaign/twitter-card/", "GET", null, null, false, cookies.token);
-      if (response.data) {
+      // const response = await APICall("/campaign/twitter-card/", "GET", null, null, false, cookies.token);
+      const response = await dAppAPICall({url:"campaign/all",method:"GET"});
+      if (response && response.length > 0) {
         setTableData(response.data.results);
         let pendingResult = response.data.results.find((data) => data.card_status === "Pending");
         let runningResult = response.data.results.find((data) => data.card_status === "Running");
