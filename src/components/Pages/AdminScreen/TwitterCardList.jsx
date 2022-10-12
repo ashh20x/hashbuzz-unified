@@ -162,7 +162,7 @@ export const TwitterCardScreen = () => {
                 <CustomTableBodyCell>
                   <p>{item.tweet_text}</p>
                 </CustomTableBodyCell>
-                <CustomTableBodyCell>{item.campaign_budget}</CustomTableBodyCell>
+                <CustomTableBodyCell>{(item.campaign_budget/1e8).toFixed(4)}</CustomTableBodyCell>
                 <CustomTableBodyCell>
                   <Link href={`https://twitter.com/${item?.user_user?.business_twitter_handle}`} target="_blank">
                     {`@${item?.user_user?.business_twitter_handle}`}
