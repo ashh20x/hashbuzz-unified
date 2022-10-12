@@ -27,10 +27,16 @@ export const useDappAPICall = () => {
   };
 
   const dAppAuthAPICall = async (props: APIProps) => {
-    const { method, url } = props;
+    const { method, url , data } = props;
+    const token = getCookie("token");
     const request = await axios({
       method,
       url: dAppApiURL+"/auth/" + url,
+      data,
+      headers: {
+        Authorization: `Token ${cookies.token ?? token}`,
+        "Content-type": "application/json",
+      },
     });
     return request.data;
   };
