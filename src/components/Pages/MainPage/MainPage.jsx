@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
-import { useNavigate } from "react-router-dom";
+import { useNavigate  , useLocation} from "react-router-dom";
 import { APIAuthCall, APICall } from "../../../APIConfig/APIServices";
 import TwitterSVG from "../../../SVGR/Twitter";
 import Typography from "../../../Typography/Typography";
@@ -18,10 +18,11 @@ import {mainText1,mainText2} from './mainText'
 import { useDappAPICall } from '../../../APIConfig/dAppApiServices';
 export const MainPage = () => {
   const [open, setOpen] = useState(false);
-  const [cookies, setCookie] = useCookies(['token']);
+  const [cookies, setCookie] = useCookies(['token', "refreshToken"]);
   const [userData, setUserData] = useState({});
   const [showLoading, setShowLoading] = useState(false);
   const {dAppAuthAPICall} = useDappAPICall();
+  const location = useLocation();
 
   const theme = {
     color: "#696969",
@@ -33,12 +34,14 @@ export const MainPage = () => {
   useEffect(() => {
     let mounted = true;
     if (mounted) {
+      const token = location.search("token");
+      const refreshToken = location.search("refreshToken");
+      const userId = location.search("user_id");
       const href = window.location.href;
-      if (href.includes('token=')) {
-        const string = href.split('token=')[1];
-        const token = string.split('&user_id=')[0];
-        setCookie('token', token)
-        const userId = string.split('&user_id=')[1];
+      // const {} = location;
+      if (token) {
+        setCookie('token', token);
+        setCookie('refreshToken', refreshToken);
         localStorage.setItem("user_id",userId)
         // getUserInfo(userId, token);
         navigate("/dashboard");
