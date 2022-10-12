@@ -9,7 +9,7 @@ export const ProtectedRoute = ({ route, children }) => {
         // user is not authenticated
         return <Navigate to="/" />;
     }
-    else if(["Ashh20x" ,  "omprakashMahua"].includes(localUser?.username?.toLowerCase()) && location.pathname === '/admin'){
+    else if(["Ashh20x" ,  "omprakashMahua"].includes(localUser?.username) && location.pathname === '/admin'){
         return children;
     }
     else if((localUser?.available_budget === 0 || localUser?.available_budget === null) && location.pathname === '/campaign'){

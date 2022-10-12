@@ -286,7 +286,7 @@ export const CreateTwitterPage = () => {
 
   return (
     <ContainerStyled align="center" justify="space-between">
-      {store && ["Ashh20x" ,  "omprakashMahua"].includes(store?.user?.username?.toLowerCase())? (
+      {store && ["Ashh20x","omprakashMahua"].includes(store?.user?.username)? (
         <LinkContainer>
           <Link to="/admin">
             <p>Admin Panel</p>
