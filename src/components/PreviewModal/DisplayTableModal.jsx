@@ -30,7 +30,7 @@ const DisplayTableModal = ({ open, setOpen, item }) => {
         },
       });
       if (response) {
-        setCampaignData(response.data);
+        setCampaignData(response);
       }
     } catch (err) {}
   };
