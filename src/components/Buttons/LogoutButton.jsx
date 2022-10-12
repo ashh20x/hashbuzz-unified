@@ -3,9 +3,11 @@ import PrimaryButton from "./PrimaryButton";
 import { LinkContainer } from "../Pages/CreateCard/CreateTwitterPage.styles";
 import { useCookies } from "react-cookie";
 import { useDappAPICall } from "../../APIConfig/dAppApiServices";
+import { useNavigate } from "react-router-dom";
 export const LogoutButton = () => {
   const [cookies, setCookie, removeCookie] = useCookies(["token", "refreshToken"]);
   const { dAppAuthAPICall } = useDappAPICall();
+  const navigate = useNavigate();
   const handleLogOut = async () => {
     await dAppAuthAPICall({
       url: "logout",
@@ -17,6 +19,7 @@ export const LogoutButton = () => {
     removeCookie("token");
     removeCookie("refreshToken");
     localStorage.clear();
+    navigate("/")
   };
   return (
     <LinkContainer>

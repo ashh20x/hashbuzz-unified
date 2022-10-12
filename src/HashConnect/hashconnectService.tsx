@@ -65,15 +65,13 @@ export const HashconnectAPIProvider = ({ children, metaData, network, debug }: P
     if (!store?.user?.hedera_wallet_id) {
       (async () => {
         try {
-          const updatedUser = await dAppAPICall({
+         await dAppAPICall({
             method: "PUT",
             url: "users/update/wallet",
             data: {
               walletId: data?.accountIds[0],
             },
           });
-          //@ts-ignore
-          if (updatedUser) updateUserData(updatedUser);
         } catch (error) {
           console.log(error);
         }

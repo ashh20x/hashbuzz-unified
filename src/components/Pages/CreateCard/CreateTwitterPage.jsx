@@ -49,6 +49,8 @@ export const CreateTwitterPage = () => {
   useEffect(() => {
     if (pairingData && pairingData.accountIds.length > 0) {
       toast.success("Wallet connected successfully !!");
+      const user = dAppAPICall({url:"users/current", method:"GET"});
+      setStore((ps) => ({ ...ps, user }));
     }
   }, [pairingData]);
 

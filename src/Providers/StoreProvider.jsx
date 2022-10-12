@@ -17,8 +17,9 @@ export const StoreProvider = ({ children }) => {
     token: "",
     user: {},
   });
-  const { dAppAPICall } = useDappAPICall();
-  const [cookies] = useCookies(["token"]);
+  const { dAppAPICall, dAppAuthAPICall } = useDappAPICall();
+  const [cookies, setCookie] = useCookies(["token", "refreshToken"]);
+  const intervalRef = React.useRef();
 
   const getBalances = React.useCallback(async () => {
     let localData = localStorage.getItem("user");
@@ -39,7 +40,7 @@ export const StoreProvider = ({ children }) => {
     } catch (error) {
       console.log(error);
     }
-  }, [cookies.token, dAppAPICall]);
+  }, [cookies.token]);
 
   React.useEffect(() => {
     (async () => {
@@ -47,6 +48,25 @@ export const StoreProvider = ({ children }) => {
       await getBalances();
     })();
   }, []);
+
+  const getToken = useCallback(async () => {
+    const data = await dAppAuthAPICall({
+      url: "refreshToken",
+      method: "POST",
+      data: { refreshToken: cookies.refreshToken },
+    });
+    if (data) {
+      setCookie("token", data.token);
+      setCookie("refreshToken", data.refreshToken);
+      // clearInterval(intervalRef.current);
+    }
+  }, [cookies.refreshToken, dAppAuthAPICall, setCookie]);
+
+  React.useEffect(() => {
+    const interval = setInterval(() => getToken(), 20*60*1000);
+    intervalRef.current = interval;
+    return () => clearInterval(interval);
+  }, [getToken]);
 
   const updateUserData = useCallback(
     (d) => {
@@ -62,7 +82,7 @@ export const StoreProvider = ({ children }) => {
       setState,
       updateUserData,
     }),
-    [state, updateUserData , setState]
+    [state, updateUserData, setState]
   );
 
   return (
