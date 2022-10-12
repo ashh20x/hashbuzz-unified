@@ -27,15 +27,15 @@ export const StoreProvider = ({ children }) => {
       setState((_d) => ({ ..._d, user: localData, token: cookies.token }));
     }
     try {
-      const data = await dAppAPICall({
-        url: "users/get-balances",
-        method: "POST",
-        data: {
-          accountId: localData?.hedera_wallet_id,
-          contractBal: false,
-        },
-      });
-      if (data.available_budget) setState((p) => ({ ...p, available_budget: data.available_budget }));
+      // const data = await dAppAPICall({
+      //   url: "users/get-balances",
+      //   method: "POST",
+      //   data: {
+      //     accountId: localData?.hedera_wallet_id,
+      //     contractBal: false,
+      //   },
+      // });
+      // if (data.available_budget) setState((p) => ({ ...p, available_budget: data.available_budget }));
     } catch (error) {
       console.log(error);
     }
