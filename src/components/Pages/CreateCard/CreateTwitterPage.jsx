@@ -7,6 +7,7 @@ import { useDappAPICall } from "../../../APIConfig/dAppApiServices";
 import { tableHeadRow } from "../../../Data/TwitterTable";
 import { useHashconnectService } from "../../../HashConnect";
 import { useStore } from "../../../Providers/StoreProvider";
+import { delay } from "../../../Utilities/Constant";
 import PrimaryButton from "../../Buttons/PrimaryButton";
 import SecondaryButton from "../../Buttons/SecondaryButton";
 import { ContainerStyled } from "../../ContainerStyled/ContainerStyled";
@@ -35,7 +36,7 @@ export const CreateTwitterPage = () => {
   const [twitterLoginURL, setTwitterLoginURL] = useState("");
   const [isTopUp, setisTopUp] = useState(false);
 
-  const { dAppAPICall , dAppAuthAPICall } = useDappAPICall();
+  const { dAppAPICall, dAppAuthAPICall } = useDappAPICall();
   const { state: store, setStore } = useStore();
   const navigate = useNavigate();
 
@@ -49,8 +50,11 @@ export const CreateTwitterPage = () => {
   useEffect(() => {
     if (pairingData && pairingData.accountIds.length > 0) {
       toast.success("Wallet connected successfully !!");
-      const user = dAppAPICall({url:"users/current", method:"GET"});
-      setStore((ps) => ({ ...ps, user }));
+      (async () => {
+        await delay(3000);
+        const user = await dAppAPICall({ url: "users/current", method: "GET" });
+        setStore((ps) => ({ ...ps, user: { ...ps.user, ...user }}));
+      })();
     }
   }, [pairingData]);
 
@@ -81,11 +85,11 @@ export const CreateTwitterPage = () => {
   const getCampaignList = async () => {
     try {
       // const response = await APICall("/campaign/twitter-card/", "GET", null, null, false, cookies.token);
-      const response = await dAppAPICall({url:"campaign/all",method:"GET"});
+      const response = await dAppAPICall({ url: "campaign/all", method: "GET" });
       if (response && response.length > 0) {
-        setTableData(response.data.results);
-        let pendingResult = response.data.results.find((data) => data.card_status === "Pending");
-        let runningResult = response.data.results.find((data) => data.card_status === "Running");
+        setTableData(response);
+        let pendingResult = response.find((data) => data.card_status === "Pending");
+        let runningResult = response.find((data) => data.card_status === "Running");
         if (pendingResult || runningResult) {
           setButtonDisabled(true);
         } else setButtonDisabled(false);
@@ -106,9 +110,9 @@ export const CreateTwitterPage = () => {
       // const user_id =user.id
       // const response = await APICall("/user/profile/" + user_id + "/", "GET", {}, null, false, cookies.token);
       const response = await dAppAPICall({
-        url:"users/current",
-        method:"GET"
-      })
+        url: "users/current",
+        method: "GET",
+      });
       if (response) {
         const { consent } = response;
         if (!consent) setConsentOpen(true);
@@ -170,12 +174,12 @@ export const CreateTwitterPage = () => {
     try {
       // const response = await APICall("/user/profile/" + userInfo.id + "/", "PATCH", {}, user_data, false, cookies.token);
       const response = await dAppAPICall({
-        url:"users/update",
-        method:"PATCH",
-        data:{
+        url: "users/update",
+        method: "PATCH",
+        data: {
           consent: true,
-        }
-      })
+        },
+      });
       if (response) {
         // setShowLoading(false);
         setConsentOpen(false);
@@ -196,7 +200,7 @@ export const CreateTwitterPage = () => {
       //     url:"campaign/update-status",
       //     method:"POST",
       //     data:{
-      //       card_status:"completed", 
+      //       card_status:"completed",
       //       card_id:data.card_id
       //     }
       //   })
@@ -251,9 +255,9 @@ export const CreateTwitterPage = () => {
             // setShowLoading(true);
             // const response = await APIAuthCall("/user/profile/request-brand-twitter-connect", "GET", {}, {}, cookies.token);
             const response = await dAppAuthAPICall({
-              url:"brand-handle",
-              method:"GET"
-            })
+              url: "brand-handle",
+              method: "GET",
+            });
             if (response.url) {
               // setShowLoading(false);
               const { url } = response;
@@ -282,7 +286,7 @@ export const CreateTwitterPage = () => {
 
   return (
     <ContainerStyled align="center" justify="space-between">
-      {store && store?.user?.username?.toLowerCase() === "ashh20x" ? (
+      {store && ["Ashh20x" ,  "omprakashMahua"].includes(store?.user?.username?.toLowerCase())? (
         <LinkContainer>
           <Link to="/admin">
             <p>Admin Panel</p>
@@ -364,7 +368,7 @@ export const CreateTwitterPage = () => {
                     Link
                   </a>
                 </CustomTableBodyCell>
-                <CustomTableBodyCell>{item.campaign_budget}</CustomTableBodyCell>
+                <CustomTableBodyCell>{(item.campaign_budget / Math.pow(10, 8)).toFixed(4)}</CustomTableBodyCell>
                 <CustomTableBodyCell>{(item.amount_spent / Math.pow(10, 8)).toFixed(4)}</CustomTableBodyCell>
                 <CustomTableBodyCell>{(item.amount_claimed / Math.pow(10, 8)).toFixed(4)}</CustomTableBodyCell>
                 <CustomTableBodyCell>
