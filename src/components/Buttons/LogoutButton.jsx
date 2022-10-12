@@ -9,16 +9,17 @@ export const LogoutButton = () => {
   const { dAppAuthAPICall } = useDappAPICall();
   const navigate = useNavigate();
   const handleLogOut = async () => {
+    const token = cookies.refreshToken;
+    removeCookie("token");
+    removeCookie("refreshToken");
+    localStorage.clear();
     await dAppAuthAPICall({
       url: "logout",
       method: "POST",
       data: {
-        refreshToken: cookies.refreshToken,
+        refreshToken: token
       },
     });
-    removeCookie("token");
-    removeCookie("refreshToken");
-    localStorage.clear();
     navigate("/")
   };
   return (
