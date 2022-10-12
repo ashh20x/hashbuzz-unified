@@ -15,11 +15,13 @@ import {
 import { Loader } from '../../Loader/Loader';
 import Cookies from 'universal-cookie';
 import {mainText1,mainText2} from './mainText'
+import { useDappAPICall } from '../../../APIConfig/dAppApiServices';
 export const MainPage = () => {
   const [open, setOpen] = useState(false);
   const [cookies, setCookie] = useCookies(['token']);
   const [userData, setUserData] = useState({});
   const [showLoading, setShowLoading] = useState(false);
+  const {dAppAuthAPICall} = useDappAPICall();
 
   const theme = {
     color: "#696969",
@@ -50,12 +52,14 @@ export const MainPage = () => {
     (async () => {
       setShowLoading(true)
       try {
-        const cookies = new Cookies();   
-        console.log(cookies.getAll());          // object
-        const response = await APIAuthCall("/user/twitter-login/", "GET", {}, {});
-        if (response.data) {
+        // const response = await APIAuthCall("/user/twitter-login/", "GET", {}, {});
+        const response = await dAppAuthAPICall({
+          url:"twitter-login",
+          method:"GET"
+        })
+        if (response.url) {
           localStorage.setItem('firstTime',true)
-          const { url } = response.data;
+          const  url = response.url;
           window.location.href = url;
 
         }
