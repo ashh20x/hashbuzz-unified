@@ -35,16 +35,27 @@ export const MainPage = () => {
       const token = params.get('token'); 
       const refreshToken = params.get("refreshToken");
       const userId = params.get("user_id");
+      const brandConnection = params.get("brandConnection");
+      const authStatus = params.get("authStatus");
+      const message = params.get("message");
+     
+      if((authStatus && authStatus==="fail") || (brandConnection && brandConnection === "fail")){
+        toast.error(message);
+        navigate("/")
+      }
+
+      if(brandConnection && brandConnection === "success"){
+        toast.success(message);
+        navigate("/")
+      }
+      
       if (token && refreshToken) {
         setCookie('token', token);
         setCookie('refreshToken', refreshToken);
         localStorage.setItem("user_id",userId)
         // getUserInfo(userId, token);
         navigate("/dashboard");
-      }else{
-        toast.error("Something wrong happens try again");
-        navigate("/")
-      }
+      };
     }
     return () => mounted = false;
   }, [userData])
