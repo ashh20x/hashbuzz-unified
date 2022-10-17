@@ -68,6 +68,7 @@ export const TwitterCardScreen = () => {
       notify(data.card_status === "Running" ? "Approved" : data.card_status);
       getCampaignList();
     } catch (err) {
+      toast.error(err.message);
       console.log("/campaign/twitter-card/card_status/:", err);
       setShowLoading(false);
     }
