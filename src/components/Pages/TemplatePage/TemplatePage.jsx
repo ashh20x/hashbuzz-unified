@@ -215,7 +215,7 @@ export const TemplatePage = () => {
     setFollow(e.target.value);
   };
   const onEmojiClick = (event, emojiObject) => {
-    if (271 - Text?.length >= 2) setText(Text + "" + emojiObject.emoji);
+    if (268 - Text?.length >= 2) setText(Text + "" + emojiObject.emoji);
   };
 
   const handleBack = () => {
