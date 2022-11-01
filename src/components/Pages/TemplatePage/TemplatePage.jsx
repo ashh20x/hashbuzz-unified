@@ -2,7 +2,7 @@ import Picker from "emoji-picker-react";
 import React, { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
-import { APICall } from "../../../APIConfig/APIServices";
+// import { APICall } from "../../../APIConfig/APIServices";
 import Typography from "../../../Typography/Typography";
 import PrimaryButton from "../../Buttons/PrimaryButton";
 import SecondaryButton from "../../Buttons/SecondaryButton";
@@ -117,8 +117,8 @@ export const TemplatePage = () => {
       data.append("media_file", file);
       data.append("media_type", "image");
       try {
-        const response = await APICall("/campaign/media/", "POST", {}, data, true, cookies.token);
-        setMedia([...media, response.data.id]);
+        // const response = await APICall("/campaign/media/", "POST", {}, data, true, cookies.token);
+        // setMedia([...media, response.data.id]);
       } catch (err) {
         console.error("/campaign/media/:", err);
       }
@@ -129,8 +129,8 @@ export const TemplatePage = () => {
         data.append("media_file", file);
         data.append("media_type", "image");
         try {
-          const response = await APICall("/campaign/media/", "POST", {}, data, true, cookies.token);
-          setMedia([...media, response.data.id]);
+          // const response = await APICall("/campaign/media/", "POST", {}, data, true, cookies.token);
+          // setMedia([...media, response.data.id]);O
         } catch (err) {
           console.error("/campaign/media/:", err);
         }
