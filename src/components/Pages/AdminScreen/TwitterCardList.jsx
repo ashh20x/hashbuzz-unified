@@ -7,10 +7,9 @@ import SecondaryButton from "../../Buttons/SecondaryButton";
 import { ContainerStyled } from "../../ContainerStyled/ContainerStyled";
 import notify from "../../Toaster/toaster";
 
-import { TableBody, TableRow, Link } from "@mui/material";
+import { Link, TableBody, TableRow } from "@mui/material";
 import { useCookies } from "react-cookie";
 import { toast } from "react-toastify";
-import { APICall } from "../../../APIConfig/APIServices";
 import { adminTableHeadRow } from "../../../Data/TwitterTable";
 import { Loader } from "../../Loader/Loader";
 import { CustomRowHead, CustomTable2, CustomTableBodyCell, CustomTableHeadCell } from "../../Tables/CreateTable.styles";
