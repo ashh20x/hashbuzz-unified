@@ -175,7 +175,7 @@ export const CreateTwitterPage = () => {
       // const response = await APICall("/user/profile/" + userInfo.id + "/", "PATCH", {}, user_data, false, cookies.token);
       const response = await dAppAPICall({
         url: "users/update",
-        method: "PATCH",
+        method: "patch",
         data: {
           consent: true,
         },

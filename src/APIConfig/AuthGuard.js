@@ -4,7 +4,7 @@ import { useCookies } from 'react-cookie';
 export const ProtectedRoute = ({ route, children }) => {
     const location = useLocation()
     const localUser = JSON.parse(localStorage.getItem('user'));
-    const [cookies, setCookie] = useCookies(['token']);
+    const [cookies] = useCookies(['token']);
     if (!cookies.token && location.pathname !== '/' && !localUser) {
         // user is not authenticated
         return <Navigate to="/" />;

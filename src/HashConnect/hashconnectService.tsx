@@ -39,7 +39,7 @@ const HashconectServiceContext = React.createContext<
 
 export const HashconnectAPIProvider = ({ children, metaData, network, debug }: ProviderProps) => {
   const [state, setState] = React.useState<Partial<HashconnectContextAPI>>({});
-  const { state: store, updateUserData } = useStore();
+  const { state: store } = useStore();
   const { dAppAPICall } = useDappAPICall();
 
   const initHashconnect = useCallback(async () => {
