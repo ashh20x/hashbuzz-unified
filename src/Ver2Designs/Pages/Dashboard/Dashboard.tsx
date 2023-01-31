@@ -1,8 +1,23 @@
 import { Box, Card, Container, Grid, Stack } from "@mui/material";
 import React from "react";
 import HashbuzzLogo from "../../../SVGR/HashbuzzLogo";
+
+import { DataGrid, GridRowsProp, GridColDef } from '@mui/x-data-grid';
+
+const columns: GridColDef[] = [
+  { field: 'col1', headerName: 'Campaign Name', width: 150 },
+  { field: 'col2', headerName: 'Campaign stats', width: 150 },
+  { field: 'col1', headerName: 'Campaign Budget', width: 150 },
+  { field: 'col2', headerName: 'Amount Spent', width: 150 },
+  { field: 'col2', headerName: 'Amount Claimed', width: 150 },
+  { field: 'col2', headerName: 'Actions', width: 150 },
+];
+
+
 const Dashboard = () => {
-  const [data , setData] = React.useState()
+  const [data , setData] = React.useState();
+
+
   return (
     <Box
       sx={{
@@ -14,7 +29,7 @@ const Dashboard = () => {
         <Stack alignItems={"center"} justifyContent="center" direction={"row"}>
           <HashbuzzLogo height={160} />
         </Stack>
-        <Grid container spacing={2}>
+        <Grid container spacing={3}>
           {[...new Array(6)].map((d, i) => (
             <Grid item lg={3}>
               <Card
@@ -30,7 +45,12 @@ const Dashboard = () => {
             </Grid>
           ))}
         </Grid>
-        <Box></Box>
+        <Box sx={{
+          marginTop:4,
+          marginBottom:2
+        }}>
+        <DataGrid rows={[]} columns={columns} />
+        </Box>
       </Container>
     </Box>
   );
