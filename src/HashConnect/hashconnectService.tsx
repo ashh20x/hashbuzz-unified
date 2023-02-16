@@ -39,7 +39,7 @@ const HashconectServiceContext = React.createContext<
 
 export const HashconnectAPIProvider = ({ children, metaData, network, debug }: ProviderProps) => {
   const [state, setState] = React.useState<Partial<HashconnectContextAPI>>({});
-  const { state: store } = useStore();
+  const store = useStore();
   const { dAppAPICall } = useDappAPICall();
 
   const initHashconnect = useCallback(async () => {
@@ -62,7 +62,7 @@ export const HashconnectAPIProvider = ({ children, metaData, network, debug }: P
     console.log("Paired with wallet", data);
     setState((exState) => ({ ...exState, pairingData: data.pairingData }));
     //@ts-ignore
-    if (!store?.user?.hedera_wallet_id) {
+    if (!store?.currentUser?.hedera_wallet_id) {
       (async () => {
         try {
          await dAppAPICall({
