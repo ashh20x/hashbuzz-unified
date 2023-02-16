@@ -2,21 +2,28 @@ import { Box, Card, Container, Grid, Stack } from "@mui/material";
 import React from "react";
 import HashbuzzLogo from "../../../SVGR/HashbuzzLogo";
 
-import { DataGrid, GridRowsProp, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridRowsProp, GridColDef } from "@mui/x-data-grid";
+import { useStore } from "../../../Providers/StoreProvider";
+import { User } from "../../../APIConfig/api";
 
 const columns: GridColDef[] = [
-  { field: 'col1', headerName: 'Campaign Name', width: 150 },
-  { field: 'col2', headerName: 'Campaign stats', width: 150 },
-  { field: 'col1', headerName: 'Campaign Budget', width: 150 },
-  { field: 'col2', headerName: 'Amount Spent', width: 150 },
-  { field: 'col2', headerName: 'Amount Claimed', width: 150 },
-  { field: 'col2', headerName: 'Actions', width: 150 },
+  { field: "col1", headerName: "Campaign Name", width: 150 },
+  { field: "col2", headerName: "Campaign stats", width: 150 },
+  { field: "col1", headerName: "Campaign Budget", width: 150 },
+  { field: "col2", headerName: "Amount Spent", width: 150 },
+  { field: "col2", headerName: "Amount Claimed", width: 150 },
+  { field: "col2", headerName: "Actions", width: 150 },
 ];
 
-
 const Dashboard = () => {
-  const [data , setData] = React.useState();
+  const store = useStore()!;
 
+  React.useEffect(() => {
+    (async () => {
+      const currentUser = await User.getCurrentUser();
+      store.updateState((perv) => ({ ...perv, currentUser }));
+    })();
+  }, []);
 
   return (
     <Box
@@ -45,11 +52,13 @@ const Dashboard = () => {
             </Grid>
           ))}
         </Grid>
-        <Box sx={{
-          marginTop:4,
-          marginBottom:2
-        }}>
-        <DataGrid rows={[]} columns={columns} />
+        <Box
+          sx={{
+            marginTop: 4,
+            marginBottom: 2,
+          }}
+        >
+          <DataGrid rows={[]} columns={columns} />
         </Box>
       </Container>
     </Box>
