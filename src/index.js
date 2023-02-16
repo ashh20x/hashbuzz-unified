@@ -1,10 +1,13 @@
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
-import "./index.css";
 import { HashconnectAPIProvider } from "./HashConnect";
-import { NETWORK } from "./Utilities/Constant";
+import "./index.css";
 import { StoreProvider } from "./Providers/StoreProvider";
+import { NETWORK } from "./Utilities/Constant";
+
+const theme = createTheme();
 
 ReactDOM.render(
   <React.StrictMode>
@@ -19,7 +22,9 @@ ReactDOM.render(
       debug={true}
     >
       <StoreProvider>
-        <App />
+        <ThemeProvider theme={theme}>
+          <App />
+        </ThemeProvider>
       </StoreProvider>
     </HashconnectAPIProvider>
   </React.StrictMode>,
