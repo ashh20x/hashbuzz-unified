@@ -1,5 +1,6 @@
 import axios, { Method } from "axios";
-import { dAppApiURL, getCookie } from "../Utilities/Constant";
+import { dAppApiURL } from "../Utilities/Constant";
+import { getCookie } from "./api";
 
 interface APIProps {
   method: Method;
