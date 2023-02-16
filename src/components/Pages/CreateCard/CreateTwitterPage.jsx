@@ -23,12 +23,9 @@ import { CardSection, LinkContainer, StatusSection, TableSection } from "./Creat
 
 export const CreateTwitterPage = () => {
   const [tableData, setTableData] = useState([]);
-  const [userData, setUserData] = useState({});
   const [openTopup, setTopUpOpen] = useState(false);
-  const [cookies, setCookie] = useCookies(["token"]);
   const [open, setOpen] = useState(false);
   const [selectedCampaign, setSelectedCampaign] = useState({});
-  const [cardDataArr, setCardData] = useState([]);
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [showLoading, setShowLoading] = useState(false);
   const [openConsent, setConsentOpen] = useState(false);
@@ -37,7 +34,7 @@ export const CreateTwitterPage = () => {
   const [isTopUp, setisTopUp] = useState(false);
 
   const { dAppAPICall, dAppAuthAPICall } = useDappAPICall();
-  const { state: store, setStore } = useStore();
+  const store = useStore();
   const navigate = useNavigate();
 
   //check is device is small
@@ -53,7 +50,7 @@ export const CreateTwitterPage = () => {
       (async () => {
         await delay(3000);
         const user = await dAppAPICall({ url: "users/current", method: "GET" });
-        setStore((ps) => ({ ...ps, user: { ...ps.user, ...user }}));
+        store.updateState((ps) => ({ ...ps, user: { ...ps.user, ...user }}));
       })();
     }
   }, [pairingData]);
@@ -94,8 +91,8 @@ export const CreateTwitterPage = () => {
           setButtonDisabled(true);
         } else setButtonDisabled(false);
 
-        if (pendingResult) setStore((d) => ({ ...d, currentStatus: "Pending Approval" }));
-        if (runningResult) setStore((d) => ({ ...d, currentStatus: "Running" }));
+        if (pendingResult) store.updateState((d) => ({ ...d, currentStatus: "Pending Approval" }));
+        if (runningResult) store.updateState((d) => ({ ...d, currentStatus: "Running" }));
       }
     } catch (err) {
       console.log("/campaign/twitter-card/", err);
@@ -104,7 +101,6 @@ export const CreateTwitterPage = () => {
 
   // Get users details functions;
   const getUserInfo = async () => {
-    const user_id = localStorage.getItem("user_id");
     setShowLoading(true);
     try {
       // const user_id =user.id
@@ -121,7 +117,7 @@ export const CreateTwitterPage = () => {
         localStorage.setItem("user", JSON.stringify(response));
 
         //? Update user object to the context store for.
-        setStore((ps) => ({ ...ps, available_budget: response.available_budget, user: response }));
+        store.updateState((ps) => ({ ...ps, available_budget: response.available_budget, user: response }));
 
         //!! get all the active campaign details...
         console.log("passed from hre");
@@ -183,7 +179,7 @@ export const CreateTwitterPage = () => {
       if (response) {
         // setShowLoading(false);
         setConsentOpen(false);
-        setStore((ps) => ({ ...ps, available_budget: response.available_budget, user: response }));
+        store.updateState((ps) => ({ ...ps, available_budget: response.available_budget, user: response }));
         // navigate("/dashboard");
       }
     } catch (err) {
@@ -296,9 +292,9 @@ export const CreateTwitterPage = () => {
       <CardSection>
         <StatusCard
           title={"Hedera Account ID"}
-          content={store.user.hedera_wallet_id ?? ""}
-          buttonTag={[`${!store.user.hedera_wallet_id ? "Connect" : ""}`]}
-          isButton={!store.user.hedera_wallet_id}
+          content={store?.currentUser?.hedera_wallet_id ?? ""}
+          buttonTag={[`${!store?.currentUser?.hedera_wallet_id ? "Connect" : ""}`]}
+          isButton={!store?.currentUser?.hedera_wallet_id}
           text={""}
           buttonClick={(e) => {
             if (pairingData) disconnect();
@@ -392,7 +388,7 @@ export const CreateTwitterPage = () => {
         text="CREATE CAMPAIGN"
         variant="contained"
         onclick={handleTemplate}
-        disabled={buttonDisabled || !store.available_budget || !store?.user?.hedera_wallet_id || !store?.user?.business_twitter_handle}
+        disabled={buttonDisabled || !store?.currentUser?.available_budget || !store?.currentUser?.hedera_wallet_id || !store?.currentUser?.business_twitter_handle}
       />
       {/* (userData?.available_budget === 0 || userData?.available_budget === null) */}
       <TopUpModal open={openTopup} setOpen={setTopUpOpen} isTopUp={isTopUp} />

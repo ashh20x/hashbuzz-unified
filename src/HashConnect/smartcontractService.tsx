@@ -8,7 +8,7 @@ export const useSmartContractServices = () => {
   const { pairingData, sendTransaction } = useHashconnectService();
   const { dAppAPICall } = useDappAPICall();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { setStore } = useStore();
+  const store = useStore()!;
 
   const topUpAccount = async ({ topUpAmount, fee, total }: { topUpAmount: number; fee: number; total: number }, accountId: string) => {
     try {
@@ -29,7 +29,7 @@ export const useSmartContractServices = () => {
           },
         });
         //@ts-ignore
-        setStore((prevS: any) => ({ ...prevS, available_budget: getBal.available_budget }));
+        store.updateState((prevS: any) => ({ ...prevS, available_budget: getBal.available_budget }));
       }
       return UpdateBalanceTransaction;
     } catch (err) {
