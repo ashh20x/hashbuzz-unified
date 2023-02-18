@@ -105,10 +105,12 @@ const Dashboard = () => {
                 </Typography>
                 {aboveXs && <Divider orientation={"vertical"} sx={{ marginLeft: 0.75 }} />}
                 <Box>
-                  <IconButton size={"small"} title="Top your campaign budget">
+                  <IconButton size={"small"} title="Top your campaign budget" disabled={!Boolean(store
+                  ?.currentUser?.hedera_wallet_id)}>
                     <AddCircleIcon fontSize="inherit" />
                   </IconButton>
-                  <IconButton size={"small"} title="Reimburse campaign budget">
+                  <IconButton size={"small"} title="Reimburse campaign budget" disabled={!Boolean(store
+                  ?.currentUser?.hedera_wallet_id)}>
                     <RemoveCircleIcon fontSize="inherit" />
                   </IconButton>
                 </Box>
@@ -118,10 +120,10 @@ const Dashboard = () => {
         </Grid>
 
         {/* Campaign List section */}
-        <CampaignList />
+        <CampaignList user={store?.currentUser}/>
 
         {/* speed dial  action button */}
-        <SpeedDialTooltipOpen />
+        <SpeedDialTooltipOpen user={store?.currentUser}/>
       </Container>
     </Box>
   );
