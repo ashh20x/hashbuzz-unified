@@ -1,6 +1,7 @@
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { Box, Button, Card, Divider, Stack, Typography } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { CurrentUser } from "../../../types";
 import { cardStyle } from "./CardGenUtility";
 
 const columns: GridColDef[] = [
@@ -13,7 +14,11 @@ const columns: GridColDef[] = [
   { field: "action", headerName: "Actions", width: 150 },
 ];
 
-const CampaignList = () => {
+interface CampaignListProps {
+  user?: CurrentUser;
+}
+
+const CampaignList = ({user}:CampaignListProps) => {
   return (
     <Box
       sx={{
@@ -36,14 +41,19 @@ const CampaignList = () => {
               At the moment you can only run one campaign at a time, and the topped up budget can be used across unlimited number of campaigns
             </Typography>
           </Stack>
-          <Button size="large" variant="contained" disableElevation>
+          <Button
+            size="large"
+            variant="contained"
+            disableElevation
+            disabled={!user?.available_budget || !user?.hedera_wallet_id || !user?.business_twitter_handle}
+          >
             Create Campaign
           </Button>
         </Stack>
       </Box>
       <Divider sx={{ borderColor: cardStyle.borderColor }} />
       <Box sx={{ height: "calc(100vh - 436px)" }}>
-        <DataGrid rows={[]} columns={columns} paginationMode="server" rowsPerPageOptions={[5]}/>
+        <DataGrid rows={[]} columns={columns} paginationMode="server" rowsPerPageOptions={[5]} />
       </Box>
     </Box>
   );
