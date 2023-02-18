@@ -8,14 +8,17 @@ import { Box, Button, Container, Divider, Grid, IconButton, Stack, Typography } 
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { useApiInstance } from "../../../APIConfig/api";
-// import { User } from "../../../APIConfig/api";
 import ℏicon from "../../../IconsPng/ℏicon.png";
 import { useStore } from "../../../Providers/StoreProvider";
 import HashbuzzLogo from "../../../SVGR/HashbuzzLogo";
 import HederaIcon from "../../../SVGR/HederaIcon";
+import { forceClearStorage } from "../../../Utilities/Constant";
 import CampaignList from "./CampaignList";
 import { CardGenUtility } from "./CardGenUtility";
+import ConsentModal from "./ConsentModal";
 import SpeedDialTooltipOpen from "./SpeedDialTooltipOpen";
 // import { useTheme } from "@emotion/react";
 
@@ -23,14 +26,23 @@ const Dashboard = () => {
   const store = useStore();
   const theme = useTheme();
   const aboveXs = useMediaQuery(theme.breakpoints.up("sm"));
-  const {User} = useApiInstance()
+  const { User } = useApiInstance();
+  const  navigate = useNavigate();
 
-  React.useEffect(() => {
-    (async () => {
+  const getUserData = React.useCallback(async () => {
+    try {
       const currentUser = await User.getCurrentUser();
       store?.updateState((perv) => ({ ...perv, currentUser }));
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    } catch (error) {
+      //@ts-ignore
+      toast.error(error?.message ?? "Server Error");
+      forceClearStorage();
+      navigate("/")
+    }
+  }, [User, navigate, store]);
+
+  React.useEffect(() => {
+    getUserData();
   }, []);
 
   return (
@@ -108,12 +120,10 @@ const Dashboard = () => {
                 </Typography>
                 {aboveXs && <Divider orientation={"vertical"} sx={{ marginLeft: 0.75 }} />}
                 <Box>
-                  <IconButton size={"small"} title="Top your campaign budget" disabled={!Boolean(store
-                  ?.currentUser?.hedera_wallet_id)}>
+                  <IconButton size={"small"} title="Top your campaign budget" disabled={!Boolean(store?.currentUser?.hedera_wallet_id)}>
                     <AddCircleIcon fontSize="inherit" />
                   </IconButton>
-                  <IconButton size={"small"} title="Reimburse campaign budget" disabled={!Boolean(store
-                  ?.currentUser?.hedera_wallet_id)}>
+                  <IconButton size={"small"} title="Reimburse campaign budget" disabled={!Boolean(store?.currentUser?.hedera_wallet_id)}>
                     <RemoveCircleIcon fontSize="inherit" />
                   </IconButton>
                 </Box>
@@ -123,10 +133,13 @@ const Dashboard = () => {
         </Grid>
 
         {/* Campaign List section */}
-        <CampaignList user={store?.currentUser}/>
+        <CampaignList user={store?.currentUser} />
 
         {/* speed dial  action button */}
-        <SpeedDialTooltipOpen user={store?.currentUser}/>
+        <SpeedDialTooltipOpen user={store?.currentUser} />
+
+        {/* Concent modal for requesting concent form user */}
+        {!store?.currentUser?.consent && <ConsentModal user={store?.currentUser!} />}
       </Container>
     </Box>
   );

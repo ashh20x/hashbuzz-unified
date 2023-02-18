@@ -3,6 +3,7 @@ import React, { useRef } from "react";
 import { useCookies } from "react-cookie";
 import { toast } from "react-toastify";
 import { AuthCred, CurrentUser, LogoutResponse } from "../types";
+import { forceLogout } from "../Utilities/Constant";
 
 export const getCookie = (cname: string) => {
   let name = cname + "=";
@@ -44,11 +45,11 @@ export const useApiInstance = () => {
   instance.current.interceptors.response.use(
     (response) => response,
     (error) => {
+      console.log("error from instance", error);
       // whatever you want to do with the error
-      // if (error.response.status === 401) forceLogout();
+      if (error?.response?.status === 401) forceLogout();
       // throw error;
       toast.error(error?.message ?? "Server error");
-      console.log(error);
     }
   );
 
@@ -70,13 +71,15 @@ export const useApiInstance = () => {
     post: (url: string, body: {}) => instance.current.post(url, body).then(responseBody),
     put: (url: string, body: {}) => instance.current.put(url, body).then(responseBody),
     delete: (url: string) => instance.current.delete(url).then(responseBody),
+    patch: (url: string, body: {}) => instance.current.patch(url, body).then(responseBody),
   };
   const User = {
-    getCurrentUser: (): Promise<CurrentUser>  => requests.get("/api/users/current")!,
+    getCurrentUser: (): Promise<CurrentUser> => requests.get("/api/users/current"),
+    updateCurrentUser: (userData: Partial<CurrentUser>): Promise<CurrentUser> => requests.patch(`/api/users/update`, { ...userData }),
   };
 
   const Auth = {
-    refreshToken: (refreshToken: string): Promise<AuthCred>  => requests.post("/auth/refreshToken", { refreshToken }),
+    refreshToken: (refreshToken: string): Promise<AuthCred> => requests.post("/auth/refreshToken", { refreshToken }),
     doLogout: (refreshToken: string): Promise<LogoutResponse> => requests.post("/auth/logout", { refreshToken }),
   };
   return { User, Auth };
