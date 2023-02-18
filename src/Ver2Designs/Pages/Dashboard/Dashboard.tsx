@@ -8,7 +8,8 @@ import { Box, Button, Container, Divider, Grid, IconButton, Stack, Typography } 
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import React from "react";
-import { User } from "../../../APIConfig/api";
+import { useApiInstance } from "../../../APIConfig/api";
+// import { User } from "../../../APIConfig/api";
 import ℏicon from "../../../IconsPng/ℏicon.png";
 import { useStore } from "../../../Providers/StoreProvider";
 import HashbuzzLogo from "../../../SVGR/HashbuzzLogo";
@@ -22,6 +23,8 @@ const Dashboard = () => {
   const store = useStore();
   const theme = useTheme();
   const aboveXs = useMediaQuery(theme.breakpoints.up("sm"));
+  const {User} = useApiInstance()
+
   React.useEffect(() => {
     (async () => {
       const currentUser = await User.getCurrentUser();
