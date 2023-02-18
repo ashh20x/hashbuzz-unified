@@ -20,7 +20,7 @@ const App =() => {
       <Router>
         <Theme>
           <Routes>
-            <Route path="/" exact element={<ProtectedRoute><Main /></ProtectedRoute>} />
+            <Route path="/" exact element={<Main />} />
             <Route path="/dashboard" exact element={<ProtectedRoute>
               <Dashboard />
             </ProtectedRoute>} />
