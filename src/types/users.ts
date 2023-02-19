@@ -3,6 +3,7 @@ export interface AuthCred {
   refreshToken: string;
   user?: CurrentUser;
 }
+export type user_roles = "SUPER_ADMIN" | "ADMIN" | "ANALYTICS" | "MARKETING" | "MANAGEMENT" | "USER" | "GUEST_USER";
 
 export interface CurrentUser {
   id: number;
@@ -18,6 +19,8 @@ export interface CurrentUser {
   available_budget: number;
   personal_twitter_id: number;
   total_rewarded: number;
+  emailActive: boolean;
+  role: user_roles;
 }
 
 export type LogoutResponse = {

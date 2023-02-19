@@ -20,3 +20,9 @@ export const forceClearStorage = () => {
   _delete_cookie("token");
   _delete_cookie("refreshToken");
 };
+
+export const getErrorMessage = (err) => {
+  if (err?.response?.data) return err?.response?.data.error ?? err?.response?.data.message;
+  if (err?.message) return err?.message;
+  return "Server response error";
+};
