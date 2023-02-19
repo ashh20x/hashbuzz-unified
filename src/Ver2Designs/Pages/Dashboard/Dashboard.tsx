@@ -16,6 +16,7 @@ import { useStore } from "../../../Providers/StoreProvider";
 import HashbuzzLogo from "../../../SVGR/HashbuzzLogo";
 import HederaIcon from "../../../SVGR/HederaIcon";
 import { forceClearStorage } from "../../../Utilities/Constant";
+import AdminPasswordSetup from "./AdminPasswordSetup";
 import CampaignList from "./CampaignList";
 import { CardGenUtility } from "./CardGenUtility";
 import ConsentModal from "./ConsentModal";
@@ -27,7 +28,7 @@ const Dashboard = () => {
   const theme = useTheme();
   const aboveXs = useMediaQuery(theme.breakpoints.up("sm"));
   const { User } = useApiInstance();
-  const  navigate = useNavigate();
+  const navigate = useNavigate();
 
   const getUserData = React.useCallback(async () => {
     try {
@@ -37,7 +38,7 @@ const Dashboard = () => {
       //@ts-ignore
       toast.error(error?.message ?? "Server Error");
       forceClearStorage();
-      navigate("/")
+      navigate("/");
     }
   }, [User, navigate, store]);
 
@@ -139,7 +140,12 @@ const Dashboard = () => {
         <SpeedDialTooltipOpen user={store?.currentUser} />
 
         {/* Concent modal for requesting concent form user */}
-        {!store?.currentUser?.consent && <ConsentModal user={store?.currentUser!} />}
+        {!store?.currentUser?.consent ? <ConsentModal user={store?.currentUser!} /> : null}
+
+        {/* Show modal to admin user for updating email and password */}
+        {!store?.currentUser?.emailActive && ["SUPER_ADMIN", "ADMIN"].includes(store?.currentUser?.role!) ? (
+          <AdminPasswordSetup user={store?.currentUser!} />
+        ) : null}
       </Container>
     </Box>
   );

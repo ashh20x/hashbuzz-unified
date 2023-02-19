@@ -2,8 +2,8 @@ import axios, { AxiosInstance, AxiosResponse } from "axios";
 import React, { useRef } from "react";
 import { useCookies } from "react-cookie";
 import { toast } from "react-toastify";
-import { AuthCred, CurrentUser, LogoutResponse } from "../types";
-import { forceLogout } from "../Utilities/Constant";
+import { AdminUpdatePassword, AuthCred, CurrentUser, LogoutResponse, UpdatePasswordResponse } from "../types";
+import { forceLogout, getErrorMessage } from "../Utilities/Constant";
 
 export const getCookie = (cname: string) => {
   let name = cname + "=";
@@ -19,15 +19,6 @@ export const getCookie = (cname: string) => {
   }
   return "";
 };
-
-// const instance = axios.create({
-//   baseURL: process.env.REACT_APP_DAPP_API,
-//   timeout: 15000,
-//   headers: {
-//     Authorization: `Token ${getCookie("token")}`,
-//     "Content-type": "application/json",
-//   },
-// });
 
 export const useApiInstance = () => {
   const [cookies] = useCookies(["token", "refreshToken"]);
@@ -49,7 +40,7 @@ export const useApiInstance = () => {
       // whatever you want to do with the error
       if (error?.response?.status === 401) forceLogout();
       // throw error;
-      toast.error(error?.message ?? "Server error");
+      toast.error(getErrorMessage(error));
     }
   );
 
@@ -82,5 +73,9 @@ export const useApiInstance = () => {
     refreshToken: (refreshToken: string): Promise<AuthCred> => requests.post("/auth/refreshToken", { refreshToken }),
     doLogout: (refreshToken: string): Promise<LogoutResponse> => requests.post("/auth/logout", { refreshToken }),
   };
-  return { User, Auth };
+
+  const Admin = {
+    updatePassword: (data: AdminUpdatePassword): Promise<UpdatePasswordResponse> => requests.put("/api/admin/update-password", { ...data }),
+  };
+  return { User, Auth, Admin };
 };
