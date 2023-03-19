@@ -12,13 +12,14 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Tooltip from "@mui/material/Tooltip";
 import * as React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useStore } from "../../Providers/StoreProvider";
 
 const HeaderMenu = () => {
   const store = useStore();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const navigate = useNavigate();
+  const {pathname} = useLocation();
 
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -93,11 +94,11 @@ const HeaderMenu = () => {
         </MenuItem> */}
         <Divider />
         {store?.currentUser?.role && ["ADMIN", "SUPER_ADMIN"].includes(store?.currentUser?.role) ? (
-          <MenuItem onClick={() => navigate("/admin")}>
+          <MenuItem onClick={() => navigate(pathname.includes("admin")?"/":"/admin")}>
             <ListItemIcon>
               <AdminPanelSettingsIcon fontSize="small" />
             </ListItemIcon>
-            Admin Dashboard
+          {  pathname.includes("admin")?"User Dashboard":"Admin Dashboard"}
           </MenuItem>
         ) : null}
         <MenuItem onClick={handleClose}>
