@@ -1,0 +1,39 @@
+Account 1
+0.0.3507551
+302e020100300506032b6570042204207cd073be13b901fe46fdc9e22dc88f249f8645c0170165a2fb457ccc16840d3d
+obtain under essay layer bone cost buffalo ski winter peasant merit fossil fatigue keen rhythm melt when patient phone peace tourist nothing clinic frog
+Token1 ID (fungible)
+0.0.3508055
+
+=================
+Account 3
+0.0.3507594
+302e020100300506032b6570042204205c846decac9cd82caaace36c09c1fef7a3579cd6d0b3e092528b4dff3066d2a5
+hand dial census orient short reveal man saddle spray actual valley transfer wise coach stable fetch decrease gentle feed rifle retire square gap burden
+Token2 ID (fungible)
+0.0.3508136
+
+=================
+Account 4
+0.0.3507599
+302e020100300506032b65700422042065a6ed2921eb64e6c1913acb8e8c8c2946f21e86c417568a1d8d361320c5e1a3
+shy panic regret stable travel earth fringe real cause shaft minimum promote artefact raccoon rapid into fever paddle rice need inch between answer knee
+Token3 ID (fungible)
+0.0.3508142
+
+=====================
+Account 5
+0.0.3507636
+302e020100300506032b6570042204207f7ee928781f8c282377736e4707af89ba1aaa15649292f2216e0385fb05786e
+clock hobby brass art ski ring slim evoke cradle dance scrap friend second snack width object pass cat plug random void blame inflict vanish
+Token4 ID (Non-fungible)
+0.0.3508143
+
+
+==========================
+Account 6
+0.0.3507637
+302e020100300506032b657004220420fb45a29b61a3fa4ef3b6536cc75f7cba36812bfb6d3e9db5666508e45981f0dd
+cake detail sail blast marble best tower arrest inhale release street believe clever sponsor velvet census area gap expect funny series mouse clerk catch
+Token5 ID (Non-fungible)
+0.0.3508148

@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosResponse } from "axios";
 import React, { useRef } from "react";
 import { useCookies } from "react-cookie";
 import { toast } from "react-toastify";
-import { AdminLoginResponse, AdminUpdatePassword, AuthCred, CurrentUser, LogoutResponse, UpdatePasswordResponse } from "../types";
+import { AdminLoginResponse, AdminUpdatePassword, AuthCred, CurrentUser, LogoutResponse, TokenInfo, UpdatePasswordResponse } from "../types";
 import { forceLogout, getErrorMessage } from "../Utilities/Constant";
 
 export const getCookie = (cname: string) => {
@@ -27,7 +27,7 @@ export const useApiInstance = () => {
       baseURL: process.env.REACT_APP_DAPP_API,
       timeout: 15000,
       headers: {
-        Authorization: `Token ${cookies.token}${cookies.adminToken ? " " + cookies.adminToken : ""}`,
+        Authorization: `Token ${cookies.token}${cookies.adminToken ? `, Token ${cookies.adminToken}` : ""}`,
         "Content-type": "application/json",
       },
     })
@@ -51,11 +51,11 @@ export const useApiInstance = () => {
       baseURL: process.env.REACT_APP_DAPP_API,
       timeout: 15000,
       headers: {
-        Authorization: `Token ${cookies.token}`,
+        Authorization: `Token ${cookies.token}${cookies.adminToken ? `, Token ${cookies.adminToken}` : ""}`,
         "Content-type": "application/json",
       },
     });
-  }, [cookies.token]);
+  }, [cookies.adminToken, cookies.token]);
 
   const requests = {
     get: (url: string) => instance.current.get(url).then(responseBody),
@@ -78,6 +78,12 @@ export const useApiInstance = () => {
 
   const Admin = {
     updatePassword: (data: AdminUpdatePassword): Promise<UpdatePasswordResponse> => requests.put("/api/admin/update-password", { ...data }),
+    getTokenInfo: (tokenId: string): Promise<TokenInfo> => requests.post("/api/admin/token-info", { tokenId }),
   };
-  return { User, Auth, Admin };
+
+  const MirrorNodeRestAPI = {
+    getTokenInfo: (tokenId:string) => axios.get<TokenInfo>(`${process.env.REACT_APP_MIRROR_NODE_LINK}/api/v1/tokens/${tokenId}`)
+  } 
+
+  return { User, Auth, Admin , MirrorNodeRestAPI};
 };
