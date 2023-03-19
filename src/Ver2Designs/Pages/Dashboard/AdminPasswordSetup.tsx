@@ -12,12 +12,16 @@ import InputAdornment from "@mui/material/InputAdornment";
 import * as React from "react";
 import { useApiInstance } from "../../../APIConfig/api";
 import { useStore } from "../../../Providers/StoreProvider";
-import { AdminPasswordFormState, CurrentUser } from "../../../types";
+import { AdminPasswordFormState, CurrentUser, FormFelid } from "../../../types";
 import { unstable_batchedUpdates } from "react-dom";
 import { toast } from "react-toastify";
 import { getErrorMessage } from "../../../Utilities/Constant";
 
-const FORM_INITIAL_STATE: AdminPasswordFormState = {
+type CurrentFormState =  AdminPasswordFormState & {
+  conformPassword: FormFelid<string>;
+}
+
+const FORM_INITIAL_STATE:CurrentFormState = {
   email: {
     value: "",
     error: false,
@@ -37,7 +41,7 @@ const FORM_INITIAL_STATE: AdminPasswordFormState = {
   },
 };
 
-const validateForm = (data: AdminPasswordFormState, updateState: React.Dispatch<React.SetStateAction<AdminPasswordFormState>>): boolean => {
+const validateForm = (data: CurrentFormState, updateState: React.Dispatch<React.SetStateAction<CurrentFormState>>): boolean => {
   let isValid = true;
 
   //email regex
@@ -75,7 +79,7 @@ interface AdminPasswordSetupProps {
 
 const AdminPasswordSetup = ({ user }: AdminPasswordSetupProps) => {
   const [adminPassModalOpen, setAdminPassModalOpen] = React.useState(false);
-  const [formData, setFormData] = React.useState<AdminPasswordFormState>(JSON.parse(JSON.stringify(FORM_INITIAL_STATE)));
+  const [formData, setFormData] = React.useState<CurrentFormState>(JSON.parse(JSON.stringify(FORM_INITIAL_STATE)));
   const { Admin } = useApiInstance();
   const store = useStore();
 

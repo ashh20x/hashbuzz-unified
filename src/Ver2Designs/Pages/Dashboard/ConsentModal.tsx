@@ -26,7 +26,7 @@ const ConsentModal = ({ user }: ConsentModalProps) => {
 
   const handleConcentAgree = async () => {
     try {
-      const updateUser = await User.updateCurrentUser({ consent: true });
+      const updateUser = await User.updateConsent({ consent: true });
       if (store?.updateState) store.updateState((_d) => ({ ..._d, currentUser: updateUser }));
       setConsentModalOpen(false);
     } catch (error) {

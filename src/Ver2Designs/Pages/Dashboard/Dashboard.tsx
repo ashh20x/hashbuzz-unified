@@ -11,15 +11,17 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useApiInstance } from "../../../APIConfig/api";
+import { useHashconnectService } from "../../../HashConnect";
 import ℏicon from "../../../IconsPng/ℏicon.png";
 import { useStore } from "../../../Providers/StoreProvider";
-import HashbuzzLogo from "../../../SVGR/HashbuzzLogo";
 import HederaIcon from "../../../SVGR/HederaIcon";
 import { forceClearStorage } from "../../../Utilities/Constant";
+import { DashboardHeader } from "../../Components";
 import AdminPasswordSetup from "./AdminPasswordSetup";
 import CampaignList from "./CampaignList";
 import { CardGenUtility } from "./CardGenUtility";
 import ConsentModal from "./ConsentModal";
+
 import SpeedDialTooltipOpen from "./SpeedDialTooltipOpen";
 // import { useTheme } from "@emotion/react";
 
@@ -29,6 +31,11 @@ const Dashboard = () => {
   const aboveXs = useMediaQuery(theme.breakpoints.up("sm"));
   const { User } = useApiInstance();
   const navigate = useNavigate();
+  const isDeviceIsSm = useMediaQuery(theme.breakpoints.down("sm"));
+
+  //Hashconnect Hook
+  //Hashpack hook init
+  const { connectToExtension, availableExtension } = useHashconnectService();
 
   const getUserData = React.useCallback(async () => {
     try {
@@ -46,6 +53,28 @@ const Dashboard = () => {
     getUserData();
   }, []);
 
+  //Hashpack functions
+  const connectHashpack = async () => {
+    try {
+      if (isDeviceIsSm) {
+        toast.warning("Please connect with HashPack extension on your desktop to make a payment");
+        return alert("Please connect with HashPack extension on your desktop to make a payment");
+      }
+      if (availableExtension) {
+        connectToExtension();
+      } else {
+        // await sendMarkOFwalletInstall();
+        // Taskbar Alert - Hashpack browser extension not installed, please click on <Go> to visit HashPack website and install their wallet on your browser
+        alert(
+          "Alert - HashPack browser extension not installed, please click on <<OK>> to visit HashPack website and install their wallet on your browser.  Once installed you might need to restart your browser for Taskbar to detect wallet extension first time."
+        );
+        window.open("https://www.hashpack.app");
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -54,9 +83,7 @@ const Dashboard = () => {
       }}
     >
       <Container maxWidth="xl">
-        <Stack alignItems={"center"} justifyContent="center" direction={"row"}>
-          <HashbuzzLogo height={160} />
-        </Stack>
+        <DashboardHeader />
         <Grid container spacing={3}>
           {/* Card for wallet info */}
           <CardGenUtility
@@ -64,9 +91,9 @@ const Dashboard = () => {
             title={"Hedera account Id"}
             content={
               store?.currentUser?.hedera_wallet_id ? (
-                <Typography variant="body2">{store?.currentUser?.hedera_wallet_id}</Typography>
+                <Typography variant="h5">{store?.currentUser?.hedera_wallet_id}</Typography>
               ) : (
-                <Button variant="contained" disableElevation startIcon={<LinkIcon />}>
+                <Button variant="contained" disableElevation startIcon={<LinkIcon />} onClick={() => connectHashpack()}>
                   Connect to wallet
                 </Button>
               )

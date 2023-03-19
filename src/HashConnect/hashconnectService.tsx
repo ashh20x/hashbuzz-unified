@@ -1,8 +1,11 @@
 import { HashConnect, HashConnectTypes, MessageTypes } from "hashconnect";
 import { HashConnectConnectionState } from "hashconnect/dist/types";
 import React, { useCallback } from "react";
+import { toast } from "react-toastify";
+import { useApiInstance } from "../APIConfig/api";
 import { useDappAPICall } from "../APIConfig/dAppApiServices";
 import { useStore } from "../Providers/StoreProvider";
+import { getErrorMessage } from "../Utilities/Constant";
 
 //create the hashconnect instance
 const hashconnect = new HashConnect(true);
@@ -40,7 +43,8 @@ const HashconectServiceContext = React.createContext<
 export const HashconnectAPIProvider = ({ children, metaData, network, debug }: ProviderProps) => {
   const [state, setState] = React.useState<Partial<HashconnectContextAPI>>({});
   const store = useStore();
-  const { dAppAPICall } = useDappAPICall();
+  // const { dAppAPICall } = useDappAPICall();
+  const { User } = useApiInstance();
 
   const initHashconnect = useCallback(async () => {
     //initialize and use returned data
@@ -65,14 +69,10 @@ export const HashconnectAPIProvider = ({ children, metaData, network, debug }: P
     if (!store?.currentUser?.hedera_wallet_id) {
       (async () => {
         try {
-         await dAppAPICall({
-            method: "PUT",
-            url: "users/update/wallet",
-            data: {
-              walletId: data?.accountIds[0],
-            },
-          });
+          const user = await User.updateWalletId({ walletId: data?.accountIds[0] });
+          if (store?.updateState) store.updateState((_d) => ({ ..._d, currentUser: {...user} }));
         } catch (error) {
+          toast.error(getErrorMessage(error))
           console.log(error);
         }
       })();

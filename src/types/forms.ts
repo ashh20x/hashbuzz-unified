@@ -7,10 +7,9 @@ export interface FormFelid<T> {
   showPassword?: boolean;
 }
 
-export type AdminPasswordFormState = {
+export type  AdminPasswordFormState = {
   email: FormFelid<string>;
   password: FormFelid<string>;
-  conformPassword: FormFelid<string>;
 };
 
 export type AdminUpdatePassword = {
@@ -21,4 +20,10 @@ export type AdminUpdatePassword = {
 export type UpdatePasswordResponse = {
   message:string,
   user?:CurrentUser
+}
+
+export type AdminLoginResponse  = {
+  message:string,
+  user:CurrentUser,
+  adminToken:string
 }

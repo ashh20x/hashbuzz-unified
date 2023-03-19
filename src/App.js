@@ -12,6 +12,8 @@ import { Invoice } from "./screens/Invoice";
 import { ProtectedRoute } from "./APIConfig/AuthGuard";
 import { ToastContainer } from 'react-toastify';
 import {Dashboard} from "./Ver2Designs"
+import AdminAuthGuard from "./Ver2Designs/Admin/AdminAuthGuard";
+import { AdminDashboard } from "./Ver2Designs/Admin";
 
 const App =() => {
 
@@ -27,7 +29,7 @@ const App =() => {
             <Route path="/campaign" exact element={<ProtectedRoute><Template /></ProtectedRoute>} />
             <Route path="/invoice" exact element={<ProtectedRoute><Invoice /></ProtectedRoute>} />
             <Route path="/onboarding" exact element={<ProtectedRoute><OnBoarding /></ProtectedRoute>} />
-            <Route path="/admin" exact element={<ProtectedRoute><AdminPanel /></ProtectedRoute>} />
+            <Route path="/admin" exact element={<AdminAuthGuard><AdminDashboard /></AdminAuthGuard>} />
           </Routes>
         </Theme>
       </Router>
