@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosResponse } from "axios";
 import React, { useRef } from "react";
 import { useCookies } from "react-cookie";
 import { toast } from "react-toastify";
-import { AdminUpdatePassword, AuthCred, CurrentUser, LogoutResponse, UpdatePasswordResponse } from "../types";
+import { AdminLoginResponse, AdminUpdatePassword, AuthCred, CurrentUser, LogoutResponse, UpdatePasswordResponse } from "../types";
 import { forceLogout, getErrorMessage } from "../Utilities/Constant";
 
 export const getCookie = (cname: string) => {
@@ -21,13 +21,13 @@ export const getCookie = (cname: string) => {
 };
 
 export const useApiInstance = () => {
-  const [cookies] = useCookies(["token", "refreshToken"]);
+  const [cookies] = useCookies(["token", "refreshToken", "adminToken"]);
   const instance = useRef<AxiosInstance>(
     axios.create({
       baseURL: process.env.REACT_APP_DAPP_API,
       timeout: 15000,
       headers: {
-        Authorization: `Token ${cookies.token}`,
+        Authorization: `Token ${cookies.token}${cookies.adminToken ? " " + cookies.adminToken : ""}`,
         "Content-type": "application/json",
       },
     })
@@ -66,12 +66,14 @@ export const useApiInstance = () => {
   };
   const User = {
     getCurrentUser: (): Promise<CurrentUser> => requests.get("/api/users/current"),
-    updateCurrentUser: (userData: Partial<CurrentUser>): Promise<CurrentUser> => requests.patch(`/api/users/update`, { ...userData }),
+    updateConsent: (userData: { consent: boolean }): Promise<CurrentUser> => requests.patch(`/api/users/update-concent`, { ...userData }),
+    updateWalletId: (userData: { walletId: string }): Promise<CurrentUser> => requests.put(`/api/users/update/wallet`, { ...userData }),
   };
 
   const Auth = {
     refreshToken: (refreshToken: string): Promise<AuthCred> => requests.post("/auth/refreshToken", { refreshToken }),
     doLogout: (refreshToken: string): Promise<LogoutResponse> => requests.post("/auth/logout", { refreshToken }),
+    adminLogin: (data: { email: string; password: string }): Promise<AdminLoginResponse> => requests.post("/auth/admin-login", { ...data }),
   };
 
   const Admin = {

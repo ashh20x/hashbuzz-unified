@@ -2,6 +2,7 @@ export interface AuthCred {
   token: string;
   refreshToken: string;
   user?: CurrentUser;
+  adminToken?:string
 }
 export type user_roles = "SUPER_ADMIN" | "ADMIN" | "ANALYTICS" | "MARKETING" | "MANAGEMENT" | "USER" | "GUEST_USER";
 
@@ -20,6 +21,7 @@ export interface CurrentUser {
   personal_twitter_id: number;
   total_rewarded: number;
   emailActive: boolean;
+  profile_image_url?:string,
   role: user_roles;
 }
 

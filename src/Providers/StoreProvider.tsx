@@ -14,7 +14,7 @@ const StoreContext = React.createContext<StoreContextType | null>(null);
 
 export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, updateState] = React.useState<AppState>({});
-  const [cookies, setCookie] = useCookies(["token", "refreshToken"]);
+  const [cookies, setCookie] = useCookies(["token", "refreshToken", "adminToken"]);
   // const [axiosInstance, setAxiosInstance] = React.useState<AxiosInstance | undefined>();
   const { Auth } = useApiInstance();
 
@@ -67,6 +67,8 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
     const data = await Auth.refreshToken(cookies.refreshToken);
     setCookie("token", data?.token);
     setCookie("refreshToken", data?.refreshToken);
+
+    if (data.adminToken) setCookie("adminToken", data.adminToken);
     // clearInterval(intervalRef.current);
     updateState((_d) => ({ ..._d, auth: data }));
   }, [Auth, cookies.refreshToken, setCookie]);
@@ -83,14 +85,10 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
       updateState,
       // axiosInstance,
     }),
-    [ state]
+    [state]
   );
 
-  return (
-    <StoreContext.Provider value={{ ...value.state, updateState: value.updateState}}>
-      {children}
-    </StoreContext.Provider>
-  );
+  return <StoreContext.Provider value={{ ...value.state, updateState: value.updateState }}>{children}</StoreContext.Provider>;
 };
 
 export const useStore = () => {
