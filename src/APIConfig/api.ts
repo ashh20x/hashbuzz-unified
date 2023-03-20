@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosResponse } from "axios";
 import React, { useRef } from "react";
 import { useCookies } from "react-cookie";
 import { toast } from "react-toastify";
-import { AdminLoginResponse, AdminUpdatePassword, AuthCred, CurrentUser, LogoutResponse, TokenInfo, UpdatePasswordResponse } from "../types";
+import { AdminLoginResponse, AdminUpdatePassword, AllTokensQuery, AuthCred, CurrentUser, LogoutResponse, TokenInfo, UpdatePasswordResponse } from "../types";
 import { forceLogout, getErrorMessage } from "../Utilities/Constant";
 
 export const getCookie = (cname: string) => {
@@ -79,11 +79,14 @@ export const useApiInstance = () => {
   const Admin = {
     updatePassword: (data: AdminUpdatePassword): Promise<UpdatePasswordResponse> => requests.put("/api/admin/update-password", { ...data }),
     getTokenInfo: (tokenId: string): Promise<TokenInfo> => requests.post("/api/admin/token-info", { tokenId }),
+    addNewToken: ({ tokenId, tokenData, token_type }: { tokenId: string; tokenData: TokenInfo; token_type: string }): Promise<{ message: string }> =>
+    requests.post("/api/admin/list-token", { tokenId, tokenData, token_type }),
+    getListedTokens: (tokenId?: string): Promise<AllTokensQuery> => requests.get(`/api/admin/listed-tokens${tokenId?`?tokenId=${tokenId}`:""}`),
   };
 
   const MirrorNodeRestAPI = {
-    getTokenInfo: (tokenId:string) => axios.get<TokenInfo>(`${process.env.REACT_APP_MIRROR_NODE_LINK}/api/v1/tokens/${tokenId}`)
-  } 
+    getTokenInfo: (tokenId: string) => axios.get<TokenInfo>(`${process.env.REACT_APP_MIRROR_NODE_LINK}/api/v1/tokens/${tokenId}`),
+  };
 
-  return { User, Auth, Admin , MirrorNodeRestAPI};
+  return { User, Auth, Admin, MirrorNodeRestAPI };
 };

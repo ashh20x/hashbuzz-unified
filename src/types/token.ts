@@ -43,3 +43,15 @@ export interface TokenInfo {
   type: string;
   wipe_key: null | string;
 }
+
+export type AllTokensQuery = {
+  message?: string;
+  data: {
+    added_by: number;
+    created_at: string;
+    id: number;
+    token_id: string;
+    token_type: string;
+    tokendata: TokenInfo;
+  }[];
+};
