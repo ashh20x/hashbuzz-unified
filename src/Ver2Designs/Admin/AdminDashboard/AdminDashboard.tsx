@@ -1,6 +1,7 @@
 import { Box, Button, Container, Divider, Grid, Stack, Typography, Avatar, Card } from "@mui/material";
 // import { DashboardHeader } from ;
 import React from "react";
+import { unstable_batchedUpdates } from "react-dom";
 import { useApiInstance } from "../../../APIConfig/api";
 import { AllTokensQuery } from "../../../types";
 import { DashboardHeader } from "../../Components";
@@ -52,7 +53,7 @@ const AdminDashboard = () => {
                   </Button>
                 </Stack>
                 <Divider />
-                <Grid container spacing={1} sx={{marginTop:2}}>
+                <Grid container spacing={1} sx={{ marginTop: 2 }}>
                   {listedTokens?.data && listedTokens.data.length > 0
                     ? listedTokens.data.map((token) => {
                         const tokenInfo = token.tokendata;
@@ -77,7 +78,21 @@ const AdminDashboard = () => {
           </Grid>
         </Box>
       </Container>
-      <AddNewTokenModal open={tokenModalOpen} onClose={() => setTokenModalOpen(false)} />
+      <AddNewTokenModal
+        open={tokenModalOpen}
+        onClose={(data) => {
+          unstable_batchedUpdates(() => {
+            setTokenModalOpen(false);
+            if (data)
+              setListedTokens((_d) => {
+                if (_d) {
+                  _d.data = [..._d.data, data];
+                  return { ..._d };
+                } else return null;
+              });
+          });
+        }}
+      />
     </Box>
   );
 };

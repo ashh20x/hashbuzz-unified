@@ -1,5 +1,5 @@
 import Picker from "emoji-picker-react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 // import { APICall } from "../../../APIConfig/APIServices";
@@ -11,7 +11,7 @@ import PreviewModal from "../../PreviewModal/PreviewModal";
 import { TemplateTable } from "../../Tables/TemplateTable";
 // import "emoji-mart/css/emoji-mart.css";
 import Image from "../../../IconsPng/arrow-symbol.png";
-import { ImageIcon } from "./ImageIcon";
+import { useStore } from "../../../Providers/StoreProvider";
 import { ShowImage } from "./ShowImage";
 import {
   ButtonWrap,
@@ -29,10 +29,9 @@ import {
   SimpleDiv,
   TableSection,
   WordsWrap,
-  Wrapper,
+  Wrapper
 } from "./TemplatePage.styles";
 import { YoutubeIcon } from "./YoutubeIcon";
-import { useStore } from "../../../Providers/StoreProvider";
 export const TemplatePage = () => {
   let navigate = useNavigate();
   const [srcLink, setSrcLink] = useState("https://www.youtube.com/embed/1lzba8D4FCU");
@@ -51,7 +50,7 @@ export const TemplatePage = () => {
   const [media, setMedia] = useState([]);
   const [displayMedia, setDisplayMedia] = useState([]);
   const [gifSelected, setGifSelect] = useState(false);
-  const [cookies, setCookie] = useCookies(["token"]);
+  // const [cookies, setCookie] = useCookies(["token"]);
   const [videoTitle, setVideoTitle] = useState(false);
   const [addMedia, setAddMedia] = useState(false);
   const [budgetMessage, setBudgetMessage] = useState("");
@@ -75,18 +74,6 @@ export const TemplatePage = () => {
     size: "36px",
     color: "#000000",
     sizeRes: "28px",
-  };
-  const main = {
-    weight: 600,
-    size: "18px",
-    color: "#696969",
-    sizeRes: "16px",
-  };
-  const body = {
-    weight: 400,
-    size: "18px",
-    color: "#696969",
-    sizeRes: "16px",
   };
   const handlePreview = () => {
     // navigate("/invoice");

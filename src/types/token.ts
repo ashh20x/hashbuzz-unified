@@ -44,14 +44,16 @@ export interface TokenInfo {
   wipe_key: null | string;
 }
 
+export interface TokenDataObj {
+  added_by: number;
+  created_at: string;
+  id: number;
+  token_id: string;
+  token_type: string;
+  tokendata: TokenInfo;
+}
+
 export type AllTokensQuery = {
   message?: string;
-  data: {
-    added_by: number;
-    created_at: string;
-    id: number;
-    token_id: string;
-    token_type: string;
-    tokendata: TokenInfo;
-  }[];
+  data: TokenDataObj[];
 };
