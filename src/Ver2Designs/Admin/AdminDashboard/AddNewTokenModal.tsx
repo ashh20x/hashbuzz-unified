@@ -7,14 +7,16 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useApiInstance } from "../../../APIConfig/api";
-import { TokenInfo } from "../../../types";
+import { TokenDataObj, TokenInfo } from "../../../types";
 import { Avatar, Card, Divider, Stack, Typography } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
+import SaveIcon from "@mui/icons-material/Save";
 import { Box } from "@mui/system";
 import { unstable_batchedUpdates } from "react-dom";
 import { toast } from "react-toastify";
 interface AddNewTokenModalProps {
   open: boolean;
-  onClose: () => void;
+  onClose: (data?:TokenDataObj) => void;
 }
 
 export default function AddNewTokenModal({ open, onClose }: AddNewTokenModalProps) {
@@ -40,12 +42,12 @@ export default function AddNewTokenModal({ open, onClose }: AddNewTokenModalProp
     }
   };
 
-  const handleClose = () => {
+  const handleClose = (data?:TokenDataObj) => {
     unstable_batchedUpdates(() => {
       setTokenId("");
       setTokenInfo(null);
     });
-    if (onClose) onClose();
+    if (onClose) onClose(data);
   };
 
   const handleAddNew = async () => {
@@ -54,28 +56,16 @@ export default function AddNewTokenModal({ open, onClose }: AddNewTokenModalProp
       if (tokenId && tokenId.length > 6 && tokenInfo) {
         // const tokenInfo =  await Admin.getTokenInfo(tokenId);
         const tokenInfoReq = await Admin.addNewToken({ tokenId, tokenData: tokenInfo, token_type: tokenInfo.type });
-
         toast.success(tokenInfoReq.message);
-        unstable_batchedUpdates(() => {
-          setTokenId("");
-          setTokenInfo(null);
-        });
+        handleClose(tokenInfoReq.data)
       }
     } catch (err) {
       console.log(err);
-    } finally {
-      setLoading(false);
     }
   };
 
   return (
-    <Dialog
-      open={open}
-      onClose={handleClose}
-      PaperProps={{
-        className: loading ? "isLoading" : "",
-      }}
-    >
+    <Dialog open={open} onClose={() => handleClose()}>
       <DialogTitle>Add New Token</DialogTitle>
       <DialogContent>
         <DialogContentText>Enter the token Id which you wanted to whitelist</DialogContentText>
@@ -113,10 +103,17 @@ export default function AddNewTokenModal({ open, onClose }: AddNewTokenModalProp
         ) : null}
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose}>Close</Button>
-        <Button disabled={!Boolean(tokenInfo)} variant={"contained"} onClick={handleAddNew}>
+        <Button onClick={() => handleClose()}>Close</Button>
+        <LoadingButton
+          loading={loading}
+          loadingPosition="start"
+          startIcon={<SaveIcon />}
+          variant="outlined"
+          onClick={handleAddNew}
+          disabled={!Boolean(tokenInfo)}
+        >
           Submit
-        </Button>
+        </LoadingButton>
       </DialogActions>
     </Dialog>
   );

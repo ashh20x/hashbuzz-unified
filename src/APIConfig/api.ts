@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosResponse } from "axios";
 import React, { useRef } from "react";
 import { useCookies } from "react-cookie";
 import { toast } from "react-toastify";
-import { AdminLoginResponse, AdminUpdatePassword, AllTokensQuery, AuthCred, CurrentUser, LogoutResponse, TokenInfo, UpdatePasswordResponse } from "../types";
+import { AdminLoginResponse, AdminUpdatePassword, AllTokensQuery, AuthCred, CurrentUser, LogoutResponse, TokenBalances, TokenDataObj, TokenInfo, UpdatePasswordResponse } from "../types";
 import { forceLogout, getErrorMessage } from "../Utilities/Constant";
 
 export const getCookie = (cname: string) => {
@@ -49,7 +49,7 @@ export const useApiInstance = () => {
   React.useEffect(() => {
     instance.current = axios.create({
       baseURL: process.env.REACT_APP_DAPP_API,
-      timeout: 15000,
+      timeout: 30000,
       headers: {
         Authorization: `Token ${cookies.token}${cookies.adminToken ? `, Token ${cookies.adminToken}` : ""}`,
         "Content-type": "application/json",
@@ -68,6 +68,7 @@ export const useApiInstance = () => {
     getCurrentUser: (): Promise<CurrentUser> => requests.get("/api/users/current"),
     updateConsent: (userData: { consent: boolean }): Promise<CurrentUser> => requests.patch(`/api/users/update-concent`, { ...userData }),
     updateWalletId: (userData: { walletId: string }): Promise<CurrentUser> => requests.put(`/api/users/update/wallet`, { ...userData }),
+    getTokenBalances:():Promise<TokenBalances[]> => requests.get("/api/users/token-balances")
   };
 
   const Auth = {
@@ -79,7 +80,7 @@ export const useApiInstance = () => {
   const Admin = {
     updatePassword: (data: AdminUpdatePassword): Promise<UpdatePasswordResponse> => requests.put("/api/admin/update-password", { ...data }),
     getTokenInfo: (tokenId: string): Promise<TokenInfo> => requests.post("/api/admin/token-info", { tokenId }),
-    addNewToken: ({ tokenId, tokenData, token_type }: { tokenId: string; tokenData: TokenInfo; token_type: string }): Promise<{ message: string }> =>
+    addNewToken: ({ tokenId, tokenData, token_type }: { tokenId: string; tokenData: TokenInfo; token_type: string }): Promise<{ message: string , data:TokenDataObj}> =>
     requests.post("/api/admin/list-token", { tokenId, tokenData, token_type }),
     getListedTokens: (tokenId?: string): Promise<AllTokensQuery> => requests.get(`/api/admin/listed-tokens${tokenId?`?tokenId=${tokenId}`:""}`),
   };

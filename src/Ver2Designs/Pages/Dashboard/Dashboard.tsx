@@ -1,10 +1,8 @@
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
 import BusinessIcon from "@mui/icons-material/Business";
 import LinkIcon from "@mui/icons-material/Link";
-import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import TwitterIcon from "@mui/icons-material/Twitter";
-import { Box, Button, Container, Divider, Grid, IconButton, Stack, Typography } from "@mui/material";
+import { Box, Button, Container, Grid, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import React from "react";
@@ -12,12 +10,11 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useApiInstance } from "../../../APIConfig/api";
 import { useHashconnectService } from "../../../HashConnect";
-import ℏicon from "../../../IconsPng/ℏicon.png";
 import { useStore } from "../../../Providers/StoreProvider";
-import HederaIcon from "../../../SVGR/HederaIcon";
 import { forceClearStorage } from "../../../Utilities/Constant";
 import { DashboardHeader } from "../../Components";
 import AdminPasswordSetup from "./AdminPasswordSetup";
+import Balances from "./Balances";
 import CampaignList from "./CampaignList";
 import { CardGenUtility } from "./CardGenUtility";
 import ConsentModal from "./ConsentModal";
@@ -131,9 +128,9 @@ const Dashboard = () => {
           />
 
           {/* Card for account balance */}
-          <CardGenUtility
+          {/* <CardGenUtility
             startIcon={<HederaIcon fill="#fff" fillBg="rgba(82, 102, 255, 0.5)" size={48} />}
-            title={"Hbar(ℏ) Balance"}
+            title={"Balances (ℏ)"}
             content={
               <Stack
                 direction={aboveXs ? "row" : "column-reverse"}
@@ -143,7 +140,6 @@ const Dashboard = () => {
               >
                 <Typography variant="h5">
                   <img src={ℏicon} alt={"ℏ"} style={{ height: "1.5rem", width: "auto", marginRight: 10, display: "inline-block" }} />
-                  {/* {(store?.currentUser?.available_budget ?? 0 / 1e8).toFixed(4)} */}
                   {"00000.0000"}
                 </Typography>
                 {aboveXs && <Divider orientation={"vertical"} sx={{ marginLeft: 0.75 }} />}
@@ -157,7 +153,9 @@ const Dashboard = () => {
                 </Box>
               </Stack>
             }
-          />
+          /> */}
+
+          <Balances />
         </Grid>
 
         {/* Campaign List section */}
