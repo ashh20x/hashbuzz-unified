@@ -25,7 +25,7 @@ import SpeedDialTooltipOpen from "./SpeedDialTooltipOpen";
 const Dashboard = () => {
   const store = useStore();
   const theme = useTheme();
-  const aboveXs = useMediaQuery(theme.breakpoints.up("sm"));
+
   const { User } = useApiInstance();
   const navigate = useNavigate();
   const isDeviceIsSm = useMediaQuery(theme.breakpoints.down("sm"));
@@ -48,6 +48,7 @@ const Dashboard = () => {
 
   React.useEffect(() => {
     getUserData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   //Hashpack functions
@@ -128,33 +129,6 @@ const Dashboard = () => {
           />
 
           {/* Card for account balance */}
-          {/* <CardGenUtility
-            startIcon={<HederaIcon fill="#fff" fillBg="rgba(82, 102, 255, 0.5)" size={48} />}
-            title={"Balances (ℏ)"}
-            content={
-              <Stack
-                direction={aboveXs ? "row" : "column-reverse"}
-                justifyContent="center"
-                alignItems={aboveXs ? "center" : "normal"}
-                sx={{ height: aboveXs ? 35 : "auto" }}
-              >
-                <Typography variant="h5">
-                  <img src={ℏicon} alt={"ℏ"} style={{ height: "1.5rem", width: "auto", marginRight: 10, display: "inline-block" }} />
-                  {"00000.0000"}
-                </Typography>
-                {aboveXs && <Divider orientation={"vertical"} sx={{ marginLeft: 0.75 }} />}
-                <Box>
-                  <IconButton size={"small"} title="Top your campaign budget" disabled={!Boolean(store?.currentUser?.hedera_wallet_id)}>
-                    <AddCircleIcon fontSize="inherit" />
-                  </IconButton>
-                  <IconButton size={"small"} title="Reimburse campaign budget" disabled={!Boolean(store?.currentUser?.hedera_wallet_id)}>
-                    <RemoveCircleIcon fontSize="inherit" />
-                  </IconButton>
-                </Box>
-              </Stack>
-            }
-          /> */}
-
           <Balances />
         </Grid>
 
