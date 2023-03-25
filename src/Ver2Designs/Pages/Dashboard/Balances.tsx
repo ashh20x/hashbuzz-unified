@@ -1,13 +1,33 @@
+import { AddCircle, ArrowBackIos, ArrowForwardIos, RemoveCircle } from "@mui/icons-material";
+import {
+  Avatar,
+  Box,
+  Button,
+  ButtonGroup,
+  Card,
+  Divider,
+  Grid,
+  Grow,
+  Paper,
+  Stack,
+  Typography,
+  useMediaQuery,
+  useTheme,
+  ListItemAvatar,
+  ListItemText,
+} from "@mui/material";
+import ClickAwayListener from "@mui/material/ClickAwayListener";
+import MenuItem from "@mui/material/MenuItem";
+import MenuList from "@mui/material/MenuList";
+import Popper from "@mui/material/Popper";
 import React, { useState } from "react";
-import { cardStyle } from "./CardGenUtility";
-import { Grid, Card, Stack, useMediaQuery, useTheme, Divider, Box, Typography, Avatar, Button, ButtonGroup } from "@mui/material";
-import { ArrowForwardIos, ArrowBackIos } from "@mui/icons-material";
-import HederaIcon from "../../../SVGR/HederaIcon";
-import { AddCircle, RemoveCircle } from "@mui/icons-material";
-import { EntityBalances } from "../../../types";
-import { useApiInstance } from "../../../APIConfig/api";
 import { toast } from "react-toastify";
+import { useApiInstance } from "../../../APIConfig/api";
+import { useStore } from "../../../Providers/StoreProvider";
+import HederaIcon from "../../../SVGR/HederaIcon";
+import { EntityBalances } from "../../../types";
 import { getErrorMessage } from "../../../Utilities/Constant";
+import { cardStyle } from "./CardGenUtility";
 
 interface BalanceObject {
   activeIndex: number;
@@ -20,6 +40,7 @@ const INITIAL_BALANCES: BalanceObject = {
       entityBalance: "1234.1245",
       entityIcon: "ℏ",
       entitySymbol: "ℏ",
+      entityId: "",
     },
   ],
 };
@@ -29,11 +50,10 @@ const Balances = () => {
   const aboveXs = useMediaQuery(theme.breakpoints.up("sm"));
   const [balances, setBalances] = useState<BalanceObject>(JSON.parse(JSON.stringify(INITIAL_BALANCES)));
   const { User } = useApiInstance();
-
-  const topUpButtons = [
-    <Button key="reimburse" startIcon={<RemoveCircle />} />,
-    <Button key="top-up" startIcon={<AddCircle />}/>,
-  ];
+  const store = useStore();
+  // const [popOverOpen, setPopOverOpen] = React.useState(false);
+  const [balanceList, setBalanceList] = React.useState<{ open: boolean; operation: "topup" | "reimburse" }>({ open: false, operation: "topup" });
+  const anchorRef = React.useRef<HTMLDivElement>(null);
 
   const fetchTokenBalances = React.useCallback(() => {
     try {
@@ -43,9 +63,17 @@ const Balances = () => {
           entityBalance: d.available_balance.toFixed(4),
           entityIcon: d.token_symbol,
           entitySymbol: "",
+          entityId: d.token_id,
         }));
         setBalances((_balances) => {
-          _balances.balances = [..._balances.balances, ...formateBalanceRecord];
+          _balances.balances = [
+            {
+              ..._balances.balances[0],
+              entityBalance: (store?.currentUser?.available_budget ?? 0 / 1e8).toFixed(4),
+              entityId: store?.currentUser?.hedera_wallet_id ?? "",
+            },
+            ...formateBalanceRecord,
+          ];
           return { ..._balances };
         });
       })();
@@ -53,7 +81,7 @@ const Balances = () => {
       toast.error(getErrorMessage(err));
       console.log(err);
     }
-  }, [User]);
+  }, [User, store?.currentUser?.available_budget, store?.currentUser?.hedera_wallet_id]);
 
   React.useEffect(() => {
     fetchTokenBalances();
@@ -73,6 +101,42 @@ const Balances = () => {
       return { ..._bal };
     });
   };
+
+  const handleClose = (event: Event) => {
+    if (anchorRef.current && anchorRef.current.contains(event.target as HTMLElement)) {
+      return;
+    }
+
+    setBalanceList((_d) => ({ ..._d, open: false }));
+  };
+
+  const handleMenuItemClick = (event: React.MouseEvent<HTMLLIElement, MouseEvent>, index: number) => {
+    // setBalances(index);
+    //Start Operation for the top up
+    setBalanceList((_d) => ({ ..._d, open: false }));
+  };
+
+  const handleTopupOrReimClick = (operation: "topup" | "reimburse") => {
+    setBalanceList({
+      open: true,
+      operation,
+    });
+  };
+
+  const topUpButtons = [
+    <Button
+      key="reimburse"
+      startIcon={<RemoveCircle />}
+      title="Reimburse from hashbuzz contract to your wallet"
+      onClick={() => handleTopupOrReimClick("reimburse")}
+    />,
+    <Button
+      key="top-up"
+      startIcon={<AddCircle />}
+      onClick={() => handleTopupOrReimClick("topup")}
+      title="Topup your hashbuzz account for the campaign"
+    />,
+  ];
 
   return (
     <Grid item lg={3} xl={3} md={4} sm={6} xs={6}>
@@ -98,7 +162,12 @@ const Balances = () => {
               <Typography variant="h6" sx={{ lineHeight: 1 }}>
                 {" Balances(ℏ)"}
               </Typography>
-              <ButtonGroup size="small" aria-label="Balance update group" sx={{ ".MuiButton-startIcon": { margin: 0 }, justifyContent: "center" }}>
+              <ButtonGroup
+                size="small"
+                aria-label="Balance update group"
+                sx={{ ".MuiButton-startIcon": { margin: 0 }, justifyContent: "center" }}
+                ref={anchorRef}
+              >
                 {topUpButtons}
               </ButtonGroup>
             </Stack>
@@ -127,6 +196,45 @@ const Balances = () => {
             </Box>
           </Box>
         </Stack>
+        <Popper
+          sx={{
+            zIndex: 1,
+          }}
+          open={balanceList.open}
+          anchorEl={anchorRef.current}
+          role={undefined}
+          transition
+          disablePortal
+        >
+          {({ TransitionProps, placement }) => (
+            <Grow
+              {...TransitionProps}
+              style={{
+                transformOrigin: placement === "bottom" ? "center top" : "center bottom",
+              }}
+            >
+              <Paper>
+                <ClickAwayListener onClickAway={handleClose}>
+                  <MenuList id="entityList-for-topup" autoFocusItem>
+                    {balances.balances.map((bal, index) => (
+                      <MenuItem onClick={(event) => handleMenuItemClick(event, index)}>
+                        <ListItemAvatar>{bal.entityIcon}</ListItemAvatar>
+                        <ListItemText>
+                          {bal.entityBalance} {bal.entitySymbol + " "}
+                        </ListItemText>
+                        {balanceList.operation === "reimburse" ? (
+                          <Typography variant="body2" color="text.secondary">
+                            {"(max)"}
+                          </Typography>
+                        ) : null}
+                      </MenuItem>
+                    ))}
+                  </MenuList>
+                </ClickAwayListener>
+              </Paper>
+            </Grow>
+          )}
+        </Popper>
       </Card>
     </Grid>
   );
@@ -158,39 +266,5 @@ const BalanceCard = ({ entityBal, entityIcon, entitySymbol }: BalanceCardProps) 
     </Stack>
   );
 };
-
-{
-  /* <Popper
-  sx={{
-    zIndex: 1,
-  }}
-  open={open}
-  anchorEl={anchorRef.current}
-  role={undefined}
-  transition
-  disablePortal
->
-  {({ TransitionProps, placement }) => (
-    <Grow
-      {...TransitionProps}
-      style={{
-        transformOrigin: placement === "bottom" ? "center top" : "center bottom",
-      }}
-    >
-      <Paper>
-        <ClickAwayListener onClickAway={handleClose}>
-          <MenuList id="split-button-menu" autoFocusItem>
-            {options.map((option, index) => (
-              <MenuItem key={option} disabled={index === 2} selected={index === selectedIndex} onClick={(event) => handleMenuItemClick(event, index)}>
-                {option}
-              </MenuItem>
-            ))}
-          </MenuList>
-        </ClickAwayListener>
-      </Paper>
-    </Grow>
-  )}
-</Popper>; */
-}
 
 export default Balances;
