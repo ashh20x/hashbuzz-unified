@@ -1,16 +1,16 @@
 import { Dialog } from "@mui/material";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useDappAPICall } from "../../APIConfig/dAppApiServices";
 import { useHashconnectService } from "../../HashConnect";
 import { useSmartContractServices } from "../../HashConnect/smartcontractService";
 import { useStore } from "../../Providers/StoreProvider";
 import Typography from "../../Typography/Typography";
 import { delay } from "../../Utilities/Constant";
 import PrimaryButton from "../Buttons/PrimaryButton";
-import { BoxCont, ButtonWrapPrimary, CustomInput, CustomParagraph, Label, Row, OverlayBox } from "./PreviewModal.styles";
-import { ErrorTextWrap } from '../Pages/TemplatePage/TemplatePage.styles'
-import { useDappAPICall } from "../../APIConfig/dAppApiServices";
+import { ErrorTextWrap } from '../Pages/TemplatePage/TemplatePage.styles';
+import { BoxCont, ButtonWrapPrimary, CustomInput, CustomParagraph, Label, OverlayBox, Row } from "./PreviewModal.styles";
 const TopUpModal = ({ open, setOpen, isTopUp }) => {
   const [amount, setAmount] = useState(0);
   const [paymentStatus, setPaymentStatus] = useState(null);

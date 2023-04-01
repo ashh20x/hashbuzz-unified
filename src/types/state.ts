@@ -15,3 +15,6 @@ export interface EntityBalances {
   entityId:string,
   entityType:string
 }
+
+
+export type BalOperation = "topup" | "reimburse";

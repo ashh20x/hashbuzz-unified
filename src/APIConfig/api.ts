@@ -2,7 +2,21 @@ import axios, { AxiosInstance, AxiosResponse } from "axios";
 import React, { useRef } from "react";
 import { useCookies } from "react-cookie";
 import { toast } from "react-toastify";
-import { AdminLoginResponse, AdminUpdatePassword, AllTokensQuery, AuthCred, CurrentUser, LogoutResponse, TokenBalances, TokenDataObj, TokenInfo, UpdatePasswordResponse } from "../types";
+import {
+  AdminLoginResponse,
+  AdminUpdatePassword,
+  AllTokensQuery,
+  AuthCred,
+  BalanceResponse,
+  CreateTransactionByteBody,
+  CurrentUser,
+  LogoutResponse,
+  SetTransactionBody,
+  TokenBalances,
+  TokenDataObj,
+  TokenInfo,
+  UpdatePasswordResponse,
+} from "../types";
 import { forceLogout, getErrorMessage } from "../Utilities/Constant";
 
 export const getCookie = (cname: string) => {
@@ -68,7 +82,7 @@ export const useApiInstance = () => {
     getCurrentUser: (): Promise<CurrentUser> => requests.get("/api/users/current"),
     updateConsent: (userData: { consent: boolean }): Promise<CurrentUser> => requests.patch(`/api/users/update-concent`, { ...userData }),
     updateWalletId: (userData: { walletId: string }): Promise<CurrentUser> => requests.put(`/api/users/update/wallet`, { ...userData }),
-    getTokenBalances:():Promise<TokenBalances[]> => requests.get("/api/users/token-balances")
+    getTokenBalances: (): Promise<TokenBalances[]> => requests.get("/api/users/token-balances"),
   };
 
   const Auth = {
@@ -80,14 +94,29 @@ export const useApiInstance = () => {
   const Admin = {
     updatePassword: (data: AdminUpdatePassword): Promise<UpdatePasswordResponse> => requests.put("/api/admin/update-password", { ...data }),
     getTokenInfo: (tokenId: string): Promise<TokenInfo> => requests.post("/api/admin/token-info", { tokenId }),
-    addNewToken: ({ tokenId, tokenData, token_type }: { tokenId: string; tokenData: TokenInfo; token_type: string }): Promise<{ message: string , data:TokenDataObj}> =>
-    requests.post("/api/admin/list-token", { tokenId, tokenData, token_type }),
-    getListedTokens: (tokenId?: string): Promise<AllTokensQuery> => requests.get(`/api/admin/listed-tokens${tokenId?`?tokenId=${tokenId}`:""}`),
+    addNewToken: ({
+      tokenId,
+      tokenData,
+      token_type,
+    }: {
+      tokenId: string;
+      tokenData: TokenInfo;
+      token_type: string;
+    }): Promise<{ message: string; data: TokenDataObj }> => requests.post("/api/admin/list-token", { tokenId, tokenData, token_type }),
+    getListedTokens: (tokenId?: string): Promise<AllTokensQuery> => requests.get(`/api/admin/listed-tokens${tokenId ? `?tokenId=${tokenId}` : ""}`),
   };
 
   const MirrorNodeRestAPI = {
     getTokenInfo: (tokenId: string) => axios.get<TokenInfo>(`${process.env.REACT_APP_MIRROR_NODE_LINK}/api/v1/tokens/${tokenId}`),
+    getBalancesForAccountId: (accountId: string) =>
+      axios.get<BalanceResponse>(`${process.env.REACT_APP_MIRROR_NODE_LINK}/api/v1/balances?account.id=${accountId}`),
   };
 
-  return { User, Auth, Admin, MirrorNodeRestAPI };
+  const Transaction = {
+    createTransactionBytes: (data: CreateTransactionByteBody): Promise<{ transactionBytes: any }> =>
+      requests.post("/api/transaction/create-topup-transaction", { ...data }),
+    setTransactionAmount: (data: SetTransactionBody): Promise<any> => requests.post("/api/transaction/create-topup-transaction", { ...data }),
+  };
+
+  return { User, Auth, Admin, MirrorNodeRestAPI, Transaction };
 };

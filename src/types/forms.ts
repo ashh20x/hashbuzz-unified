@@ -7,7 +7,7 @@ export interface FormFelid<T> {
   showPassword?: boolean;
 }
 
-export type  AdminPasswordFormState = {
+export type AdminPasswordFormState = {
   email: FormFelid<string>;
   password: FormFelid<string>;
 };
@@ -18,12 +18,35 @@ export type AdminUpdatePassword = {
 };
 
 export type UpdatePasswordResponse = {
-  message:string,
-  user?:CurrentUser
-}
+  message: string;
+  user?: CurrentUser;
+};
 
-export type AdminLoginResponse  = {
-  message:string,
-  user:CurrentUser,
-  adminToken:string
-}
+export type AdminLoginResponse = {
+  message: string;
+  user: CurrentUser;
+  adminToken: string;
+};
+
+type TopupAmounts = {
+  value: number;
+  fee: number;
+  total: number;
+};
+
+export type CreateTransactionEntity = {
+  entityType: string;
+  entityId?: string;
+  senderId: string;
+  amount: TopupAmounts;
+};
+
+export type CreateTransactionByteBody = {
+  entity: CreateTransactionEntity;
+  connectedAccountId: string;
+};
+
+export type SetTransactionBody = {
+  entity: CreateTransactionEntity;
+  transactionId: string;
+};
