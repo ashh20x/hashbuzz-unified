@@ -12,5 +12,6 @@ export interface EntityBalances {
   entitySymbol: string;
   entityBalance: string;
   entityIcon: React.ReactNode;
-  entityId:string
+  entityId:string,
+  entityType:string
 }

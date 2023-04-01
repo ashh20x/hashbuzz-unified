@@ -41,6 +41,7 @@ const INITIAL_BALANCES: BalanceObject = {
       entityIcon: "ℏ",
       entitySymbol: "ℏ",
       entityId: "",
+      entityType:"HBAR"
     },
   ],
 };
@@ -64,6 +65,7 @@ const Balances = () => {
           entityIcon: d.token_symbol,
           entitySymbol: "",
           entityId: d.token_id,
+          entityType:d.token_type,
         }));
         setBalances((_balances) => {
           _balances.balances = [
