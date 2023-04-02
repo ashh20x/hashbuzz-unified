@@ -20,7 +20,7 @@ export const useSmartContractServices = () => {
         if (UpdateBalanceTransaction.success) {
           const getBal = await Transaction.setTransactionAmount({ entity, transactionId: UpdateBalanceTransaction.id! });
           //@ts-ignore
-          store.updateState((prevS: any) => ({ ...prevS, available_budget: getBal.available_budget }));
+          // store.updateState((prevS: any) => ({ ...prevS, available_budget: getBal.available_budget }));
         }
         return UpdateBalanceTransaction;
       }

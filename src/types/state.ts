@@ -6,6 +6,7 @@ export interface AppState {
   currentUser?: CurrentUser;
   campaigns?: Campaign[];
   auth?: AuthCred;
+  balances:EntityBalances[]
 }
 
 export interface EntityBalances {
