@@ -8,30 +8,29 @@ import {
   Divider,
   Grid,
   Grow,
+  ListItemAvatar,
+  ListItemText,
   Paper,
   Stack,
   Typography,
   useMediaQuery,
   useTheme,
-  ListItemAvatar,
-  ListItemText,
 } from "@mui/material";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
 import MenuItem from "@mui/material/MenuItem";
 import MenuList from "@mui/material/MenuList";
 import Popper from "@mui/material/Popper";
 import React, { useState } from "react";
+import { unstable_batchedUpdates } from "react-dom";
 import { toast } from "react-toastify";
 import { useApiInstance } from "../../../APIConfig/api";
+import { useHashconnectService } from "../../../HashConnect";
 import { useStore } from "../../../Providers/StoreProvider";
 import HederaIcon from "../../../SVGR/HederaIcon";
-import { EntityBalances, BalOperation } from "../../../types";
+import { BalOperation, EntityBalances } from "../../../types";
 import { getErrorMessage } from "../../../Utilities/Constant";
 import { cardStyle } from "./CardGenUtility";
-import { unstable_batchedUpdates } from "react-dom";
 import TopupModal from "./TopupModal";
-import { useSmartContractServices } from "../../../HashConnect/smartcontractService";
-import { useHashconnectService } from "../../../HashConnect";
 
 interface BalanceObject {
   activeIndex: number;
@@ -53,62 +52,27 @@ const INITIAL_BALANCES: BalanceObject = {
 const Balances = () => {
   const theme = useTheme();
   const aboveXs = useMediaQuery(theme.breakpoints.up("sm"));
-  const [balances, setBalances] = useState<BalanceObject>(JSON.parse(JSON.stringify(INITIAL_BALANCES)));
+  const store = useStore();
+  const balances = store?.balances;
+
+  const [activeIndex, setActiveIndex] = useState<number>(0);
   const [topupModalData, setTopupModalData] = useState<EntityBalances | null>(null);
 
-  const { pairingData, connectToExtension, hashconnect } = useHashconnectService();
+  const { pairingData, connectToExtension } = useHashconnectService();
 
   const { User, MirrorNodeRestAPI } = useApiInstance();
-  const store = useStore();
   // const [popOverOpen, setPopOverOpen] = React.useState(false);
   const [balanceList, setBalanceList] = React.useState<{ open: boolean; operation: BalOperation }>({ open: false, operation: "topup" });
   const anchorRef = React.useRef<HTMLDivElement>(null);
 
-  const fetchTokenBalances = React.useCallback(() => {
-    try {
-      (async () => {
-        const balancesData = await User.getTokenBalances();
-        const formateBalanceRecord = balancesData.map((d) => ({
-          entityBalance: d.available_balance.toFixed(4),
-          entityIcon: d.token_symbol,
-          entitySymbol: "",
-          entityId: d.token_id,
-          entityType: d.token_type,
-        }));
-        setBalances((_balances) => {
-          _balances.balances = [
-            {
-              ..._balances.balances[0],
-              entityBalance: (store?.currentUser?.available_budget ?? 0 / 1e8).toFixed(4),
-              entityId: store?.currentUser?.hedera_wallet_id ?? "",
-            },
-            ...formateBalanceRecord,
-          ];
-          return { ..._balances };
-        });
-      })();
-    } catch (err) {
-      toast.error(getErrorMessage(err));
-      console.log(err);
-    }
-  }, [User, store?.currentUser?.available_budget, store?.currentUser?.hedera_wallet_id]);
-
-  React.useEffect(() => {
-    fetchTokenBalances();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const handleBalanceNavigator = (navigate: "next" | "prev") => {
-    setBalances((_bal) => {
-      const index = _bal.activeIndex;
-      const length = _bal.balances.length;
+    setActiveIndex((index) => {
+      const length = balances!.length;
       if (navigate === "next") {
-        _bal.activeIndex = index <= length - 1 ? index + 1 : 0;
+        return index <= length - 1 ? index + 1 : 0;
       } else {
-        _bal.activeIndex = index >= 0 ? index - 1 : length - 1;
+        return index >= 0 ? index - 1 : length - 1;
       }
-      // _bal.activeIndex = index < length - 1 && index > 0 ? (navigate === "next" ? index + 1 : index - 1) : navigate === "prev" ? length - 1 : 0;
-      return { ..._bal };
     });
   };
 
@@ -122,7 +86,7 @@ const Balances = () => {
 
   const handleMenuItemClick = async (event: React.MouseEvent<HTMLLIElement, MouseEvent>, index: number) => {
     event.preventDefault();
-    const entity = balances.balances[index];
+    const entity = balances![index];
     if (balanceList.operation === "topup") {
       //Start Operation for the top up
       const accountId = pairingData?.accountIds[0];
@@ -217,19 +181,19 @@ const Balances = () => {
                   <Button
                     key="next_button"
                     startIcon={<ArrowBackIos />}
-                    disabled={balances.activeIndex === 0}
+                    disabled={activeIndex === 0}
                     onClick={() => handleBalanceNavigator("prev")}
                   />
                   <BalanceCard
-                    entityBal={balances.balances[balances.activeIndex].entityBalance}
-                    entityIcon={balances.balances[balances.activeIndex].entityIcon}
-                    entitySymbol={balances.balances[balances.activeIndex].entitySymbol}
+                    entityBal={balances![activeIndex].entityBalance}
+                    entityIcon={balances![activeIndex].entityIcon}
+                    entitySymbol={balances![activeIndex].entitySymbol}
                     key="balance_card"
                   />
                   <Button
                     key="prev_button"
                     startIcon={<ArrowForwardIos />}
-                    disabled={balances.activeIndex === balances.balances.length - 1}
+                    disabled={activeIndex === balances!.length - 1}
                     onClick={() => handleBalanceNavigator("next")}
                   />
                 </ButtonGroup>
@@ -256,7 +220,7 @@ const Balances = () => {
                 <Paper>
                   <ClickAwayListener onClickAway={handleClose}>
                     <MenuList id="entityList-for-topup" autoFocusItem>
-                      {balances.balances.map((bal, index) => (
+                      {balances!.map((bal, index) => (
                         <MenuItem onClick={(event) => handleMenuItemClick(event, index)}>
                           <ListItemAvatar>{bal.entityIcon}</ListItemAvatar>
                           <ListItemText>

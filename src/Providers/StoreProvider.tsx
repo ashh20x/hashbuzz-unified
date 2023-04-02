@@ -1,9 +1,11 @@
 import React, { useCallback } from "react";
 import { useCookies } from "react-cookie";
+import { toast } from "react-toastify";
 import { useApiInstance } from "../APIConfig/api";
 // import { Auth } from "../APIConfig/api";
 import { CurrentUser } from "../types";
 import { AppState } from "../types/state";
+import { getErrorMessage } from "../Utilities/Constant";
 
 interface StoreContextType extends AppState {
   updateState: React.Dispatch<React.SetStateAction<AppState>>;
@@ -13,14 +15,22 @@ interface StoreContextType extends AppState {
 const StoreContext = React.createContext<StoreContextType | null>(null);
 
 export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
-  const [state, updateState] = React.useState<AppState>({});
+  const [state, updateState] = React.useState<AppState>({balances: [
+    {
+      entityBalance: "1234.1245",
+      entityIcon: "ℏ",
+      entitySymbol: "ℏ",
+      entityId: "",
+      entityType: "HBAR",
+    },
+  ]});
   const [cookies, setCookie] = useCookies(["token", "refreshToken", "adminToken"]);
   // const [axiosInstance, setAxiosInstance] = React.useState<AxiosInstance | undefined>();
-  const { Auth } = useApiInstance();
+  const { Auth , User } = useApiInstance();
 
   const intervalRef = React.useRef<NodeJS.Timer>();
 
-  const getBalances = React.useCallback(() => {
+  const checkAndUpdateLoggedInUser = React.useCallback(() => {
     let localData = localStorage.getItem("user");
     if (localData) {
       const currentUser = JSON.parse(localData) as CurrentUser;
@@ -33,12 +43,41 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
           refreshToken,
         },
       }));
-      // setState((_d) => ({ ..._d, user: localData, token: cookies.token }));
     }
   }, [cookies]);
 
+  const checkAndUpdateEntityBalances = React.useCallback(() => {
+    try {
+      (async () => {
+        const balancesData = await User.getTokenBalances();
+        const formateBalanceRecord = balancesData.map((d) => ({
+          entityBalance: d.available_balance.toFixed(4),
+          entityIcon: d.token_symbol,
+          entitySymbol: "",
+          entityId: d.token_id,
+          entityType: d.token_type,
+        }));
+        updateState((_state) => {
+          _state.balances = [
+            {
+              ..._state.balances[0],
+              entityBalance: (state?.currentUser?.available_budget ?? 0 / 1e8).toFixed(4),
+              entityId: state?.currentUser?.hedera_wallet_id ?? "",
+            },
+            ...formateBalanceRecord,
+          ];
+          return { ..._state };
+        });
+      })();
+    } catch (err) {
+      toast.error(getErrorMessage(err));
+    }
+  }, [User, state?.currentUser?.available_budget, state?.currentUser?.hedera_wallet_id]);
+
   React.useEffect(() => {
-    getBalances();
+    checkAndUpdateLoggedInUser();
+    checkAndUpdateEntityBalances();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // React.useEffect(() => {
