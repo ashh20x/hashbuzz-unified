@@ -1,5 +1,4 @@
 import { useApiInstance } from "../APIConfig/api";
-import { useDappAPICall } from "../APIConfig/dAppApiServices";
 import { useStore } from "../Providers/StoreProvider";
 import { CreateTransactionEntity } from "../types";
 import { useHashconnectService } from "./hashconnectService";
@@ -15,7 +14,7 @@ export const useSmartContractServices = () => {
   const topUpAccount = async (entity: CreateTransactionEntity) => {
     try {
       if (pairingData && pairingData.accountIds) {
-        const { transactionBytes } = await Transaction.createTransactionBytes({ entity, connectedAccountId: pairingData?.accountIds[0] });
+        const transactionBytes  = await Transaction.createTransactionBytes({ entity, connectedAccountId: pairingData?.accountIds[0] });
         const UpdateBalanceTransaction = await sendTransaction(transactionBytes, pairingData?.accountIds[0]!, false, false);
 
         if (UpdateBalanceTransaction.success) {
