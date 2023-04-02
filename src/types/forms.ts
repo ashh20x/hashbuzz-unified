@@ -1,3 +1,4 @@
+import { TokenBalances } from "./users";
 import { CurrentUser } from "./users";
 
 export interface FormFelid<T> {
@@ -50,3 +51,11 @@ export type SetTransactionBody = {
   entity: CreateTransactionEntity;
   transactionId: string;
 };
+
+export type TopUpResponse = {
+  error?:boolean,
+  message?:string,
+  success?:boolean,
+  available_budget?:number,
+  balance?:TokenBalances
+}

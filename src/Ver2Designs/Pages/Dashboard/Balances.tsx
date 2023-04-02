@@ -28,26 +28,10 @@ import { useHashconnectService } from "../../../HashConnect";
 import { useStore } from "../../../Providers/StoreProvider";
 import HederaIcon from "../../../SVGR/HederaIcon";
 import { BalOperation, EntityBalances } from "../../../types";
-import { getErrorMessage } from "../../../Utilities/Constant";
 import { cardStyle } from "./CardGenUtility";
 import TopupModal from "./TopupModal";
 
-interface BalanceObject {
-  activeIndex: number;
-  balances: EntityBalances[];
-}
-const INITIAL_BALANCES: BalanceObject = {
-  activeIndex: 0,
-  balances: [
-    {
-      entityBalance: "1234.1245",
-      entityIcon: "ℏ",
-      entitySymbol: "ℏ",
-      entityId: "",
-      entityType: "HBAR",
-    },
-  ],
-};
+
 
 const Balances = () => {
   const theme = useTheme();
@@ -60,7 +44,7 @@ const Balances = () => {
 
   const { pairingData, connectToExtension } = useHashconnectService();
 
-  const { User, MirrorNodeRestAPI } = useApiInstance();
+  const {  MirrorNodeRestAPI } = useApiInstance();
   // const [popOverOpen, setPopOverOpen] = React.useState(false);
   const [balanceList, setBalanceList] = React.useState<{ open: boolean; operation: BalOperation }>({ open: false, operation: "topup" });
   const anchorRef = React.useRef<HTMLDivElement>(null);
