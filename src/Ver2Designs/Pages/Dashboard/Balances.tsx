@@ -132,7 +132,7 @@ const Balances = () => {
         const accountBal = accountBalReq.data.balances.find((b) => b.account === accountId);
 
         // User is asking for the topup of fiet hbar
-        if (entity.entityType === "habr") {
+        if (entity.entityType === "HBAR") {
           accountBal?.balance ? setTopupModalData(entity) : toast.warning("Insufficient fund to the account.");
         } else {
           const tokenBalance = accountBal?.tokens.find((t) => t.token_id === entity.entityId);

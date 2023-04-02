@@ -21,6 +21,9 @@ import InputLabel from "@mui/material/InputLabel";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import FormHelperText from "@mui/material/FormHelperText";
 import { EntityBalances, BalOperation, FormFelid } from "../../../types";
+import { useSmartContractServices } from "../../../HashConnect/smartcontractService";
+import { toast } from "react-toastify";
+import { useHashconnectService } from "../../../HashConnect";
 
 interface TopupModalProps {
   data: EntityBalances | null;
@@ -47,6 +50,9 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
   const [formData, setFromData] = React.useState<CurrentFormState>(JSON.parse(JSON.stringify(FORM_INITIAL_STATE)));
   const inputRef = React.createRef<HTMLInputElement>();
 
+  const { topUpAccount } = useSmartContractServices();
+  const { pairingData } = useHashconnectService();
+
   const inputChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
     setFromData((_d) => ({
@@ -57,8 +63,21 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
     }));
   };
 
-  const handleTopup = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleTopup = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
+    if (formData.amount.value > 0 && data?.entityType && pairingData?.accountIds) {
+      const value = parseFloat(formData.amount.value.toFixed(4));
+      const fee = parseFloat(calculateCharge(value).toFixed(4));
+      const total =  parseFloat(calculateTotal(value).toFixed(4))
+      await topUpAccount({
+        entityType: data?.entityType,
+        entityId: data?.entityId,
+        amount: { value, fee, total },
+        senderId: pairingData?.accountIds[0],
+      });
+    } else {
+      toast.warning("Please Enter the valid amount to topup");
+    }
   };
 
   const modalClose = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -196,7 +215,7 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
           <Button>Reimburse</Button>
         ) : (
           <Button autoFocus onClick={handleTopup} variant="contained">
-            Topup<i>{` ( ${calculateTotal(formData.amount.value)}  ${data?.entityIcon} )`}</i>
+            Topup<i>{` ( ${calculateTotal(formData.amount.value).toFixed(4)}  ${data?.entityIcon} )`}</i>
           </Button>
         )}
       </DialogActions>
