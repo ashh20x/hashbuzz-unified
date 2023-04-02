@@ -24,6 +24,9 @@ import { EntityBalances, BalOperation, FormFelid } from "../../../types";
 import { useSmartContractServices } from "../../../HashConnect/smartcontractService";
 import { toast } from "react-toastify";
 import { useHashconnectService } from "../../../HashConnect";
+import { LoadingButton } from "@mui/lab";
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import { unstable_batchedUpdates } from "react-dom";
 
 interface TopupModalProps {
   data: EntityBalances | null;
@@ -49,6 +52,7 @@ const calculateTotal = (amt: number) => amt + calculateCharge(amt);
 const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
   const [formData, setFromData] = React.useState<CurrentFormState>(JSON.parse(JSON.stringify(FORM_INITIAL_STATE)));
   const inputRef = React.createRef<HTMLInputElement>();
+  const [loading, setLoading] = React.useState(false);
 
   const { topUpAccount } = useSmartContractServices();
   const { pairingData } = useHashconnectService();
@@ -65,18 +69,38 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
 
   const handleTopup = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    if (formData.amount.value > 0 && data?.entityType && pairingData?.accountIds) {
-      const value = parseFloat(formData.amount.value.toFixed(4));
-      const fee = parseFloat(calculateCharge(value).toFixed(4));
-      const total =  parseFloat(calculateTotal(value).toFixed(4))
-      await topUpAccount({
-        entityType: data?.entityType,
-        entityId: data?.entityId,
-        amount: { value, fee, total },
-        senderId: pairingData?.accountIds[0],
-      });
-    } else {
-      toast.warning("Please Enter the valid amount to topup");
+    setLoading(true);
+    try {
+      if (formData.amount.value > 0 && data?.entityType && pairingData?.accountIds) {
+        const value = parseFloat(formData.amount.value.toFixed(4));
+        const fee = parseFloat(calculateCharge(value).toFixed(4));
+        const total = parseFloat(calculateTotal(value).toFixed(4));
+        const req = await topUpAccount({
+          entityType: data?.entityType,
+          entityId: data?.entityId,
+          amount: { value, fee, total },
+          senderId: pairingData?.accountIds[0],
+        });
+
+        if (req?.success) {
+          toast.success("Transaction successfully completed.");
+        }
+
+        if (req?.error) {
+          toast.error(req.error === "USER_REJECT" ? "Payment request rejected by user" : req.error);
+        }
+        unstable_batchedUpdates(() => {
+          setLoading(false);
+          setFromData(JSON.parse(JSON.stringify(FORM_INITIAL_STATE)));
+        });
+
+        if (onClose) onClose();
+      } else {
+        toast.warning("Please Enter the valid amount to topup");
+      }
+    } catch (err) {
+      setLoading(false);
+      setFromData(JSON.parse(JSON.stringify(FORM_INITIAL_STATE)));
     }
   };
 
@@ -94,7 +118,7 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
   return (
     <Dialog open={open}>
       <DialogTitle>
-        {`Top wallet with ${data?.entityType === "HBAR" ? "hbar(ℏ)" : `token ${data?.entityIcon}`}`}
+        {loading? "Payment in progress...":`Top wallet with ${data?.entityType === "HBAR" ? "hbar(ℏ)" : `token ${data?.entityIcon}`}`}
         <IconButton
           onClick={modalClose}
           color="error"
@@ -145,6 +169,7 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
                   id="topup-amount-input"
                   placeholder="Enter the Topup amount"
                   fullWidth
+                  disabled={loading}
                   error={formData.amount.error}
                   value={formData.amount.value}
                   endAdornment={<InputAdornment position="end">{data?.entityIcon}</InputAdornment>}
@@ -214,9 +239,17 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
         {operation === "reimburse" ? (
           <Button>Reimburse</Button>
         ) : (
-          <Button autoFocus onClick={handleTopup} variant="contained">
+          <LoadingButton
+            autoFocus
+            onClick={handleTopup}
+            variant="contained"
+            loading={loading}
+            loadingPosition="start"
+            startIcon={<AccountBalanceWalletIcon />}
+            disabled={loading}
+          >
             Topup<i>{` ( ${calculateTotal(formData.amount.value).toFixed(4)}  ${data?.entityIcon} )`}</i>
-          </Button>
+          </LoadingButton>
         )}
       </DialogActions>
     </Dialog>
