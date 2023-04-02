@@ -3,8 +3,7 @@ import { useApiInstance } from "../APIConfig/api";
 import { useStore } from "../Providers/StoreProvider";
 import { CreateTransactionEntity } from "../types";
 import { useHashconnectService } from "./hashconnectService";
-// import abi from "./Hashbuzz.json";
-// const contractId = "0.0.47952016";
+
 
 export const useSmartContractServices = () => {
   const { pairingData, sendTransaction } = useHashconnectService();

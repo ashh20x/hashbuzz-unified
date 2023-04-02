@@ -15,18 +15,20 @@ interface StoreContextType extends AppState {
 const StoreContext = React.createContext<StoreContextType | null>(null);
 
 export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
-  const [state, updateState] = React.useState<AppState>({balances: [
-    {
-      entityBalance: "1234.1245",
-      entityIcon: "ℏ",
-      entitySymbol: "ℏ",
-      entityId: "",
-      entityType: "HBAR",
-    },
-  ]});
+  const [state, updateState] = React.useState<AppState>({
+    balances: [
+      {
+        entityBalance: "1234.1245",
+        entityIcon: "ℏ",
+        entitySymbol: "ℏ",
+        entityId: "",
+        entityType: "HBAR",
+      },
+    ],
+  });
   const [cookies, setCookie] = useCookies(["token", "refreshToken", "adminToken"]);
   // const [axiosInstance, setAxiosInstance] = React.useState<AxiosInstance | undefined>();
-  const { Auth , User } = useApiInstance();
+  const { Auth, User } = useApiInstance();
 
   const intervalRef = React.useRef<NodeJS.Timer>();
 
@@ -76,31 +78,12 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
 
   React.useEffect(() => {
     checkAndUpdateLoggedInUser();
-    checkAndUpdateEntityBalances();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // React.useEffect(() => {
-  //   const instance = axios.create({
-  //     baseURL: process.env.REACT_APP_DAPP_API,
-  //     timeout: 15000,
-  //     headers: {
-  //       Authorization: `Token ${cookies.token}`,
-  //       "Content-type": "application/json",
-  //     },
-  //   });
-  //   instance.interceptors.response.use(
-  //     (response) => response,
-  //     (error) => {
-  //       // whatever you want to do with the error
-  //       // if (error.response.status === 401) forceLogout();
-  //       // throw error;
-  //       toast.error(error?.message ?? "Server error");
-  //       console.log(error);
-  //     }
-  //   );
-  //   setAxiosInstance(instance);
-  // }, [cookies.token]);
+  React.useEffect(() => {
+    if (state.currentUser?.hedera_wallet_id) checkAndUpdateEntityBalances();
+  }, [state.currentUser?.hedera_wallet_id]);
 
   const getToken = useCallback(async () => {
     const data = await Auth.refreshToken(cookies.refreshToken);
