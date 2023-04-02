@@ -81,7 +81,7 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
           amount: { value, fee, total },
           senderId: pairingData?.accountIds[0],
         });
-
+        console.log(req);
         if (req?.success) {
           toast.success("Transaction successfully completed.");
         }

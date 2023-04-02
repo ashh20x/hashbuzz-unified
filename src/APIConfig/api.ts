@@ -15,6 +15,7 @@ import {
   TokenBalances,
   TokenDataObj,
   TokenInfo,
+  TopUpResponse,
   UpdatePasswordResponse,
 } from "../types";
 import { forceLogout, getErrorMessage } from "../Utilities/Constant";
@@ -115,7 +116,7 @@ export const useApiInstance = () => {
   const Transaction = {
     createTransactionBytes: (data: CreateTransactionByteBody): Promise<any> =>
       requests.post("/api/transaction/create-topup-transaction", { ...data }),
-    setTransactionAmount: (data: SetTransactionBody): Promise<any> => requests.post("/api/transaction/create-topup-transaction", { ...data }),
+    setTransactionAmount: (data: SetTransactionBody): Promise<TopUpResponse> => requests.post("/api/transaction/top-up", { ...data }),
   };
 
   return { User, Auth, Admin, MirrorNodeRestAPI, Transaction };
