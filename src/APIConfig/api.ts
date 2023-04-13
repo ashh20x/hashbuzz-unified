@@ -8,6 +8,7 @@ import {
   AllTokensQuery,
   AuthCred,
   BalanceResponse,
+  ContractInfo,
   CreateTransactionByteBody,
   CurrentUser,
   LogoutResponse,
@@ -84,6 +85,7 @@ export const useApiInstance = () => {
     updateConsent: (userData: { consent: boolean }): Promise<CurrentUser> => requests.patch(`/api/users/update-concent`, { ...userData }),
     updateWalletId: (userData: { walletId: string }): Promise<CurrentUser> => requests.put(`/api/users/update/wallet`, { ...userData }),
     getTokenBalances: (): Promise<TokenBalances[]> => requests.get("/api/users/token-balances"),
+    updatePassword: (data: AdminUpdatePassword): Promise<UpdatePasswordResponse> => requests.put("/api/users/update-password", { ...data }),
   };
 
   const Auth = {
@@ -105,6 +107,7 @@ export const useApiInstance = () => {
       token_type: string;
     }): Promise<{ message: string; data: TokenDataObj }> => requests.post("/api/admin/list-token", { tokenId, tokenData, token_type }),
     getListedTokens: (tokenId?: string): Promise<AllTokensQuery> => requests.get(`/api/admin/listed-tokens${tokenId ? `?tokenId=${tokenId}` : ""}`),
+    getActiveContractInfo: ():Promise<ContractInfo> => requests.get("/api/admin/active-contract")
   };
 
   const MirrorNodeRestAPI = {

@@ -169,7 +169,7 @@ const Balances = () => {
                     onClick={() => handleBalanceNavigator("prev")}
                   />
                   <BalanceCard
-                    entityBal={balances![activeIndex].entityBalance}
+                    entityBal={balances![activeIndex].entityType === "HBAR" ? (parseFloat(balances![activeIndex].entityBalance)/1e8).toFixed(4):balances![activeIndex].entityBalance}
                     entityIcon={balances![activeIndex].entityIcon}
                     entitySymbol={balances![activeIndex].entitySymbol}
                     key="balance_card"

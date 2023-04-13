@@ -1,8 +1,11 @@
-import { Box, Button, Container, Divider, Grid, Stack, Typography, Avatar, Card } from "@mui/material";
+import { Avatar, Box, Button, Card, Container, Divider, Grid, Link, Stack, Typography } from "@mui/material";
 // import { DashboardHeader } from ;
 import React from "react";
 import { unstable_batchedUpdates } from "react-dom";
+import { toast } from "react-toastify";
 import { useApiInstance } from "../../../APIConfig/api";
+import { useStore } from "../../../Providers/StoreProvider";
+import { getErrorMessage } from "../../../Utilities/Constant";
 import { AllTokensQuery } from "../../../types";
 import { DashboardHeader } from "../../Components";
 import AddNewTokenModal from "./AddNewTokenModal";
@@ -12,6 +15,7 @@ const AdminDashboard = () => {
   const [listedTokens, setListedTokens] = React.useState<AllTokensQuery | null>(null);
 
   const { Admin } = useApiInstance();
+  const store = useStore();
 
   React.useEffect(() => {
     (async () => {
@@ -20,6 +24,17 @@ const AdminDashboard = () => {
       // console.log(request);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  React.useEffect(() => {
+    try {
+      (async () => {
+        const contractInfo = await Admin.getActiveContractInfo();
+        store?.updateState((_state) => ({ ..._state, contractInfo: contractInfo }));
+      })();
+    } catch (err) {
+      toast.error(getErrorMessage(err));
+    }
   }, []);
 
   return (
@@ -33,9 +48,18 @@ const AdminDashboard = () => {
         <DashboardHeader />
         <Box>
           <Grid container spacing={2} sx={{ backgroundColor: "#E1D9FF", borderRadius: 2 }}>
+            <Grid item md={12}>
+              <Box>
+                <Typography variant="h3" sx={{ textAlign: "center" }}>
+                  {"Admin Dashboard"}
+                </Typography>
+                {/* https://hashscan.io/testnet/contract/0.0.3980646 */}
+                <Typography>Active contract Id:- <Link href={`https://hashscan.io/testnet/contract/${store?.contractInfo?.contract_id}`} target="_blank"> {store?.contractInfo?.contract_id ?? ""}</Link></Typography>
+              </Box>
+            </Grid>
             <Grid md={6}>
               <Box sx={{ padding: 2.2 }}>
-                <Typography variant="h4" sx={{ marginBottom: 2 }}>
+                <Typography variant="h5" sx={{ marginBottom: 2 }}>
                   Pending Cards
                 </Typography>
                 <Divider />
@@ -45,7 +69,7 @@ const AdminDashboard = () => {
             <Grid md={6}>
               <Box sx={{ padding: 2.2 }}>
                 <Stack direction={"row"} justifyContent={"space-between"} alignItems="flex-start">
-                  <Typography variant="h4" sx={{ marginBottom: 2 }}>
+                  <Typography variant="h6" sx={{ marginBottom: 2 }}>
                     Whitelisted Tokens
                   </Typography>
                   <Button disableElevation size="small" variant="contained" onClick={() => setTokenModalOpen(true)}>

@@ -1,6 +1,6 @@
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { Box, List, ListItem, OutlinedInput, FormControl, TextField, InputLabel, FormHelperText, ListItemText } from "@mui/material";
+import { Box, FormControl, FormHelperText, InputLabel, List, ListItem, OutlinedInput, TextField } from "@mui/material";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -10,18 +10,18 @@ import DialogTitle from "@mui/material/DialogTitle";
 import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
 import * as React from "react";
-import { useApiInstance } from "../../../APIConfig/api";
-import { useStore } from "../../../Providers/StoreProvider";
-import { AdminPasswordFormState, CurrentUser, FormFelid } from "../../../types";
 import { unstable_batchedUpdates } from "react-dom";
 import { toast } from "react-toastify";
+import { useApiInstance } from "../../../APIConfig/api";
+import { useStore } from "../../../Providers/StoreProvider";
 import { getErrorMessage } from "../../../Utilities/Constant";
+import { AdminPasswordFormState, CurrentUser, FormFelid } from "../../../types";
 
-type CurrentFormState =  AdminPasswordFormState & {
+type CurrentFormState = AdminPasswordFormState & {
   conformPassword: FormFelid<string>;
-}
+};
 
-const FORM_INITIAL_STATE:CurrentFormState = {
+const FORM_INITIAL_STATE: CurrentFormState = {
   email: {
     value: "",
     error: false,
@@ -80,7 +80,7 @@ interface AdminPasswordSetupProps {
 const AdminPasswordSetup = ({ user }: AdminPasswordSetupProps) => {
   const [adminPassModalOpen, setAdminPassModalOpen] = React.useState(false);
   const [formData, setFormData] = React.useState<CurrentFormState>(JSON.parse(JSON.stringify(FORM_INITIAL_STATE)));
-  const { Admin } = useApiInstance();
+  const { User } = useApiInstance();
   const store = useStore();
 
   //!! check for user state and update modal
@@ -99,7 +99,7 @@ const AdminPasswordSetup = ({ user }: AdminPasswordSetupProps) => {
     const validation = validateForm(formData, setFormData);
     try {
       if (validation) {
-        const response = await Admin.updatePassword({
+        const response = await User.updatePassword({
           email: formData.email.value,
           password: formData.password.value,
         });
