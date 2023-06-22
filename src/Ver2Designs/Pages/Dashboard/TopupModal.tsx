@@ -178,12 +178,12 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
                 <FormHelperText error={formData.amount.error}>{formData.amount.helperText}</FormHelperText>
               </FormControl>
             </Grid>
-            <Grid md={3}>
+            <Grid item md={3}>
               <Stack height={"100%"} alignItems={"center"} sx={{ paddingTop: 2.75 }}>
                 {"+ (of 10%)"}
               </Stack>
             </Grid>
-            <Grid md={4}>
+            <Grid item md={4}>
               <FormControl fullWidth sx={{ marginBottom: 1.25 }}>
                 <InputLabel htmlFor="hashbuzz-charge-input">Charge</InputLabel>
                 <OutlinedInput

@@ -1,7 +1,7 @@
 import { toast } from "react-toastify";
 import { useApiInstance } from "../APIConfig/api";
 import { useStore } from "../Providers/StoreProvider";
-import { CreateTransactionEntity } from "../types";
+import { CreateTransactionEntity, TransactionResponse } from "../types";
 import { useHashconnectService } from "./hashconnectService";
 
 
@@ -15,10 +15,12 @@ export const useSmartContractServices = () => {
     try {
       if (pairingData && pairingData.accountIds) {
         const transactionBytes = await Transaction.createTransactionBytes({ entity, connectedAccountId: pairingData?.accountIds[0] });
-        const UpdateBalanceTransaction = await sendTransaction(transactionBytes, pairingData?.accountIds[0]!, false, false);
+        const updateBalanceTransaction = await sendTransaction(transactionBytes, pairingData?.accountIds[0]!, false, false);
+        const transactionResponse =  updateBalanceTransaction.response as TransactionResponse;
+        // console.log("UpdateBalanceTransaction:::-",updateBalanceTransaction)
 
-        if (UpdateBalanceTransaction.success) {
-          const getBal = await Transaction.setTransactionAmount({ entity, transactionId: UpdateBalanceTransaction.id! });
+        if (updateBalanceTransaction.success) {
+          const getBal = await Transaction.setTransactionAmount({ entity, transactionId:transactionResponse.transactionId });
 
           if (getBal.message) {
             getBal.error ? toast.error(getBal.message ?? "Error with request for balance update.") : toast.info(getBal.message);
@@ -37,7 +39,7 @@ export const useSmartContractServices = () => {
             });
           }
         }
-        return UpdateBalanceTransaction;
+        return updateBalanceTransaction;
       }
     } catch (err) {
       throw err;

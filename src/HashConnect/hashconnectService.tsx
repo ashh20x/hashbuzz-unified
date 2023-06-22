@@ -134,7 +134,8 @@ export const useHashconnectService = () => {
       },
     };
 
-    return await hashconnect.sendTransaction(topic!, transaction);
+    const transactionResponse  =  await hashconnect.sendTransaction(topic!, transaction);
+    return transactionResponse;
   };
 
   const disconnect = () => {
