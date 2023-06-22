@@ -22,7 +22,10 @@ const ConsentModal = ({ user }: ConsentModalProps) => {
 
   React.useEffect(() => {
     setConsentModalOpen(Boolean(!user?.consent));
-  }, []);
+    return () =>{
+      setConsentModalOpen(false)
+    }
+  }, [user?.consent]);
 
   const handleConcentAgree = async () => {
     try {
