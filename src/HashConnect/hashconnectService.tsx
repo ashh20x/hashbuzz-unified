@@ -3,7 +3,6 @@ import { HashConnectConnectionState } from "hashconnect/dist/types";
 import React, { useCallback } from "react";
 import { toast } from "react-toastify";
 import { useApiInstance } from "../APIConfig/api";
-import { useDappAPICall } from "../APIConfig/dAppApiServices";
 import { useStore } from "../Providers/StoreProvider";
 import { getErrorMessage } from "../Utilities/Constant";
 
@@ -70,7 +69,7 @@ export const HashconnectAPIProvider = ({ children, metaData, network, debug }: P
       (async () => {
         try {
           const user = await User.updateWalletId({ walletId: data?.accountIds[0] });
-          if (store?.updateState) store.updateState((_d) => ({ ..._d, currentUser: {...user} }));
+          if (store?.updateState) store.updateState((_d) => ({ ..._d, currentUser: {..._d.currentUser , ...user} }));
         } catch (error) {
           toast.error(getErrorMessage(error))
           console.log(error);

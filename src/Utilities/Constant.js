@@ -12,7 +12,7 @@ export const forceLogout = async () => {
   localStorage.clear();
   _delete_cookie("token");
   _delete_cookie("refreshToken");
-  window.location.href("/");
+  // window.location.href("/");
 };
 
 export const forceClearStorage = () => {

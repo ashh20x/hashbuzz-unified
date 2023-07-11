@@ -14,6 +14,7 @@ import Tooltip from "@mui/material/Tooltip";
 import * as React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useStore } from "../../Providers/StoreProvider";
+import { forceLogout } from "../../Utilities/Constant";
 
 const HeaderMenu = () => {
   const store = useStore();
@@ -28,6 +29,12 @@ const HeaderMenu = () => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const handleLogout  = () => {
+    forceLogout();
+    navigate("/")
+  }
+
   return (
     <Box sx={{ position: "absolute", right: 10, top: 20 }}>
       <Tooltip title="Account Options">
@@ -113,7 +120,7 @@ const HeaderMenu = () => {
           </ListItemIcon>
           Settings
         </MenuItem>
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={handleLogout}>
           <ListItemIcon>
             <Logout fontSize="small" />
           </ListItemIcon>
