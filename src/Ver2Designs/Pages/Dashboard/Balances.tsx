@@ -31,7 +31,10 @@ import { BalOperation, EntityBalances } from "../../../types";
 import { cardStyle } from "./CardGenUtility";
 import TopupModal from "./TopupModal";
 
-
+const formatBalance = (balObj:EntityBalances) : string => {
+ const {entityBalance , entityType } =  balObj;
+  return entityType === "HBAR" ? (parseFloat(entityBalance)/1e8).toFixed(4): entityBalance
+}
 
 const Balances = () => {
   const theme = useTheme();
@@ -169,7 +172,10 @@ const Balances = () => {
                     onClick={() => handleBalanceNavigator("prev")}
                   />
                   <BalanceCard
-                    entityBal={balances![activeIndex].entityType === "HBAR" ? (parseFloat(balances![activeIndex].entityBalance)/1e8).toFixed(4):balances![activeIndex].entityBalance}
+                    entityBal={
+                      //balances![activeIndex].entityType === "HBAR" ? (parseFloat(balances![activeIndex].entityBalance)/1e8).toFixed(4):balances![activeIndex].entityBalance}
+                      formatBalance(balances![activeIndex])
+                    } 
                     entityIcon={balances![activeIndex].entityIcon}
                     entitySymbol={balances![activeIndex].entitySymbol}
                     key="balance_card"
@@ -198,7 +204,7 @@ const Balances = () => {
               <Grow
                 {...TransitionProps}
                 style={{
-                  transformOrigin: placement === "bottom" ? "center top" : "center bottom",
+                  transformOrigin: placement === "bottom" ? "center top" : "center bottom", 
                 }}
               >
                 <Paper>
@@ -208,7 +214,7 @@ const Balances = () => {
                         <MenuItem onClick={(event) => handleMenuItemClick(event, index)}>
                           <ListItemAvatar>{bal.entityIcon}</ListItemAvatar>
                           <ListItemText>
-                            {bal.entityBalance} {bal.entitySymbol + " "}
+                            {formatBalance(bal)} {bal.entitySymbol + " "}
                           </ListItemText>
                           {balanceList.operation === "reimburse" ? (
                             <Typography variant="body2" color="text.secondary">
