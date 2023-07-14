@@ -6,7 +6,7 @@ import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useApiInstance } from "../../APIConfig/api";
-import HashbuzzLogo_Main_Transparent from "../../SVGR/HashbuzzLogo";
+import HashbuzzLogoMainTransparent from "../../SVGR/HashbuzzLogo";
 import { AdminPasswordFormState } from "../../types";
 import { getErrorMessage } from "../../Utilities/Constant";
 
@@ -29,7 +29,7 @@ const validateForm = (data: AdminPasswordFormState, updateState: React.Dispatch<
 
   //email regex
   const expression: RegExp = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-  const checkPasswordExp: RegExp = /^[a-zA-Z0-9!@#\$%\^\&*\)\(+=._-]{8,}$/g;
+  const checkPasswordExp: RegExp = /^[a-zA-Z0-9!@#$%^&*)(+=._-]{8,}$/g;
 
   const email = data.email.value;
   const password = data.password.value;
@@ -109,7 +109,7 @@ const AdminAuth = () => {
     <Box sx={{ display: "flex", justifyContent: "center", height: "100vh", background: "hsl(0, 0%, 95%)" }}>
       <Box sx={{ width: 500 }}>
         <Box sx={{ textAlign: "center", marginBottom: 2 }}>
-          <HashbuzzLogo_Main_Transparent height={100} />
+          <HashbuzzLogoMainTransparent height={100} />
           <Typography variant="h3" component={"h1"}>
             Hashbuzz Admin
           </Typography>

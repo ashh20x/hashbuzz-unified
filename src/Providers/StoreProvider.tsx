@@ -83,6 +83,7 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
 
   React.useEffect(() => {
     if (state.currentUser?.hedera_wallet_id) checkAndUpdateEntityBalances();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.currentUser?.hedera_wallet_id]);
 
   const getToken = useCallback(async () => {

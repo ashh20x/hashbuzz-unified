@@ -31,10 +31,10 @@ import { BalOperation, EntityBalances } from "../../../types";
 import { cardStyle } from "./CardGenUtility";
 import TopupModal from "./TopupModal";
 
-const formatBalance = (balObj:EntityBalances) : string => {
- const {entityBalance , entityType } =  balObj;
-  return entityType === "HBAR" ? (parseFloat(entityBalance)/1e8).toFixed(4): entityBalance
-}
+const formatBalance = (balObj: EntityBalances): string => {
+  const { entityBalance, entityType } = balObj;
+  return entityType === "HBAR" ? (parseFloat(entityBalance) / 1e8).toFixed(4) : entityBalance;
+};
 
 const Balances = () => {
   const theme = useTheme();
@@ -47,7 +47,7 @@ const Balances = () => {
 
   const { pairingData, connectToExtension } = useHashconnectService();
 
-  const {  MirrorNodeRestAPI } = useApiInstance();
+  const { MirrorNodeRestAPI } = useApiInstance();
   // const [popOverOpen, setPopOverOpen] = React.useState(false);
   const [balanceList, setBalanceList] = React.useState<{ open: boolean; operation: BalOperation }>({ open: false, operation: "topup" });
   const anchorRef = React.useRef<HTMLDivElement>(null);
@@ -84,7 +84,12 @@ const Balances = () => {
 
         // User is asking for the topup of fiet hbar
         if (entity.entityType === "HBAR") {
-          accountBal?.balance ? setTopupModalData(entity) : toast.warning("Insufficient fund to the account.");
+          console.log("listed for the hbar", accountBal?.balance);
+          if (accountBal?.balance) setTopupModalData(entity);
+          else {
+            alert("Insufficient balance")
+            toast.warning("Insufficient fund to the account.");
+          }
         } else {
           const tokenBalance = accountBal?.tokens.find((t) => t.token_id === entity.entityId);
           tokenBalance && tokenBalance.balance > 0
@@ -175,7 +180,7 @@ const Balances = () => {
                     entityBal={
                       //balances![activeIndex].entityType === "HBAR" ? (parseFloat(balances![activeIndex].entityBalance)/1e8).toFixed(4):balances![activeIndex].entityBalance}
                       formatBalance(balances![activeIndex])
-                    } 
+                    }
                     entityIcon={balances![activeIndex].entityIcon}
                     entitySymbol={balances![activeIndex].entitySymbol}
                     key="balance_card"
@@ -204,7 +209,7 @@ const Balances = () => {
               <Grow
                 {...TransitionProps}
                 style={{
-                  transformOrigin: placement === "bottom" ? "center top" : "center bottom", 
+                  transformOrigin: placement === "bottom" ? "center top" : "center bottom",
                 }}
               >
                 <Paper>

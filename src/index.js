@@ -1,7 +1,7 @@
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import React from "react";
 import ReactDOM from "react-dom";
-import App from "./App";
+import AppRouter from "./AppRouter";
 import { HashconnectAPIProvider } from "./HashConnect";
 import "./index.css";
 import { StoreProvider } from "./Providers/StoreProvider";
@@ -23,7 +23,7 @@ ReactDOM.render(
         debug={true}
       >
         <ThemeProvider theme={theme}>
-          <App />
+          <AppRouter />
         </ThemeProvider>
       </HashconnectAPIProvider>
     </StoreProvider>

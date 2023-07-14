@@ -46,7 +46,7 @@ const validateForm = (data: CurrentFormState, updateState: React.Dispatch<React.
 
   //email regex
   const expression: RegExp = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-  const checkPasswordExp: RegExp = /^[a-zA-Z0-9!@#\$%\^\&*\)\(+=._-]{8,}$/g;
+  const checkPasswordExp: RegExp = /^[a-zA-Z0-9!@#$%^&*)(+=._-]{8,}$/g;
 
   const email = data.email.value;
   const password = data.password.value;
@@ -92,6 +92,7 @@ const AdminPasswordSetup = ({ user }: AdminPasswordSetupProps) => {
         return { ...__prev };
       });
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
