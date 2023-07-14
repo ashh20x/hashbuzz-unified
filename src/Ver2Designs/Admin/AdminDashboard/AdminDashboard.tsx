@@ -35,6 +35,7 @@ const AdminDashboard = () => {
     } catch (err) {
       toast.error(getErrorMessage(err));
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

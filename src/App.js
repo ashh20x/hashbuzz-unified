@@ -1,19 +1,17 @@
-import React from "react";
 import Theme from "./theme/Theme";
 
 
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import { Main } from "./screens/Main";
 // import { CreateTwitterCard } from "./screens/CreateTwitterCard";
-import { OnBoarding } from "./screens/OnBoarding";
-import { AdminPanel } from "./screens/AdminPanel";
-import { Template } from "./screens/Template";
-import { Invoice } from "./screens/Invoice";
-import { ProtectedRoute } from "./APIConfig/AuthGuard";
 import { ToastContainer } from 'react-toastify';
-import {Dashboard} from "./Ver2Designs"
-import AdminAuthGuard from "./Ver2Designs/Admin/AdminAuthGuard";
+import { ProtectedRoute } from "./APIConfig/AuthGuard";
+import { Dashboard } from "./Ver2Designs";
 import { AdminDashboard } from "./Ver2Designs/Admin";
+import AdminAuthGuard from "./Ver2Designs/Admin/AdminAuthGuard";
+import { Invoice } from "./screens/Invoice";
+import { OnBoarding } from "./screens/OnBoarding";
+import { Template } from "./screens/Template";
 
 const App =() => {
 
