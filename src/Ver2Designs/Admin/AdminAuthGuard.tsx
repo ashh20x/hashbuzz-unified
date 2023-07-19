@@ -1,5 +1,5 @@
 import { useCookies } from "react-cookie";
-import { useStore } from "../../Providers/StoreProvider";
+import { useStore } from "../../Store/StoreProvider";
 import PageNotfound from "../Pages/PageNotfound";
 import AdminAuth from "./AdminAuth";
 

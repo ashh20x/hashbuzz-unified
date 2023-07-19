@@ -13,7 +13,7 @@ import * as React from "react";
 import { unstable_batchedUpdates } from "react-dom";
 import { toast } from "react-toastify";
 import { useApiInstance } from "../../../APIConfig/api";
-import { useStore } from "../../../Providers/StoreProvider";
+import { useStore } from "../../../Store/StoreProvider";
 import { getErrorMessage } from "../../../Utilities/Constant";
 import { AdminPasswordFormState, CurrentUser, FormFelid } from "../../../types";
 
@@ -88,7 +88,7 @@ const AdminPasswordSetup = ({ user }: AdminPasswordSetupProps) => {
     unstable_batchedUpdates(() => {
       setAdminPassModalOpen(Boolean(["SUPER_ADMIN", "ADMIN"].includes(user.role) && !user.emailActive));
       setFormData((__prev) => {
-        __prev["email"].value = user.email;
+        __prev["email"].value = "";
         return { ...__prev };
       });
     });

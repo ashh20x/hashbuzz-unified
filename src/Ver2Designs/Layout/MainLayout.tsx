@@ -3,7 +3,7 @@ import React from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useApiInstance } from "../../APIConfig/api";
-import { useStore } from "../../Providers/StoreProvider";
+import { useStore } from "../../Store/StoreProvider";
 import { forceClearStorage } from "../../Utilities/Constant";
 import { DashboardHeader } from "../Components";
 // import { DashboardHeader } from "../../Components";

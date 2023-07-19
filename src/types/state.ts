@@ -5,9 +5,13 @@ import React from "react";
 export type ContractInfo = {
   contract_id: string;
   contractAddress: string;
-}
+};
 
 export interface AppState {
+  ping: {
+    status: boolean;
+    hedera_wallet_id: string;
+  };
   currentUser?: CurrentUser;
   campaigns?: Campaign[];
   auth?: AuthCred;

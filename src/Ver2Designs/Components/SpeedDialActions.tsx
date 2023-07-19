@@ -1,8 +1,8 @@
-import CloseIcon from '@mui/icons-material/Close';
+import CloseIcon from "@mui/icons-material/Close";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import LogoutIcon from "@mui/icons-material/Logout";
 import QrCodeIcon from "@mui/icons-material/QrCode";
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typography } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typography, useMediaQuery, useTheme } from "@mui/material";
 import Slide from "@mui/material/Slide";
 import SpeedDial from "@mui/material/SpeedDial";
 import SpeedDialAction from "@mui/material/SpeedDialAction";
@@ -10,9 +10,9 @@ import { TransitionProps } from "@mui/material/transitions";
 import * as React from "react";
 import QRCode from "react-qr-code";
 import { useNavigate } from "react-router-dom";
-import { useHashconnectService } from "../../HashConnect";
+import { useHashconnectService } from "../../Wallet";
 import ℏicon from "../../IconsPng/ℏicon.png";
-import { useStore } from "../../Providers/StoreProvider";
+import { useStore } from "../../Store/StoreProvider";
 import HashbuzzIcon from "../../SVGR/HashbuzzIcon";
 import HashpackIcon from "../../SVGR/HashpackIcon";
 import { forceLogout } from "../../Utilities/Constant";
@@ -27,7 +27,7 @@ const postAuthActions = [
   { icon: <LogoutIcon />, name: "Logout", id: "logout" },
 ];
 const beforeAuthActions = [
-  { icon: <HashpackIcon height={24}/>, name: "Hashpack", id: "hashpack-connect" },
+  { icon: <HashpackIcon height={24} />, name: "Hashpack", id: "hashpack-connect" },
   { icon: <QrCodeIcon />, name: "QR", id: "qr-connect" },
 ];
 // interface SpeedDialTooltipOpenProps {
@@ -45,10 +45,11 @@ const Transition = React.forwardRef(function Transition(
 
 const SpeedDialActions = () => {
   const [open, setOpen] = React.useState(false);
+  const theme = useTheme();
   const [qrCodeOpen, setQrCodeOpen] = React.useState(false);
-  const { pairingString, pairingData } = useHashconnectService();
+  const { pairingString, pairingData, connectToExtension, availableExtension } = useHashconnectService();
+  const isDeviceIsSm = useMediaQuery(theme.breakpoints.down("sm"));
   const store = useStore();
-
 
   const navigate = useNavigate();
 
@@ -67,6 +68,26 @@ const SpeedDialActions = () => {
     }
   };
 
+  const connectHashpack = async () => {
+    try {
+      if (isDeviceIsSm) {
+        handleQrCodeGen();
+      }
+      if (availableExtension) {
+        connectToExtension();
+      } else {
+        // await sendMarkOFwalletInstall();
+        // Taskbar Alert - Hashpack browser extension not installed, please click on <Go> to visit HashPack website and install their wallet on your browser
+        alert(
+          "Alert - HashPack browser extension not installed, please click on <<OK>> to visit HashPack website and install their wallet on your browser.  Once installed you might need to restart your browser for Taskbar to detect wallet extension first time."
+        );
+        window.open("https://www.hashpack.app");
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   const handleClick = (name: string) => {
     switch (name) {
       case "top-up":
@@ -81,7 +102,7 @@ const SpeedDialActions = () => {
         handleQrCodeGen();
         break;
       case "hashpack-connect":
-        alert("hashpackconnect");
+        connectHashpack();
         break;
       default:
         break;
@@ -94,17 +115,16 @@ const SpeedDialActions = () => {
       <SpeedDial
         ariaLabel="SpeedDial tooltip example"
         sx={{ position: "absolute", bottom: 40, right: 40 }}
-        icon={<HashbuzzIcon size={60} color="#fff"/>}
+        icon={<HashbuzzIcon size={60} color="#fff" />}
         openIcon={<CloseIcon />}
         onClose={handleClose}
         onOpen={handleOpen}
         open={open}
         FabProps={{
-          sx:{
-            colorScheme:"light"
-          }
+          sx: {
+            colorScheme: "light",
+          },
         }}
-      
       >
         {(pairingData?.topic ? postAuthActions : beforeAuthActions).map((action) => {
           // if(action.name === "Connect" && pairingData?.topic) return null;

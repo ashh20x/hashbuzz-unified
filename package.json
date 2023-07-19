@@ -5,6 +5,7 @@
   "dependencies": {
     "@emotion/react": "^11.8.1",
     "@emotion/styled": "^11.8.1",
+    "@hashgraph/sdk": "^2.30.0",
     "@mui/icons-material": "^5.6.0",
     "@mui/lab": "^5.0.0-alpha.123",
     "@mui/material": "^5.4.4",

@@ -13,7 +13,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Tooltip from "@mui/material/Tooltip";
 import * as React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useStore } from "../../Providers/StoreProvider";
+import { useStore } from "../../Store/StoreProvider";
 import { forceLogout } from "../../Utilities/Constant";
 
 const HeaderMenu = () => {

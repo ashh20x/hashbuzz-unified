@@ -11,7 +11,7 @@ import PreviewModal from "../../PreviewModal/PreviewModal";
 import { TemplateTable } from "../../Tables/TemplateTable";
 // import "emoji-mart/css/emoji-mart.css";
 import Image from "../../../IconsPng/arrow-symbol.png";
-import { useStore } from "../../../Providers/StoreProvider";
+import { useStore } from "../../../Store/StoreProvider";
 import { ShowImage } from "./ShowImage";
 import {
   ButtonWrap,
