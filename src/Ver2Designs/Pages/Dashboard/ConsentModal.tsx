@@ -7,7 +7,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { CurrentUser } from "../../../types";
 import { useApiInstance } from "../../../APIConfig/api";
-import { useStore } from "../../../Providers/StoreProvider";
+import { useStore } from "../../../Store/StoreProvider";
 import { toast } from "react-toastify";
 import { forceLogout } from "../../../Utilities/Constant";
 

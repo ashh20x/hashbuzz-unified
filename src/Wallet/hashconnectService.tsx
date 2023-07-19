@@ -1,10 +1,29 @@
 import { HashConnect, HashConnectTypes, MessageTypes } from "hashconnect";
 import { HashConnectConnectionState } from "hashconnect/dist/types";
+import { PublicKey } from "@hashgraph/sdk";
 import React, { useCallback } from "react";
+import { useCookies } from "react-cookie";
 import { toast } from "react-toastify";
 import { useApiInstance } from "../APIConfig/api";
-import { useStore } from "../Providers/StoreProvider";
-import { getErrorMessage } from "../Utilities/Constant";
+import { useStore } from "../Store/StoreProvider";
+
+const verifyData = (data: object, publicKey: string, signature: Uint8Array): boolean => {
+  const pubKey = PublicKey.fromString(publicKey);
+
+  const bytes = new Uint8Array(Buffer.from(JSON.stringify(data)));
+
+  const verify = pubKey.verify(bytes, signature);
+
+  return verify;
+};
+
+export const fetchAccountIfoKey = async (accountId: string) => {
+  const url = "https://testnet.mirrornode.hedera.com/api/v1/accounts/" + accountId;
+  const response = await fetch(url);
+  const data = await response.json();
+  const key: string = data.key.key as string;
+  return key;
+};
 
 //create the hashconnect instance
 const hashconnect = new HashConnect(true);
@@ -15,6 +34,10 @@ export interface ProviderProps {
   metaData?: HashConnectTypes.AppMetadata;
   debug?: boolean;
 }
+
+const delay = (ms: number) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
 
 export interface HashconnectContextAPI {
   availableExtension: HashConnectTypes.WalletMetadata;
@@ -41,9 +64,6 @@ const HashconectServiceContext = React.createContext<
 
 export const HashconnectAPIProvider = ({ children, metaData, network, debug }: ProviderProps) => {
   const [state, setState] = React.useState<Partial<HashconnectContextAPI>>({});
-  const store = useStore();
-  // const { dAppAPICall } = useDappAPICall();
-  const { User } = useApiInstance();
 
   const initHashconnect = useCallback(async () => {
     //initialize and use returned data
@@ -53,7 +73,7 @@ export const HashconnectAPIProvider = ({ children, metaData, network, debug }: P
     //Saved pairings will return here, generally you will only have one unless you are doing something advanced
     const pairingData = initData.savedPairings[0];
 
-    setState((exState) => ({ ...exState, topic, pairingData, pairingString, state: HashConnectConnectionState.Disconnected }));
+    setState((exState) => ({ ...exState, topic, pairingData, pairingString }));
   }, [metaData, network]);
 
   const onFoundExtension = (data: HashConnectTypes.WalletMetadata) => {
@@ -61,26 +81,14 @@ export const HashconnectAPIProvider = ({ children, metaData, network, debug }: P
     setState((exState) => ({ ...exState, availableExtension: data }));
   };
 
-  const onParingEvent = (data: MessageTypes.ApprovePairing) => {
+  const onParingEvent = async (data: MessageTypes.ApprovePairing) => {
     console.log("Paired with wallet", data);
     setState((exState) => ({ ...exState, pairingData: data.pairingData }));
-    //@ts-ignore
-    if (!store?.currentUser?.hedera_wallet_id) {
-      (async () => {
-        try {
-          const user = await User.updateWalletId({ walletId: data?.accountIds[0] });
-          if (store?.updateState) store.updateState((_d) => ({ ..._d, currentUser: {..._d.currentUser , ...user} }));
-        } catch (error) {
-          toast.error(getErrorMessage(error))
-          console.log(error);
-        }
-      })();
-    }
   };
 
-  const onConnectionChange = (state: HashConnectConnectionState) => {
+  const onConnectionChange = (data: HashConnectConnectionState) => {
     console.log("hashconnect state change event", state);
-    setState((exState) => ({ ...exState, state }));
+    setState((exState) => ({ ...exState, state: data }));
   };
 
   //register events
@@ -93,6 +101,7 @@ export const HashconnectAPIProvider = ({ children, metaData, network, debug }: P
       hashconnect.pairingEvent.on(onParingEvent);
       hashconnect.connectionStatusChangeEvent.off(onConnectionChange);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   //Call Initialization
@@ -115,6 +124,9 @@ export const HashconnectAPIProvider = ({ children, metaData, network, debug }: P
 export const useHashconnectService = () => {
   const value = React.useContext(HashconectServiceContext);
   const { topic, pairingData, network, setState } = value;
+  const { Auth } = useApiInstance();
+  const store = useStore();
+  const [cookies, setCookies] = useCookies(["aSToken"]);
 
   const connectToExtension = async () => {
     //this will automatically pop up a pairing request in the HashPack extension
@@ -133,16 +145,16 @@ export const useHashconnectService = () => {
       },
     };
 
-    const transactionResponse  =  await hashconnect.sendTransaction(topic!, transaction);
+    const transactionResponse = await hashconnect.sendTransaction(topic!, transaction);
     return transactionResponse;
   };
 
-  const disconnect = () => {
+  const disconnect = React.useCallback(() => {
     hashconnect.disconnect(pairingData?.topic!);
     setState!((exState) => ({ ...exState, pairingData: null }))!;
-  };
+  }, [pairingData?.topic, setState]);
 
-  const requestAccountInfo = async () => {
+  const requestAccountInfo = React.useCallback(async () => {
     const request: MessageTypes.AdditionalAccountRequest = {
       topic: topic!,
       network: network!,
@@ -150,12 +162,61 @@ export const useHashconnectService = () => {
     };
 
     await hashconnect.requestAdditionalAccounts(topic!, request);
-  };
+  }, [network, topic]);
 
   const clearPairings = () => {
     hashconnect.clearConnectionsAndData();
     setState!((exState) => ({ ...exState, pairingData: null }));
   };
 
-  return { ...value, connectToExtension, sendTransaction, disconnect, requestAccountInfo, clearPairings, hashconnect };
+  // Authentication event;
+  const handleAuthenticate = React.useCallback(async () => {
+    console.log("Here from handleAuthenticate::");
+    // const topic = state.pairingData?.topic;
+    const accountId = pairingData?.accountIds[0];
+    try {
+      const { payload, server } = await Auth.createChallenge({ url: window.location.origin });
+
+      console.log("Request walled to authenticate challenge");
+      console.log("Authparams", topic, accountId, server.account, server.signature, payload);
+      if (topic && accountId) {
+        await delay(5000);
+        hashconnect
+          .authenticate(topic, accountId, server.account, Buffer.from(server.signature), payload)
+          .then(async (authResponse) => {
+            if (authResponse.success && authResponse.signedPayload && authResponse.userSignature) {
+              const { signedPayload, userSignature } = authResponse;
+              const { ast } = await Auth.generateAuth({
+                payload: signedPayload.originalPayload,
+                clientPayload: signedPayload,
+                signatures: {
+                  server: server.signature,
+                  wallet: {
+                    accountId,
+                    value: Buffer.from(userSignature).toString("base64"),
+                  },
+                },
+              });
+              if (ast) {
+                setCookies("aSToken", ast);
+                store?.updateState((_prevState) => ({ ..._prevState, auth: { ..._prevState.auth, aSToken: ast } }));
+                return { auth: true, ast };
+              }
+            }
+
+            if (authResponse.error) {
+              toast.error(authResponse.error);
+            }
+          })
+          .catch((err) => {
+            console.log("Error from authenticate", err);
+          });
+      }
+    } catch (err) {
+      //@ts-ignore
+      toast.error(err.message);
+    }
+  }, [Auth, pairingData?.accountIds, setCookies, store, topic]);
+
+  return { ...value, connectToExtension, sendTransaction, disconnect, requestAccountInfo, clearPairings, hashconnect, handleAuthenticate };
 };

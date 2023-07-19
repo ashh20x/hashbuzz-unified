@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 import { useApiInstance } from "../APIConfig/api";
-import { useStore } from "../Providers/StoreProvider";
+import { useStore } from "../Store/StoreProvider";
 import { CreateTransactionEntity, TransactionResponse } from "../types";
 import { useHashconnectService } from "./hashconnectService";
 

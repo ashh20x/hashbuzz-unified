@@ -1,17 +1,15 @@
-import React from "react";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-// import { Main } from "./screens/Main";
 import { ProtectedRoute } from "./APIConfig/AuthGuard";
-import { Dashboard, CreateCampaign, PageNotfound  , Landing} from "./Ver2Designs";
+import { CreateCampaign, Dashboard, Landing, PageNotfound } from "./Ver2Designs";
 import { AdminDashboard } from "./Ver2Designs/Admin";
-import StyledComponentTheme from "./theme/Theme";
 import AdminAuthGuard from "./Ver2Designs/Admin/AdminAuthGuard";
 import MainLayout from "./Ver2Designs/Layout";
+import StyledComponentTheme from "./theme/Theme";
 
 const router = createBrowserRouter([
   {
     index: true,
-    element: <Landing />
+    element: <Landing      />
   },
   {
     path: "/",

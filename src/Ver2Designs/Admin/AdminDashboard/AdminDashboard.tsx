@@ -4,7 +4,7 @@ import React from "react";
 import { unstable_batchedUpdates } from "react-dom";
 import { toast } from "react-toastify";
 import { useApiInstance } from "../../../APIConfig/api";
-import { useStore } from "../../../Providers/StoreProvider";
+import { useStore } from "../../../Store/StoreProvider";
 import { getErrorMessage } from "../../../Utilities/Constant";
 import { AllTokensQuery } from "../../../types";
 import { DashboardHeader } from "../../Components";

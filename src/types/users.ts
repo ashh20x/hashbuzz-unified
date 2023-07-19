@@ -1,6 +1,5 @@
 export interface AuthCred {
-  token: string;
-  refreshToken: string;
+  aSToken: string;
   user?: CurrentUser;
   adminToken?: string;
 }
@@ -9,13 +8,11 @@ export type user_roles = "SUPER_ADMIN" | "ADMIN" | "ANALYTICS" | "MARKETING" | "
 export interface CurrentUser {
   id: number;
   username: string;
-  first_name: string;
-  last_name: string;
-  email: string;
+  name:string,
   is_active: boolean;
   personal_twitter_handle?: string;
   business_twitter_handle?: string;
-  hedera_wallet_id?: string;
+  hedera_wallet_id: string;
   consent: boolean;
   available_budget: number;
   personal_twitter_id: number;

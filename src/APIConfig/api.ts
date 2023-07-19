@@ -9,9 +9,12 @@ import {
   AllTokensQuery,
   AuthCred,
   BalanceResponse,
+  Challenge,
   ContractInfo,
   CreateTransactionByteBody,
   CurrentUser,
+  GenerateAstPayload,
+  GnerateReseponse,
   LogoutResponse,
   SetTransactionBody,
   TokenBalances,
@@ -38,13 +41,13 @@ export const getCookie = (cname: string) => {
 };
 
 export const useApiInstance = () => {
-  const [cookies] = useCookies(["token", "refreshToken", "adminToken"]);
+  const [cookies] = useCookies(["aSToken", "refreshToken", "adminToken"]);
   const instance = useRef<AxiosInstance>(
     axios.create({
       baseURL: process.env.REACT_APP_DAPP_API,
       timeout: 15000,
       headers: {
-        Authorization: `Token ${cookies.token}${cookies.adminToken ? `, Token ${cookies.adminToken}` : ""}`,
+        Authorization: `aSToken ${cookies.aSToken}${cookies.adminToken ? `, Token ${cookies.adminToken}` : ""}`,
         "Content-type": "application/json",
       },
     })
@@ -68,14 +71,14 @@ export const useApiInstance = () => {
       baseURL: process.env.REACT_APP_DAPP_API,
       timeout: 30000,
       headers: {
-        Authorization: `Token ${cookies.token}${cookies.adminToken ? `, Token ${cookies.adminToken}` : ""}`,
+        Authorization: `aSToken ${cookies.aSToken}${cookies.adminToken ? `, Token ${cookies.adminToken}` : ""}`,
         "Content-type": "application/json",
       },
     });
-  }, [cookies.adminToken, cookies.token]);
+  }, [cookies.adminToken, cookies.aSToken]);
 
   const requests = {
-    get: (url: string) => instance.current.get(url).then(responseBody),
+    get: (url: string , params?:{}) => instance.current.get(url , {params:params??{}}).then(responseBody),
     post: (url: string, body: {}) => instance.current.post(url, body).then(responseBody),
     put: (url: string, body: {}) => instance.current.put(url, body).then(responseBody),
     delete: (url: string) => instance.current.delete(url).then(responseBody),
@@ -93,6 +96,9 @@ export const useApiInstance = () => {
     refreshToken: (refreshToken: string): Promise<AuthCred> => requests.post("/auth/refreshToken", { refreshToken }),
     doLogout: (refreshToken: string): Promise<LogoutResponse> => requests.post("/auth/logout", { refreshToken }),
     adminLogin: (data: { email: string; password: string }): Promise<AdminLoginResponse> => requests.post("/auth/admin-login", { ...data }),
+    authPing: (): Promise<{ hedera_wallet_id: string }> => requests.get("/auth/ping" ),
+    createChallenge: (data:{url:string}): Promise<Challenge> => requests.get("/auth/challenge", {...data}),
+    generateAuth:(data:any):Promise<GnerateReseponse> => requests.post("/auth/generate",{...data})
   };
 
   const Admin = {
@@ -108,7 +114,7 @@ export const useApiInstance = () => {
       token_type: string;
     }): Promise<{ message: string; data: TokenDataObj }> => requests.post("/api/admin/list-token", { tokenId, tokenData, token_type }),
     getListedTokens: (tokenId?: string): Promise<AllTokensQuery> => requests.get(`/api/admin/listed-tokens${tokenId ? `?tokenId=${tokenId}` : ""}`),
-    getActiveContractInfo: ():Promise<ContractInfo> => requests.get("/api/admin/active-contract")
+    getActiveContractInfo: (): Promise<ContractInfo> => requests.get("/api/admin/active-contract"),
   };
 
   const MirrorNodeRestAPI = {

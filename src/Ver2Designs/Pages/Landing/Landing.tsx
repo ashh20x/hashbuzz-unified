@@ -1,9 +1,33 @@
 import { Box, Container, Link, Stack, Typography } from "@mui/material";
 import HashbuzzLogo from "../../../SVGR/HashbuzzLogo";
 // import Box from '@mui/material/Box';
-import {SpeedDialActions} from "../../Components";
+import React from "react";
+import { useCookies } from "react-cookie";
+import { useNavigate } from "react-router-dom";
+import { useStore } from "../../../Store/StoreProvider";
+import { useHashconnectService } from "../../../Wallet";
+import { SpeedDialActions } from "../../Components";
 
 const Landing = () => {
+  const store = useStore();
+  const [cookies] = useCookies(["aSToken"]);
+  const { pairingData, handleAuthenticate } = useHashconnectService();
+  const navigate = useNavigate();
+  const ping = store?.ping;
+
+  React.useEffect(() => {
+    if (cookies.aSToken && ping?.status && pairingData?.accountIds[0]) {
+      navigate("/dashboard");
+    }
+  }, [cookies.aSToken, navigate, pairingData?.accountIds, ping]);
+  
+  React.useEffect(() => {
+    if (pairingData?.accountIds[0] && !ping?.status ) {
+      handleAuthenticate();
+    }
+    console.log(ping,pairingData?.accountIds[0])
+  } ,[pairingData, ping])
+
   return (
     <Box
       sx={{
@@ -14,7 +38,7 @@ const Landing = () => {
         backgroundRepeat: "no-repeat",
         backgroundSize: "cover",
         backgroundPosition: "right bottom",
-        backdropFilter:"blur(20px)",
+        backdropFilter: "blur(20px)",
       }}
     >
       <Container>
@@ -23,10 +47,13 @@ const Landing = () => {
           //</Container>alignItems={"center"}
           justifyContent={"center"}
         >
-          <HashbuzzLogo height={150} colors={{
-            color1:"#fff",
-            color2:"#fff"
-          }}/>
+          <HashbuzzLogo
+            height={150}
+            colors={{
+              color1: "#fff",
+              color2: "#fff",
+            }}
+          />
         </Stack>
         <Stack
           sx={{
@@ -34,10 +61,10 @@ const Landing = () => {
             p: 3,
             color: "#fff",
             borderRadius: 1,
-            maxWidth:600,
-            marginTop:5,
-            marginLeft:"auto",
-            marginRight:"auto"
+            maxWidth: 600,
+            marginTop: 5,
+            marginLeft: "auto",
+            marginRight: "auto",
           }}
           spacing={2}
         >
@@ -57,9 +84,13 @@ const Landing = () => {
             the right thing.{" "}
           </Typography>
 
-          <Typography component={Link} href="#">Learn how to launch your first promo.</Typography>
+          <Typography component={Link} href="#">
+            Learn how to launch your first promo.
+          </Typography>
           {/* <link> */}
-          <Typography component={Link} href="#">Submit request to whitelist your token.</Typography>
+          <Typography component={Link} href="#">
+            Submit request to whitelist your token.
+          </Typography>
           {/* <link> */}
           <Typography>Follow us for latest update and new announcements: Twitter - Discord</Typography>
         </Stack>
@@ -68,7 +99,5 @@ const Landing = () => {
     </Box>
   );
 };
-
-
 
 export default Landing;
