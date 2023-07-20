@@ -1,6 +1,5 @@
-import { Box, Container, Link, Stack, Typography } from "@mui/material";
+import { Box, Container, Link, Stack, Typography, Grid, Alert } from "@mui/material";
 import HashbuzzLogo from "../../../SVGR/HashbuzzLogo";
-// import Box from '@mui/material/Box';
 import React from "react";
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
@@ -11,22 +10,23 @@ import { SpeedDialActions } from "../../Components";
 const Landing = () => {
   const store = useStore();
   const [cookies] = useCookies(["aSToken"]);
-  const { pairingData, handleAuthenticate } = useHashconnectService();
+  const { pairingData, handleAuthenticate, authStatusLog } = useHashconnectService();
   const navigate = useNavigate();
   const ping = store?.ping;
+  const pairedAccount = pairingData?.accountIds[0];
 
   React.useEffect(() => {
-    if (cookies.aSToken && ping?.status && pairingData?.accountIds[0]) {
+    if (cookies.aSToken && ping?.status && pairedAccount) {
       navigate("/dashboard");
     }
-  }, [cookies.aSToken, navigate, pairingData?.accountIds, ping]);
-  
+  }, [cookies.aSToken, navigate, pairedAccount, ping?.status]);
+
   React.useEffect(() => {
-    if (pairingData?.accountIds[0] && !ping?.status ) {
+    if (pairedAccount && !ping?.status) {
       handleAuthenticate();
     }
-    console.log(ping,pairingData?.accountIds[0])
-  } ,[pairingData, ping])
+    // console.log(ping,pairingData?.accountIds[0])
+  }, [pairedAccount, ping?.status])
 
   return (
     <Box
@@ -55,45 +55,52 @@ const Landing = () => {
             }}
           />
         </Stack>
-        <Stack
-          sx={{
-            background: "linear-gradient(rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15))",
-            p: 3,
-            color: "#fff",
-            borderRadius: 1,
-            maxWidth: 600,
-            marginTop: 5,
-            marginLeft: "auto",
-            marginRight: "auto",
-          }}
-          spacing={2}
-        >
-          <Typography variant="subtitle1">
-            Imagine a world where anyone can confidently share verified information on social media. We're talkin' about a social DAO where local
-            communities are incentivized to validate information from the source of origin. The current Proof of Concept (PoC) we're workin' on is
-            just a stepping stone towards this bigger vision.
-          </Typography>
+        <Box sx={{
+          background: "linear-gradient(rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15))", p: 3, borderRadius: 1,
+          maxWidth: 600, marginTop: 5, marginLeft: "auto",
+          marginRight: "auto",
+        }}>
 
-          <Typography>
-            PoC Scope: campaigners can run a Twitter promo and reward their engaged organic influencers in $hbar or from a list of whitelisted
-            fungible HTS tokens.
-          </Typography>
+          {pairedAccount ? (<Grid container>
+            <Grid item sm={6} xs={12} sx={{color:"#fff"}}>
+              <Typography variant="h4">{pairedAccount}</Typography>
+            </Grid>
+            <Grid item sm={6} xs={12}>
+              {authStatusLog.length > 0 ? <Alert severity={authStatusLog.pop()?.type ?? "info"}>{authStatusLog.pop()?.message}</Alert> : null}
+            </Grid>
+          </Grid>) : (null)}
+          <Stack
+            sx={{ color: "#fff" }}
+            spacing={2}
+          >
+            <Typography variant="subtitle1">
+              Imagine a world where anyone can confidently share verified information on social media. We're talkin' about a social DAO where local
+              communities are incentivized to validate information from the source of origin. The current Proof of Concept (PoC) we're workin' on is
+              just a stepping stone towards this bigger vision.
+            </Typography>
 
-          <Typography>
-            Goal: to orchestrate web2 and web3 action-based rewarding mechanism. It's all about makin' sure the right people get rewarded for doin'
-            the right thing.{" "}
-          </Typography>
+            <Typography>
+              PoC Scope: campaigners can run a Twitter promo and reward their engaged organic influencers in $hbar or from a list of whitelisted
+              fungible HTS tokens.
+            </Typography>
 
-          <Typography component={Link} href="#">
-            Learn how to launch your first promo.
-          </Typography>
-          {/* <link> */}
-          <Typography component={Link} href="#">
-            Submit request to whitelist your token.
-          </Typography>
-          {/* <link> */}
-          <Typography>Follow us for latest update and new announcements: Twitter - Discord</Typography>
-        </Stack>
+            <Typography>
+              Goal: to orchestrate web2 and web3 action-based rewarding mechanism. It's all about makin' sure the right people get rewarded for doin'
+              the right thing.{" "}
+            </Typography>
+
+            <Typography component={Link} href="#">
+              Learn how to launch your first promo.
+            </Typography>
+            {/* <link> */}
+            <Typography component={Link} href="#">
+              Submit request to whitelist your token.
+            </Typography>
+            {/* <link> */}
+            <Typography>Follow us for latest update and new announcements: Twitter - Discord</Typography>
+
+          </Stack>
+        </Box>
       </Container>
       <SpeedDialActions />
     </Box>

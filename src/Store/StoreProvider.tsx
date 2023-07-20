@@ -9,6 +9,7 @@ import { AppState } from "../types/state";
 // Defines the type for the context including the AppState and an update function.
 interface StoreContextType extends AppState {
   updateState: React.Dispatch<React.SetStateAction<AppState>>;
+  authCheckPing: () => Promise<{ ping: boolean }>
 }
 
 // Create a context with a default value of null.
@@ -79,18 +80,21 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [User, state?.currentUser?.available_budget, state?.currentUser?.hedera_wallet_id]);
 
-  const authCheckPing = async () => {
+  const authCheckPing = React.useCallback(async () => {
     try {
       const data = await Auth.authPing();
       if (data.hedera_wallet_id) updateState((_state) => ({ ..._state, ping: { status: true, hedera_wallet_id: data.hedera_wallet_id } }));
+      return { ping: true }
     } catch (error) {
       updateState(JSON.parse(JSON.stringify(INITIAL_STATE)));
+      return { ping: false }
     }
-  };
+  }, [Auth]);
 
   React.useEffect(() => {
     authCheckPing();
-  }, [cookies.aSToken]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   React.useEffect(() => {
     if (state.ping.status) checkAndUpdateLoggedInUser();
@@ -104,11 +108,12 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
     () => ({
       state,
       updateState,
+      authCheckPing
     }),
-    [state]
+    [authCheckPing, state]
   );
 
-  return <StoreContext.Provider value={{ ...value.state, updateState: value.updateState }}>{children}</StoreContext.Provider>;
+  return <StoreContext.Provider value={{ ...value.state, updateState: value.updateState, authCheckPing }}>{children}</StoreContext.Provider>;
 };
 
 // Hook function for accessing the context.
