@@ -1,8 +1,8 @@
-import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import Logout from "@mui/icons-material/Logout";
 import Settings from "@mui/icons-material/Settings";
 import TwitterIcon from "@mui/icons-material/Twitter";
+import { Typography } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
@@ -12,7 +12,8 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Tooltip from "@mui/material/Tooltip";
 import * as React from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import HederaIcon from "../../SVGR/HederaIcon";
 import { useStore } from "../../Store/StoreProvider";
 import { useHashconnectService } from "../../Wallet";
 
@@ -90,16 +91,18 @@ const HeaderMenu = () => {
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
-        <MenuItem onClick={handleClose}>
-          <Avatar>
-            {" "}
-            <TwitterIcon />
-          </Avatar>{" "}
+        <MenuItem title="Click to copy" onClick={() => navigator.clipboard.writeText(store?.currentUser?.personal_twitter_handle ?? "")}>
+          <Avatar sx={{ height: 35, width: 35 }}>
+            <HederaIcon size={23} fill="white" fillBg="#ccc" />
+          </Avatar>
+          {store?.currentUser?.hedera_wallet_id ?? ""}
+        </MenuItem>
+        <MenuItem >
+          <Avatar sx={{ height: 35, width: 35 }}>
+            <TwitterIcon fontSize="inherit" />
+          </Avatar>
           @{store?.currentUser?.personal_twitter_handle}
         </MenuItem>
-        {/* <MenuItem onClick={handleClose}>
-          <Avatar /> My account
-        </MenuItem> */}
         <Divider />
         {store?.currentUser?.role && ["ADMIN", "SUPER_ADMIN"].includes(store?.currentUser?.role) ? (
           <MenuItem onClick={() => navigate(pathname.includes("admin") ? "/" : "/admin")}>
@@ -111,7 +114,8 @@ const HeaderMenu = () => {
         ) : null}
         <MenuItem onClick={handleClose}>
           <ListItemIcon>
-            <AccountBalanceWalletIcon fontSize="small" />
+            {/* <AccountBalanceWalletIcon fontSize="small" /> */}
+            <Typography component={'span'} fontSize={"inherit"}>{"ℏ"}</Typography>
           </ListItemIcon>
           Top up account
         </MenuItem>

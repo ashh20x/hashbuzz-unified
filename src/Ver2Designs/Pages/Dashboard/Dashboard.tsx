@@ -25,7 +25,6 @@ const Dashboard = () => {
       event.preventDefault();
       const { url } = await Integrations.twitterPersonalHandle();
       console.log({ url })
-      alert("Check console")
       window.location.href = url;
     } catch (err) {
       toast.error(getErrorMessage(err) ?? "Error while requesting personal handle integration.")
