@@ -19,6 +19,7 @@ import SpeedDialActions from "../../Components/SpeedDialActions";
 const Dashboard = () => {
   const store = useStore();
   const { Integrations } = useApiInstance();
+  const currentUser = store?.currentUser;
 
   const personalHandleIntegration = async (event: React.MouseEvent<HTMLButtonElement>) => {
     try {
@@ -46,6 +47,7 @@ const Dashboard = () => {
     const toastsMessage = store?.toasts;
     toastsMessage?.map(t => toast(t.message, { type: t.type }));
     store?.updateState(_d => ({ ..._d, toasts: [] }))
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
@@ -55,7 +57,7 @@ const Dashboard = () => {
         <CardGenUtility
           startIcon={<AccountBalanceWalletIcon color="inherit" fontSize={"inherit"} />}
           title={"Hedera account Id"}
-          content={<Typography variant="h5">{store?.currentUser?.hedera_wallet_id}</Typography>}
+          content={<Typography variant="h5">{currentUser?.hedera_wallet_id}</Typography>}
         />
 
         {/* card for personal twitter handle */}
@@ -63,8 +65,8 @@ const Dashboard = () => {
           startIcon={<TwitterIcon color="inherit" fontSize={"inherit"} />}
           title={"Personal twitter handle"}
           content={
-            store?.currentUser?.personal_twitter_handle ? (
-              <Typography variant="h5">{"@" + store?.currentUser?.personal_twitter_handle}</Typography>
+            currentUser?.personal_twitter_handle ? (
+              <Typography variant="h5">{"@" + currentUser?.personal_twitter_handle}</Typography>
             ) : (
               <Button type="button" variant="contained" disableElevation startIcon={<TwitterIcon />} onClick={personalHandleIntegration}>
                 Connect
@@ -78,8 +80,8 @@ const Dashboard = () => {
           startIcon={<BusinessIcon color="inherit" fontSize={"inherit"} />}
           title={"Brand twitter handle"}
           content={
-            store?.currentUser?.business_twitter_handle ? (
-              <Typography variant="h5">{"@" + store?.currentUser?.business_twitter_handle}</Typography>
+            currentUser?.business_twitter_handle ? (
+              <Typography variant="h5">{"@" + currentUser?.business_twitter_handle}</Typography>
             ) : (
               <Button type="button" variant="contained" disableElevation startIcon={<TwitterIcon />} onClick={bizHandleIntegration}>
                 Connect
@@ -93,17 +95,17 @@ const Dashboard = () => {
       </Grid>
 
       {/* Campaign List section */}
-      <CampaignList user={store?.currentUser} />
+      <CampaignList user={currentUser} />
 
       {/* speed dial  action button */}
       <SpeedDialActions />
 
       {/* Concent modal for requesting concent form user */}
-      {!store?.currentUser?.consent ? <ConsentModal user={store?.currentUser!} /> : null}
+      {!currentUser?.consent ? <ConsentModal user={currentUser!} /> : null}
 
       {/* Show modal to admin user for updating email and password */}
-      {!store?.currentUser?.emailActive && ["SUPER_ADMIN", "ADMIN"].includes(store?.currentUser?.role!) ? (
-        <AdminPasswordSetup user={store?.currentUser!} />
+      {currentUser && !currentUser?.adminActive && ["SUPER_ADMIN", "ADMIN"].includes(currentUser?.role!) ? (
+        <AdminPasswordSetup user={currentUser} />
       ) : null}
     </React.Fragment>
   );

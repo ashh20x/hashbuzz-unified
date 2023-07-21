@@ -17,7 +17,7 @@ export interface CurrentUser {
   available_budget: number;
   personal_twitter_id: number;
   total_rewarded: number;
-  emailActive: boolean;
+  adminActive: boolean;
   profile_image_url?: string;
   role: user_roles;
 }

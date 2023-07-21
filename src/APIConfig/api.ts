@@ -23,7 +23,7 @@ import {
   TopUpResponse,
   UpdatePasswordResponse,
 } from "../types";
-import {  getErrorMessage } from "../Utilities/helpers";
+import { getErrorMessage } from "../Utilities/helpers";
 
 export const getCookie = (cname: string) => {
   let name = cname + "=";
@@ -41,13 +41,13 @@ export const getCookie = (cname: string) => {
 };
 
 export const useApiInstance = () => {
-  const [cookies] = useCookies(["aSToken", "refreshToken", "adminToken"]);
+  const [cookies] = useCookies(["aSToken"]);
   const instance = useRef<AxiosInstance>(
     axios.create({
       baseURL: process.env.REACT_APP_DAPP_API,
       timeout: 15000,
       headers: {
-        Authorization: `aSToken ${cookies.aSToken}${cookies.adminToken ? `, Token ${cookies.adminToken}` : ""}`,
+        Authorization: `aSToken ${cookies.aSToken}`,
         "Content-type": "application/json",
       },
     })
@@ -73,14 +73,14 @@ export const useApiInstance = () => {
       baseURL: process.env.REACT_APP_DAPP_API,
       timeout: 30000,
       headers: {
-        Authorization: `aSToken ${cookies.aSToken}${cookies.adminToken ? `, Token ${cookies.adminToken}` : ""}`,
+        Authorization: `aSToken ${cookies.aSToken}`,
         "Content-type": "application/json",
       },
     });
-  }, [cookies.adminToken, cookies.aSToken]);
+  }, [cookies.aSToken]);
 
   const requests = {
-    get: (url: string , params?:{}) => instance.current.get(url , {params:params??{}}).then(responseBody),
+    get: (url: string, params?: {}) => instance.current.get(url, { params: params ?? {} }).then(responseBody),
     post: (url: string, body: {}) => instance.current.post(url, body).then(responseBody),
     put: (url: string, body: {}) => instance.current.put(url, body).then(responseBody),
     delete: (url: string) => instance.current.delete(url).then(responseBody),
@@ -91,16 +91,15 @@ export const useApiInstance = () => {
     updateConsent: (userData: { consent: boolean }): Promise<CurrentUser> => requests.patch(`/api/users/update-concent`, { ...userData }),
     updateWalletId: (userData: { walletId: string }): Promise<CurrentUser> => requests.put(`/api/users/update/wallet`, { ...userData }),
     getTokenBalances: (): Promise<TokenBalances[]> => requests.get("/api/users/token-balances"),
-    updatePassword: (data: AdminUpdatePassword): Promise<UpdatePasswordResponse> => requests.put("/api/users/update-password", { ...data }),
   };
 
   const Auth = {
     refreshToken: (refreshToken: string): Promise<AuthCred> => requests.post("/auth/refreshToken", { refreshToken }),
-    doLogout: (): Promise<LogoutResponse> => requests.post("/auth/logout",{}),
-    adminLogin: (data: { email: string; password: string }): Promise<AdminLoginResponse> => requests.post("/auth/admin-login", { ...data }),
-    authPing: (): Promise<{ hedera_wallet_id: string }> => requests.get("/auth/ping" ),
-    createChallenge: (data:{url:string}): Promise<Challenge> => requests.get("/auth/challenge", {...data}),
-    generateAuth:(data:GenerateAstPayload):Promise<GnerateReseponse> => requests.post("/auth/generate",{...data})
+    doLogout: (): Promise<LogoutResponse> => requests.post("/auth/logout", {}),
+    adminLogin: (data: { password: string }): Promise<AdminLoginResponse> => requests.post("/auth/admin-login", { ...data }),
+    authPing: (): Promise<{ hedera_wallet_id: string }> => requests.get("/auth/ping"),
+    createChallenge: (data: { url: string }): Promise<Challenge> => requests.get("/auth/challenge", { ...data }),
+    generateAuth: (data: GenerateAstPayload): Promise<GnerateReseponse> => requests.post("/auth/generate", { ...data }),
   };
 
   const Admin = {
@@ -132,9 +131,9 @@ export const useApiInstance = () => {
   };
 
   const Integrations = {
-    twitterPersonalHandle:():Promise<{url:string}> => requests.get("/api/integrations/twitter/personalHandle"),
-    twitterBizHandle:():Promise<{url:string}> => requests.get("/api/integrations/twitter/bizHandle")
-  }
+    twitterPersonalHandle: (): Promise<{ url: string }> => requests.get("/api/integrations/twitter/personalHandle"),
+    twitterBizHandle: (): Promise<{ url: string }> => requests.get("/api/integrations/twitter/bizHandle"),
+  };
 
-  return { User, Auth, Admin, MirrorNodeRestAPI, Transaction  , Integrations};
+  return { User, Auth, Admin, MirrorNodeRestAPI, Transaction, Integrations };
 };
