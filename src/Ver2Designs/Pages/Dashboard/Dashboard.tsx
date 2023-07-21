@@ -1,13 +1,8 @@
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import BusinessIcon from "@mui/icons-material/Business";
-import LinkIcon from "@mui/icons-material/Link";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import { Button, Grid, Typography } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
-import useMediaQuery from "@mui/material/useMediaQuery";
 import React from "react";
-import { toast } from "react-toastify";
-import { useHashconnectService } from "../../../Wallet";
 import { useStore } from "../../../Store/StoreProvider";
 import AdminPasswordSetup from "./AdminPasswordSetup";
 import Balances from "./Balances";
@@ -15,40 +10,44 @@ import CampaignList from "./CampaignList";
 import { CardGenUtility } from "./CardGenUtility";
 import ConsentModal from "./ConsentModal";
 
+import { toast } from "react-toastify";
+import { useApiInstance } from "../../../APIConfig/api";
+import { getErrorMessage } from "../../../Utilities/helpers";
 import SpeedDialActions from "../../Components/SpeedDialActions";
 // import { useTheme } from "@emotion/react";
 
 const Dashboard = () => {
   const store = useStore();
-  const theme = useTheme();
-  
-  const isDeviceIsSm = useMediaQuery(theme.breakpoints.down("sm"));
+  const { Integrations } = useApiInstance();
 
-  //Hashconnect Hook
-  //Hashpack hook init
-  const { connectToExtension, availableExtension } = useHashconnectService();
-
-  //Hashpack functions
-  const connectHashpack = async () => {
+  const personalHandleIntegration = async (event: React.MouseEvent<HTMLButtonElement>) => {
     try {
-      if (isDeviceIsSm) {
-        toast.warning("Please connect with HashPack extension on your desktop to make a payment");
-        return alert("Please connect with HashPack extension on your desktop to make a payment");
-      }
-      if (availableExtension) {
-        connectToExtension();
-      } else {
-        // await sendMarkOFwalletInstall();
-        // Taskbar Alert - Hashpack browser extension not installed, please click on <Go> to visit HashPack website and install their wallet on your browser
-        alert(
-          "Alert - HashPack browser extension not installed, please click on <<OK>> to visit HashPack website and install their wallet on your browser.  Once installed you might need to restart your browser for Taskbar to detect wallet extension first time."
-        );
-        window.open("https://www.hashpack.app");
-      }
-    } catch (e) {
-      console.log(e);
+      event.preventDefault();
+      const { url } = await Integrations.twitterPersonalHandle();
+      console.log({ url })
+      alert("Check console")
+      window.location.href = url;
+    } catch (err) {
+      toast.error(getErrorMessage(err) ?? "Error while requesting personal handle integration.")
+
     }
   };
+  const bizHandleIntegration = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    try {
+      event.preventDefault();
+      const { url } = await Integrations.twitterBizHandle();
+      window.location.href = url;
+    } catch (err) {
+      toast.error(getErrorMessage(err) ?? "Error while requesting personal handle integration.")
+
+    }
+  }
+
+  React.useEffect(() => {
+    const toastsMessage = store?.toasts;
+    toastsMessage?.map(t => toast(t.message, { type: t.type }));
+    store?.updateState(_d => ({ ..._d, toasts: [] }))
+  }, [])
 
   return (
     <React.Fragment>
@@ -57,15 +56,7 @@ const Dashboard = () => {
         <CardGenUtility
           startIcon={<AccountBalanceWalletIcon color="inherit" fontSize={"inherit"} />}
           title={"Hedera account Id"}
-          content={
-            store?.currentUser?.hedera_wallet_id ? (
-              <Typography variant="h5">{store?.currentUser?.hedera_wallet_id}</Typography>
-            ) : (
-              <Button variant="contained" disableElevation startIcon={<LinkIcon />} onClick={() => connectHashpack()}>
-                Connect to wallet
-              </Button>
-            )
-          }
+          content={<Typography variant="h5">{store?.currentUser?.hedera_wallet_id}</Typography>}
         />
 
         {/* card for personal twitter handle */}
@@ -76,7 +67,7 @@ const Dashboard = () => {
             store?.currentUser?.personal_twitter_handle ? (
               <Typography variant="h5">{"@" + store?.currentUser?.personal_twitter_handle}</Typography>
             ) : (
-              <Button variant="contained" disableElevation startIcon={<TwitterIcon />}>
+              <Button type="button" variant="contained" disableElevation startIcon={<TwitterIcon />} onClick={personalHandleIntegration}>
                 Connect
               </Button>
             )
@@ -91,7 +82,7 @@ const Dashboard = () => {
             store?.currentUser?.business_twitter_handle ? (
               <Typography variant="h5">{"@" + store?.currentUser?.business_twitter_handle}</Typography>
             ) : (
-              <Button variant="contained" disableElevation startIcon={<TwitterIcon />}>
+              <Button type="button" variant="contained" disableElevation startIcon={<TwitterIcon />} onClick={bizHandleIntegration}>
                 Connect
               </Button>
             )
@@ -106,7 +97,7 @@ const Dashboard = () => {
       <CampaignList user={store?.currentUser} />
 
       {/* speed dial  action button */}
-      <SpeedDialActions  />
+      <SpeedDialActions />
 
       {/* Concent modal for requesting concent form user */}
       {!store?.currentUser?.consent ? <ConsentModal user={store?.currentUser!} /> : null}

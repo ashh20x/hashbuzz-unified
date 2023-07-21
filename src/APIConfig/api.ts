@@ -23,7 +23,7 @@ import {
   TopUpResponse,
   UpdatePasswordResponse,
 } from "../types";
-import { forceLogout, getErrorMessage } from "../Utilities/Constant";
+import {  getErrorMessage } from "../Utilities/helpers";
 
 export const getCookie = (cname: string) => {
   let name = cname + "=";
@@ -58,7 +58,9 @@ export const useApiInstance = () => {
     (error) => {
       console.log("error from instance", error);
       // whatever you want to do with the error
-      if (error?.response?.status === 401) forceLogout();
+      if (error?.response?.status === 401) {
+        // handleLogout();
+      }
       // throw error;
       toast.error(getErrorMessage(error));
     }
@@ -94,11 +96,11 @@ export const useApiInstance = () => {
 
   const Auth = {
     refreshToken: (refreshToken: string): Promise<AuthCred> => requests.post("/auth/refreshToken", { refreshToken }),
-    doLogout: (refreshToken: string): Promise<LogoutResponse> => requests.post("/auth/logout", { refreshToken }),
+    doLogout: (): Promise<LogoutResponse> => requests.post("/auth/logout",{}),
     adminLogin: (data: { email: string; password: string }): Promise<AdminLoginResponse> => requests.post("/auth/admin-login", { ...data }),
     authPing: (): Promise<{ hedera_wallet_id: string }> => requests.get("/auth/ping" ),
     createChallenge: (data:{url:string}): Promise<Challenge> => requests.get("/auth/challenge", {...data}),
-    generateAuth:(data:any):Promise<GnerateReseponse> => requests.post("/auth/generate",{...data})
+    generateAuth:(data:GenerateAstPayload):Promise<GnerateReseponse> => requests.post("/auth/generate",{...data})
   };
 
   const Admin = {
@@ -129,5 +131,10 @@ export const useApiInstance = () => {
     setTransactionAmount: (data: SetTransactionBody): Promise<TopUpResponse> => requests.post("/api/transaction/top-up", { ...data }),
   };
 
-  return { User, Auth, Admin, MirrorNodeRestAPI, Transaction };
+  const Integrations = {
+    twitterPersonalHandle:():Promise<{url:string}> => requests.get("/api/integrations/twitter/personalHandle"),
+    twitterBizHandle:():Promise<{url:string}> => requests.get("/api/integrations/twitter/bizHandle")
+  }
+
+  return { User, Auth, Admin, MirrorNodeRestAPI, Transaction  , Integrations};
 };

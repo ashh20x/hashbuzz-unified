@@ -8,14 +8,16 @@ import SpeedDial from "@mui/material/SpeedDial";
 import SpeedDialAction from "@mui/material/SpeedDialAction";
 import { TransitionProps } from "@mui/material/transitions";
 import * as React from "react";
+import { useCookies } from "react-cookie";
 import QRCode from "react-qr-code";
 import { useNavigate } from "react-router-dom";
-import { useHashconnectService } from "../../Wallet";
+import { toast } from "react-toastify";
+import { useApiInstance } from "../../APIConfig/api";
 import ℏicon from "../../IconsPng/ℏicon.png";
-import { useStore } from "../../Store/StoreProvider";
 import HashbuzzIcon from "../../SVGR/HashbuzzIcon";
 import HashpackIcon from "../../SVGR/HashpackIcon";
-import { forceLogout } from "../../Utilities/Constant";
+import { useStore } from "../../Store/StoreProvider";
+import { useHashconnectService } from "../../Wallet";
 
 const postAuthActions = [
   {
@@ -47,11 +49,12 @@ const SpeedDialActions = () => {
   const [open, setOpen] = React.useState(false);
   const theme = useTheme();
   const [qrCodeOpen, setQrCodeOpen] = React.useState(false);
-  const { pairingString, pairingData, connectToExtension, availableExtension } = useHashconnectService();
+  const { pairingString, pairingData, connectToExtension, availableExtension, disconnect } = useHashconnectService();
   const isDeviceIsSm = useMediaQuery(theme.breakpoints.down("sm"));
   const store = useStore();
-
+  const { Auth } = useApiInstance();
   const navigate = useNavigate();
+  const cookies = useCookies(["aSToken"])
 
   const handleOpen = React.useCallback(() => setOpen(true), []);
   const handleClose = React.useCallback(() => setOpen(false), []);
@@ -59,7 +62,7 @@ const SpeedDialActions = () => {
   const connectWalletProcess = () => {
     console.log("Connect logo");
   };
-  const showSnackBar = () => {};
+  const showSnackBar = () => { };
 
   const handleQrCodeGen = () => {
     if (pairingString) {
@@ -88,15 +91,18 @@ const SpeedDialActions = () => {
     }
   };
 
-  const handleClick = (name: string) => {
+
+
+  const handleClick = async (name: string) => {
     switch (name) {
       case "top-up":
         if (store?.currentUser?.hedera_wallet_id) connectWalletProcess();
         else showSnackBar();
         break;
       case "logout":
-        forceLogout();
-        navigate("/");
+        const logout = await disconnect();
+        toast.info("Logout Successfully.")
+        if (logout.success) navigate("/");
         break;
       case "qr-connect":
         handleQrCodeGen();

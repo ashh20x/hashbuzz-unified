@@ -9,7 +9,6 @@ import { CurrentUser } from "../../../types";
 import { useApiInstance } from "../../../APIConfig/api";
 import { useStore } from "../../../Store/StoreProvider";
 import { toast } from "react-toastify";
-import { forceLogout } from "../../../Utilities/Constant";
 
 interface ConsentModalProps {
   user: CurrentUser;
@@ -22,7 +21,7 @@ const ConsentModal = ({ user }: ConsentModalProps) => {
 
   React.useEffect(() => {
     setConsentModalOpen(Boolean(!user?.consent));
-    return () =>{
+    return () => {
       setConsentModalOpen(false)
     }
   }, [user?.consent]);
@@ -35,14 +34,13 @@ const ConsentModal = ({ user }: ConsentModalProps) => {
     } catch (error) {
       //@ts-ignore
       toast.error(error?.message ?? "Server Error");
-      forceLogout();
     }
   };
 
   return (
     <Dialog
       open={consentModalOpen}
-      onClose={(event, reason) => {}}
+      onClose={(event, reason) => { }}
       aria-labelledby="twitter-concent-dialog-title"
       aria-describedby="twitter-concent-dialog-description"
     >

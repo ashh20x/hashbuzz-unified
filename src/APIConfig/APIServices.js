@@ -1,4 +1,4 @@
-import { base_URL } from "../Utilities/Constant";
+import { base_URL } from "../Utilities/helpers";
 import axios from 'axios';
 export const APICall = async (url, method, header, data, isImage = false, token) => {
     if (isImage) {

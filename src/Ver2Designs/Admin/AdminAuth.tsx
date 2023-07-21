@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { useApiInstance } from "../../APIConfig/api";
 import HashbuzzLogoMainTransparent from "../../SVGR/HashbuzzLogo";
 import { AdminPasswordFormState } from "../../types";
-import { getErrorMessage } from "../../Utilities/Constant";
+import { getErrorMessage } from "../../Utilities/helpers";
 
 const FORM_INITIAL_STATE: AdminPasswordFormState = {
   email: {

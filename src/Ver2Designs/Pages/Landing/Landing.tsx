@@ -62,11 +62,11 @@ const Landing = () => {
         }}>
 
           {pairedAccount ? (<Grid container>
-            <Grid item sm={6} xs={12} sx={{color:"#fff"}}>
+            <Grid item sm={6} xs={12} sx={{ color: "#fff" }}>
               <Typography variant="h4">{pairedAccount}</Typography>
             </Grid>
             <Grid item sm={6} xs={12}>
-              {authStatusLog.length > 0 ? <Alert severity={authStatusLog.pop()?.type ?? "info"}>{authStatusLog.pop()?.message}</Alert> : null}
+              {authStatusLog.length > 0 ? <Alert severity={authStatusLog[authStatusLog.length - 1]?.type ?? "info"}>{authStatusLog[authStatusLog.length - 1]?.message ?? "Message"}</Alert> : null}
             </Grid>
           </Grid>) : (null)}
           <Stack

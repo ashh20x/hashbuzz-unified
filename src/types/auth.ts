@@ -19,6 +19,13 @@ export type GenerateAstPayload = {
     data: any;
   };
 
+  clientPayload:{
+    serverSignature: string | Uint8Array;
+    originalPayload: {
+        url: string;
+        data: any;
+    };
+}
   signatures: {
     server: string;
     wallet: {

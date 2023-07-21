@@ -17,6 +17,7 @@ export interface AppState {
   auth?: AuthCred;
   balances: EntityBalances[];
   contractInfo?: ContractInfo;
+  toasts:{type:"error"|"info"|"success" , message:string}[]
 }
 
 export interface EntityBalances {

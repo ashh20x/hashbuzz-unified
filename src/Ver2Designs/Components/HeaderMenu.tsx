@@ -14,13 +14,14 @@ import Tooltip from "@mui/material/Tooltip";
 import * as React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useStore } from "../../Store/StoreProvider";
-import { forceLogout } from "../../Utilities/Constant";
+import { useHashconnectService } from "../../Wallet";
 
 const HeaderMenu = () => {
   const store = useStore();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const navigate = useNavigate();
-  const {pathname} = useLocation();
+  const { pathname } = useLocation();
+  const { disconnect } = useHashconnectService();
 
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -30,9 +31,9 @@ const HeaderMenu = () => {
     setAnchorEl(null);
   };
 
-  const handleLogout  = () => {
-    forceLogout();
-    navigate("/")
+  const handleLogout = async () => {
+    const logout = await disconnect()
+    if (logout.success) navigate("/")
   }
 
   return (
@@ -101,11 +102,11 @@ const HeaderMenu = () => {
         </MenuItem> */}
         <Divider />
         {store?.currentUser?.role && ["ADMIN", "SUPER_ADMIN"].includes(store?.currentUser?.role) ? (
-          <MenuItem onClick={() => navigate(pathname.includes("admin")?"/":"/admin")}>
+          <MenuItem onClick={() => navigate(pathname.includes("admin") ? "/" : "/admin")}>
             <ListItemIcon>
               <AdminPanelSettingsIcon fontSize="small" />
             </ListItemIcon>
-          {  pathname.includes("admin")?"User Dashboard":"Admin Dashboard"}
+            {pathname.includes("admin") ? "User Dashboard" : "Admin Dashboard"}
           </MenuItem>
         ) : null}
         <MenuItem onClick={handleClose}>

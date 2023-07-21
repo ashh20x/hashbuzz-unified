@@ -9,7 +9,7 @@ import StyledComponentTheme from "./theme/Theme";
 const router = createBrowserRouter([
   {
     index: true,
-    element: <Landing      />
+    element: <Landing />
   },
   {
     path: "/",
@@ -19,6 +19,10 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
+      {
+        path: "/",
+        element: <Dashboard />
+      },
       {
         path: "dashboard",
         element: <Dashboard />,

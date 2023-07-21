@@ -119,8 +119,8 @@ export const useHashconnectService = () => {
   const { topic, pairingData, network, setState } = value;
   const { Auth } = useApiInstance();
   const store = useStore();
-  const [_, setCookies] = useCookies(["aSToken"]);
-  const [authStatusLog, setAuthStatusLog] = React.useState<AuthenticationLog[]>([{type:"info" , message:"Authentication Called"}])
+  const [_, setCookies, removeCookies] = useCookies(["aSToken"]);
+  const [authStatusLog, setAuthStatusLog] = React.useState<AuthenticationLog[]>([{ type: "info", message: "Authentication Called" }])
 
   const connectToExtension = async () => {
     //this will automatically pop up a pairing request in the HashPack extension
@@ -143,10 +143,15 @@ export const useHashconnectService = () => {
     return transactionResponse;
   };
 
-  const disconnect = React.useCallback(() => {
-    hashconnect.disconnect(pairingData?.topic!);
+  const disconnect = React.useCallback(async () => {
+    await hashconnect.disconnect(pairingData?.topic!);
     setState!((exState) => ({ ...exState, pairingData: null }))!;
-  }, [pairingData?.topic, setState]);
+    const logoutResponse = await Auth.doLogout();
+    if (logoutResponse.success) {
+      removeCookies("aSToken");
+    }
+    return logoutResponse;
+  }, [Auth, pairingData?.topic, removeCookies, setState]);
 
   const requestAccountInfo = React.useCallback(async () => {
     const request: MessageTypes.AdditionalAccountRequest = {
@@ -213,7 +218,11 @@ export const useHashconnectService = () => {
                 //? Signatures verifies successfully and token received.
                 setAuthStatusLog((_d) => ([..._d, { type: "success", message: "Verifies successfully." }]))
 
-                setCookies("aSToken", ast);
+                setCookies("aSToken", ast, {
+                  expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
+                  sameSite: true,
+                  maxAge: 24 * 60 * 60
+                });
                 store?.updateState((_prevState) => ({ ..._prevState, auth: { ..._prevState.auth, aSToken: ast } }));
 
                 setAuthStatusLog((_d) => ([..._d, { type: "success", message: "Authentication Completed." }]))
