@@ -14,7 +14,7 @@ import { unstable_batchedUpdates } from "react-dom";
 import { toast } from "react-toastify";
 import { useApiInstance } from "../../../APIConfig/api";
 import { useStore } from "../../../Store/StoreProvider";
-import { getErrorMessage } from "../../../Utilities/Constant";
+import { getErrorMessage } from "../../../Utilities/helpers";
 import { AdminPasswordFormState, CurrentUser, FormFelid } from "../../../types";
 
 type CurrentFormState = AdminPasswordFormState & {

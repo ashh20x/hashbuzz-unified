@@ -4,13 +4,11 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useApiInstance } from "../../APIConfig/api";
 import { useStore } from "../../Store/StoreProvider";
-import { forceClearStorage } from "../../Utilities/Constant";
+import { getErrorMessage } from "../../Utilities/helpers";
 import { DashboardHeader } from "../Components";
 // import { DashboardHeader } from "../../Components";
 const MainLayout = () => {
   const store = useStore();
-
-
   const { User } = useApiInstance();
   const navigate = useNavigate();
 
@@ -20,17 +18,15 @@ const MainLayout = () => {
       const currentUser = await User.getCurrentUser();
       store?.updateState((perv) => ({ ...perv, currentUser }));
     } catch (error) {
-      //@ts-ignore
-      toast.error(error?.message ?? "Server Error");
-      forceClearStorage();
-      navigate("/");
+      toast.error(getErrorMessage(error) ?? "Error while getting current user details.");
     }
-  }, [User, navigate, store]);
+  }, [User, store]);
 
   React.useEffect(() => {
     getUserData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   return (
     <Box
       sx={{

@@ -6,7 +6,9 @@ import { HashconnectAPIProvider } from "./Wallet";
 import "./index.css";
 import { CookiesProvider } from "react-cookie";
 import { StoreProvider } from "./Store/StoreProvider";
-import { NETWORK } from "./Utilities/Constant";
+import { NETWORK } from "./Utilities/helpers";
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 const theme = createTheme();
 
@@ -28,6 +30,7 @@ const App = () => {
           >
             <ThemeProvider theme={theme}>
               <AppRouter />
+              <ToastContainer />
             </ThemeProvider>
           </HashconnectAPIProvider>
         </StoreProvider>

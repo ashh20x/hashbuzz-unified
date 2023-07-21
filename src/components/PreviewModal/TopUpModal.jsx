@@ -7,7 +7,7 @@ import { useHashconnectService } from "../../Wallet";
 import { useSmartContractServices } from "../../Wallet/smartcontractService";
 import { useStore } from "../../Store/StoreProvider";
 import Typography from "../../Typography/Typography";
-import { delay } from "../../Utilities/Constant";
+import { delay } from "../../Utilities/helpers";
 import PrimaryButton from "../Buttons/PrimaryButton";
 import { ErrorTextWrap } from '../Pages/TemplatePage/TemplatePage.styles';
 import { BoxCont, ButtonWrapPrimary, CustomInput, CustomParagraph, Label, OverlayBox, Row } from "./PreviewModal.styles";

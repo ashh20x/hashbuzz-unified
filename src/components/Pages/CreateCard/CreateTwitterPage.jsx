@@ -7,7 +7,7 @@ import { useDappAPICall } from "../../../APIConfig/dAppApiServices";
 import { tableHeadRow } from "../../../Data/TwitterTable";
 import { useHashconnectService } from "../../../Wallet";
 import { useStore } from "../../../Store/StoreProvider";
-import { delay } from "../../../Utilities/Constant";
+import { delay } from "../../../Utilities/helpers";
 import PrimaryButton from "../../Buttons/PrimaryButton";
 import SecondaryButton from "../../Buttons/SecondaryButton";
 import { ContainerStyled } from "../../ContainerStyled/ContainerStyled";

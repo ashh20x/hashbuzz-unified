@@ -2,14 +2,15 @@ import React from "react";
 import { useCookies } from "react-cookie";
 import { toast } from "react-toastify";
 import { useApiInstance } from "../APIConfig/api";
-import { getErrorMessage } from "../Utilities/Constant";
+import { getErrorMessage } from "../Utilities/helpers";
 import { CurrentUser } from "../types";
 import { AppState } from "../types/state";
 
 // Defines the type for the context including the AppState and an update function.
 interface StoreContextType extends AppState {
   updateState: React.Dispatch<React.SetStateAction<AppState>>;
-  authCheckPing: () => Promise<{ ping: boolean }>
+  authCheckPing: () => Promise<{ ping: boolean }>,
+
 }
 
 // Create a context with a default value of null.
@@ -29,6 +30,7 @@ const INITIAL_STATE = {
       entityType: "HBAR",
     },
   ],
+  toasts: []
 };
 
 // Component that provides the state to its children.
@@ -102,7 +104,38 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
 
   React.useEffect(() => {
     if (state.currentUser?.hedera_wallet_id) checkAndUpdateEntityBalances();
-  }, [state.currentUser?.hedera_wallet_id, checkAndUpdateEntityBalances]);
+  }, [state.currentUser?.hedera_wallet_id]);
+
+  React.useEffect(() => {
+    const params = new URL(document.location.href).searchParams;
+    const token = params.get("aSToken");
+    const userId = params.get("user_id");
+    const brandConnection = params.get("brandConnection");
+    const authStatus = params.get("authStatus");
+    const message = params.get("message");
+
+    if ((authStatus && authStatus === "fail") || (brandConnection && brandConnection === "fail")) {
+      updateState((_d) => {
+        _d.toasts.push({ type: "error", message: message ?? "Error while integration." })
+        return { ..._d, toasts: [..._d.toasts] }
+      })
+    }
+
+    if (brandConnection && brandConnection === "success") {
+      updateState((_d) => {
+        _d.toasts.push({ type: "success", message: message ?? "Integration completed successfully." })
+        return { ..._d, toasts: [..._d.toasts] }
+      })
+    }
+
+    if (token && userId) {
+      updateState((_d) => {
+        _d.toasts.push({ type: "success", message: "Integration completed." })
+        return { ..._d, toasts: [..._d.toasts] }
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const value = React.useMemo(
     () => ({
