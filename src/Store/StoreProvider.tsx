@@ -13,6 +13,14 @@ interface StoreContextType extends AppState {
 
 }
 
+const INITIAL_HBAR_BALANCE_ENTITY = {
+  entityBalance: "00.00",
+  entityIcon: "ℏ",
+  entitySymbol: "ℏ",
+  entityId: "",
+  entityType: "HBAR",
+};
+
 // Create a context with a default value of null.
 const StoreContext = React.createContext<StoreContextType | null>(null);
 
@@ -21,15 +29,7 @@ const INITIAL_STATE = {
     status: false,
     hedera_wallet_id: "",
   },
-  balances: [
-    {
-      entityBalance: "00.00",
-      entityIcon: "ℏ",
-      entitySymbol: "ℏ",
-      entityId: "",
-      entityType: "HBAR",
-    },
-  ],
+  balances: [],
   toasts: []
 };
 
@@ -38,8 +38,9 @@ const INITIAL_STATE = {
 export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
   const [cookies] = useCookies(["aSToken"]);
   const [state, updateState] = React.useState<AppState>(JSON.parse(JSON.stringify(INITIAL_STATE)));
-
   const { Auth, User } = useApiInstance();
+
+  const accountId = state.currentUser?.hedera_wallet_id;
 
   const checkAndUpdateLoggedInUser = React.useCallback(() => {
     let localData = localStorage.getItem("user");
@@ -59,22 +60,28 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
   const checkAndUpdateEntityBalances = React.useCallback(async () => {
     try {
       const balancesData = await User.getTokenBalances();
-      const formateBalanceRecord = balancesData.map((d) => ({
-        entityBalance: d.available_balance.toFixed(4),
-        entityIcon: d.token_symbol,
-        entitySymbol: "",
-        entityId: d.token_id,
-        entityType: d.token_type,
-      }));
+      const available_budget = state.currentUser?.available_budget;
+
       updateState((_state) => {
-        _state.balances = [
-          {
-            ..._state.balances[0],
-            entityBalance: (state?.currentUser?.available_budget ?? 0 / 1e8).toFixed(4),
+        if (available_budget && available_budget > 0) {
+          _state.balances.push({
+            ...INITIAL_HBAR_BALANCE_ENTITY,
+            entityBalance: (available_budget / 1e8).toFixed(4),
             entityId: state?.currentUser?.hedera_wallet_id ?? "",
-          },
-          ...formateBalanceRecord,
-        ];
+          })
+        }
+        if (balancesData.length > 0) {
+          for (let index = 0; index < balancesData.length; index++) {
+            const d = balancesData[index];
+            _state.balances.push({
+              entityBalance: d.available_balance.toFixed(4),
+              entityIcon: d.token_symbol,
+              entitySymbol: "",
+              entityId: d.token_id,
+              entityType: d.token_type,
+            })
+          }
+        }
         return { ..._state };
       });
     } catch (err) {
@@ -103,8 +110,8 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
   }, [checkAndUpdateLoggedInUser, state.ping.status]);
 
   React.useEffect(() => {
-    if (state.currentUser?.hedera_wallet_id) checkAndUpdateEntityBalances();
-  }, [state.currentUser?.hedera_wallet_id]);
+    if (accountId) checkAndUpdateEntityBalances();
+  }, [accountId]);
 
   React.useEffect(() => {
     const params = new URL(document.location.href).searchParams;

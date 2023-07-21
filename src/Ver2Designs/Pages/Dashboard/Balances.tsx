@@ -32,8 +32,11 @@ import { cardStyle } from "./CardGenUtility";
 import TopupModal from "./TopupModal";
 
 const formatBalance = (balObj: EntityBalances): string => {
-  const { entityBalance, entityType } = balObj;
-  return entityType === "HBAR" ? (parseFloat(entityBalance) / 1e8).toFixed(4) : entityBalance;
+  if (balObj) {
+    const { entityBalance, entityType } = balObj;
+    return entityType === "HBAR" ? (parseFloat(entityBalance) / 1e8).toFixed(4) : entityBalance;
+  }
+  return ""
 };
 
 const Balances = () => {
@@ -156,43 +159,53 @@ const Balances = () => {
             <Box sx={{ flexGrow: 1, flexBasis: 0, maxWidth: "100%", textAlign: "left", paddingLeft: 1, paddingRight: 1 }}>
               <Stack direction={"row"} alignItems="center" justifyContent={"space-between"} sx={{ marginBottom: 2 }}>
                 <Typography variant="h6" sx={{ lineHeight: 1 }}>
-                  {" Balances(ℏ)"}
+                  {"Balances(ℏ)"}
                 </Typography>
-                <ButtonGroup
-                  size="small"
-                  aria-label="Balance update group"
-                  sx={{ ".MuiButton-startIcon": { margin: 0 }, justifyContent: "center" }}
-                  ref={anchorRef}
-                >
-                  {topUpButtons}
-                </ButtonGroup>
-              </Stack>
+                {balances && balances?.length > 0 ? (
+                  <ButtonGroup
+                    size="small"
+                    aria-label="Balance update group"
+                    sx={{ ".MuiButton-startIcon": { margin: 0 }, justifyContent: "center" }}
+                    ref={anchorRef}
+                  >
+                    {topUpButtons}
+                  </ButtonGroup>) : null}
 
-              <Box sx={{ display: "flex", justifyContent: "center" }}>
-                <ButtonGroup size="small" aria-label="Balance display card" sx={{ ".MuiButton-startIcon": { margin: 0 }, justifyContent: "center" }}>
-                  <Button
-                    key="next_button"
-                    startIcon={<ArrowBackIos />}
-                    disabled={activeIndex === 0}
-                    onClick={() => handleBalanceNavigator("prev")}
-                  />
-                  <BalanceCard
-                    entityBal={
-                      //balances![activeIndex].entityType === "HBAR" ? (parseFloat(balances![activeIndex].entityBalance)/1e8).toFixed(4):balances![activeIndex].entityBalance}
-                      formatBalance(balances![activeIndex])
-                    }
-                    entityIcon={balances![activeIndex].entityIcon}
-                    entitySymbol={balances![activeIndex].entitySymbol}
-                    key="balance_card"
-                  />
-                  <Button
-                    key="prev_button"
-                    startIcon={<ArrowForwardIos />}
-                    disabled={activeIndex === balances!.length - 1}
-                    onClick={() => handleBalanceNavigator("next")}
-                  />
-                </ButtonGroup>
-              </Box>
+              </Stack>
+              {balances && balances.length > 0 ? (
+                <Box sx={{ display: "flex", justifyContent: "center" }}>
+                  <ButtonGroup size="small" aria-label="Balance display card" sx={{ ".MuiButton-startIcon": { margin: 0 }, justifyContent: "center" }}>
+                    <Button
+                      key="next_button"
+                      startIcon={<ArrowBackIos />}
+                      disabled={activeIndex === 0}
+                      onClick={() => handleBalanceNavigator("prev")}
+                    />
+                    <BalanceCard
+                      entityBal={
+                        //balances![activeIndex].entityType === "HBAR" ? (parseFloat(balances![activeIndex].entityBalance)/1e8).toFixed(4):balances![activeIndex].entityBalance}
+                        formatBalance(balances[activeIndex])
+                      }
+                      entityIcon={balances[activeIndex].entityIcon}
+                      entitySymbol={balances[activeIndex]?.entitySymbol}
+                      key="balance_card"
+                    />
+                    <Button
+                      key="prev_button"
+                      startIcon={<ArrowForwardIos />}
+                      disabled={activeIndex === balances!.length - 1}
+                      onClick={() => handleBalanceNavigator("next")}
+                    />
+                  </ButtonGroup>
+                </Box>) : (<Stack sx={{ marginTop: 3 }} direction={"row"} justifyContent={"center"}>
+                  <Button variant="contained" disableElevation sx={{ width: 120, margin: "0  auto" }} 
+                  // startIcon={<HederaIcon size={20} fill="white" />}
+                  startIcon={"ℏ"}
+                  >
+                    Topup
+                  </Button></Stack>
+              )}
+
             </Box>
           </Stack>
           <Popper
