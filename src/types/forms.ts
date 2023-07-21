@@ -9,12 +9,10 @@ export interface FormFelid<T> {
 }
 
 export type AdminPasswordFormState = {
-  email: FormFelid<string>;
   password: FormFelid<string>;
 };
 
 export type AdminUpdatePassword = {
-  email?: string;
   password: string;
 };
 

@@ -4,11 +4,11 @@ import PageNotfound from "../Pages/PageNotfound";
 import AdminAuth from "./AdminAuth";
 
 const AdminAuthGuard = ({ children }: { children: JSX.Element }) => {
-  const [cookies] = useCookies(["token", "adminToken"]);
+  const [cookies] = useCookies(["aSToken", "adminToken"]);
   const store = useStore();
-  if (!cookies.token || (store?.currentUser?.role && !["ADMIN", "SUPER_ADMIN"].includes(store?.currentUser?.role))) return <PageNotfound />;
-  if(!cookies.adminToken) return <AdminAuth />;
-  return children; 
+  if (!cookies.aSToken || (store?.currentUser?.role && !["ADMIN", "SUPER_ADMIN"].includes(store?.currentUser?.role))) return <PageNotfound />;
+  if (!cookies.adminToken) return <AdminAuth />;
+  return children;
 };
 
 export default AdminAuthGuard;
