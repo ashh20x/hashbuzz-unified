@@ -125,7 +125,7 @@ export const useApiInstance = () => {
   };
 
   const Transaction = {
-    createTransactionBytes: (data: CreateTransactionByteBody): Promise<any> =>
+    createTransactionBytes: (data: CreateTransactionByteBody): Promise<Uint8Array> =>
       requests.post("/api/transaction/create-topup-transaction", { ...data }),
     setTransactionAmount: (data: SetTransactionBody): Promise<TopUpResponse> => requests.post("/api/transaction/top-up", { ...data }),
   };

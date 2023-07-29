@@ -63,13 +63,13 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
       const available_budget = state.currentUser?.available_budget;
 
       updateState((_state) => {
-        if (available_budget && available_budget > 0) {
-          _state.balances.push({
-            ...INITIAL_HBAR_BALANCE_ENTITY,
-            entityBalance: (available_budget / 1e8).toFixed(4),
-            entityId: state?.currentUser?.hedera_wallet_id ?? "",
-          })
-        }
+
+        _state.balances.push({
+          ...INITIAL_HBAR_BALANCE_ENTITY,
+          entityBalance: (available_budget ?? 0 / 1e8).toFixed(4),
+          entityId: state?.currentUser?.hedera_wallet_id ?? "",
+        })
+
         if (balancesData.length > 0) {
           for (let index = 0; index < balancesData.length; index++) {
             const d = balancesData[index];

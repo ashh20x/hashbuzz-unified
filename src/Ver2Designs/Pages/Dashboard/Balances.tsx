@@ -30,6 +30,8 @@ import HederaIcon from "../../../SVGR/HederaIcon";
 import { BalOperation, EntityBalances } from "../../../types";
 import { cardStyle } from "./CardGenUtility";
 import TopupModal from "./TopupModal";
+import { isAnyBalancesIsAvailable } from "../../../Utilities/helpers";
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 
 const formatBalance = (balObj: EntityBalances): string => {
   if (balObj) {
@@ -52,8 +54,12 @@ const Balances = () => {
 
   const { MirrorNodeRestAPI } = useApiInstance();
   // const [popOverOpen, setPopOverOpen] = React.useState(false);
-  const [balanceList, setBalanceList] = React.useState<{ open: boolean; operation: BalOperation }>({ open: false, operation: "topup" });
-  const anchorRef = React.useRef<HTMLDivElement>(null);
+  const [balanceList, setBalanceList] = React.useState<{ operation: BalOperation }>({ operation: "topup" });
+  const topUpButtonsListRef = React.useRef<HTMLDivElement>(null);
+  const [entityListEl, setEntityEl] = React.useState<HTMLElement | null>(null);
+
+  // open for the entityList popper state;
+  const entityListOpen = Boolean(entityListEl);
 
   const handleBalanceNavigator = (navigate: "next" | "prev") => {
     setActiveIndex((index) => {
@@ -66,12 +72,12 @@ const Balances = () => {
     });
   };
 
-  const handleClose = (event: Event) => {
-    if (anchorRef.current && anchorRef.current.contains(event.target as HTMLElement)) {
+  const handleCloseEntityList = (event: Event) => {
+    if (topUpButtonsListRef.current && topUpButtonsListRef.current.contains(event.target as HTMLElement)) {
       return;
     }
-
-    setBalanceList((_d) => ({ ..._d, open: false }));
+    setEntityEl(null)
+    // setBalanceList((_d) => ({ ..._d, open: false }));
   };
 
   const handleMenuItemClick = async (event: React.MouseEvent<HTMLLIElement, MouseEvent>, index: number) => {
@@ -109,15 +115,19 @@ const Balances = () => {
     }
   };
 
-  const handleTopupOrReimClick = (operation: BalOperation) => {
+  const handleTopupOrReimClick = (operation: BalOperation, event?: React.MouseEvent) => {
+    event?.preventDefault();
     if (!pairingData) {
       toast.warning("Connect wallet first then retry topup.");
       connectToExtension();
     } else {
-      setBalanceList({
-        open: true,
-        operation,
-      });
+      unstable_batchedUpdates(() => {
+        setBalanceList({
+          operation,
+        });
+        //@ts-ignore
+        setEntityEl(event ? event?.target : topUpButtonsListRef.current)
+      })
     }
   };
 
@@ -166,13 +176,13 @@ const Balances = () => {
                     size="small"
                     aria-label="Balance update group"
                     sx={{ ".MuiButton-startIcon": { margin: 0 }, justifyContent: "center" }}
-                    ref={anchorRef}
+                    ref={topUpButtonsListRef}
                   >
                     {topUpButtons}
                   </ButtonGroup>) : null}
 
               </Stack>
-              {balances && balances.length > 0 ? (
+              {balances && isAnyBalancesIsAvailable(balances) ? (
                 <Box sx={{ display: "flex", justifyContent: "center" }}>
                   <ButtonGroup size="small" aria-label="Balance display card" sx={{ ".MuiButton-startIcon": { margin: 0 }, justifyContent: "center" }}>
                     <Button
@@ -198,12 +208,15 @@ const Balances = () => {
                     />
                   </ButtonGroup>
                 </Box>) : (<Stack sx={{ marginTop: 3 }} direction={"row"} justifyContent={"center"}>
-                  <Button variant="contained" disableElevation sx={{ width: 120, margin: "0  auto" }} 
-                  // startIcon={<HederaIcon size={20} fill="white" />}
-                  startIcon={"ℏ"}
+                  <Button variant="contained" disableElevation sx={{ width: 120, margin: "0  auto" }}
+                    // startIcon={<HederaIcon size={20} fill="white" />}
+                    startIcon={"ℏ"}
+                    endIcon={<KeyboardArrowDownIcon />}
+                    onClick={(event) => handleTopupOrReimClick("topup" , event)}
                   >
                     Topup
-                  </Button></Stack>
+                  </Button>
+                </Stack>
               )}
 
             </Box>
@@ -212,8 +225,8 @@ const Balances = () => {
             sx={{
               zIndex: 1,
             }}
-            open={balanceList.open}
-            anchorEl={anchorRef.current}
+            open={entityListOpen}
+            anchorEl={entityListEl}
             role={undefined}
             transition
             disablePortal
@@ -226,7 +239,7 @@ const Balances = () => {
                 }}
               >
                 <Paper>
-                  <ClickAwayListener onClickAway={handleClose}>
+                  <ClickAwayListener onClickAway={handleCloseEntityList}>
                     <MenuList id="entityList-for-topup" autoFocusItem>
                       {balances!.map((bal, index) => (
                         <MenuItem onClick={(event) => handleMenuItemClick(event, index)}>
