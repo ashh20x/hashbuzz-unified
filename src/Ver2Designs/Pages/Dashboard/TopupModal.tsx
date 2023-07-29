@@ -118,7 +118,7 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
   return (
     <Dialog open={open}>
       <DialogTitle>
-        {loading? "Payment in progress...":`Top wallet with ${data?.entityType === "HBAR" ? "hbar(ℏ)" : `token ${data?.entityIcon}`}`}
+        {loading? "Payment in progress...":`Top up wallet with ${data?.entityType === "HBAR" ? "hbar(ℏ)" : `token ${data?.entityIcon}`}`}
         <IconButton
           onClick={modalClose}
           color="error"
