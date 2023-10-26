@@ -4,6 +4,7 @@ import React, { useCallback } from "react";
 import { useCookies } from "react-cookie";
 import { useApiInstance } from "../APIConfig/api";
 import { useStore } from "../Store/StoreProvider";
+import { toast } from "react-toastify";
 
 export const fetchAccountIfoKey = async (accountId: string) => {
   const url = "https://testnet.mirrornode.hedera.com/api/v1/accounts/" + accountId;
@@ -120,7 +121,7 @@ export const useHashconnectService = () => {
   const { Auth } = useApiInstance();
   const store = useStore();
   const [_, setCookies, removeCookies] = useCookies(["aSToken"]);
-  const [authStatusLog, setAuthStatusLog] = React.useState<AuthenticationLog[]>([{ type: "info", message: "Authentication Called" }])
+  const [authStatusLog, setAuthStatusLog] = React.useState<AuthenticationLog[]>([{ type: "info", message: "Authentication Called" }]);
 
   const connectToExtension = async () => {
     //this will automatically pop up a pairing request in the HashPack extension
@@ -138,6 +139,7 @@ export const useHashconnectService = () => {
         hideNft: hideNfts,
       },
     };
+    console.log(transaction, "transaction");
 
     const transactionResponse = await hashconnect.sendTransaction(topic!, transaction);
     return transactionResponse;
@@ -149,6 +151,18 @@ export const useHashconnectService = () => {
     const logoutResponse = await Auth.doLogout();
     if (logoutResponse.success) {
       removeCookies("aSToken");
+      store?.updateState(
+        JSON.parse(
+          JSON.stringify({
+            ping: {
+              status: false,
+              hedera_wallet_id: "",
+            },
+            balances: [],
+            toasts: [],
+          })
+        )
+      );
     }
     return logoutResponse;
   }, [Auth, pairingData?.topic, removeCookies, setState]);
@@ -175,33 +189,35 @@ export const useHashconnectService = () => {
     const accountId = pairingData?.accountIds[0];
     //? Authentication process initialized;
     console.log("Authentication Initialized::");
-    setAuthStatusLog((_d) => ([..._d, { type: "info", message: "Authentication Initialized with account Id " + accountId }]));
+    setAuthStatusLog((_d) => [..._d, { type: "info", message: "Authentication Initialized with account Id " + accountId }]);
     try {
       //? Wait for a second
       await delay(1000);
       //? Getting Challenge Signing
-      setAuthStatusLog((_d) => ([..._d, { type: "info", message: "Requesting challenge" }]))
+      setAuthStatusLog((_d) => [..._d, { type: "info", message: "Requesting challenge" }]);
 
       const { payload, server } = await Auth.createChallenge({ url: window.location.origin });
 
-      setAuthStatusLog((_d) => ([..._d, { type: "info", message: "Challenge received" }]))
+      setAuthStatusLog((_d) => [..._d, { type: "info", message: "Challenge received" }]);
 
       if (topic && accountId) {
         //? Request wallet to sign the challenge.
-        setAuthStatusLog((_d) => ([..._d, { type: "info", message: "Check wallet. Signing Request is initialized" }]));
+        setAuthStatusLog((_d) => [..._d, { type: "info", message: "Check wallet. Signing Request is initialized" }]);
         await delay(1500);
 
         hashconnect
           .authenticate(topic, accountId, server.account, Buffer.from(server.signature), payload)
           .then(async (authResponse) => {
+            console.log("CHECK");
+
             if (authResponse.success && authResponse.signedPayload && authResponse.userSignature) {
               //? Challenge signed successfully.
-              setAuthStatusLog((_d) => ([..._d, { type: "success", message: "Wallet signature received" }]))
+              setAuthStatusLog((_d) => [..._d, { type: "success", message: "Wallet signature received" }]);
 
               const { signedPayload, userSignature } = authResponse;
 
               //? Requesting for verifications of the signatures
-              setAuthStatusLog((_d) => ([..._d, { type: "info", message: "Signature verification initialized" }]))
+              setAuthStatusLog((_d) => [..._d, { type: "info", message: "Signature verification initialized" }]);
 
               const { ast } = await Auth.generateAuth({
                 payload: signedPayload.originalPayload,
@@ -214,42 +230,58 @@ export const useHashconnectService = () => {
                   },
                 },
               });
+              console.log(ast, "checking");
+
               if (ast) {
                 //? Signatures verifies successfully and token received.
-                setAuthStatusLog((_d) => ([..._d, { type: "success", message: "Verifies successfully." }]))
+                setAuthStatusLog((_d) => [..._d, { type: "success", message: "Verifies successfully." }]);
 
                 setCookies("aSToken", ast, {
                   expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
                   sameSite: true,
-                  maxAge: 24 * 60 * 60
+                  maxAge: 24 * 60 * 60,
                 });
                 store?.updateState((_prevState) => ({ ..._prevState, auth: { ..._prevState.auth, aSToken: ast } }));
 
-                setAuthStatusLog((_d) => ([..._d, { type: "success", message: "Authentication Completed." }]))
+                setAuthStatusLog((_d) => [..._d, { type: "success", message: "Authentication Completed." }]);
                 await delay(1500);
                 await store?.authCheckPing();
+                toast.info("Login Successful");
                 return { auth: true, ast };
               }
             }
 
             if (authResponse.error) {
               //! Error while signing the challenge by wallet
-              console.log(authResponse.error)
-              setAuthStatusLog((_d) => ([..._d, { type: "error", message: "Error while signing::-" + authResponse.error }]))
+              console.log(authResponse.error);
+
+              setAuthStatusLog((_d) => [..._d, { type: "error", message: "Error while signing::-" + authResponse.error }]);
             }
           })
           .catch((err) => {
             //! Error while authentication.
             console.log("Error from authenticate", err);
-            setAuthStatusLog((_d) => ([..._d, { type: "error", message: "Error while Authenticating::-" + err.message }]))
+            setAuthStatusLog((_d) => [..._d, { type: "error", message: "Error while Authenticating::-" + err.message }]);
           });
       }
     } catch (err) {
       console.log(err);
+
       //@ts-ignore
-      setAuthStatusLog((_d) => ([..._d, { type: "error", message: "Error from validation::-" + err.message }]))
+
+      setAuthStatusLog((_d) => [..._d, { type: "error", message: "Error fro m validation::-" + err.message }]);
     }
   }, [Auth, pairingData?.accountIds, setCookies, store, topic]);
 
-  return { ...value, connectToExtension, sendTransaction, disconnect, requestAccountInfo, clearPairings, hashconnect, handleAuthenticate, authStatusLog };
+  return {
+    ...value,
+    connectToExtension,
+    sendTransaction,
+    disconnect,
+    requestAccountInfo,
+    clearPairings,
+    hashconnect,
+    handleAuthenticate,
+    authStatusLog,
+  };
 };

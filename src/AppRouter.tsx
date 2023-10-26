@@ -5,11 +5,14 @@ import { AdminDashboard } from "./Ver2Designs/Admin";
 import AdminAuthGuard from "./Ver2Designs/Admin/AdminAuthGuard";
 import MainLayout from "./Ver2Designs/Layout";
 import StyledComponentTheme from "./theme/Theme";
+import { Template } from "./screens/Template";
+import { Invoice } from "./screens/Invoice";
+import { OnBoarding } from "./screens/OnBoarding";
 
 const router = createBrowserRouter([
   {
     index: true,
-    element: <Landing />
+    element: <Landing />,
   },
   {
     path: "/",
@@ -21,15 +24,27 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <Dashboard />
+        element: <Dashboard />,
       },
       {
         path: "dashboard",
         element: <Dashboard />,
       },
       {
+        path: "campaign",
+        element: <Template />,
+      },
+      {
         path: "create-campaign",
         element: <CreateCampaign />,
+      },
+      {
+        path: "invoice",
+        element: <Invoice />,
+      },
+      {
+        path: "onboarding",
+        element: <OnBoarding />,
       },
       {
         path: "settings",

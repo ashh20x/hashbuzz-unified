@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 export const TableSection = styled.div`
   display: flex;
-  width: 9%;
+  width: 99%;
   height: 45vh;
   overflow-y: scroll;
   scrollbar-width: none;

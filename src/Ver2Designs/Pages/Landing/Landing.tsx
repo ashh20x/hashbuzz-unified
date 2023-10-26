@@ -23,10 +23,11 @@ const Landing = () => {
 
   React.useEffect(() => {
     if (pairedAccount && !ping?.status) {
+      console.log(pairingData, "testing");
       handleAuthenticate();
     }
     // console.log(ping,pairingData?.accountIds[0])
-  }, [pairedAccount, ping?.status])
+  }, [pairedAccount, ping?.status]);
 
   return (
     <Box
@@ -55,24 +56,32 @@ const Landing = () => {
             }}
           />
         </Stack>
-        <Box sx={{
-          background: "linear-gradient(rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15))", p: 3, borderRadius: 1,
-          maxWidth: 600, marginTop: 5, marginLeft: "auto",
-          marginRight: "auto",
-        }}>
-
-          {pairedAccount ? (<Grid container>
-            <Grid item sm={6} xs={12} sx={{ color: "#fff" }}>
-              <Typography variant="h4">{pairedAccount}</Typography>
+        <Box
+          sx={{
+            background: "linear-gradient(rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15))",
+            p: 3,
+            borderRadius: 1,
+            maxWidth: 600,
+            marginTop: 5,
+            marginLeft: "auto",
+            marginRight: "auto",
+          }}
+        >
+          {pairedAccount ? (
+            <Grid container>
+              <Grid item sm={6} xs={12} sx={{ color: "#fff" }}>
+                <Typography variant="h4">{pairedAccount}</Typography>
+              </Grid>
+              <Grid item sm={6} xs={12}>
+                {authStatusLog.length > 0 ? (
+                  <Alert severity={authStatusLog[authStatusLog.length - 1]?.type ?? "info"}>
+                    {authStatusLog[authStatusLog.length - 1]?.message ?? "Message"}
+                  </Alert>
+                ) : null}
+              </Grid>
             </Grid>
-            <Grid item sm={6} xs={12}>
-              {authStatusLog.length > 0 ? <Alert severity={authStatusLog[authStatusLog.length - 1]?.type ?? "info"}>{authStatusLog[authStatusLog.length - 1]?.message ?? "Message"}</Alert> : null}
-            </Grid>
-          </Grid>) : (null)}
-          <Stack
-            sx={{ color: "#fff" }}
-            spacing={2}
-          >
+          ) : null}
+          <Stack sx={{ color: "#fff" }} spacing={2}>
             <Typography variant="subtitle1">
               Imagine a world where anyone can confidently share verified information on social media. We're talkin' about a social DAO where local
               communities are incentivized to validate information from the source of origin. The current Proof of Concept (PoC) we're workin' on is
@@ -98,7 +107,6 @@ const Landing = () => {
             </Typography>
             {/* <link> */}
             <Typography>Follow us for latest update and new announcements: Twitter - Discord</Typography>
-
           </Stack>
         </Box>
       </Container>

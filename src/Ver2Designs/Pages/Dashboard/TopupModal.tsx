@@ -25,9 +25,12 @@ import { useSmartContractServices } from "../../../Wallet/smartcontractService";
 import { toast } from "react-toastify";
 import { useHashconnectService } from "../../../Wallet";
 import { LoadingButton } from "@mui/lab";
-import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import { unstable_batchedUpdates } from "react-dom";
-
+import { transactionData } from "../../../Data/InvoiceTransactions";
+import { useApiInstance } from "../../../APIConfig/api";
+import { getErrorMessage } from "../../../Utilities/helpers";
+import { useStore } from "../../../Store/StoreProvider";
 interface TopupModalProps {
   data: EntityBalances | null;
   open: boolean;
@@ -36,6 +39,14 @@ interface TopupModalProps {
 }
 type CurrentFormState = {
   amount: FormFelid<number>;
+};
+
+const INITIAL_HBAR_BALANCE_ENTITY = {
+  entityBalance: "00.00",
+  entityIcon: "ℏ",
+  entitySymbol: "ℏ",
+  entityId: "",
+  entityType: "HBAR",
 };
 
 const FORM_INITIAL_STATE: CurrentFormState = {
@@ -53,10 +64,12 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
   const [formData, setFromData] = React.useState<CurrentFormState>(JSON.parse(JSON.stringify(FORM_INITIAL_STATE)));
   const inputRef = React.createRef<HTMLInputElement>();
   const [loading, setLoading] = React.useState(false);
+  const { User } = useApiInstance();
 
   const { topUpAccount } = useSmartContractServices();
   const { pairingData } = useHashconnectService();
-
+  const { Transaction } = useApiInstance();
+  const store = useStore();
   const inputChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
     setFromData((_d) => ({
@@ -97,6 +110,7 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
         if (onClose) onClose();
       } else {
         toast.warning("Please Enter the valid amount to topup");
+        setLoading(false);
       }
     } catch (err) {
       setLoading(false);
@@ -114,11 +128,36 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
   useEffect(() => {
     if (inputRef.current) inputRef.current.focus();
   }, [inputRef]);
-
+  const reimburse = async () => {
+    setLoading(true);
+    try {
+      const response = await Transaction.reimburseAmount({ amount: formData?.amount?.value });
+      const currentUser = await User.getCurrentUser();
+      store?.updateState((prev) => {
+        return {
+          ...prev,
+          currentUser: currentUser,
+          balances: [
+            {
+              ...INITIAL_HBAR_BALANCE_ENTITY,
+              entityBalance: (currentUser?.available_budget ?? 0 / 1e8).toFixed(4),
+              entityId: currentUser?.hedera_wallet_id ?? "",
+            },
+          ],
+        };
+      });
+      toast.info(response?.message);
+      setLoading(false);
+      if (onClose) onClose();
+    } catch (err: any) {
+      toast.error(err);
+      setLoading(false);
+    }
+  };
   return (
     <Dialog open={open}>
       <DialogTitle>
-        {loading? "Payment in progress...":`Top up wallet with ${data?.entityType === "HBAR" ? "hbar(ℏ)" : `token ${data?.entityIcon}`}`}
+        {loading ? "Payment in progress..." : `Top up wallet with ${data?.entityType === "HBAR" ? "hbar(ℏ)" : `token ${data?.entityIcon}`}`}
         <IconButton
           onClick={modalClose}
           color="error"
@@ -237,7 +276,9 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
           Close
         </Button> */}
         {operation === "reimburse" ? (
-          <Button>Reimburse</Button>
+          <LoadingButton onClick={reimburse} autoFocus variant="contained" loading={loading} loadingPosition="start" disabled={loading}>
+            Reimburse
+          </LoadingButton>
         ) : (
           <LoadingButton
             autoFocus

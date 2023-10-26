@@ -6,7 +6,7 @@ import { InvTranPage } from "../components/Pages/InvTranPage/InvTranPage";
 export const Invoice = () => {
   return (
     <ContainerWrapper>
-      <Logo />
+      {/* <Logo /> */}
       <InvTranPage />
     </ContainerWrapper>
   );

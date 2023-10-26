@@ -46,7 +46,7 @@ const Balances = () => {
   const aboveXs = useMediaQuery(theme.breakpoints.up("sm"));
   const store = useStore();
   const balances = store?.balances;
-
+console.log(balances,'balances')
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const [topupModalData, setTopupModalData] = useState<EntityBalances | null>(null);
 

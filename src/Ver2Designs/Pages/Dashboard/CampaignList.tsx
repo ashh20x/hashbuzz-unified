@@ -3,6 +3,7 @@ import { Box, Button, Card, Divider, Stack, Typography } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { CurrentUser } from "../../../types";
 import { cardStyle } from "./CardGenUtility";
+import { useNavigate } from "react-router-dom";
 
 const columns: GridColDef[] = [
   { field: "id", headerName: "Card No.", width: 100, align: "center" },
@@ -18,7 +19,12 @@ interface CampaignListProps {
   user?: CurrentUser;
 }
 
-const CampaignList = ({user}:CampaignListProps) => {
+const CampaignList = ({ user }: CampaignListProps) => {
+  const navigate = useNavigate();
+  const handleTemplate = () => {
+    navigate("/campaign");
+    // navigate("/create-campaign");
+  };
   return (
     <Box
       sx={{
@@ -46,6 +52,7 @@ const CampaignList = ({user}:CampaignListProps) => {
             variant="contained"
             disableElevation
             disabled={!user?.available_budget || !user?.hedera_wallet_id || !user?.business_twitter_handle}
+            onClick={handleTemplate}
           >
             Create Campaign
           </Button>

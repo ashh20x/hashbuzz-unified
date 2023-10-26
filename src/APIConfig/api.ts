@@ -16,6 +16,7 @@ import {
   GenerateAstPayload,
   GnerateReseponse,
   LogoutResponse,
+  reimburseAmountBody,
   SetTransactionBody,
   TokenBalances,
   TokenDataObj,
@@ -57,6 +58,7 @@ export const useApiInstance = () => {
     (response) => response,
     (error) => {
       console.log("error from instance", error);
+      toast.error(error?.response?.data?.message);
       // whatever you want to do with the error
       if (error?.response?.status === 401) {
         // handleLogout();
@@ -128,6 +130,7 @@ export const useApiInstance = () => {
     createTransactionBytes: (data: CreateTransactionByteBody): Promise<Uint8Array> =>
       requests.post("/api/transaction/create-topup-transaction", { ...data }),
     setTransactionAmount: (data: SetTransactionBody): Promise<TopUpResponse> => requests.post("/api/transaction/top-up", { ...data }),
+    reimburseAmount: (data: reimburseAmountBody): Promise<any> => requests.post("/api/transaction/reimbursement", { ...data }),
   };
 
   const Integrations = {

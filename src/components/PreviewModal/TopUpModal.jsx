@@ -9,7 +9,7 @@ import { useStore } from "../../Store/StoreProvider";
 import Typography from "../../Typography/Typography";
 import { delay } from "../../Utilities/helpers";
 import PrimaryButton from "../Buttons/PrimaryButton";
-import { ErrorTextWrap } from '../Pages/TemplatePage/TemplatePage.styles';
+import { ErrorTextWrap } from "../Pages/TemplatePage/TemplatePage.styles";
 import { BoxCont, ButtonWrapPrimary, CustomInput, CustomParagraph, Label, OverlayBox, Row } from "./PreviewModal.styles";
 const TopUpModal = ({ open, setOpen, isTopUp }) => {
   const [amount, setAmount] = useState(0);
@@ -17,10 +17,11 @@ const TopUpModal = ({ open, setOpen, isTopUp }) => {
   const { topUpAccount } = useSmartContractServices();
   const { pairingData, connectToExtension } = useHashconnectService();
   const [fee, setfee] = useState(0);
+
   const [budgetMessage, setBudgetMessage] = useState("");
   const [buttonDisabled, setButtonDisabled] = useState(false);
-  const { state , updateUserData } = useStore();
-  const {dAppAPICall} = useDappAPICall()
+  const { state, updateUserData } = useStore();
+  const { dAppAPICall } = useDappAPICall();
 
   let navigate = useNavigate();
   const handleClose = () => setOpen(false);
@@ -40,22 +41,22 @@ const TopUpModal = ({ open, setOpen, isTopUp }) => {
   // const handleSubmit = () => {
   //     navigate("/onboarding");
   // };
-  const submitReimburse = async (e) => { 
+  const submitReimburse = async (e) => {
     setPaymentStatus("Requesting for reimbursement...");
-    try{
-    const response = await dAppAPICall({
-      url:"transaction/reimbursement",
-      method:"POST",
-      data:{
-        amount:Math.round(amount*1e8)
-      }
-    })
-    setPaymentStatus("Please check your ...")
-    updateUserData(response.userData);
-    }catch(err){
-      console.log(err)
-      toast.error(err.message)
-    }finally{
+    try {
+      const response = await dAppAPICall({
+        url: "transaction/reimbursement",
+        method: "POST",
+        data: {
+          amount: Math.round(amount * 1e8),
+        },
+      });
+      setPaymentStatus("Please check your ...");
+      updateUserData(response.userData);
+    } catch (err) {
+      console.log(err);
+      toast.error(err.message);
+    } finally {
       setPaymentStatus(null);
       setOpen(false);
       window.location.reload();
@@ -65,7 +66,7 @@ const TopUpModal = ({ open, setOpen, isTopUp }) => {
   const handleBudget = (event) => {
     // 1habr = Math.pow(10,8) tinyhabrs;
     if (Math.round(event.target.value * Math.pow(10, 8)) <= state.available_budget) {
-      setAmount(event.target.value)
+      setAmount(event.target.value);
       setBudgetMessage("");
       setButtonDisabled(false);
     } else {
@@ -82,7 +83,7 @@ const TopUpModal = ({ open, setOpen, isTopUp }) => {
       await delay(3000);
       setAmount(0);
       setOpen(false);
-      return toast.warning("Connect Your wallet first then try to top-up again.")
+      return toast.warning("Connect Your wallet first then try to top-up again.");
     }
     // const amountTotopup = (parseFloat(amount) + parseFloat(amount) * 0.1).toFixed(8);
     try {
@@ -133,22 +134,26 @@ const TopUpModal = ({ open, setOpen, isTopUp }) => {
             <Label>Amount in HBAR</Label>
           </>
           <>
-            {
-              isTopUp ?
+            {isTopUp ? (
               <>
-                  <CustomInput placeholder="Amount in hbar" value={amount} onChange={(e) => setAmount(e.target.value)} />
-                  </>
-                :
-                <CustomInput placeholder="Amount in hbar" onKeyPress={(event) => {
-                  if (event.code === 'Minus') {
+                <CustomInput placeholder="Amount in hbar" value={amount} onChange={(e) => setAmount(e.target.value)} />
+              </>
+            ) : (
+              <CustomInput
+                placeholder="Amount in hbar"
+                onKeyPress={(event) => {
+                  if (event.code === "Minus") {
                     event.preventDefault();
                   }
                 }}
-                  step="0.1" type="number"
-                  min="1" onChange={handleBudget} />
-            }
+                step="0.1"
+                type="number"
+                min="1"
+                onChange={handleBudget}
+              />
+            )}
           </>
-       
+
           <>
             {isTopUp ? (
               <>
@@ -160,11 +165,10 @@ const TopUpModal = ({ open, setOpen, isTopUp }) => {
               <Label></Label>
             )}
           </>
-
         </Row>
         <div>
-          <ErrorTextWrap style={{marginTop:"-20px"}}>{budgetMessage}</ErrorTextWrap>
-          </div>
+          <ErrorTextWrap style={{ marginTop: "-20px" }}>{budgetMessage}</ErrorTextWrap>
+        </div>
         {isTopUp ? (
           <>
             <CustomParagraph>Note1: the specified amount excludes Hedera network fee</CustomParagraph>
@@ -181,7 +185,11 @@ const TopUpModal = ({ open, setOpen, isTopUp }) => {
 
       <ButtonWrapPrimary>
         <PrimaryButton text="CANCEL" inverse={true} onclick={handleClose} colors="#EF5A22" border="1px solid #EF5A22" />
-        {isTopUp ? <PrimaryButton text={"PAY"} onclick={submitPay} /> : <PrimaryButton disabled={buttonDisabled || !amount || amount < 1} text={"Reimburse"} onclick={submitReimburse} />}
+        {isTopUp ? (
+          <PrimaryButton text={"PAY"} onclick={submitPay} />
+        ) : (
+          <PrimaryButton disabled={buttonDisabled || !amount || amount < 1} text={"Reimburse"} onclick={submitReimburse} />
+        )}
       </ButtonWrapPrimary>
       <div style={{ marginBottom: 30 }}></div>
       {paymentStatus && (

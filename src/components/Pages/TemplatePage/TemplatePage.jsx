@@ -76,12 +76,12 @@ export const TemplatePage = () => {
     sizeRes: "28px",
   };
   const handlePreview = () => {
-    // navigate("/invoice");
+    navigate("/invoice");
     setOpen(true);
   };
-  // const handleSubmit = () => {
-  //   navigate("/onboarding");
-  // };
+  const handleSubmit = () => {
+    navigate("/onboarding");
+  };
   const handleText = (event) => {
     if (271 - Text?.length === 0) {
       console.log("message for reached text enter limit!");
@@ -384,7 +384,7 @@ export const TemplatePage = () => {
               onclick={handlePreview}
               colors="#2546EB"
               border="1px solid #2546EB"
-              disabled={buttonDisabled || !budget || budget < 1}
+              // disabled={buttonDisabled || !budget || budget < 1}
             />
             {/* <PrimaryButton text="Submit" onclick={handleSubmit} /> */}
           </ButtonWrapPrimary>
