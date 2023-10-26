@@ -22,26 +22,26 @@ export const CustomTable2 = styled(Table)({
   },
 });
 export const CustomTableRowHead = styled(TableRow)({
-  '&:first-child': {
+  "&:first-child": {
     borderLeft: "none",
   },
-  '& th:first-child': {
-    borderRadius: '8px 0 0 0'
+  "& th:first-child": {
+    borderRadius: "8px 0 0 0",
   },
-  '& th:last-child': {
-    borderRadius: '0 8px 0 0'
-  }
+  "& th:last-child": {
+    borderRadius: "0 8px 0 0",
+  },
 });
 export const CustomRowHead = styled(TableHead)({
-  '& th:first-child': {
-    borderRadius: '8px 0 0 0'
+  "& th:first-child": {
+    borderRadius: "8px 0 0 0",
   },
-  '& th:last-child': {
-    borderRadius: '0 8px 0 0'
-  }
+  "& th:last-child": {
+    borderRadius: "0 8px 0 0",
+  },
 });
 export const CustomTableHeadCell = styled(TableCell)({
-  '&:first-child': {
+  "&:first-child": {
     borderLeft: "none !important",
   },
   "&&&": {
@@ -49,12 +49,12 @@ export const CustomTableHeadCell = styled(TableCell)({
     whiteSpace: "nowrap",
     fontSize: "18px",
     fontWeight: 600,
-    color: '#696969',
-    textAlign: "center",    
+    color: "#696969",
+    textAlign: "center",
   },
 });
 export const CustomTableBodyCell = styled(TableCell)({
-  '&:first-child': {
+  "&:first-child": {
     borderLeft: "none !important",
   },
   "&&&": {
@@ -63,14 +63,13 @@ export const CustomTableBodyCell = styled(TableCell)({
     whiteSpace: "nowrap",
     fontSize: "18px",
     fontWeight: 400,
-    color: '#696969',
-    textAlign: "center",    
+    color: "#696969",
+    textAlign: "center",
   },
- 
 });
 
 export const CustomTableRow = styled(TableRow)({
-  '&:nth-of-type(odd)': {
+  "&:nth-of-type(odd)": {
     backgroundColor: "#F6F7FE",
   },
 });
@@ -80,8 +79,8 @@ export const BorderlessHead = styled(TableCell)({
     whiteSpace: "nowrap",
     fontSize: "18px",
     fontWeight: 600,
-    color: '#696969',
-    textAlign: "center",    
+    color: "#696969",
+    textAlign: "center",
   },
 });
 
@@ -91,8 +90,8 @@ export const BorderlessCell = styled(TableCell)({
     whiteSpace: "nowrap",
     fontSize: "18px",
     fontWeight: 400,
-    color: '#696969',
-    textAlign: "center",    
+    color: "#696969",
+    textAlign: "center",
   },
 });
 export const BorderCellG = styled(TableCell)({
@@ -101,10 +100,10 @@ export const BorderCellG = styled(TableCell)({
     whiteSpace: "nowrap",
     fontSize: "18px",
     fontWeight: 400,
-    color: '#696969',
-    background: '#F6F7FE',
+    color: "#696969",
+    background: "#F6F7FE",
     textAlign: "left",
-    width: '50%',    
+    width: "50%",
   },
 });
 export const BorderCellW = styled(TableCell)({
@@ -113,9 +112,9 @@ export const BorderCellW = styled(TableCell)({
     whiteSpace: "nowrap",
     fontSize: "18px",
     fontWeight: 400,
-    color: '#696969',
-    background: '#fff',
-    textAlign: "left",    
+    color: "#696969",
+    background: "#fff",
+    textAlign: "left",
   },
 });
 

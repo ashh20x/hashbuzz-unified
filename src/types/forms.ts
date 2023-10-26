@@ -51,9 +51,13 @@ export type SetTransactionBody = {
 };
 
 export type TopUpResponse = {
-  error?:boolean,
-  message?:string,
-  success?:boolean,
-  available_budget?:number,
-  balance?:TokenBalances
-}
+  error?: boolean;
+  message?: string;
+  success?: boolean;
+  available_budget?: number;
+  balance?: TokenBalances;
+};
+
+export type reimburseAmountBody = {
+  amount?: any;
+};

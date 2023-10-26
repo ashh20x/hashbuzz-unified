@@ -76,8 +76,8 @@ const PreviewModal = ({
       });
       if (response) {
         setShowLoading(false)
-        navigate("/dashboard");
-        // navigate("/onboarding");
+        // navigate("/dashboard");
+        navigate("/onboarding");
       }
     }
     catch (err) {

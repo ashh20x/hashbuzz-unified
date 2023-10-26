@@ -50,7 +50,7 @@ export const CreateTwitterPage = () => {
       (async () => {
         await delay(3000);
         const user = await dAppAPICall({ url: "users/current", method: "GET" });
-        store.updateState((ps) => ({ ...ps, user: { ...ps.user, ...user }}));
+        store.updateState((ps) => ({ ...ps, user: { ...ps.user, ...user } }));
       })();
     }
   }, [pairingData]);
@@ -282,7 +282,7 @@ export const CreateTwitterPage = () => {
 
   return (
     <ContainerStyled align="center" justify="space-between">
-      {store && ["Ashh20x","omprakashMahua"].includes(store?.user?.username)? (
+      {store && ["Ashh20x", "omprakashMahua"].includes(store?.user?.username) ? (
         <LinkContainer>
           <Link to="/admin">
             <p>Admin Panel</p>
@@ -388,7 +388,12 @@ export const CreateTwitterPage = () => {
         text="CREATE CAMPAIGN"
         variant="contained"
         onclick={handleTemplate}
-        disabled={buttonDisabled || !store?.currentUser?.available_budget || !store?.currentUser?.hedera_wallet_id || !store?.currentUser?.business_twitter_handle}
+        disabled={
+          buttonDisabled ||
+          !store?.currentUser?.available_budget ||
+          !store?.currentUser?.hedera_wallet_id ||
+          !store?.currentUser?.business_twitter_handle
+        }
       />
       {/* (userData?.available_budget === 0 || userData?.available_budget === null) */}
       <TopUpModal open={openTopup} setOpen={setTopUpOpen} isTopUp={isTopUp} />

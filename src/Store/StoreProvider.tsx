@@ -10,10 +10,11 @@ import { AppState } from "../types/state";
 interface StoreContextType extends AppState {
   updateState: React.Dispatch<React.SetStateAction<AppState>>;
   authCheckPing: () => Promise<{ ping: boolean }>,
+  checkAndUpdateEntityBalances:()=>Promise<any>,
 
 }
 
-const INITIAL_HBAR_BALANCE_ENTITY = {
+export const INITIAL_HBAR_BALANCE_ENTITY = {
   entityBalance: "00.00",
   entityIcon: "ℏ",
   entitySymbol: "ℏ",
@@ -101,7 +102,9 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
   }, [Auth]);
 
   React.useEffect(() => {
-    authCheckPing();
+    if(cookies?.aSToken){
+      authCheckPing();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -148,12 +151,13 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
     () => ({
       state,
       updateState,
-      authCheckPing
+      authCheckPing,
+      checkAndUpdateEntityBalances
     }),
-    [authCheckPing, state]
+    [authCheckPing, state,checkAndUpdateEntityBalances]
   );
 
-  return <StoreContext.Provider value={{ ...value.state, updateState: value.updateState, authCheckPing }}>{children}</StoreContext.Provider>;
+  return <StoreContext.Provider value={{ ...value.state, updateState: value.updateState, authCheckPing ,checkAndUpdateEntityBalances}}>{children}</StoreContext.Provider>;
 };
 
 // Hook function for accessing the context.

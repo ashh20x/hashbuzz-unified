@@ -3,25 +3,30 @@ import { useApiInstance } from "../APIConfig/api";
 import { useStore } from "../Store/StoreProvider";
 import { CreateTransactionEntity, TransactionResponse } from "../types";
 import { useHashconnectService } from "./hashconnectService";
-
+const INITIAL_HBAR_BALANCE_ENTITY = {
+  entityBalance: "00.00",
+  entityIcon: "ℏ",
+  entitySymbol: "ℏ",
+  entityId: "",
+  entityType: "HBAR",
+};
 
 export const useSmartContractServices = () => {
   const { pairingData, sendTransaction } = useHashconnectService();
-  const { Transaction } = useApiInstance();
+  const { Transaction, User } = useApiInstance();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const store = useStore()!;
 
   const topUpAccount = async (entity: CreateTransactionEntity) => {
     try {
-      if (pairingData && pairingData.accountIds) {
+      if (pairingData?.accountIds) {
         const transactionBytes = await Transaction.createTransactionBytes({ entity, connectedAccountId: pairingData?.accountIds[0] });
         const updateBalanceTransaction = await sendTransaction(transactionBytes, pairingData?.accountIds[0]!, false, false);
-        const transactionResponse =  updateBalanceTransaction.response as TransactionResponse;
-        // console.log("UpdateBalanceTransaction:::-",updateBalanceTransaction)
+        const transactionResponse = updateBalanceTransaction.response as TransactionResponse;
 
         if (updateBalanceTransaction.success) {
-          const getBal = await Transaction.setTransactionAmount({ entity, transactionId:transactionResponse.transactionId });
-
+          const getBal = await Transaction.setTransactionAmount({ entity, transactionId: transactionResponse.transactionId });
+          console.log(getBal, "Getbalance");
           if (getBal.message) {
             getBal.error ? toast.error(getBal.message ?? "Error with request for balance update.") : toast.info(getBal.message);
           }
@@ -39,10 +44,27 @@ export const useSmartContractServices = () => {
             });
           }
         }
+        const currentUser = await User.getCurrentUser();
+        store?.updateState((prev) => {
+          return {
+            ...prev,
+            currentUser: currentUser,
+
+            balances: [
+              {
+                ...INITIAL_HBAR_BALANCE_ENTITY,
+                entityBalance: (currentUser?.available_budget ?? 0 / 1e8).toFixed(4),
+                entityId: currentUser?.hedera_wallet_id ?? "",
+              },
+            ],
+          };
+        });
         return updateBalanceTransaction;
       }
-    } catch (err) {
-      throw err;
+    } catch (err: any) {
+      console.log(err, "top up error");
+      toast.error(err?.response?.data?.message);
+      // throw err;
     }
   };
 

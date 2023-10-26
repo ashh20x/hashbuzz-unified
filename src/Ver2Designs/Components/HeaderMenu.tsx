@@ -16,6 +16,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import HederaIcon from "../../SVGR/HederaIcon";
 import { useStore } from "../../Store/StoreProvider";
 import { useHashconnectService } from "../../Wallet";
+import { toast } from "react-toastify";
 
 const HeaderMenu = () => {
   const store = useStore();
@@ -33,8 +34,14 @@ const HeaderMenu = () => {
   };
 
   const handleLogout = async () => {
-    const logout = await disconnect()
-    if (logout.success) navigate("/")
+    try{
+
+      const logout = await disconnect();
+      if (logout.success) navigate("/");
+      toast.info("Logout Successfully");
+    }catch(err){
+  console.log(err);
+  }
   }
 
   return (

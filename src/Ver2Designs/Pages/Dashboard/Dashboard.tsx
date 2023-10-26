@@ -18,6 +18,8 @@ import SpeedDialActions from "../../Components/SpeedDialActions";
 
 const Dashboard = () => {
   const store = useStore();
+  console.log(store, "store");
+
   const { Integrations } = useApiInstance();
   const currentUser = store?.currentUser;
 
@@ -25,11 +27,10 @@ const Dashboard = () => {
     try {
       event.preventDefault();
       const { url } = await Integrations.twitterPersonalHandle();
-      console.log({ url })
+      console.log({ url });
       window.location.href = url;
     } catch (err) {
-      toast.error(getErrorMessage(err) ?? "Error while requesting personal handle integration.")
-
+      toast.error(getErrorMessage(err) ?? "Error while requesting personal handle integration.");
     }
   };
   const bizHandleIntegration = async (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -38,17 +39,16 @@ const Dashboard = () => {
       const { url } = await Integrations.twitterBizHandle();
       window.location.href = url;
     } catch (err) {
-      toast.error(getErrorMessage(err) ?? "Error while requesting personal handle integration.")
-
+      toast.error(getErrorMessage(err) ?? "Error while requesting personal handle integration.");
     }
-  }
+  };
 
   React.useEffect(() => {
     const toastsMessage = store?.toasts;
-    toastsMessage?.map(t => toast(t.message, { type: t.type }));
-    store?.updateState(_d => ({ ..._d, toasts: [] }))
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    toastsMessage?.map((t) => toast(t.message, { type: t.type }));
+    store?.updateState((_d) => ({ ..._d, toasts: [] }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <React.Fragment>
@@ -100,8 +100,8 @@ const Dashboard = () => {
       {/* speed dial  action button */}
       <SpeedDialActions />
 
-      {/* Concent modal for requesting concent form user */}
-      {!currentUser?.consent ? <ConsentModal user={currentUser!} /> : null}
+      {/* Concent modal for requesting concent form user
+      {!currentUser?.consent ? <ConsentModal user={currentUser!} /> : null} */}
 
       {/* Show modal to admin user for updating email and password */}
       {currentUser && !currentUser?.adminActive && ["SUPER_ADMIN", "ADMIN"].includes(currentUser?.role!) ? (

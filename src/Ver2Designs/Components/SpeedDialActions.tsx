@@ -54,7 +54,7 @@ const SpeedDialActions = () => {
   const store = useStore();
   const { Auth } = useApiInstance();
   const navigate = useNavigate();
-  const cookies = useCookies(["aSToken"])
+  const [cookies] = useCookies(["aSToken"]);
 
   const handleOpen = React.useCallback(() => setOpen(true), []);
   const handleClose = React.useCallback(() => setOpen(false), []);
@@ -62,7 +62,7 @@ const SpeedDialActions = () => {
   const connectWalletProcess = () => {
     console.log("Connect logo");
   };
-  const showSnackBar = () => { };
+  const showSnackBar = () => {};
 
   const handleQrCodeGen = () => {
     if (pairingString) {
@@ -91,8 +91,6 @@ const SpeedDialActions = () => {
     }
   };
 
-
-
   const handleClick = async (name: string) => {
     switch (name) {
       case "top-up":
@@ -101,7 +99,7 @@ const SpeedDialActions = () => {
         break;
       case "logout":
         const logout = await disconnect();
-        toast.info("Logout Successfully.")
+        toast.info("Logout Successfully.");
         if (logout.success) navigate("/");
         break;
       case "qr-connect":
@@ -132,7 +130,7 @@ const SpeedDialActions = () => {
           },
         }}
       >
-        {(pairingData?.topic ? postAuthActions : beforeAuthActions).map((action) => {
+        {(cookies?.aSToken ? postAuthActions : beforeAuthActions).map((action) => {
           // if(action.name === "Connect" && pairingData?.topic) return null;
           return (
             <SpeedDialAction
