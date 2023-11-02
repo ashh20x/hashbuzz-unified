@@ -9,9 +9,8 @@ import { AppState } from "../types/state";
 // Defines the type for the context including the AppState and an update function.
 interface StoreContextType extends AppState {
   updateState: React.Dispatch<React.SetStateAction<AppState>>;
-  authCheckPing: () => Promise<{ ping: boolean }>,
-  checkAndUpdateEntityBalances:()=>Promise<any>,
-
+  authCheckPing: () => Promise<{ ping: boolean }>;
+  checkAndUpdateEntityBalances: () => Promise<any>;
 }
 
 export const INITIAL_HBAR_BALANCE_ENTITY = {
@@ -31,7 +30,7 @@ const INITIAL_STATE = {
     hedera_wallet_id: "",
   },
   balances: [],
-  toasts: []
+  toasts: [],
 };
 
 // Component that provides the state to its children.
@@ -62,14 +61,13 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const balancesData = await User.getTokenBalances();
       const available_budget = state.currentUser?.available_budget;
-
+      console.log(balancesData, "balancesdat");
       updateState((_state) => {
-
         _state.balances.push({
           ...INITIAL_HBAR_BALANCE_ENTITY,
           entityBalance: (available_budget ?? 0 / 1e8).toFixed(4),
           entityId: state?.currentUser?.hedera_wallet_id ?? "",
-        })
+        });
 
         if (balancesData.length > 0) {
           for (let index = 0; index < balancesData.length; index++) {
@@ -80,7 +78,8 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
               entitySymbol: "",
               entityId: d.token_id,
               entityType: d.token_type,
-            })
+              decimals:d.decimals
+            });
           }
         }
         return { ..._state };
@@ -94,15 +93,15 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const data = await Auth.authPing();
       if (data.hedera_wallet_id) updateState((_state) => ({ ..._state, ping: { status: true, hedera_wallet_id: data.hedera_wallet_id } }));
-      return { ping: true }
+      return { ping: true };
     } catch (error) {
       updateState(JSON.parse(JSON.stringify(INITIAL_STATE)));
-      return { ping: false }
+      return { ping: false };
     }
   }, [Auth]);
 
   React.useEffect(() => {
-    if(cookies?.aSToken){
+    if (cookies?.aSToken) {
       authCheckPing();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -126,38 +125,42 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
 
     if ((authStatus && authStatus === "fail") || (brandConnection && brandConnection === "fail")) {
       updateState((_d) => {
-        _d.toasts.push({ type: "error", message: message ?? "Error while integration." })
-        return { ..._d, toasts: [..._d.toasts] }
-      })
+        _d.toasts.push({ type: "error", message: message ?? "Error while integration." });
+        return { ..._d, toasts: [..._d.toasts] };
+      });
     }
 
     if (brandConnection && brandConnection === "success") {
       updateState((_d) => {
-        _d.toasts.push({ type: "success", message: message ?? "Integration completed successfully." })
-        return { ..._d, toasts: [..._d.toasts] }
-      })
+        _d.toasts.push({ type: "success", message: message ?? "Integration completed successfully." });
+        return { ..._d, toasts: [..._d.toasts] };
+      });
     }
 
     if (token && userId) {
       updateState((_d) => {
-        _d.toasts.push({ type: "success", message: "Integration completed." })
-        return { ..._d, toasts: [..._d.toasts] }
-      })
+        _d.toasts.push({ type: "success", message: "Integration completed." });
+        return { ..._d, toasts: [..._d.toasts] };
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, []);
 
   const value = React.useMemo(
     () => ({
       state,
       updateState,
       authCheckPing,
-      checkAndUpdateEntityBalances
+      checkAndUpdateEntityBalances,
     }),
-    [authCheckPing, state,checkAndUpdateEntityBalances]
+    [authCheckPing, state, checkAndUpdateEntityBalances]
   );
 
-  return <StoreContext.Provider value={{ ...value.state, updateState: value.updateState, authCheckPing ,checkAndUpdateEntityBalances}}>{children}</StoreContext.Provider>;
+  return (
+    <StoreContext.Provider value={{ ...value.state, updateState: value.updateState, authCheckPing, checkAndUpdateEntityBalances }}>
+      {children}
+    </StoreContext.Provider>
+  );
 };
 
 // Hook function for accessing the context.

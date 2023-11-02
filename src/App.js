@@ -27,7 +27,10 @@ const App =() => {
             <Route path="/campaign" exact element={<ProtectedRoute><Template /></ProtectedRoute>} />
             <Route path="/invoice" exact element={<ProtectedRoute><Invoice /></ProtectedRoute>} />
             <Route path="/onboarding" exact element={<ProtectedRoute><OnBoarding /></ProtectedRoute>} />
-            <Route path="/admin" exact element={<AdminAuthGuard><AdminDashboard /></AdminAuthGuard>} />
+            <Route path="/admin" exact element={<AdminAuthGuard>
+              <AdminDashboard />
+              </AdminAuthGuard>
+            } />
           </Routes>
         </Theme>
       </Router>

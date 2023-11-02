@@ -51,17 +51,17 @@ export default function AddNewTokenModal({ open, onClose }: AddNewTokenModalProp
   };
 
   const handleAddNew = async () => {
-    setLoading(true);
-    try {
-      if (tokenId && tokenId.length > 6 && tokenInfo) {
-        // const tokenInfo =  await Admin.getTokenInfo(tokenId);
-        const tokenInfoReq = await Admin.addNewToken({ tokenId, tokenData: tokenInfo, token_type: tokenInfo.type });
-        toast.success(tokenInfoReq.message);
-        handleClose(tokenInfoReq.data)
-      }
-    } catch (err) {
-      console.log(err);
-    }
+    // setLoading(true);
+    // try {
+    //   if (tokenId && tokenId.length > 6 && tokenInfo) {
+    //     // const tokenInfo =  await Admin.getTokenInfo(tokenId);
+    //     const tokenInfoReq = await Admin.addNewToken({ tokenId, tokenData: tokenInfo, token_type: tokenInfo.type });
+    //     toast.success(tokenInfoReq.message);
+    //     handleClose(tokenInfoReq.data)
+    //   }
+    // } catch (err) {
+    //   console.log(err);
+    // }
   };
 
   return (

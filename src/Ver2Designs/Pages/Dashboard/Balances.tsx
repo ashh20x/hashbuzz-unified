@@ -31,14 +31,14 @@ import { BalOperation, EntityBalances } from "../../../types";
 import { cardStyle } from "./CardGenUtility";
 import TopupModal from "./TopupModal";
 import { isAnyBalancesIsAvailable } from "../../../Utilities/helpers";
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 const formatBalance = (balObj: EntityBalances): string => {
   if (balObj) {
     const { entityBalance, entityType } = balObj;
     return entityType === "HBAR" ? (parseFloat(entityBalance) / 1e8).toFixed(4) : entityBalance;
   }
-  return ""
+  return "";
 };
 
 const Balances = () => {
@@ -46,7 +46,7 @@ const Balances = () => {
   const aboveXs = useMediaQuery(theme.breakpoints.up("sm"));
   const store = useStore();
   const balances = store?.balances;
-console.log(balances,'balances')
+  console.log(balances, "balances");
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const [topupModalData, setTopupModalData] = useState<EntityBalances | null>(null);
 
@@ -76,7 +76,7 @@ console.log(balances,'balances')
     if (topUpButtonsListRef.current && topUpButtonsListRef.current.contains(event.target as HTMLElement)) {
       return;
     }
-    setEntityEl(null)
+    setEntityEl(null);
     // setBalanceList((_d) => ({ ..._d, open: false }));
   };
 
@@ -96,14 +96,14 @@ console.log(balances,'balances')
           console.log("listed for the hbar", accountBal?.balance);
           if (accountBal?.balance) setTopupModalData(entity);
           else {
-            alert("Insufficient balance")
+            alert("Insufficient balance");
             toast.warning("Insufficient fund to the account.");
           }
         } else {
           const tokenBalance = accountBal?.tokens.find((t) => t.token_id === entity.entityId);
           tokenBalance && tokenBalance.balance > 0
             ? setTopupModalData(entity)
-            : toast.warning(`Paired account have insufficient token balance for the token ${entity.entityIcon}.`);
+            : toast.warning(`Paired account have insufficient token balance for the token ${entity?.entityIcon}.`);
         }
       }
       setBalanceList((_d) => ({ ..._d, open: false }));
@@ -126,8 +126,8 @@ console.log(balances,'balances')
           operation,
         });
         //@ts-ignore
-        setEntityEl(event ? event?.target : topUpButtonsListRef.current)
-      })
+        setEntityEl(event ? event?.target : topUpButtonsListRef.current);
+      });
     }
   };
 
@@ -179,12 +179,16 @@ console.log(balances,'balances')
                     ref={topUpButtonsListRef}
                   >
                     {topUpButtons}
-                  </ButtonGroup>) : null}
-
+                  </ButtonGroup>
+                ) : null}
               </Stack>
               {balances && isAnyBalancesIsAvailable(balances) ? (
                 <Box sx={{ display: "flex", justifyContent: "center" }}>
-                  <ButtonGroup size="small" aria-label="Balance display card" sx={{ ".MuiButton-startIcon": { margin: 0 }, justifyContent: "center" }}>
+                  <ButtonGroup
+                    size="small"
+                    aria-label="Balance display card"
+                    sx={{ ".MuiButton-startIcon": { margin: 0 }, justifyContent: "center" }}
+                  >
                     <Button
                       key="next_button"
                       startIcon={<ArrowBackIos />}
@@ -196,7 +200,7 @@ console.log(balances,'balances')
                         //balances![activeIndex].entityType === "HBAR" ? (parseFloat(balances![activeIndex].entityBalance)/1e8).toFixed(4):balances![activeIndex].entityBalance}
                         formatBalance(balances[activeIndex])
                       }
-                      entityIcon={balances[activeIndex].entityIcon}
+                      entityIcon={balances[activeIndex]?.entityIcon}
                       entitySymbol={balances[activeIndex]?.entitySymbol}
                       key="balance_card"
                     />
@@ -207,18 +211,22 @@ console.log(balances,'balances')
                       onClick={() => handleBalanceNavigator("next")}
                     />
                   </ButtonGroup>
-                </Box>) : (<Stack sx={{ marginTop: 3 }} direction={"row"} justifyContent={"center"}>
-                  <Button variant="contained" disableElevation sx={{ width: 120, margin: "0  auto" }}
+                </Box>
+              ) : (
+                <Stack sx={{ marginTop: 3 }} direction={"row"} justifyContent={"center"}>
+                  <Button
+                    variant="contained"
+                    disableElevation
+                    sx={{ width: 120, margin: "0  auto" }}
                     // startIcon={<HederaIcon size={20} fill="white" />}
                     startIcon={"ℏ"}
                     endIcon={<KeyboardArrowDownIcon />}
-                    onClick={(event) => handleTopupOrReimClick("topup" , event)}
+                    onClick={(event) => handleTopupOrReimClick("topup", event)}
                   >
                     Topup
                   </Button>
                 </Stack>
               )}
-
             </Box>
           </Stack>
           <Popper
@@ -243,7 +251,7 @@ console.log(balances,'balances')
                     <MenuList id="entityList-for-topup" autoFocusItem>
                       {balances!.map((bal, index) => (
                         <MenuItem onClick={(event) => handleMenuItemClick(event, index)}>
-                          <ListItemAvatar>{bal.entityIcon}</ListItemAvatar>
+                          <ListItemAvatar>{bal?.entityIcon}</ListItemAvatar>
                           <ListItemText>
                             {formatBalance(bal)} {bal.entitySymbol + " "}
                           </ListItemText>

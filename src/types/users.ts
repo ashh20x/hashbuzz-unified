@@ -35,4 +35,5 @@ export type TokenBalances = {
   name: string;
   available_balance: number;
   entity_decimal: number;
+  decimals?:number
 };

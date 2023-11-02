@@ -4,6 +4,7 @@ import { useCookies } from "react-cookie";
 import { toast } from "react-toastify";
 
 import {
+  addCampaignBody,
   AdminLoginResponse,
   AdminUpdatePassword,
   AllTokensQuery,
@@ -22,6 +23,7 @@ import {
   TokenDataObj,
   TokenInfo,
   TopUpResponse,
+  updateCampaignStatusBody,
   UpdatePasswordResponse,
 } from "../types";
 import { getErrorMessage } from "../Utilities/helpers";
@@ -108,14 +110,18 @@ export const useApiInstance = () => {
     updatePassword: (data: AdminUpdatePassword): Promise<UpdatePasswordResponse> => requests.put("/api/admin/update-password", { ...data }),
     getTokenInfo: (tokenId: string): Promise<TokenInfo> => requests.post("/api/admin/token-info", { tokenId }),
     addNewToken: ({
-      tokenId,
-      tokenData,
+      token_id,
+      tokendata,
       token_type,
+      token_symbol,
+      decimals
     }: {
-      tokenId: string;
-      tokenData: TokenInfo;
+      token_id: string;
+      tokendata: any;
       token_type: string;
-    }): Promise<{ message: string; data: TokenDataObj }> => requests.post("/api/admin/list-token", { tokenId, tokenData, token_type }),
+      token_symbol:String;
+      decimals:Number;
+    }): Promise<{ message: string; data: TokenDataObj }> => requests.post("/api/admin/list-token", { token_id,token_symbol, tokendata, decimals,token_type }),
     getListedTokens: (tokenId?: string): Promise<AllTokensQuery> => requests.get(`/api/admin/listed-tokens${tokenId ? `?tokenId=${tokenId}` : ""}`),
     getActiveContractInfo: (): Promise<ContractInfo> => requests.get("/api/admin/active-contract"),
   };
@@ -138,5 +144,11 @@ export const useApiInstance = () => {
     twitterBizHandle: (): Promise<{ url: string }> => requests.get("/api/integrations/twitter/bizHandle"),
   };
 
-  return { User, Auth, Admin, MirrorNodeRestAPI, Transaction, Integrations };
+  const Campaign = {
+    addCampaign: (data: addCampaignBody): Promise<any> => requests.post("/api/campaign/add-new", { ...data }),
+    getCampaigns: (): Promise<any> => requests.get("/api/campaign/all"),
+    updateCampaignStatus: (data: updateCampaignStatusBody): Promise<any> => requests.post("/api/campaign/update-status", { ...data }),
+  };
+
+  return { User, Auth, Admin, MirrorNodeRestAPI, Transaction, Integrations, Campaign };
 };

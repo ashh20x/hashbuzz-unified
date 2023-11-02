@@ -29,9 +29,11 @@ import {
   SimpleDiv,
   TableSection,
   WordsWrap,
-  Wrapper
+  Wrapper,
 } from "./TemplatePage.styles";
 import { YoutubeIcon } from "./YoutubeIcon";
+import { InputLabel, MenuItem, Select } from "@mui/material";
+import { useApiInstance } from "../../../APIConfig/api";
 export const TemplatePage = () => {
   let navigate = useNavigate();
   const [srcLink, setSrcLink] = useState("https://www.youtube.com/embed/1lzba8D4FCU");
@@ -40,10 +42,12 @@ export const TemplatePage = () => {
   const [Text, setText] = useState("");
   const [name, setName] = useState("");
   const [reply, setReply] = useState(0);
+  const [tokenId, setTokenId] = useState('');
   const [retweet, setRetweet] = useState(0);
   const [like, setLike] = useState(0);
   const [quote, setQuote] = useState(0);
   const [follow, setFollow] = useState(0);
+  const [type, setType] = useState('HBAR')
   const [open, setOpen] = useState(false);
   const [showEmojis, setShowEmojis] = useState(false);
   const [isYoutube, setYoutube] = useState(false);
@@ -52,13 +56,41 @@ export const TemplatePage = () => {
   const [gifSelected, setGifSelect] = useState(false);
   // const [cookies, setCookie] = useCookies(["token"]);
   const [videoTitle, setVideoTitle] = useState(false);
+  const { User } = useApiInstance();
   const [addMedia, setAddMedia] = useState(false);
   const [budgetMessage, setBudgetMessage] = useState("");
   const [budget, setBudget] = useState(0);
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [userData, setUserData] = useState({});
+  const [allTokens, setAllTokens] = useState([])
+  const [selectedToken, setSelectedToken] = useState({
+    value: allTokens?.[0]?.value,
+  })
+  console.log(allTokens,'aall')
+  const getTokens = async () => {
+    const response = await User.getTokenBalances();
+    console.log(response, "responses")
+    const updatedTokens = [];
+    response?.forEach((item) => {
+      if (item?.available_balance > 0) {
 
-  const { state } = useStore();
+        updatedTokens.push({
+          value: item?.token_id
+        });
+      }
+    })
+    setAllTokens(updatedTokens)
+  }
+  useEffect(()=>{
+setSelectedToken(allTokens?.[0]?.value)
+  },[allTokens])
+  console.log(allTokens, "allTokens")
+  useEffect(() => {
+    getTokens()
+  }, [])
+  const store = useStore();
+
+  console.log(store, store?.currentUser, "store");
 
   useEffect(() => {
     let mounted = true;
@@ -76,7 +108,7 @@ export const TemplatePage = () => {
     sizeRes: "28px",
   };
   const handlePreview = () => {
-    navigate("/invoice");
+    // navigate("/invoice");
     setOpen(true);
   };
   const handleSubmit = () => {
@@ -164,21 +196,44 @@ export const TemplatePage = () => {
     setMedia([event.target.value]);
     setDisplayMedia([]);
   };
-  const handleClose = (event) => {};
+  const handleClose = (event) => { };
 
   const handleName = (event) => {
     setName(event.target.value);
   };
 
+  const handleTokenId = (e) => {
+    setTokenId(e?.target?.value)
+  }
+  console.log(tokenId, 'tokenId')
   const handleBudget = (event) => {
     // 1habr = Math.pow(10,8) tinyhabrs;
-    if (Math.round(event.target.value * Math.pow(10, 8)) <= state.available_budget) {
-      setBudget(event.target.value);
-      setBudgetMessage("");
-      setButtonDisabled(false);
+    console.log(event.target.value)
+    if (type === "HBAR") {
+
+      if (Math.round(event.target.value * Math.pow(10, 8)) <= store?.currentUser?.available_budget) {
+        setBudget(event.target.value);
+        setBudgetMessage("");
+        setButtonDisabled(false);
+      } else {
+        setBudgetMessage(`You have exceeded the total budget of ${store?.currentUser?.available_budget / Math.pow(10, 8)} ℏ`);
+        setButtonDisabled(true);
+      }
     } else {
-      setBudgetMessage(`You have exceeded the total budget of ${userData.available_budget / Math.pow(10, 8)} ℏ`);
-      setButtonDisabled(true);
+      console.log(store?.balances,selectedToken,'store?.balances?.[selectedToken]?.entityBalance')
+      let currentToken = store?.balances?.filter(item=>
+        item?.entityId === selectedToken
+      );
+      console.log(currentToken,'currenToken')
+      if (Math.round(event.target.value * Math.pow(10, currentToken?.[0]?.decimals)) <= currentToken?.[0]?.entityBalance) {
+        setBudget(event.target.value);
+        setBudgetMessage("");
+        setButtonDisabled(false);
+      } else {
+        setBudgetMessage(`You have exceeded the total budget of ${Number(currentToken?.[0]?.entityBalance) / Math.pow(10,  Number(currentToken?.[0]?.decimals))} ${ currentToken?.[0]?.entityIcon}`);
+        setButtonDisabled(true);
+      }
+
     }
   };
 
@@ -201,8 +256,21 @@ export const TemplatePage = () => {
   const handleFollow = (e) => {
     setFollow(e.target.value);
   };
+  const inputSelectChangeHandler = (event) => {
+    event.preventDefault();
+    setType(
+      (event.target.value))
+  };
+
+  const selectTokenIdHandler = (event) => {
+    event.preventDefault();
+    setSelectedToken(
+      (event.target.value))
+  }
+
   const onEmojiClick = (event, emojiObject) => {
-    if (268 - Text?.length >= 2) setText(Text + "" + emojiObject.emoji);
+    console.log(event, emojiObject, "obj");
+    if (268 - Text?.length >= 2) setText(Text + "" + event.emoji);
   };
 
   const handleBack = () => {
@@ -226,7 +294,34 @@ export const TemplatePage = () => {
       <Typography theme={theme}>Campaign</Typography>
       <Wrapper>
         <LeftSec>
-          <CustomInput placeholder="Enter Campaign title" onChange={handleName} />
+          <CustomInput style={{width:'100%',height:"150px"}} placeholder="Enter Campaign title" onChange={handleName} />
+          <Select
+            style={{ margin: '20px 0' }}
+            labelId="token_type"
+            id="token_type"
+            //   error={formData.amount.error}
+            value={type} label="Age"
+            onChange={inputSelectChangeHandler}
+          >
+            <MenuItem value={'FUNGIBLE'}>Fungible</MenuItem>
+            <MenuItem value={'HBAR'}>HBAR</MenuItem>
+          </Select>
+          {type === 'FUNGIBLE' && <Select
+            style={{ margin: '20px 0' }}
+            labelId="token_id"
+            id="token_id"
+            placeholder="Select Token Id"
+            //   error={formData.amount.error}
+            value={selectedToken} label="Token Id"
+            onChange={selectTokenIdHandler}
+          >
+            {allTokens?.map(item => {
+              return <MenuItem value={item?.value}>{item?.value}</MenuItem>
+
+            })}
+          </Select>
+          }
+          {/* <FormHelperText error={formData.amount.error}>{formData.amount.helperText}</FormHelperText> */}
           <CustomParagraph onChange={handleText} value={Text} type="textarea" maxLength={271} placeholder="Start typing your tweet campaign" />
           <WordsWrap>
             <EmoBtnWrap className="button" onClick={() => setShowEmojis(!showEmojis)}>
@@ -241,11 +336,14 @@ export const TemplatePage = () => {
             </div>
           )}
           <ButtonWrap>
-            {buttonTags.slice(0, 2).map((item) => (
+            {/* {buttonTags.slice(0, 2).map((item) => (
+              <SecondaryButton text={item.replace(item[0], "")} />
+            ))} */}
+            {buttonTags.map((item) => (
               <SecondaryButton text={item.replace(item[0], "")} />
             ))}
-            <SecondaryButton text="hashbuzz" />
-            <SecondaryButton text="TestNet" />
+            {/* <SecondaryButton text="hashbuzz" />
+            <SecondaryButton text="TestNet" /> */}
           </ButtonWrap>
           <TableSection>
             <TemplateTable
@@ -254,6 +352,7 @@ export const TemplatePage = () => {
               handleLike={handleLike}
               handleDownload={handleQuote}
               reply={reply}
+              selectedToken={selectedToken}
               retweet={retweet}
               like={like}
               quote={quote}
@@ -262,11 +361,11 @@ export const TemplatePage = () => {
         </LeftSec>
         <RightSec>
           <CustomInput
-            onKeyPress={(event) => {
-              if (event.code === 'Minus') {
-                event.preventDefault();
-              }
-            }}
+            // onKeyPress={(event) => {
+            //   if (event.code === "Minus") {
+            //     event.preventDefault();
+            //   }
+            // }}
             step="0.1"
             type="number"
             min="1"
@@ -281,10 +380,7 @@ export const TemplatePage = () => {
           {addMedia ? (
             <IconsWrap>
               <label for="file">
-                <span>
-                  {" "}
-                  {/* <ImageIcon /> */}
-                </span>
+                <span> {/* <ImageIcon /> */}</span>
               </label>
               <CustomInput
                 type="file"
@@ -340,7 +436,7 @@ export const TemplatePage = () => {
                   {displayMedia[1] ? (
                     <SimpleDiv>
                       <ShowImage ind={1} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[1]} alt="" />
-                      <br />{" "}
+                      <br />
                     </SimpleDiv>
                   ) : null}
                 </IconsWrap>
@@ -384,7 +480,7 @@ export const TemplatePage = () => {
               onclick={handlePreview}
               colors="#2546EB"
               border="1px solid #2546EB"
-              // disabled={buttonDisabled || !budget || budget < 1}
+            // disabled={buttonDisabled || !budget || budget < 1}
             />
             {/* <PrimaryButton text="Submit" onclick={handleSubmit} /> */}
           </ButtonWrapPrimary>
@@ -396,8 +492,11 @@ export const TemplatePage = () => {
         Text={Text + " #hashbuzz #TestNet"}
         buttonTags={buttonTags}
         reply={reply}
+        tokenId={tokenId}
         retweet={retweet}
+        type={type}
         like={like}
+        selectedToken={selectedToken}
         follow={follow}
         srcLink={srcLink}
         name={name}
