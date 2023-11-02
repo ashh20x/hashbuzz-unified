@@ -61,6 +61,7 @@ const calculateCharge = (amt: number) => amt * 0.1;
 const calculateTotal = (amt: number) => amt + calculateCharge(amt);
 
 const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
+  console.log(data,'data')
   const [formData, setFromData] = React.useState<CurrentFormState>(JSON.parse(JSON.stringify(FORM_INITIAL_STATE)));
   const inputRef = React.createRef<HTMLInputElement>();
   const [loading, setLoading] = React.useState(false);
@@ -93,6 +94,7 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
           entityId: data?.entityId,
           amount: { value, fee, total },
           senderId: pairingData?.accountIds[0],
+          decimals:data?.decimals
         });
         console.log(req);
         if (req?.success) {
@@ -131,7 +133,7 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
   const reimburse = async () => {
     setLoading(true);
     try {
-      const response = await Transaction.reimburseAmount({ amount: formData?.amount?.value });
+      const response = await Transaction.reimburseAmount({amount: formData?.amount?.value });
       const currentUser = await User.getCurrentUser();
       store?.updateState((prev) => {
         return {

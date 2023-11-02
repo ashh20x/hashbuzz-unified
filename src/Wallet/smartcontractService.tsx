@@ -12,32 +12,35 @@ const INITIAL_HBAR_BALANCE_ENTITY = {
 };
 
 export const useSmartContractServices = () => {
-  const { pairingData, sendTransaction } = useHashconnectService();
+  const { pairingData, sendTransaction,transferTokenToContract,approveToken } = useHashconnectService();
   const { Transaction, User } = useApiInstance();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const store = useStore()!;
-
+  
   const topUpAccount = async (entity: CreateTransactionEntity) => {
     try {
       if (pairingData?.accountIds) {
-        const transactionBytes = await Transaction.createTransactionBytes({ entity, connectedAccountId: pairingData?.accountIds[0] });
-        const updateBalanceTransaction = await sendTransaction(transactionBytes, pairingData?.accountIds[0]!, false, false);
-        const transactionResponse = updateBalanceTransaction.response as TransactionResponse;
-
-        if (updateBalanceTransaction.success) {
-          const getBal = await Transaction.setTransactionAmount({ entity, transactionId: transactionResponse.transactionId });
-          console.log(getBal, "Getbalance");
-          if (getBal.message) {
-            getBal.error ? toast.error(getBal.message ?? "Error with request for balance update.") : toast.info(getBal.message);
-          }
-          if (getBal.balance) {
-            store.updateState((_state) => {
-              const tokenIndex = _state.balances.findIndex((b) => b.entityId === getBal.balance?.token_id);
-              _state.balances[tokenIndex].entityBalance = getBal.balance?.available_balance!.toFixed(4)!;
-              return { ..._state };
-            });
-          }
-          if (getBal.available_budget && getBal.available_budget > 0) {
+        if(entity?.entityType ==='HBAR'){
+          const transactionBytes = await Transaction.createTransactionBytes({ entity, connectedAccountId: pairingData?.accountIds[0] });
+          const updateBalanceTransaction = await sendTransaction(transactionBytes, pairingData?.accountIds[0]!, false, false);
+          const transactionResponse = updateBalanceTransaction.response as TransactionResponse;
+          
+          if (updateBalanceTransaction.success) {
+            const getBal = await Transaction.setTransactionAmount({ entity, 
+              // transactionId: transactionResponse.transactionId
+             });
+            console.log(getBal, "Getbalance");
+            if (getBal.message) {
+              getBal.error ? toast.error(getBal.message ?? "Error with request for balance update.") : toast.info(getBal.message);
+            }
+            if (getBal.balance) {
+              store.updateState((_state) => {
+                const tokenIndex = _state.balances.findIndex((b) => b.entityId === getBal.balance?.token_id);
+                _state.balances[tokenIndex].entityBalance = getBal.balance?.available_balance!.toFixed(4)!;
+                return { ..._state };
+              });
+            }
+            if (getBal.available_budget && getBal.available_budget > 0) {
             store.updateState((_state) => {
               if (_state.currentUser?.available_budget) _state.currentUser.available_budget = getBal.available_budget!;
               return { ..._state };
@@ -49,7 +52,7 @@ export const useSmartContractServices = () => {
           return {
             ...prev,
             currentUser: currentUser,
-
+            
             balances: [
               {
                 ...INITIAL_HBAR_BALANCE_ENTITY,
@@ -60,7 +63,35 @@ export const useSmartContractServices = () => {
           };
         });
         return updateBalanceTransaction;
+      }else{
+        const res =await  approveToken(pairingData?.accountIds[0],entity);
+        console.log("TESTING")
+        const response = await transferTokenToContract(pairingData?.accountIds[0],entity);
+        console.log(response,'response')
+        if(response){
+
+          const getBal = await Transaction.setTransactionAmount({ entity });
+          console.log(getBal, "Getbalance");
+          if (getBal.message) {
+          getBal.error ? toast.error(getBal.message ?? "Error with request for balance update.") : toast.info(getBal.message);
+        }
+        if (getBal.balance) {
+          store.updateState((_state) => {
+            const tokenIndex = _state.balances.findIndex((b) => b.entityId === getBal.balance?.token_id);
+            _state.balances[tokenIndex].entityBalance = getBal.balance?.available_balance!.toFixed(4)!;
+            return { ..._state };
+          });
+        }
+        if (getBal.available_budget && getBal.available_budget > 0) {
+          store.updateState((_state) => {
+            if (_state.currentUser?.available_budget) _state.currentUser.available_budget = getBal.available_budget!;
+            return { ..._state };
+          });
+        }
+      };
+        
       }
+    }
     } catch (err: any) {
       console.log(err, "top up error");
       toast.error(err?.response?.data?.message);

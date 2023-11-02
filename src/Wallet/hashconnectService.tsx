@@ -5,6 +5,8 @@ import { useCookies } from "react-cookie";
 import { useApiInstance } from "../APIConfig/api";
 import { useStore } from "../Store/StoreProvider";
 import { toast } from "react-toastify";
+import { AccountAllowanceApproveTransaction, AccountId, ContractExecuteTransaction, ContractFunctionParameters, ContractId } from "@hashgraph/sdk";
+import BigNumber from "bignumber.js";
 
 export const fetchAccountIfoKey = async (accountId: string) => {
   const url = "https://testnet.mirrornode.hedera.com/api/v1/accounts/" + accountId;
@@ -145,6 +147,49 @@ export const useHashconnectService = () => {
     return transactionResponse;
   };
 
+  const approveToken = async(accountId:any,data:any)=>{
+    let contract_address:any = process.env.REACT_APP_CONTRACT_ADDRESS;
+    const provider = hashconnect.getProvider("testnet", topic!, accountId);
+    const signer = hashconnect.getSigner(provider);
+const approvedToken =
+    new AccountAllowanceApproveTransaction().approveTokenAllowance(
+      data?.entityId,
+      accountId,
+      contract_address,
+      data.amount.value * Math.pow(10,data.decimals)
+    );
+
+  const approveTokenSign = await approvedToken
+    .freezeWithSigner(signer)
+   
+    const signApprove = await approveTokenSign.signWithSigner(signer);
+    const responseApprove = await signApprove.executeWithSigner(signer);
+    return responseApprove
+  }
+
+  const transferTokenToContract = async (accountId: any,data:any) => {
+try{
+let amount =  data.amount.value * Math.pow(10,data.decimals)
+  const provider = hashconnect.getProvider("testnet", topic!, accountId);
+  const signer = hashconnect.getSigner(provider);
+  let contract_address:any = process.env.REACT_APP_CONTRACT_ADDRESS
+  console.log(accountId,data,"TESTING")
+  
+  const tx = await new ContractExecuteTransaction()
+  .setContractId(ContractId.fromString(contract_address))
+  .setGas(3000000)
+  .setFunction('transferTokenToContract', new ContractFunctionParameters().addAddress(AccountId.fromString(data?.entityId).toSolidityAddress()).addAddress(AccountId.fromString(accountId).toSolidityAddress()).addInt64((new BigNumber(data?.amount?.value* Math.pow(10,data.decimals)))))
+  .setTransactionMemo("transfer Token").freezeWithSigner(signer);
+  const sign = await tx.signWithSigner(signer);
+  const response = await sign.executeWithSigner(signer);
+  
+  return response;
+}catch(err){
+  console.log(err);
+  return err
+}
+  }
+
   const disconnect = React.useCallback(async () => {
     await hashconnect.disconnect(pairingData?.topic!);
     setState!((exState) => ({ ...exState, pairingData: null }))!;
@@ -196,8 +241,8 @@ export const useHashconnectService = () => {
       //? Getting Challenge Signing
       setAuthStatusLog((_d) => [..._d, { type: "info", message: "Requesting challenge" }]);
 
+      console.log(window.location.origin, 'location');
       const { payload, server } = await Auth.createChallenge({ url: window.location.origin });
-
       setAuthStatusLog((_d) => [..._d, { type: "info", message: "Challenge received" }]);
 
       if (topic && accountId) {
@@ -208,8 +253,6 @@ export const useHashconnectService = () => {
         hashconnect
           .authenticate(topic, accountId, server.account, Buffer.from(server.signature), payload)
           .then(async (authResponse) => {
-            console.log("CHECK");
-
             if (authResponse.success && authResponse.signedPayload && authResponse.userSignature) {
               //? Challenge signed successfully.
               setAuthStatusLog((_d) => [..._d, { type: "success", message: "Wallet signature received" }]);
@@ -269,7 +312,7 @@ export const useHashconnectService = () => {
 
       //@ts-ignore
 
-      setAuthStatusLog((_d) => [..._d, { type: "error", message: "Error fro m validation::-" + err.message }]);
+      setAuthStatusLog((_d) => [..._d, { type: "error", message: "Error from validation::-" + err.message }]);
     }
   }, [Auth, pairingData?.accountIds, setCookies, store, topic]);
 
@@ -279,8 +322,10 @@ export const useHashconnectService = () => {
     sendTransaction,
     disconnect,
     requestAccountInfo,
+    transferTokenToContract,
     clearPairings,
     hashconnect,
+    approveToken,
     handleAuthenticate,
     authStatusLog,
   };

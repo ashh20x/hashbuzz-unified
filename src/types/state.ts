@@ -26,6 +26,7 @@ export interface EntityBalances {
   entityIcon: React.ReactNode;
   entityId: string;
   entityType: string;
+  decimals?:number
 }
 
 export type BalOperation = "topup" | "reimburse";

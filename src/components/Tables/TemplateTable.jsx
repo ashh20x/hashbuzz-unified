@@ -12,6 +12,7 @@ import {
 import CheckIcon from "@mui/icons-material/Check";
 import EditIcon from "@mui/icons-material/Edit";
 import { useState } from "react";
+import { useStore } from "../../Store/StoreProvider";
 
 export const TemplateTable = ({
   handleReply,
@@ -21,13 +22,14 @@ export const TemplateTable = ({
   handleFollow,
   reply,
   retweet,
+  selectedToken,
   like,
   download,
   follow,
   quote
 }) => {
   
-
+const store = useStore()
   const [editIdx, setEditIdx] = useState(-1);
 
   const startEditing = (i) => {
@@ -38,7 +40,9 @@ export const TemplateTable = ({
     setEditIdx(-1);
     console.log(retweet);
   };
-  
+  let currentToken = store?.balances?.filter(item=>
+    item?.entityId === selectedToken
+  );
   return (
     <CustomTable stickyHeader aria-label="simple table">
       <CustomRowHead>
@@ -68,7 +72,7 @@ export const TemplateTable = ({
                 min="0"
                 name="like" onChange={(e) => handleLike(e)} placeholder={like} />
               ) : (
-                like + "ℏ"
+                like + `${currentToken?.[0]?.entityIcon ? currentToken?.[0]?.entityIcon: "ℏ"}`
               )}
             </BorderlessCell>
             <BorderlessCell>
@@ -80,7 +84,7 @@ export const TemplateTable = ({
                 }}
                 step="0.1" name="retweet" onChange={(e) => handleRetweet(e)} placeholder={retweet} />
               ) : (
-                retweet + "ℏ"
+                retweet + `${currentToken?.[0]?.entityIcon ? currentToken?.[0]?.entityIcon: "ℏ"}`
               )}
             </BorderlessCell>
            
@@ -98,7 +102,7 @@ export const TemplateTable = ({
                   placeholder={quote}
                 />
               ) : (
-                quote + "ℏ"
+                quote + `${currentToken?.[0]?.entityIcon ? currentToken?.[0]?.entityIcon: "ℏ"}`
               )}
             </BorderlessCell>
             <BorderlessCell>
@@ -110,14 +114,14 @@ export const TemplateTable = ({
                 }}
                 step="0.1" name="comment" onChange={(e) => handleReply(e)} placeholder={reply} />
               ) : (
-                reply + "ℏ"
+                reply + `${currentToken?.[0]?.entityIcon ? currentToken?.[0]?.entityIcon: "ℏ"}`
               )}
             </BorderlessCell>
             {/* <BorderlessCell>
               {!editIdx ? (
                 <NumberInput name="follow" onChange={(e) => handleFollow(e)} placeholder={follow} />
               ) : (
-                follow + "ℏ"
+                follow + `${currentToken?.[0]?.entityIcon ? currentToken?.[0]?.entityIcon: "ℏ"}`
               )}
             </BorderlessCell> */}
 
