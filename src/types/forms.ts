@@ -38,7 +38,7 @@ export type CreateTransactionEntity = {
   entityId?: string;
   senderId: string;
   amount: TopupAmounts;
-  decimals?:number
+  decimals?: number
 };
 
 export type CreateTransactionByteBody = {
@@ -61,7 +61,8 @@ export type TopUpResponse = {
 
 export type reimburseAmountBody = {
   amount?: any;
-  type?:any
+  type?: any;
+  token_id?: any
 };
 
 export type addCampaignBody = {
@@ -69,9 +70,9 @@ export type addCampaignBody = {
   tweet_text: string;
   comment_reward: number;
   retweet_reward: number;
-  fungible_token_id?:String,
+  fungible_token_id?: String,
   like_reward: number;
-  type:String,
+  type: String,
   quote_reward: number;
   // follow_reward: follow,
   campaign_budget: number;

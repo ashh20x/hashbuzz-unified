@@ -16,7 +16,7 @@ interface CampaignListProps {
 
 const CampaignList = ({ user }: CampaignListProps) => {
   const navigate = useNavigate();
-  const [openAssociateModal,setOpenAssociateModal] = useState<boolean>(false)
+  const [openAssociateModal, setOpenAssociateModal] = useState<boolean>(false)
   const handleTemplate = () => {
     navigate("/campaign");
     // navigate("/create-campaign");
@@ -57,11 +57,13 @@ const CampaignList = ({ user }: CampaignListProps) => {
   const columns: GridColDef[] = [
     { field: "id", headerName: "Card No.", width: 100, align: "center" },
     { field: "name", headerName: "Campaign Name", minWidth: 150, flex: 0.75 },
-    { field: "type", headerName: "Campaign Type", minWidth: 150, flex: 0.75,renderCell:(cellValues)=>{
-      return (
-       <span>{cellValues?.row?.type || "HBAR"}</span>
-      );
-    } },
+    {
+      field: "type", headerName: "Campaign Type", minWidth: 150, flex: 0.75, renderCell: (cellValues) => {
+        return (
+          <span>{cellValues?.row?.type || "HBAR"}</span>
+        );
+      }
+    },
     { field: "campaign_stats", headerName: "Campaign stats", minWidth: 150, flex: 0.75 },
     { field: "campaign_budget", headerName: "Campaign Budget", minWidth: 150, flex: 0.45 },
     { field: "amount_spent", headerName: "Amount Spent", width: 150 },
@@ -80,7 +82,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
               handleClick(cellValues.row);
             }}
           >
-          {cellValues.row.campaign_stats === "Completed" ? "Completed" : cellValues.row.campaign_stats === "Pending" ? "Start" :cellValues.row.campaign_stats === "Running" ? "Stop" : "Update"} 
+            {cellValues.row.campaign_stats === "Completed" ? "Completed" : cellValues.row.campaign_stats === "Pending" ? "Start" : cellValues.row.campaign_stats === "Running" ? "Stop" : "Update"}
           </Button>
         );
       },
@@ -137,16 +139,16 @@ const CampaignList = ({ user }: CampaignListProps) => {
                 At the moment you can only run one campaign at a time, and the topped up budget can be used across unlimited number of campaigns
               </Typography>
             </Stack>
-            {/* {process.env.REACT_APP_ADMIN_ADDRESS &&  */}
-            <Button
-              size="large"
-              variant="contained"
-              disableElevation
-              onClick={()=> setOpenAssociateModal(true)}
-            >
-              Associate
-            </Button>
-            {/* } */}
+            {process.env.REACT_APP_ADMIN_ADDRESS &&
+              <Button
+                size="large"
+                variant="contained"
+                disableElevation
+                onClick={() => setOpenAssociateModal(true)}
+              >
+                Associate
+              </Button>
+            }
             <Button
               size="large"
               variant="contained"
@@ -156,7 +158,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
             >
               Create Campaign
             </Button>
-            <AssociateModal open={openAssociateModal} onClose={()=>setOpenAssociateModal(false)}/>
+            <AssociateModal open={openAssociateModal} onClose={() => setOpenAssociateModal(false)} />
           </Stack>
         </Box>
         <Divider sx={{ borderColor: cardStyle.borderColor }} />

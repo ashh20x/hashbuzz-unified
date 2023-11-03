@@ -52,7 +52,6 @@ export const useSmartContractServices = () => {
           return {
             ...prev,
             currentUser: currentUser,
-            
             balances: [
               {
                 ...INITIAL_HBAR_BALANCE_ENTITY,
@@ -62,16 +61,28 @@ export const useSmartContractServices = () => {
             ],
           };
         });
+        const balancesData = await User.getTokenBalances();
+        store?.updateState((_state) => {
+          if (balancesData.length > 0) {
+            for (let index = 0; index < balancesData.length; index++) {
+              const d = balancesData[index];
+              _state.balances.push({
+                entityBalance: d.available_balance.toFixed(4),
+                entityIcon: d.token_symbol,
+                entitySymbol: "",
+                entityId: d.token_id,
+                entityType: d.token_type,
+              });
+            }
+          }
+          return { ..._state };
+        });
         return updateBalanceTransaction;
       }else{
         const res =await  approveToken(pairingData?.accountIds[0],entity);
-        console.log("TESTING")
         const response = await transferTokenToContract(pairingData?.accountIds[0],entity);
-        console.log(response,'response')
         if(response){
-
           const getBal = await Transaction.setTransactionAmount({ entity });
-          console.log(getBal, "Getbalance");
           if (getBal.message) {
           getBal.error ? toast.error(getBal.message ?? "Error with request for balance update.") : toast.info(getBal.message);
         }
@@ -89,6 +100,37 @@ export const useSmartContractServices = () => {
           });
         }
       };
+      const currentUser = await User.getCurrentUser();
+      store?.updateState((prev) => {
+        return {
+          ...prev,
+          currentUser: currentUser,
+          
+          balances: [
+            {
+              ...INITIAL_HBAR_BALANCE_ENTITY,
+              entityBalance: (currentUser?.available_budget ?? 0 / 1e8).toFixed(4),
+              entityId: currentUser?.hedera_wallet_id ?? "",
+            },
+          ],
+        };
+      });
+      const balancesData = await User.getTokenBalances();
+      store?.updateState((_state) => {
+        if (balancesData.length > 0) {
+          for (let index = 0; index < balancesData.length; index++) {
+            const d = balancesData[index];
+            _state.balances.push({
+              entityBalance: d.available_balance.toFixed(4),
+              entityIcon: d.token_symbol,
+              entitySymbol: "",
+              entityId: d.token_id,
+              entityType: d.token_type,
+            });
+          }
+        }
+        return { ..._state };
+      });
         
       }
     }
