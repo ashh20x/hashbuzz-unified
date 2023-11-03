@@ -63,7 +63,7 @@ const calculateCharge = (amt: number) => amt * 0.1;
 
 const AssociateModal = ({ open, onClose }: TopupModalProps) => {
   const [formData, setFromData] = React.useState<CurrentFormState>(JSON.parse(JSON.stringify(FORM_INITIAL_STATE)));
-  const { Admin ,User} = useApiInstance();
+  const { Admin, User } = useApiInstance();
   const [loading, setLoading] = useState(false)
   const store = useStore();
 

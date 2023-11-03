@@ -61,7 +61,6 @@ const calculateCharge = (amt: number) => amt * 0.1;
 const calculateTotal = (amt: number) => amt + calculateCharge(amt);
 
 const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
-  console.log(data,'data')
   const [formData, setFromData] = React.useState<CurrentFormState>(JSON.parse(JSON.stringify(FORM_INITIAL_STATE)));
   const inputRef = React.createRef<HTMLInputElement>();
   const [loading, setLoading] = React.useState(false);
@@ -94,9 +93,8 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
           entityId: data?.entityId,
           amount: { value, fee, total },
           senderId: pairingData?.accountIds[0],
-          decimals:data?.decimals
+          decimals: data?.decimals
         });
-        console.log(req);
         if (req?.success) {
           toast.success("Transaction successfully completed.");
         }
@@ -133,7 +131,7 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
   const reimburse = async () => {
     setLoading(true);
     try {
-      const response = await Transaction.reimburseAmount({amount: formData?.amount?.value });
+      const response = await Transaction.reimburseAmount({ type: data?.entityType?.toUpperCase(), token_id: data?.entityId, amount: formData?.amount?.value });
       const currentUser = await User.getCurrentUser();
       store?.updateState((prev) => {
         return {
@@ -148,6 +146,22 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
           ],
         };
       });
+      const balancesData = await User.getTokenBalances();
+      store?.updateState((_state) => {
+        if (balancesData.length > 0) {
+          for (let index = 0; index < balancesData.length; index++) {
+            const d = balancesData[index];
+            _state.balances.push({
+              entityBalance: d.available_balance.toFixed(4),
+              entityIcon: d.token_symbol,
+              entitySymbol: "",
+              entityId: d.token_id,
+              entityType: d.token_type,
+            });
+          }
+        }
+        return { ..._state };
+      });
       toast.info(response?.message);
       setLoading(false);
       if (onClose) onClose();
@@ -156,6 +170,8 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
       setLoading(false);
     }
   };
+  console.log(data, 'data')
+
   return (
     <Dialog open={open}>
       <DialogTitle>
