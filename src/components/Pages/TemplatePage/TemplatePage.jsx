@@ -63,10 +63,10 @@ export const TemplatePage = () => {
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [userData, setUserData] = useState({});
   const [allTokens, setAllTokens] = useState([])
-  const [selectedToken, setSelectedToken] = useState({
-    value: allTokens?.[0]?.value,
-  })
-  console.log(allTokens,'aall')
+  const [selectedToken, setSelectedToken] = useState(
+    allTokens?.[0]?.value,
+  );
+  console.log(allTokens, 'aall')
   const getTokens = async () => {
     const response = await User.getTokenBalances();
     console.log(response, "responses")
@@ -81,9 +81,9 @@ export const TemplatePage = () => {
     })
     setAllTokens(updatedTokens)
   }
-  useEffect(()=>{
-setSelectedToken(allTokens?.[0]?.value)
-  },[allTokens])
+  useEffect(() => {
+    setSelectedToken(allTokens?.[0]?.value)
+  }, [allTokens])
   console.log(allTokens, "allTokens")
   useEffect(() => {
     getTokens()
@@ -220,17 +220,17 @@ setSelectedToken(allTokens?.[0]?.value)
         setButtonDisabled(true);
       }
     } else {
-      console.log(store?.balances,selectedToken,'store?.balances?.[selectedToken]?.entityBalance')
-      let currentToken = store?.balances?.filter(item=>
+      console.log(store?.balances, selectedToken, 'store?.balances?.[selectedToken]?.entityBalance')
+      let currentToken = store?.balances?.filter(item =>
         item?.entityId === selectedToken
       );
-      console.log(currentToken,'currenToken')
-      if (Math.round(event.target.value * Math.pow(10, currentToken?.[0]?.decimals)) <= currentToken?.[0]?.entityBalance) {
+      console.log(currentToken, 'currenToken')
+      if (Math.round(Number(event.target.value) * Math.pow(10, Number(currentToken?.[0]?.decimals))) <= Number(Number(currentToken?.[0]?.entityBalance) * Math.pow(10, Number(currentToken?.[0]?.decimals)))) {
         setBudget(event.target.value);
         setBudgetMessage("");
         setButtonDisabled(false);
       } else {
-        setBudgetMessage(`You have exceeded the total budget of ${Number(currentToken?.[0]?.entityBalance) / Math.pow(10,  Number(currentToken?.[0]?.decimals))} ${ currentToken?.[0]?.entityIcon}`);
+        setBudgetMessage(`You have exceeded the total budget of ${Number(Number(currentToken?.[0]?.entityBalance)) / Math.pow(10, Number(currentToken?.[0]?.decimals))} ${currentToken?.[0]?.entityIcon}`);
         setButtonDisabled(true);
       }
 
@@ -294,7 +294,7 @@ setSelectedToken(allTokens?.[0]?.value)
       <Typography theme={theme}>Campaign</Typography>
       <Wrapper>
         <LeftSec>
-          <CustomInput style={{width:'100%',height:"150px"}} placeholder="Enter Campaign title" onChange={handleName} />
+          <CustomInput style={{ width: '100%', height: "150px" }} placeholder="Enter Campaign title" onChange={handleName} />
           <Select
             style={{ margin: '20px 0' }}
             labelId="token_type"
@@ -372,7 +372,7 @@ setSelectedToken(allTokens?.[0]?.value)
             placeholder="Enter campaign budget"
             onChange={handleBudget}
           />
-          <ErrorTextWrap>{budgetMessage}</ErrorTextWrap>
+          {/* <ErrorTextWrap>{budgetMessage}</ErrorTextWrap> */}
           <IconsWrap>
             <CustomCheckboxInput type="checkbox" onChange={handleAddMedia} />
             Do you want to add media?

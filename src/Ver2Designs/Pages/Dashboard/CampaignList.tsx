@@ -65,9 +65,19 @@ const CampaignList = ({ user }: CampaignListProps) => {
       }
     },
     { field: "campaign_stats", headerName: "Campaign stats", minWidth: 150, flex: 0.75 },
-    { field: "campaign_budget", headerName: "Campaign Budget", minWidth: 150, flex: 0.45 },
-    { field: "amount_spent", headerName: "Amount Spent", width: 150 },
-    { field: "amount_claimed", headerName: "Amount Claimed", width: 150 },
+    {
+      field: "campaign_budget", headerName: "Campaign Budget", minWidth: 150, flex: 0.45, renderCell: (cellValues) => {
+        return <span>{cellValues?.row?.type === "HBAR" ? (cellValues?.row?.campaign_budget / 1e8) : cellValues?.row?.campaign_budget}</span>
+      }
+    },
+    {
+      field: "amount_spent", headerName: "Amount Spent", width: 150, renderCell: (cellValues) => {
+        return <span>{cellValues?.row?.type === "HBAR" ? (cellValues?.row?.amount_spent / 1e8) : cellValues?.row?.amount_spent}</span>
+      }
+    },
+    { field: "amount_claimed", headerName: "Amount Claimed", width: 150,renderCell: (cellValues) => {
+      return <span>{cellValues?.row?.type === "HBAR" ? (cellValues?.row?.amount_claimed / 1e8) : cellValues?.row?.amount_claimed}</span>
+    } },
     {
       field: "action",
       headerName: "Actions",
