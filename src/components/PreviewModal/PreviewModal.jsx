@@ -47,7 +47,7 @@ const PreviewModal = ({
   const [cookies, setCookie] = useCookies(["token"]);
   const [showLoading, setShowLoading] = useState(false);
   const { dAppAPICall } = useDappAPICall();
-const store = useStore();
+  const store = useStore();
   const { Campaign } = useApiInstance();
   const handleClose = () => setOpen(false);
   const theme = {
@@ -68,11 +68,11 @@ const store = useStore();
     const postData = {
       name: name,
       tweet_text: Text,
-     "fungible_token_id": selectedToken,
+      "fungible_token_id": type === 'HBAR' ? "" : selectedToken,
       comment_reward: reply,
       retweet_reward: retweet,
       like_reward: like,
-      type:type,
+      type: type,
       quote_reward: quote,
       // "follow_reward": follow,
       campaign_budget: budget == "" ? 0 : budget,
@@ -93,7 +93,7 @@ const store = useStore();
       notify("Something went wrong! Please try again later");
     }
   };
-  let currentToken = store?.balances?.filter(item=>
+  let currentToken = store?.balances?.filter(item =>
     item?.entityId === selectedToken
   );
   return (
