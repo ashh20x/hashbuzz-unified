@@ -95,6 +95,7 @@ export const useApiInstance = () => {
     updateConsent: (userData: { consent: boolean }): Promise<CurrentUser> => requests.patch(`/api/users/update-concent`, { ...userData }),
     updateWalletId: (userData: { walletId: string }): Promise<CurrentUser> => requests.put(`/api/users/update/wallet`, { ...userData }),
     getTokenBalances: (): Promise<TokenBalances[]> => requests.get("/api/users/token-balances"),
+    getCardEngagement: (data: { id: number }): Promise<any> => requests.get("/api/campaign/card-status", { ...data }),
   };
 
   const Auth = {
@@ -119,9 +120,9 @@ export const useApiInstance = () => {
       token_id: string;
       tokendata: any;
       token_type: string;
-      token_symbol:String;
-      decimals:Number;
-    }): Promise<{ message: string; data: TokenDataObj }> => requests.post("/api/admin/list-token", { token_id,token_symbol, tokendata, decimals,token_type }),
+      token_symbol: String;
+      decimals: Number;
+    }): Promise<{ message: string; data: TokenDataObj }> => requests.post("/api/admin/list-token", { token_id, token_symbol, tokendata, decimals, token_type }),
     getListedTokens: (tokenId?: string): Promise<AllTokensQuery> => requests.get(`/api/admin/listed-tokens${tokenId ? `?tokenId=${tokenId}` : ""}`),
     getActiveContractInfo: (): Promise<ContractInfo> => requests.get("/api/admin/active-contract"),
   };

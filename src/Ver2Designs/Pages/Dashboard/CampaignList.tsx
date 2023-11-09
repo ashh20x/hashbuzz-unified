@@ -9,6 +9,9 @@ import { useApiInstance } from "../../../APIConfig/api";
 import { toast } from "react-toastify";
 import { Loader } from "../../../components/Loader/Loader";
 import AssociateModal from "./AssociateModal";
+import InfoIcon from "@mui/icons-material/Info";
+import { useStore } from "../../../Store/StoreProvider";
+import DetailsModal from "../../../components/PreviewModal/DetailsModal";
 
 interface CampaignListProps {
   user?: CurrentUser;
@@ -16,7 +19,13 @@ interface CampaignListProps {
 
 const CampaignList = ({ user }: CampaignListProps) => {
   const navigate = useNavigate();
-  const [openAssociateModal, setOpenAssociateModal] = useState<boolean>(false)
+  const [openAssociateModal, setOpenAssociateModal] = useState<boolean>(false);
+  const [open, setOpen] = useState<boolean>(false);
+  const [modalData, setModalData] = useState<Object>({});
+  const { User } = useApiInstance();
+
+  const store = useStore();
+  const balances = store?.balances;
   const handleTemplate = () => {
     navigate("/campaign");
     // navigate("/create-campaign");
@@ -24,6 +33,13 @@ const CampaignList = ({ user }: CampaignListProps) => {
   const [rows, setRows] = React.useState<GridRowsProp>([]);
   const { Campaign } = useApiInstance();
   const [loading, setLoading] = React.useState(false);
+
+  const handleCard = async (id: number) => {
+    const res = await User.getCardEngagement({ id: id });
+    console.log(res, "CardEngagement");
+    setModalData(res.data);
+    setOpen(true)
+  };
 
   const handleClick = async (values: any) => {
     console.log(values, "rtyuio");
@@ -48,7 +64,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
       }
     } catch (err: any) {
       console.log(err);
-      toast.error(err?.message)
+      toast.error(err?.message);
     } finally {
       setLoading(false);
     }
@@ -58,42 +74,67 @@ const CampaignList = ({ user }: CampaignListProps) => {
     { field: "id", headerName: "Card No.", width: 100, align: "center" },
     { field: "name", headerName: "Campaign Name", minWidth: 150, flex: 0.75 },
     {
-      field: "type", headerName: "Campaign Type", minWidth: 150, flex: 0.75, renderCell: (cellValues) => {
-        return (
-          <span>{cellValues?.row?.type || "HBAR"}</span>
-        );
-      }
+      field: "type",
+      headerName: "Campaign Type",
+      minWidth: 150,
+      flex: 0.75,
+      renderCell: (cellValues) => {
+        return <span>{cellValues?.row?.type || "HBAR"}</span>;
+      },
     },
     { field: "campaign_stats", headerName: "Campaign stats", minWidth: 150, flex: 0.75 },
     {
-      field: "campaign_budget", headerName: "Campaign Budget", minWidth: 150, flex: 0.45, renderCell: (cellValues) => {
-        return <span>{cellValues?.row?.type === "HBAR" ? (cellValues?.row?.campaign_budget / 1e8) : cellValues?.row?.campaign_budget}</span>
-      }
+      field: "campaign_budget",
+      headerName: "Campaign Budget",
+      minWidth: 150,
+      flex: 0.45,
+      renderCell: (cellValues) => {
+        return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.campaign_budget / 1e8 : cellValues?.row?.campaign_budget}</span>;
+      },
     },
     {
-      field: "amount_spent", headerName: "Amount Spent", width: 150, renderCell: (cellValues) => {
-        return <span>{cellValues?.row?.type === "HBAR" ? (cellValues?.row?.amount_spent / 1e8) : cellValues?.row?.amount_spent}</span>
-      }
+      field: "amount_spent",
+      headerName: "Amount Spent",
+      width: 150,
+      renderCell: (cellValues) => {
+        return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.amount_spent / 1e8 : cellValues?.row?.amount_spent}</span>;
+      },
     },
-    { field: "amount_claimed", headerName: "Amount Claimed", width: 150,renderCell: (cellValues) => {
-      return <span>{cellValues?.row?.type === "HBAR" ? (cellValues?.row?.amount_claimed / 1e8) : cellValues?.row?.amount_claimed}</span>
-    } },
+    {
+      field: "amount_claimed",
+      headerName: "Amount Claimed",
+      width: 150,
+      renderCell: (cellValues) => {
+        return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.amount_claimed / 1e8 : cellValues?.row?.amount_claimed}</span>;
+      },
+    },
     {
       field: "action",
       headerName: "Actions",
-      width: 150,
+      width: 200,
       renderCell: (cellValues) => {
         return (
-          <Button
-            variant="contained"
-            color="primary"
-            disabled={cellValues.row.campaign_stats === "Completed"}
-            onClick={() => {
-              handleClick(cellValues.row);
-            }}
-          >
-            {cellValues.row.campaign_stats === "Completed" ? "Completed" : cellValues.row.campaign_stats === "Pending" ? "Start" : cellValues.row.campaign_stats === "Running" ? "Stop" : "Update"}
-          </Button>
+          <>
+            <Button
+              variant="contained"
+              color="primary"
+              disabled={cellValues.row.campaign_stats === "Completed"}
+              onClick={() => {
+                handleClick(cellValues.row);
+              }}
+            >
+              {cellValues.row.campaign_stats === "Completed"
+                ? "Completed"
+                : cellValues.row.campaign_stats === "Pending"
+                ? "Start"
+                : cellValues.row.campaign_stats === "Running"
+                ? "Stop"
+                : "Update"}
+            </Button>
+            <div className="info-icon" onClick={() => handleCard(cellValues.row.id)}>
+              <InfoIcon />
+            </div>
+          </>
         );
       },
     },
@@ -113,7 +154,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
           campaign_budget: item?.campaign_budget,
           amount_spent: item?.amount_spent,
           amount_claimed: item?.amount_claimed,
-          type: item?.type
+          type: item?.type,
         }));
       }
       setRows(data);
@@ -149,16 +190,11 @@ const CampaignList = ({ user }: CampaignListProps) => {
                 At the moment you can only run one campaign at a time, and the topped up budget can be used across unlimited number of campaigns
               </Typography>
             </Stack>
-            {process.env.REACT_APP_ADMIN_ADDRESS &&
-              <Button
-                size="large"
-                variant="contained"
-                disableElevation
-                onClick={() => setOpenAssociateModal(true)}
-              >
+            {process.env.REACT_APP_ADMIN_ADDRESS && (
+              <Button size="large" variant="contained" disableElevation onClick={() => setOpenAssociateModal(true)}>
                 Associate
               </Button>
-            }
+            )}
             <Button
               size="large"
               variant="contained"
@@ -176,7 +212,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
           <DataGrid rows={rows} columns={columns} paginationMode="server" rowsPerPageOptions={[20]} />
         </Box>
       </Box>
-
+      <DetailsModal open={open} setOpen={setOpen} data={modalData} />
       <Loader open={loading} />
     </Box>
   );
