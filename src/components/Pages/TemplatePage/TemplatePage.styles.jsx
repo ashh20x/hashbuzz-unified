@@ -3,7 +3,7 @@ import styled from "styled-components";
 export const Wrapper = styled.div`
   display: flex;
   flex-direction: row;
-  height: 65vh;
+  height: 90vh;
   @media (max-width: 960px) {
     height: 100%;
     display: flex;
