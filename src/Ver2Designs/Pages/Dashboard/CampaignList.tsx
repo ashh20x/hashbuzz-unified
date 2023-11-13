@@ -26,6 +26,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
 
   const store = useStore();
   const balances = store?.balances;
+  const [runningCampaigns, setRunningCampaigns] = useState(false);
   const handleTemplate = () => {
     navigate("/campaign");
     // navigate("/create-campaign");
@@ -82,7 +83,6 @@ const CampaignList = ({ user }: CampaignListProps) => {
         return <span>{cellValues?.row?.type || "HBAR"}</span>;
       },
     },
-    { field: "campaign_stats", headerName: "Campaign stats", minWidth: 150, flex: 0.75 },
     {
       field: "campaign_budget",
       headerName: "Campaign Budget",
@@ -108,6 +108,8 @@ const CampaignList = ({ user }: CampaignListProps) => {
         return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.amount_claimed / 1e8 : cellValues?.row?.amount_claimed}</span>;
       },
     },
+    { field: "campaign_stats", headerName: "Campaign Status", minWidth: 150, flex: 0.75 },
+
     {
       field: "action",
       headerName: "Actions",
@@ -126,10 +128,10 @@ const CampaignList = ({ user }: CampaignListProps) => {
               {cellValues.row.campaign_stats === "Completed"
                 ? "Completed"
                 : cellValues.row.campaign_stats === "Pending"
-                ? "Start"
-                : cellValues.row.campaign_stats === "Running"
-                ? "Stop"
-                : "Update"}
+                  ? "Start"
+                  : cellValues.row.campaign_stats === "Running"
+                    ? "Stop"
+                    : "Update"}
             </Button>
             <div className="info-icon" onClick={() => handleCard(cellValues.row.id)}>
               <InfoIcon />
@@ -146,16 +148,24 @@ const CampaignList = ({ user }: CampaignListProps) => {
       const allCampaigns = await Campaign.getCampaigns();
       console.log(allCampaigns, "allcampaigns");
       let data = [];
+      allCampaigns?.forEach((item: any) => {
+        if (item?.card_status === "Pending") {
+          setRunningCampaigns(true);
+          return;
+        }
+      });
       if (allCampaigns?.length > 0) {
-        data = allCampaigns?.map((item: any) => ({
-          id: item?.id,
-          name: item?.name,
-          campaign_stats: item?.card_status,
-          campaign_budget: item?.campaign_budget,
-          amount_spent: item?.amount_spent,
-          amount_claimed: item?.amount_claimed,
-          type: item?.type,
-        }));
+        data = allCampaigns?.map((item: any) => {
+          return ({
+            id: item?.id,
+            name: item?.name,
+            campaign_stats: item?.card_status,
+            campaign_budget: item?.campaign_budget,
+            amount_spent: item?.amount_spent,
+            amount_claimed: item?.amount_claimed,
+            type: item?.type,
+          })
+        });
       }
       setRows(data);
     } catch (err) {
@@ -199,7 +209,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
               size="large"
               variant="contained"
               disableElevation
-              disabled={!user?.available_budget || !user?.hedera_wallet_id || !user?.business_twitter_handle}
+              disabled={!user?.available_budget || runningCampaigns || !user?.hedera_wallet_id || !user?.business_twitter_handle}
               onClick={handleTemplate}
             >
               Create Campaign

@@ -56,14 +56,14 @@ const Dashboard = () => {
         {/* Card for wallet info */}
         <CardGenUtility
           startIcon={<AccountBalanceWalletIcon color="inherit" fontSize={"inherit"} />}
-          title={"Hedera account Id"}
+          title={"Hedera Account ID"}
           content={<Typography variant="h5">{currentUser?.hedera_wallet_id}</Typography>}
         />
 
         {/* card for personal twitter handle */}
         <CardGenUtility
           startIcon={<TwitterIcon color="inherit" fontSize={"inherit"} />}
-          title={"Personal twitter handle"}
+          title={"Individual X Account"}
           content={
             currentUser?.personal_twitter_handle ? (
               <Typography variant="h5">{"@" + currentUser?.personal_twitter_handle}</Typography>
@@ -78,7 +78,7 @@ const Dashboard = () => {
         {/* card for Brand twitter handle */}
         <CardGenUtility
           startIcon={<BusinessIcon color="inherit" fontSize={"inherit"} />}
-          title={"Brand twitter handle"}
+          title={"Brand X Account"}
           content={
             currentUser?.business_twitter_handle ? (
               <Typography variant="h5">{"@" + currentUser?.business_twitter_handle}</Typography>

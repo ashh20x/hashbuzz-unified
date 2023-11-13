@@ -20,11 +20,11 @@ import { useStore } from "../../Store/StoreProvider";
 import { useHashconnectService } from "../../Wallet";
 
 const postAuthActions = [
-  {
-    icon: <img src={ℏicon} alt={"ℏ"} style={{ height: "24px", width: "auto", marginRight: 10, display: "inline-block" }} />,
-    name: "Topup",
-    id: "top-up",
-  },
+  // {
+  //   icon: <img src={ℏicon} alt={"ℏ"} style={{ height: "24px", width: "auto", marginRight: 10, display: "inline-block" }} />,
+  //   name: "Topup",
+  //   id: "top-up",
+  // },
 
   { icon: <LogoutIcon />, name: "Logout", id: "logout" },
 ];

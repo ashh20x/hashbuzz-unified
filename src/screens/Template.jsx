@@ -7,7 +7,7 @@ export const Template = () => {
   return (
     <ContainerWrapper>
       {/* <Logo /> */}
-      <LogoutButton />
+      {/* <LogoutButton /> */}
       <TemplatePage />
     </ContainerWrapper>
   );
