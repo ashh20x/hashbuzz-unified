@@ -6,7 +6,6 @@ import {
     CustomParagraph
 } from "./PreviewModal.styles";
 
-
 const DetailsModal = ({
     open,
     setOpen,

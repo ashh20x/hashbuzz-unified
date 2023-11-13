@@ -143,13 +143,14 @@ const CampaignList = ({ user }: CampaignListProps) => {
   ];
 
   const getAllCampaigns = async () => {
+    console.log(runningCampaigns, "Campaigns")
     try {
       // const tokenInfo =  await Admin.getTokenInfo(tokenId);
       const allCampaigns = await Campaign.getCampaigns();
       console.log(allCampaigns, "allcampaigns");
       let data = [];
       allCampaigns?.forEach((item: any) => {
-        if (item?.card_status === "Pending") {
+        if (item?.card_status === "Pending" || item?.card_status === "Running") {
           setRunningCampaigns(true);
           return;
         }
