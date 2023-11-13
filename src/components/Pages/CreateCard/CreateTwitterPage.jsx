@@ -382,7 +382,7 @@ export const CreateTwitterPage = () => {
         </CustomTable2>
       </TableSection>
       <StatusSection>
-        At the moment you can only run one campaign at a time, and the topped up budget can be used across unlimited number of campaigns.
+      During the beta phase, there is a limitation of running a single campaign concurrently. Each campaign will conclude automatically 24 hours after its initiation, unless you choose to end it earlier. We anticipate relaxing these constraints gradually. Additionally, your recharged balance is available for unlimited use across various campaigns.
       </StatusSection>
       <PrimaryButton
         text="CREATE CAMPAIGN"

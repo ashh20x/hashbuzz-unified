@@ -294,7 +294,7 @@ export const TemplatePage = () => {
       <Typography theme={theme}>Campaign</Typography>
       <Wrapper>
         <LeftSec>
-          <CustomInput style={{ width: "100%", height: "150px" }} placeholder="Enter Campaign title" onChange={handleName} />
+          <CustomInput style={{ width: "100%", height: "100px" }} placeholder="Enter Campaign title" onChange={handleName} />
           <Select
             style={{ margin: "20px 0" }}
             labelId="token_type"
