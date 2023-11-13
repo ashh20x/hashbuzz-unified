@@ -119,13 +119,13 @@ const HeaderMenu = () => {
             {pathname.includes("admin") ? "User Dashboard" : "Admin Dashboard"}
           </MenuItem>
         ) : null}
-        <MenuItem onClick={handleClose}>
+        {/* <MenuItem onClick={handleClose}>
           <ListItemIcon>
-            {/* <AccountBalanceWalletIcon fontSize="small" /> */}
+            <AccountBalanceWalletIcon fontSize="small" />
             <Typography component={'span'} fontSize={"inherit"}>{"ℏ"}</Typography>
           </ListItemIcon>
           Top up account
-        </MenuItem>
+        </MenuItem> */}
         <MenuItem onClick={handleClose}>
           <ListItemIcon>
             <Settings fontSize="small" />

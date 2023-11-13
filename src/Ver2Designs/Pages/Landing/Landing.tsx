@@ -83,30 +83,26 @@ const Landing = () => {
           ) : null}
           <Stack sx={{ color: "#fff" }} spacing={2}>
             <Typography variant="subtitle1">
-              Imagine a world where anyone can confidently share verified information on social media. We're talkin' about a social DAO where local
-              communities are incentivized to validate information from the source of origin. The current Proof of Concept (PoC) we're workin' on is
-              just a stepping stone towards this bigger vision.
+              Welcome to a world where sharing verified information on X is as easy as sending a tweet! We're talking about a groundbreaking social DAO (Decentralized Autonomous Organization) that empowers local communities to validate information right from its source.
+
             </Typography>
 
             <Typography>
-              PoC Scope: campaigners can run a Twitter promo and reward their engaged organic influencers in $hbar or from a list of whitelisted
-              fungible HTS tokens.
+              Our current Proof of Concept (PoC) is just the beginning of this grand vision. In this PoC, campaigners can run X promotions and reward their dedicated influencers with $hbar or a selection of whitelisted fungible HTS tokens.
+
             </Typography>
 
             <Typography>
-              Goal: to orchestrate web2 and web3 action-based rewarding mechanism. It's all about makin' sure the right people get rewarded for doin'
-              the right thing.{" "}
+              Our goal with this PoC is to create a seamless rewarding mechanism that bridges both web2 and web3. It's all about ensuring that the right individuals receive recognition for their contributions.
+              {" "}
+            </Typography>
+            <Typography>
+              Ready to get started? Learn how to launch your very first promo [ <Typography component={Link} style={{ color: "red" }}>here</Typography>]. To request the whitelisting of your token, simply submit a request [<Typography component={Link} style={{ color: "red" }}>here</Typography>].  Stay in the loop with our latest updates and announcements by following us on <Typography component={Link} href={"https://x.com/hbuzzs"} style={{ color: "red" }}>X</Typography> - <Typography component={Link} href={"https://discord.com/invite/Zq6UAQ63Vc"} style={{ color: "red" }}>Discord</Typography>.
+              {" "}
             </Typography>
 
-            <Typography component={Link} href="#">
-              Learn how to launch your first promo.
+            <Typography>Join us in revolutionizing the way we share and validate information on social media.
             </Typography>
-            {/* <link> */}
-            <Typography component={Link} href="#">
-              Submit request to whitelist your token.
-            </Typography>
-            {/* <link> */}
-            <Typography>Follow us for latest update and new announcements: Twitter - Discord</Typography>
           </Stack>
         </Box>
       </Container>

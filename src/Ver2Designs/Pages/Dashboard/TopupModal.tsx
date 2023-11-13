@@ -53,7 +53,7 @@ const FORM_INITIAL_STATE: CurrentFormState = {
   amount: {
     value: 0,
     error: false,
-    helperText: "Enter the amount hbar(ℏ) / Token",
+    helperText: "",
   },
 };
 
@@ -175,7 +175,7 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
   return (
     <Dialog open={open}>
       <DialogTitle>
-        {loading ? "Payment in progress..." : `Top up wallet with ${data?.entityType === "HBAR" ? "hbar(ℏ)" : `token ${data?.entityIcon}`}`}
+        {loading ? "Payment in progress..." : `${operation === 'topup' ? " Add funds from your wallet" : "Refund to your wallet"} ${data?.entityType === "HBAR" ? "hbar(ℏ)" : `token ${data?.entityIcon}`}`}
         <IconButton
           onClick={modalClose}
           color="error"
@@ -192,23 +192,33 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
         <Box sx={{ marginTop: 0.5, marginBottom: 2.5 }}>
           <Typography variant="caption">Notes: </Typography>
           <List dense>
-            <ListItem>
-              <Typography variant="caption"> The specified amount excludes Hedera network fee</Typography>
-            </ListItem>
             {operation === "topup" ? (
               <React.Fragment>
                 <ListItem>
-                  <Typography variant="caption"> The specified amount can be used over multiple campaigns</Typography>
+                  <Typography>The stated amount does not include Hedera network fees.
+                  </Typography>
                 </ListItem>
                 <ListItem>
-                  <Typography variant="caption">Hashbuzz applies 10% charge fee on top of the specified amount</Typography>
+                  <Typography variant="caption">The stated amount can be allocated across various campaigns.
+                  </Typography>
+                </ListItem>
+                <ListItem>
+                  <Typography variant="caption">Hashbuzz imposes a 10% service fee on the designated amount.
+                  </Typography>
                 </ListItem>
               </React.Fragment>
             ) : (
               <React.Fragment>
                 <ListItem>
-                  <Typography variant="caption"> reimbursements are free of charge</Typography>
+                  <Typography variant="caption"> The stated amount does not include Hedera network fees.</Typography>
+
                 </ListItem>
+                <ListItem>
+                  <Typography variant="caption"> Refunds are provided at no cost.</Typography>
+                </ListItem>
+                {/* <ListItem>
+                  <Typography variant="caption"> reimbursements are free of charge</Typography>
+                </ListItem> */}
               </React.Fragment>
             )}
           </List>
@@ -237,12 +247,12 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
             </Grid>
             <Grid item md={3}>
               <Stack height={"100%"} alignItems={"center"} sx={{ paddingTop: 2.75 }}>
-                {"+ (of 10%)"}
+                {"+ (10%)"}
               </Stack>
             </Grid>
             <Grid item md={4}>
               <FormControl fullWidth sx={{ marginBottom: 1.25 }}>
-                <InputLabel htmlFor="hashbuzz-charge-input">Charge</InputLabel>
+                <InputLabel htmlFor="hashbuzz-charge-input">Fees</InputLabel>
                 <OutlinedInput
                   label="Hashbuzz chnarge"
                   type={"number"}

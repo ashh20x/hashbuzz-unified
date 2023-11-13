@@ -169,7 +169,7 @@ const Balances = () => {
             <Box sx={{ flexGrow: 1, flexBasis: 0, maxWidth: "100%", textAlign: "left", paddingLeft: 1, paddingRight: 1 }}>
               <Stack direction={"row"} alignItems="center" justifyContent={"space-between"} sx={{ marginBottom: 2 }}>
                 <Typography variant="h6" sx={{ lineHeight: 1 }}>
-                  {"Balances(ℏ)"}
+                  {"Balances"}
                 </Typography>
                 {balances && balances?.length > 0 ? (
                   <ButtonGroup
