@@ -31,7 +31,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
 
   const getAllPendingCampaigns = useCallback(async () => {
     const response = await Admin.getPendingCards();
-    console.log(response, "response")
+    setAdminPendingCards(response);
   }, [])
   useEffect(() => {
     if (process.env.REACT_APP_ADMIN_ADDRESS === currentUser?.hedera_wallet_id) {
@@ -39,6 +39,77 @@ const CampaignList = ({ user }: CampaignListProps) => {
     }
 
   })
+
+  const ADMINCOLUMNS: GridColDef[] = [{ field: "id", headerName: "Card No.", width: 100, align: "center" },
+  { field: "name", headerName: "Campaign Name", minWidth: 150, flex: 0.75 },
+  {
+    field: "type",
+    headerName: "Campaign Type",
+    minWidth: 150,
+    flex: 0.75,
+    renderCell: (cellValues) => {
+      return <span>{cellValues?.row?.type || "HBAR"}</span>;
+    },
+  },
+  {
+    field: "campaign_budget",
+    headerName: "Campaign Budget",
+    minWidth: 150,
+    flex: 0.45,
+    renderCell: (cellValues) => {
+      return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.campaign_budget / 1e8 : cellValues?.row?.campaign_budget}</span>;
+    },
+  },
+  {
+    field: "amount_spent",
+    headerName: "Amount Spent",
+    width: 150,
+    renderCell: (cellValues) => {
+      return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.amount_spent / 1e8 : cellValues?.row?.amount_spent}</span>;
+    },
+  },
+  {
+    field: "amount_claimed",
+    headerName: "Amount Claimed",
+    width: 150,
+    renderCell: (cellValues) => {
+      return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.amount_claimed / 1e8 : cellValues?.row?.amount_claimed}</span>;
+    },
+  },
+  { field: "campaign_stats", headerName: "Campaign Status", minWidth: 150, flex: 0.75 },
+
+  {
+    field: "action",
+    headerName: "Actions",
+    width: 200,
+    renderCell: (cellValues) => {
+      console.log(cellValues, "cellValues");
+      return (
+        <>
+          <Button
+            variant="contained"
+            color="primary"
+            // disabled={cellValues.row.campaign_stats === "Completed"}
+            onClick={() => {
+
+            }}
+          >
+            Approve
+          </Button>
+
+          <Button
+            variant="contained"
+            color="primary"
+            // disabled={cellValues.row.campaign_stats === "Completed"}
+            onClick={() => {
+
+            }}
+          >
+            Reject
+          </Button>        </>
+      );
+    },
+  }]
 
   const balances = store?.balances;
   const [runningCampaigns, setRunningCampaigns] = useState(false);
@@ -62,7 +133,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
     try {
       setLoading(true);
       let status = "";
-      if (values?.campaign_stats === "Pending") {
+      if (values?.campaign_stats === "Campaign Active") {
         status = "running";
       }
       if (values?.campaign_stats === "Running") {
@@ -142,7 +213,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
             >
               {cellValues.row.campaign_stats === "Completed"
                 ? "Completed"
-                : cellValues.row.campaign_stats === "Pending"
+                : cellValues.row.campaign_stats === "Campaign Active"
                   ? "Start"
                   : cellValues.row.campaign_stats === "Running"
                     ? "Stop"
@@ -164,7 +235,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
       console.log(allCampaigns, "allcampaigns");
       let data = [];
       allCampaigns?.forEach((item: any) => {
-        if (item?.card_status === "Pending") {
+        if (item?.card_status === "Campaign Active") {
           setRunningCampaigns(true);
           return;
         }
