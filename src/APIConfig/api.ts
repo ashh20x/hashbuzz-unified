@@ -110,6 +110,7 @@ export const useApiInstance = () => {
   const Admin = {
     updatePassword: (data: AdminUpdatePassword): Promise<UpdatePasswordResponse> => requests.put("/api/admin/update-password", { ...data }),
     getTokenInfo: (tokenId: string): Promise<TokenInfo> => requests.post("/api/admin/token-info", { tokenId }),
+    getPendingCards: () => requests.get("/api/admin/twitter-pending-cards"),
     addNewToken: ({
       token_id,
       tokendata,
