@@ -27,6 +27,7 @@ export const RightSec = styled.div`
   width: 50%;
   display: flex;
   flex-direction: column;
+  gap:40px;
   align-items: flex-end;
   @media screen and (max-width: 960px) {
     width: 100%;

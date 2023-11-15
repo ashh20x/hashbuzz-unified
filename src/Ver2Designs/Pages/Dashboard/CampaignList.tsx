@@ -4,7 +4,7 @@ import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
 import { CurrentUser } from "../../../types";
 import { cardStyle } from "./CardGenUtility";
 import { useNavigate } from "react-router-dom";
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useApiInstance } from "../../../APIConfig/api";
 import { toast } from "react-toastify";
 import { Loader } from "../../../components/Loader/Loader";
@@ -20,11 +20,26 @@ interface CampaignListProps {
 const CampaignList = ({ user }: CampaignListProps) => {
   const navigate = useNavigate();
   const [openAssociateModal, setOpenAssociateModal] = useState<boolean>(false);
+  const store = useStore();
+
+  const currentUser = store?.currentUser;
   const [open, setOpen] = useState<boolean>(false);
   const [modalData, setModalData] = useState<Object>({});
-  const { User } = useApiInstance();
+  const [adminPendingCards, setAdminPendingCards] = useState([])
+  const { User, Admin } = useApiInstance();
 
-  const store = useStore();
+
+  const getAllPendingCampaigns = useCallback(async () => {
+    const response = await Admin.getPendingCards();
+    console.log(response, "response")
+  }, [])
+  useEffect(() => {
+    if (process.env.REACT_APP_ADMIN_ADDRESS === currentUser?.hedera_wallet_id) {
+      getAllPendingCampaigns()
+    }
+
+  })
+
   const balances = store?.balances;
   const [runningCampaigns, setRunningCampaigns] = useState(false);
   const handleTemplate = () => {
@@ -200,7 +215,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
                 During the beta phase, there is a limitation of running a single campaign concurrently. Each campaign will conclude automatically 24 hours after its initiation, unless you choose to end it earlier. We anticipate relaxing these constraints gradually. Additionally, your recharged balance is available for unlimited use across various campaigns.
               </Typography>
             </Stack>
-            {process.env.REACT_APP_ADMIN_ADDRESS && (
+            {process.env.REACT_APP_ADMIN_ADDRESS === currentUser?.hedera_wallet_id && (
               <Button size="large" variant="contained" disableElevation onClick={() => setOpenAssociateModal(true)}>
                 Associate
               </Button>
