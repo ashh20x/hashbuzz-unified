@@ -30,15 +30,20 @@ const CampaignList = ({ user }: CampaignListProps) => {
 
 
   const getAllPendingCampaigns = useCallback(async () => {
-    const response = await Admin.getPendingCards();
-    setAdminPendingCards(response);
+    try {
+
+      const response = await Admin.getPendingCards();
+      setAdminPendingCards(response);
+    } catch (err) {
+      console.log(err)
+    }
   }, [])
   useEffect(() => {
     if (process.env.REACT_APP_ADMIN_ADDRESS === currentUser?.hedera_wallet_id) {
-      getAllPendingCampaigns()
+      getAllPendingCampaigns();
     }
 
-  })
+  }, [getAllPendingCampaigns, currentUser?.hedera_wallet_id])
 
   const ADMINCOLUMNS: GridColDef[] = [{ field: "id", headerName: "Card No.", width: 100, align: "center" },
   { field: "name", headerName: "Campaign Name", minWidth: 150, flex: 0.75 },
@@ -89,9 +94,19 @@ const CampaignList = ({ user }: CampaignListProps) => {
           <Button
             variant="contained"
             color="primary"
-            // disabled={cellValues.row.campaign_stats === "Completed"}
-            onClick={() => {
-
+            onClick={async () => {
+              const data = {
+                approve: true,
+                id: cellValues?.row?.id
+              }
+              try {
+                const response = await Admin.updateStatus(data);
+                getAllPendingCampaigns()
+                toast(response?.message);
+                console.log(response, "update status")
+              } catch (err) {
+                console.log(err)
+              }
             }}
           >
             Approve
@@ -100,9 +115,21 @@ const CampaignList = ({ user }: CampaignListProps) => {
           <Button
             variant="contained"
             color="primary"
-            // disabled={cellValues.row.campaign_stats === "Completed"}
-            onClick={() => {
+            style={{ marginLeft: "10px" }}
+            onClick={async () => {
+              const data = {
+                approve: false,
+                id: cellValues?.row?.id
+              }
+              try {
+                const response = await Admin.updateStatus(data);
+                getAllPendingCampaigns()
+                console.log(response, "update status");
+                toast(response?.message);
 
+              } catch (err) {
+                console.log(err)
+              }
             }}
           >
             Reject
@@ -206,14 +233,14 @@ const CampaignList = ({ user }: CampaignListProps) => {
             <Button
               variant="contained"
               color="primary"
-              disabled={cellValues.row.campaign_stats === "Completed"}
+              disabled={cellValues.row.campaign_stats === "Campaign Complete, Initiating Rewards" || cellValues.row.approve === false || cellValues.row.campaign_stats === "Under Review " ||cellValues.row.campaign_stats === "Campaign Declined"}
               onClick={() => {
                 handleClick(cellValues.row);
               }}
             >
-              {cellValues.row.campaign_stats === "Completed"
+              {cellValues.row.campaign_stats === "Campaign Complete, Initiating Rewards"
                 ? "Completed"
-                : cellValues.row.campaign_stats === "Campaign Active"
+                : cellValues.row.campaign_stats === "Campaign Active" || cellValues.row.campaign_stats === "Under Review " || cellValues.row.campaign_stats === "Campaign Declined"
                   ? "Start"
                   : cellValues.row.campaign_stats === "Running"
                     ? "Stop"
@@ -229,13 +256,14 @@ const CampaignList = ({ user }: CampaignListProps) => {
   ];
 
   const getAllCampaigns = async () => {
+    console.log(runningCampaigns, "Campaigns")
     try {
       // const tokenInfo =  await Admin.getTokenInfo(tokenId);
       const allCampaigns = await Campaign.getCampaigns();
       console.log(allCampaigns, "allcampaigns");
       let data = [];
       allCampaigns?.forEach((item: any) => {
-        if (item?.card_status === "Campaign Active") {
+        if (item?.card_status === "Campaign Active" || item?.card_status === "Running") {
           setRunningCampaigns(true);
           return;
         }
@@ -305,7 +333,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
         </Box>
         <Divider sx={{ borderColor: cardStyle.borderColor }} />
         <Box sx={{ height: "calc(100vh - 436px)" }}>
-          <DataGrid rows={rows} columns={columns} paginationMode="server" rowsPerPageOptions={[20]} />
+          <DataGrid rows={process.env.REACT_APP_ADMIN_ADDRESS === currentUser?.hedera_wallet_id ? adminPendingCards : rows} columns={process.env.REACT_APP_ADMIN_ADDRESS === currentUser?.hedera_wallet_id ? ADMINCOLUMNS : columns} paginationMode="server" rowsPerPageOptions={[20]} />
         </Box>
       </Box>
       <DetailsModal open={open} setOpen={setOpen} data={modalData} />

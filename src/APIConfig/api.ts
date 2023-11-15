@@ -126,6 +126,7 @@ export const useApiInstance = () => {
     }): Promise<{ message: string; data: TokenDataObj }> => requests.post("/api/admin/list-token", { token_id, token_symbol, tokendata, decimals, token_type }),
     getListedTokens: (tokenId?: string): Promise<AllTokensQuery> => requests.get(`/api/admin/listed-tokens${tokenId ? `?tokenId=${tokenId}` : ""}`),
     getActiveContractInfo: (): Promise<ContractInfo> => requests.get("/api/admin/active-contract"),
+    updateStatus: (data: any) => requests.put("/api/admin/update-status", data)
   };
 
   const MirrorNodeRestAPI = {
