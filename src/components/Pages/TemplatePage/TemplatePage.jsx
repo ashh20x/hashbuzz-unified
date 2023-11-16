@@ -51,7 +51,7 @@ export const TemplatePage = () => {
   const [open, setOpen] = useState(false);
   const [showEmojis, setShowEmojis] = useState(false);
   const [isYoutube, setYoutube] = useState(false);
-  const [media, setMedia] = useState([]);
+  const [media, setMedia] = useState(["https://www.youtube.com/watch?time_continue=1&v=1lzba8D4FCU&embeds_referring_euri=http%3A%2F%2Flocalhost%3A3000%2F&source_ve_path=Mjg2NjY&feature=emb_logo"]);
   const [displayMedia, setDisplayMedia] = useState([]);
   const [gifSelected, setGifSelect] = useState(false);
   // const [cookies, setCookie] = useCookies(["token"]);
@@ -168,7 +168,7 @@ export const TemplatePage = () => {
     let videoId = "";
     if (url.indexOf("youtube") !== -1) {
       let urlParts = url.split("?v=");
-      videoId = urlParts[1].substring(0, 11);
+      videoId = urlParts?.[1]?.substring(0, 11);
     } else if (url.indexOf("youtu.be") !== -1) {
       let urlParts = url.replace("//", "").split("/");
       videoId = urlParts[1].substring(0, 11);
@@ -404,7 +404,7 @@ export const TemplatePage = () => {
               </label>
             </IconsWrap>
           ) : null}
-          {isYoutube ? <CustomInput placeholder="http/123/reward/taskbar" onChange={handleLink} /> : null}
+          {isYoutube ? <CustomInput placeholder="http/123/reward/taskbar" value={media} onChange={handleLink} /> : null}
 
           {displayMedia.length > 0 ? (
             displayMedia.length === 3 ? (
