@@ -169,9 +169,9 @@ export const TemplatePage = () => {
     if (url.indexOf("youtube") !== -1) {
       let urlParts = url.split("?v=");
       videoId = urlParts?.[1]?.substring(0, 11);
-    } else if (url.indexOf("youtu.be") !== -1) {
-      let urlParts = url.replace("//", "").split("/");
-      videoId = urlParts[1].substring(0, 11);
+    } else if (url?.indexOf("youtu.be") !== -1) {
+      let urlParts = url?.replace("//", "")?.split("/");
+      videoId = urlParts[1]?.substring(0, 11);
     }
     if (videoId === "") {
       setSrcLink(urls);
