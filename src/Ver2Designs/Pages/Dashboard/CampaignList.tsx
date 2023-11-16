@@ -12,6 +12,7 @@ import AssociateModal from "./AssociateModal";
 import InfoIcon from "@mui/icons-material/Info";
 import { useStore } from "../../../Store/StoreProvider";
 import DetailsModal from "../../../components/PreviewModal/DetailsModal";
+import { getErrorMessage } from "../../../Utilities/helpers";
 
 interface CampaignListProps {
   user?: CurrentUser;
@@ -38,6 +39,14 @@ const CampaignList = ({ user }: CampaignListProps) => {
       console.log(err)
     }
   }, [])
+  const getUserData = React.useCallback(async () => {
+    try {
+      const currentUser = await User.getCurrentUser();
+      store?.updateState((perv) => ({ ...perv, currentUser }));
+    } catch (error) {
+      toast.error(getErrorMessage(error) ?? "Error while getting current user details.");
+    }
+  }, [User, store]);
   useEffect(() => {
     if (process.env.REACT_APP_ADMIN_ADDRESS === currentUser?.hedera_wallet_id) {
       getAllPendingCampaigns();
@@ -162,6 +171,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
       let status = "";
       if (values?.campaign_stats === "Campaign Active") {
         status = "running";
+        getUserData();
       }
       if (values?.campaign_stats === "Running") {
         status = "completed";
@@ -233,14 +243,15 @@ const CampaignList = ({ user }: CampaignListProps) => {
             <Button
               variant="contained"
               color="primary"
-              disabled={cellValues.row.campaign_stats === "Campaign Complete, Initiating Rewards" || cellValues.row.approve === false || cellValues.row.campaign_stats === "Under Review " ||cellValues.row.campaign_stats === "Campaign Declined"}
+              disabled={cellValues.row.campaign_stats === "Campaign Complete, Initiating Rewards" || cellValues.row.approve === false || cellValues.row.campaign_stats === "Under Review" || cellValues.row.campaign_stats === "Campaign Declined" || cellValues.row.campaign_stats === "Rewards Disbursed"}
               onClick={() => {
                 handleClick(cellValues.row);
+
               }}
             >
-              {cellValues.row.campaign_stats === "Campaign Complete, Initiating Rewards"
+              {cellValues.row.campaign_stats === "Campaign Complete, Initiating Rewards" || cellValues.row.campaign_stats === "Rewards Disbursed"
                 ? "Completed"
-                : cellValues.row.campaign_stats === "Campaign Active" || cellValues.row.campaign_stats === "Under Review " || cellValues.row.campaign_stats === "Campaign Declined"
+                : cellValues.row.campaign_stats === "Campaign Active" || cellValues.row.campaign_stats === "Under Review" || cellValues.row.campaign_stats === "Campaign Declined"
                   ? "Start"
                   : cellValues.row.campaign_stats === "Running"
                     ? "Stop"
@@ -266,6 +277,9 @@ const CampaignList = ({ user }: CampaignListProps) => {
         if (item?.card_status === "Campaign Active" || item?.card_status === "Running") {
           setRunningCampaigns(true);
           return;
+        } else {
+          setRunningCampaigns(false);
+
         }
       });
       if (allCampaigns?.length > 0) {
