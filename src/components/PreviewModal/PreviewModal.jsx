@@ -76,7 +76,7 @@ const PreviewModal = ({
       quote_reward: quote,
       // "follow_reward": follow,
       campaign_budget: budget == "" ? 0 : budget,
-      media: media,
+      ...(addMedia && { media: media })
     };
     try {
       // const response = await APICall("/campaign/twitter-card/", "POST", {}, postData, false, cookies.token);

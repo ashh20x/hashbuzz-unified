@@ -24,9 +24,12 @@ const CampaignList = ({ user }: CampaignListProps) => {
   const store = useStore();
 
   const currentUser = store?.currentUser;
+
+
   const [open, setOpen] = useState<boolean>(false);
   const [modalData, setModalData] = useState<Object>({});
   const [adminPendingCards, setAdminPendingCards] = useState([]);
+  const [activeTab, setActiveTab] = useState('all')
   const { User, Admin } = useApiInstance();
 
   const getAllPendingCampaigns = useCallback(async () => {
@@ -69,7 +72,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
       minWidth: 150,
       flex: 0.45,
       renderCell: (cellValues) => {
-        return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.campaign_budget / 1e8 : cellValues?.row?.campaign_budget}</span>;
+        return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.campaign_budget / 1e8 : cellValues?.row?.campaign_budget / Math.pow(10, Number(cellValues?.row?.decimals))}</span>;
       },
     },
     {
@@ -109,6 +112,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
                 try {
                   const response = await Admin.updateStatus(data);
                   getAllPendingCampaigns();
+                  getAllCampaigns()
                   toast(response?.message);
                   console.log(response, "update status");
                 } catch (err) {
@@ -130,6 +134,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
                 try {
                   const response = await Admin.updateStatus(data);
                   getAllPendingCampaigns();
+                  getAllCampaigns()
                   console.log(response, "update status");
                   toast(response?.message);
                 } catch (err) {
@@ -154,7 +159,9 @@ const CampaignList = ({ user }: CampaignListProps) => {
   const [rows, setRows] = React.useState<GridRowsProp>([]);
   const { Campaign } = useApiInstance();
   const [loading, setLoading] = React.useState(false);
-
+  // useEffect(() => {
+  //   setActiveTableRows(rows)
+  // }, [rows])
   const handleCard = async (id: number) => {
     const res = await User.getCardEngagement({ id: id });
     console.log(res, "CardEngagement");
@@ -180,7 +187,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
       };
       const response = await Campaign.updateCampaignStatus(data);
       if (response) {
-        await getAllCampaigns();
+        getAllCampaigns();
         toast.success(response.message);
         setLoading(false);
       }
@@ -210,7 +217,8 @@ const CampaignList = ({ user }: CampaignListProps) => {
       minWidth: 150,
       flex: 0.45,
       renderCell: (cellValues) => {
-        return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.campaign_budget / 1e8 : cellValues?.row?.campaign_budget}</span>;
+
+        return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.campaign_budget / 1e8 : cellValues?.row?.campaign_budget / Math.pow(10, Number(cellValues?.row?.decimals))}</span>;
       },
     },
     {
@@ -257,10 +265,10 @@ const CampaignList = ({ user }: CampaignListProps) => {
                 : cellValues.row.campaign_stats === "Campaign Active" ||
                   cellValues.row.campaign_stats === "Under Review" ||
                   cellValues.row.campaign_stats === "Campaign Declined"
-                ? "Start"
-                : cellValues.row.campaign_stats === "Running"
-                ? "Stop"
-                : "Update"}
+                  ? "Start"
+                  : cellValues.row.campaign_stats === "Running"
+                    ? "Stop"
+                    : "Update"}
             </Button>
             <div className="info-icon" onClick={() => handleCard(cellValues.row.id)}>
               <InfoIcon />
@@ -270,7 +278,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
       },
     },
   ];
-
+  // const [activeTableColumns, setActiveTableColumns] = useState(columns);
   const getAllCampaigns = async () => {
     try {
       // const tokenInfo =  await Admin.getTokenInfo(tokenId);
@@ -278,8 +286,8 @@ const CampaignList = ({ user }: CampaignListProps) => {
       console.log(allCampaigns, "allcampaigns");
       let data = [];
       allCampaigns?.forEach((item: any) => {
-        console.log(item.card_status,"Card_status");
-        if (item?.card_status === "Campaign Active" || item?.card_status === "Running") {
+        console.log(item.card_status, "Card_status");
+        if (item?.card_status === "Campaign Active" || item?.card_status === "Running" || item?.card_status === "Under Review") {
           setRunningCampaigns(true);
           return;
         }
@@ -293,7 +301,9 @@ const CampaignList = ({ user }: CampaignListProps) => {
             campaign_budget: item?.campaign_budget,
             amount_spent: item?.amount_spent,
             amount_claimed: item?.amount_claimed,
+            fungible_token_id: item?.fungible_token_id,
             type: item?.type,
+            decimals: item?.decimals
           };
         });
       }
@@ -326,7 +336,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
               <Box sx={{ marginRight: 1 }}>
                 <InfoOutlinedIcon />
               </Box>
-              <Typography sx={{ maxWidth: 400 }} variant="caption">
+              <Typography sx={{ maxWidth: 700 }} variant="caption">
                 During the beta phase, there is a limitation of running a single campaign concurrently. Each campaign will conclude automatically 24
                 hours after its initiation, unless you choose to end it earlier. We anticipate relaxing these constraints gradually. Additionally,
                 your recharged balance is available for unlimited use across various campaigns.
@@ -348,12 +358,42 @@ const CampaignList = ({ user }: CampaignListProps) => {
             </Button>
             <AssociateModal open={openAssociateModal} onClose={() => setOpenAssociateModal(false)} />
           </Stack>
+          <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+            {process.env.REACT_APP_ADMIN_ADDRESS === currentUser?.hedera_wallet_id && <><Button
+              size="large"
+              variant={activeTab === "all" ? "contained" : "outlined"}
+              disableElevation
+              onClick={() => {
+                // setActiveTableRows(rows);
+                // setActiveTableColumns(columns);
+                setActiveTab('all')
+              }}
+            >
+              All
+            </Button>
+              <Button
+                size="large"
+                variant={activeTab === "pending" ? "contained" : "outlined"}
+                disableElevation
+                onClick={() => {
+                  // setActiveTableRows(adminPendingCards);
+                  // setActiveTableColumns(ADMINCOLUMNS);
+                  setActiveTab('pending')
+
+                }}
+              >
+                Pending
+              </Button>
+            </>}
+          </div>
         </Box>
+
+
         <Divider sx={{ borderColor: cardStyle.borderColor }} />
         <Box sx={{ height: "calc(100vh - 436px)" }}>
           <DataGrid
-            rows={process.env.REACT_APP_ADMIN_ADDRESS === currentUser?.hedera_wallet_id ? adminPendingCards : rows}
-            columns={process.env.REACT_APP_ADMIN_ADDRESS === currentUser?.hedera_wallet_id ? ADMINCOLUMNS : columns}
+            rows={activeTab === 'pending' ? adminPendingCards : rows}
+            columns={activeTab === 'pending' ? ADMINCOLUMNS : columns}
             paginationMode="server"
             rowsPerPageOptions={[20]}
           />

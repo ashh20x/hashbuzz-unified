@@ -290,7 +290,7 @@ const BalanceCard = ({ entityBal, entityIcon, entitySymbol }: BalanceCardProps) 
       elevation={0}
       sx={{ padding: 0.5, display: "inline-flex", margin: "0 auto", borderRadius: 0, border: 1, borderColor: theme.palette.primary.main }}
     >
-      <Avatar variant="rounded" sx={{ width: "24px", height: "24px" }}>
+      <Avatar variant="rounded" sx={{ width: "auto", height: "auto",padding:"5px" }}>
         {entityIcon ?? "ℏ"}
       </Avatar>
       <Stack spacing={0.25} sx={{ marginLeft: 0.5, marginRight: 0.5 }}>

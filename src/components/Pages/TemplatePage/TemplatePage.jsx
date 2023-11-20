@@ -73,6 +73,7 @@ export const TemplatePage = () => {
       if (item?.available_balance > 0) {
         updatedTokens.push({
           value: item?.token_id,
+          token_symbol: item?.token_symbol
         });
       }
     });
@@ -193,7 +194,7 @@ export const TemplatePage = () => {
     setMedia([event.target.value]);
     setDisplayMedia([]);
   };
-  const handleClose = (event) => {};
+  const handleClose = (event) => { };
 
   const handleName = (event) => {
     setName(event.target.value);
@@ -230,8 +231,8 @@ export const TemplatePage = () => {
       } else {
         setBudgetMessage(
           `You have exceeded the total budget of ${
-            // Number(Number(currentToken?.[0]?.entityBalance)) * Math.pow(10, Number(currentToken?.[0]?.decimals))
-            currentToken?.[0]?.entityBalance
+          // Number(Number(currentToken?.[0]?.entityBalance)) * Math.pow(10, Number(currentToken?.[0]?.decimals))
+          currentToken?.[0]?.entityBalance
           } ${currentToken?.[0]?.entityIcon}`
         );
         setButtonDisabled(true);
@@ -319,7 +320,7 @@ export const TemplatePage = () => {
               onChange={selectTokenIdHandler}
             >
               {allTokens?.map((item) => {
-                return <MenuItem value={item?.value}>{item?.value}</MenuItem>;
+                return <MenuItem value={item?.value}>{`${item?.token_symbol}-${item?.value}`}</MenuItem>;
               })}
             </Select>
           )}
@@ -487,7 +488,7 @@ export const TemplatePage = () => {
               onclick={handlePreview}
               colors="#2546EB"
               border="1px solid #2546EB"
-              disabled={buttonDisabled || !budget || budget < 1}
+              disabled={buttonDisabled || !budget}
             />
             {/* <PrimaryButton text="Submit" onclick={handleSubmit} /> */}
           </ButtonWrapPrimary>
