@@ -175,7 +175,7 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
   return (
     <Dialog open={open}>
       <DialogTitle>
-        {loading ? "Payment in progress..." : `${operation === 'topup' ? " Add funds from your wallet" : "Refund to your wallet"} ${data?.entityType === "HBAR" ? "hbar(ℏ)" : `token ${data?.entityIcon}`}`}
+        {loading ? "Payment in progress..." : `${operation === 'topup' ? " Add funds from your wallet" : "Refund to your wallet"} ${data?.entityType === "HBAR" ? "hbar(ℏ)" : `(token ${data?.entityIcon})`}`}
         <IconButton
           onClick={modalClose}
           color="error"
@@ -190,12 +190,12 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
       </DialogTitle>
       <DialogContent dividers>
         <Box sx={{ marginTop: 0.5, marginBottom: 2.5 }}>
-          <Typography variant="caption">Notes: </Typography>
+          <Typography variant="caption">Remark: </Typography>
           <List dense>
             {operation === "topup" ? (
               <React.Fragment>
                 <ListItem>
-                  <Typography>The stated amount does not include Hedera network fees.
+                  <Typography variant="caption">The stated amount does not include Hedera network fees.
                   </Typography>
                 </ListItem>
                 <ListItem>
