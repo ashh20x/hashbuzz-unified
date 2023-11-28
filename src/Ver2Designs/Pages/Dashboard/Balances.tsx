@@ -150,7 +150,7 @@ const Balances = () => {
     <React.Fragment>
       <Grid item lg={3} xl={3} md={4} sm={6} xs={6}>
         <Card elevation={0} sx={cardStyle}>
-          <Stack direction={aboveXs ? "row" : "column"} alignItems={aboveXs ? "flex-start" : "normal"} sx={{ height: "100%", width: "100%" }}>
+          <Stack direction={aboveXs ? "row" : "column"} alignItems={aboveXs ? "flex-start" : "normal"} sx={{ height: "100%", width: "100%", overflowY: "auto", }}>
             <Stack
               direction={"row"}
               alignItems="center"

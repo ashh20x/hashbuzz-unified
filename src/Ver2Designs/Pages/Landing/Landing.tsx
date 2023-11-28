@@ -35,7 +35,7 @@ const Landing = () => {
         backgroundImage: `url("./images/landing-bg-2.jpg")`,
         // backgroundColor: "rgba(255, 255, 255 , 0.5)",
         // background:"linear-gradient(rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.25)), url('./images/landing-bg-2.jpg')",
-        height: "100vh",
+        minHeight: "100vh",
         backgroundRepeat: "no-repeat",
         backgroundSize: "cover",
         backgroundPosition: "right bottom",

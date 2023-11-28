@@ -30,7 +30,7 @@ export const CardGenUtility = ({ title, content, startIcon }: CardGenUtilityProp
   return (
     <Grid item lg={3} xl={3} md={4} sm={6} xs={6}>
       <Card elevation={0} sx={cardStyle}>
-        <Stack direction={aboveXs ? "row" : "column"} alignItems={aboveXs ? "flex-start" : "normal"} sx={{ height: "100%", width: "100%" }}>
+        <Stack direction={aboveXs ? "row" : "column"} alignItems={aboveXs ? "flex-start" : "normal"} sx={{ height: "100%", width: "100%", overflowY: "scroll", }}>
           <Stack
             direction={"row"}
             alignItems="center"
