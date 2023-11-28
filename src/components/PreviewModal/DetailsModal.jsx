@@ -14,9 +14,9 @@ const DetailsModal = ({
     const handleClose = () => setOpen(false);
     const theme = {
         weight: 500,
-        size: "25px",
+        size: "20px",
         color: "#000000",
-        sizeRes: "28px",
+        sizeRes: "25px",
     };
 
 
@@ -28,7 +28,7 @@ const DetailsModal = ({
                 style: {
                     borderRadius: 11,
                     padding: 0,
-                    width: "50%",
+                    width: "94%",
                     height: "35%",
                     maxWidth: 1010,
                     scrollbarWidth: "none",
@@ -37,14 +37,14 @@ const DetailsModal = ({
             }}
         >
 
-            <BoxCont>
+            <BoxCont sx={{width: "100%"}}>
                 <Typography theme={theme}>Engagement Detail</Typography>
-                <table style={{width: "100%", background: "#cec2ff", marginTop:"40px"}}>
+                <table style={{width: "100%", background: "#cec2ff", margin:"40px 40px 0 40px", overflowY: "scroll", padding: "0 20px 0 20px"}}>
                     <tr style={{textAlign:"center"}}>
-                        <th style={{padding:"20px 0px"}}>Retweets</th>
-                        <th style={{padding:"20px 0px"}}>Replies</th>
-                        <th style={{padding:"20px 0px"}}>Likes</th>
-                        <th style={{padding:"20px 0px"}}>Quotes</th>
+                        <th style={{padding:"20px 0px", minWidth:"80px"}}>Retweets</th>
+                        <th style={{padding:"20px 0px", minWidth:"80px"}}>Replies</th>
+                        <th style={{padding:"20px 0px", minWidth:"80px"}}>Likes</th>
+                        <th style={{padding:"20px 0px", minWidth:"80px"}}>Quotes</th>
                     </tr>
                     <tr style={{textAlign:"center"}}>
                         <td style={{padding:"20px 0px"}}> {data?.retweet_count}</td>

@@ -118,7 +118,7 @@ const SpeedDialActions = () => {
       {/* <Backdrop open={open} /> */}
       <SpeedDial
         ariaLabel="SpeedDial tooltip example"
-        sx={{ position: "absolute", bottom: 40, right: 40 }}
+        sx={{ position: "absolute", bottom: 10, right: 40 }}
         icon={<HashbuzzIcon size={60} color="#fff" />}
         openIcon={<CloseIcon />}
         onClose={handleClose}

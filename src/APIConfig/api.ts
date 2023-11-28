@@ -96,6 +96,9 @@ export const useApiInstance = () => {
     updateWalletId: (userData: { walletId: string }): Promise<CurrentUser> => requests.put(`/api/users/update/wallet`, { ...userData }),
     getTokenBalances: (): Promise<TokenBalances[]> => requests.get("/api/users/token-balances"),
     getCardEngagement: (data: { id: number }): Promise<any> => requests.get("/api/campaign/card-status", { ...data }),
+    getClaimRewards: (): Promise<any> => requests.get("/api/campaign/reward-details"),
+    buttonClaimRewards: (data: any): Promise<any> => requests.put("api/campaign/claim-reward",data),
+
   };
 
   const Auth = {
