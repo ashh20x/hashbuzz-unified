@@ -37,6 +37,7 @@ const Landing = () => {
         // background:"linear-gradient(rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.25)), url('./images/landing-bg-2.jpg')",
         minHeight: "100vh",
         backgroundRepeat: "no-repeat",
+        paddingBottom: "20px",
         backgroundSize: "cover",
         backgroundPosition: "right bottom",
         backdropFilter: "blur(20px)",
@@ -83,26 +84,40 @@ const Landing = () => {
           ) : null}
           <Stack sx={{ color: "#fff" }} spacing={2}>
             <Typography variant="subtitle1">
-              Welcome to a world where sharing verified information on X is as easy as sending a tweet! We're talking about a groundbreaking social DAO (Decentralized Autonomous Organization) that empowers local communities to validate information right from its source.
-
+              Welcome to a world where sharing verified information on X is as easy as sending a tweet! We're talking about a groundbreaking social
+              DAO (Decentralized Autonomous Organization) that empowers local communities to validate information right from its source.
             </Typography>
 
             <Typography>
-              Our current Proof of Concept (PoC) is just the beginning of this grand vision. In this PoC, campaigners can run X promotions and reward their dedicated influencers with $hbar or a selection of whitelisted fungible HTS tokens.
-
+              Our current Proof of Concept (PoC) is just the beginning of this grand vision. In this PoC, campaigners can run X promotions and reward
+              their dedicated influencers with $hbar or a selection of whitelisted fungible HTS tokens.
             </Typography>
 
             <Typography>
-              Our goal with this PoC is to create a seamless rewarding mechanism that bridges both web2 and web3. It's all about ensuring that the right individuals receive recognition for their contributions.
-              {" "}
+              Our goal with this PoC is to create a seamless rewarding mechanism that bridges both web2 and web3. It's all about ensuring that the
+              right individuals receive recognition for their contributions.{" "}
             </Typography>
             <Typography>
-              Ready to get started? Learn how to launch your very first promo [ <Typography component={Link} style={{ color: "red" }}>here</Typography>]. To request the whitelisting of your token, simply submit a request [<Typography component={Link} style={{ color: "red" }}>here</Typography>].  Stay in the loop with our latest updates and announcements by following us on <Typography component={Link} href={"https://x.com/hbuzzs"} style={{ color: "red" }}>X</Typography> - <Typography component={Link} href={"https://discord.com/invite/Zq6UAQ63Vc"} style={{ color: "red" }}>Discord</Typography>.
-              {" "}
+              Ready to get started? Learn how to launch your very first promo [{" "}
+              <Typography component={Link} style={{ color: "red" }}>
+                here
+              </Typography>
+              ]. To request the whitelisting of your token, simply submit a request [
+              <Typography component={Link} style={{ color: "red" }}>
+                here
+              </Typography>
+              ]. Stay in the loop with our latest updates and announcements by following us on{" "}
+              <Typography component={Link} href={"https://x.com/hbuzzs"} style={{ color: "red" }}>
+                X
+              </Typography>{" "}
+              -{" "}
+              <Typography component={Link} href={"https://discord.com/invite/Zq6UAQ63Vc"} style={{ color: "red" }}>
+                Discord
+              </Typography>
+              .{" "}
             </Typography>
 
-            <Typography>Join us in revolutionizing the way we share and validate information on social media.
-            </Typography>
+            <Typography>Join us in revolutionizing the way we share and validate information on social media.</Typography>
           </Stack>
         </Box>
       </Container>
