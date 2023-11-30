@@ -190,7 +190,7 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
       </DialogTitle>
       <DialogContent dividers>
         <Box sx={{ marginTop: 0.5, marginBottom: 2.5 }}>
-          <Typography variant="caption">Remark: </Typography>
+          <Typography variant="caption">Remarks: </Typography>
           <List dense>
             {operation === "topup" ? (
               <React.Fragment>

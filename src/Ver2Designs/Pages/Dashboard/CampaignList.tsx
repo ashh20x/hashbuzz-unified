@@ -25,12 +25,11 @@ const CampaignList = ({ user }: CampaignListProps) => {
 
   const currentUser = store?.currentUser;
 
-
   const [open, setOpen] = useState<boolean>(false);
   const [modalData, setModalData] = useState<Object>({});
   const [adminPendingCards, setAdminPendingCards] = useState([]);
   const [claimPendingRewards, setClaimPendingRewards] = useState([]);
-  const [activeTab, setActiveTab] = useState('all')
+  const [activeTab, setActiveTab] = useState("all");
   const { User, Admin } = useApiInstance();
   const [buttonDisabled, setButtonDisabled] = useState(false);
 
@@ -43,13 +42,14 @@ const CampaignList = ({ user }: CampaignListProps) => {
     }
   }, []);
   const getClaimAllRewards = useCallback(async () => {
-    try{
+    try {
       const response = await User.getClaimRewards();
       console.log(response, "ClaimRewardsResponse");
       setClaimPendingRewards(response.rewardDetails);
-    }catch(error){
-      console.log(error)
-    }},[]);
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
   const getUserData = React.useCallback(async () => {
     try {
       const currentUser = await User.getCurrentUser();
@@ -64,17 +64,28 @@ const CampaignList = ({ user }: CampaignListProps) => {
       getAllPendingCampaigns();
     }
     getClaimAllRewards();
-
-  }, [getAllPendingCampaigns, currentUser?.hedera_wallet_id,getClaimAllRewards]);
+  }, [getAllPendingCampaigns, currentUser?.hedera_wallet_id, getClaimAllRewards]);
 
   const CLAIMREWARDS: GridColDef[] = [
-    { field: "id", headerName: "Card No.", width: 100, align: "center",  renderCell: (cellValues) => {
-      console.log(cellValues,"cellValues")
-      return <span>{cellValues?.row?.id|| "HBAR"}</span>;
-    }, },
-    { field: "tokenId ", headerName: "Fungible Token ID", minWidth: 150, flex: 0.75,  renderCell: (cellValues) => {
-      return <span>{cellValues?.row?.token_id || "--"}</span>;
-    }, },
+    {
+      field: "id",
+      headerName: "Card No.",
+      width: 100,
+      align: "center",
+      renderCell: (cellValues) => {
+        console.log(cellValues, "cellValues");
+        return <span>{cellValues?.row?.id || "HBAR"}</span>;
+      },
+    },
+    {
+      field: "tokenId ",
+      headerName: "Fungible Token ID",
+      minWidth: 150,
+      flex: 0.75,
+      renderCell: (cellValues) => {
+        return <span>{cellValues?.row?.token_id || "--"}</span>;
+      },
+    },
     {
       field: "title",
       headerName: "Title",
@@ -84,7 +95,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
         return <span>{cellValues?.row?.name || "--"}</span>;
       },
     },
-    
+
     {
       field: "engagement_type",
       headerName: "Enagement Type",
@@ -98,18 +109,60 @@ const CampaignList = ({ user }: CampaignListProps) => {
       headerName: "Retweet Reward",
       width: 150,
       renderCell: (cellValues) => {
-        return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.retweet_reward / 1e8 : cellValues?.row?.retweet_reward / Math.pow(10, Number(cellValues?.row?.decimals))}</span>;
+        return (
+          <span>
+            {cellValues?.row?.type === "HBAR"
+              ? cellValues?.row?.retweet_reward / 1e8
+              : cellValues?.row?.retweet_reward / Math.pow(10, Number(cellValues?.row?.decimals))}
+          </span>
+        );
       },
     },
-    { field: "like_reward", headerName: "Like Reward", minWidth: 150, flex: 0.75, renderCell: (cellValues) => {
-      return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.like_reward/ 1e8 : cellValues?.row?.like_reward / Math.pow(10, Number(cellValues?.row?.decimals))}</span>;
-    }, },
-    { field: "quote_reward", headerName: "Quote Reward", minWidth: 150, flex: 0.75, renderCell: (cellValues) => {
-      return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.quote_reward / 1e8 : cellValues?.row?.quote_reward / Math.pow(10, Number(cellValues?.row?.decimals))}</span>;
-    }, },
-    { field: "comment_reward", headerName: "Comment Reward", minWidth: 150, flex: 0.75, renderCell: (cellValues) => {
-      return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.comment_reward / 1e8 : cellValues?.row?.comment_reward / Math.pow(10, Number(cellValues?.row?.decimals))}</span>;
-    }, },
+    {
+      field: "like_reward",
+      headerName: "Like Reward",
+      minWidth: 150,
+      flex: 0.75,
+      renderCell: (cellValues) => {
+        return (
+          <span>
+            {cellValues?.row?.type === "HBAR"
+              ? cellValues?.row?.like_reward / 1e8
+              : cellValues?.row?.like_reward / Math.pow(10, Number(cellValues?.row?.decimals))}
+          </span>
+        );
+      },
+    },
+    {
+      field: "quote_reward",
+      headerName: "Quote Reward",
+      minWidth: 150,
+      flex: 0.75,
+      renderCell: (cellValues) => {
+        return (
+          <span>
+            {cellValues?.row?.type === "HBAR"
+              ? cellValues?.row?.quote_reward / 1e8
+              : cellValues?.row?.quote_reward / Math.pow(10, Number(cellValues?.row?.decimals))}
+          </span>
+        );
+      },
+    },
+    {
+      field: "comment_reward",
+      headerName: "Comment Reward",
+      minWidth: 150,
+      flex: 0.75,
+      renderCell: (cellValues) => {
+        return (
+          <span>
+            {cellValues?.row?.type === "HBAR"
+              ? cellValues?.row?.comment_reward / 1e8
+              : cellValues?.row?.comment_reward / Math.pow(10, Number(cellValues?.row?.decimals))}
+          </span>
+        );
+      },
+    },
 
     {
       field: "action",
@@ -129,16 +182,16 @@ const CampaignList = ({ user }: CampaignListProps) => {
                   card_id: cellValues?.row?.id,
                 };
                 try {
-                  setButtonDisabled(true)
+                  setButtonDisabled(true);
                   const response = await User.buttonClaimRewards(data);
-                  getClaimAllRewards()
-                  getAllCampaigns()
+                  getClaimAllRewards();
+                  getAllCampaigns();
                   toast(response?.message);
-                  setButtonDisabled(false)
+                  setButtonDisabled(false);
                   console.log(response, "update status");
                 } catch (err) {
                   console.log(err);
-                  setButtonDisabled(false)
+                  setButtonDisabled(false);
                 }
               }}
             >
@@ -190,7 +243,13 @@ const CampaignList = ({ user }: CampaignListProps) => {
       minWidth: 150,
       flex: 0.45,
       renderCell: (cellValues) => {
-        return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.campaign_budget / 1e8 : cellValues?.row?.campaign_budget / Math.pow(10, Number(cellValues?.row?.decimals))}</span>;
+        return (
+          <span>
+            {cellValues?.row?.type === "HBAR"
+              ? cellValues?.row?.campaign_budget / 1e8
+              : cellValues?.row?.campaign_budget / Math.pow(10, Number(cellValues?.row?.decimals))}
+          </span>
+        );
       },
     },
     {
@@ -230,7 +289,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
                 try {
                   const response = await Admin.updateStatus(data);
                   getAllPendingCampaigns();
-                  getAllCampaigns()
+                  getAllCampaigns();
                   toast(response?.message);
                   console.log(response, "update status");
                 } catch (err) {
@@ -243,7 +302,6 @@ const CampaignList = ({ user }: CampaignListProps) => {
             <Button
               variant="contained"
               color="primary"
-            
               style={{ marginLeft: "10px" }}
               onClick={async () => {
                 const data = {
@@ -253,7 +311,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
                 try {
                   const response = await Admin.updateStatus(data);
                   getAllPendingCampaigns();
-                  getAllCampaigns()
+                  getAllCampaigns();
                   console.log(response, "update status");
                   toast(response?.message);
                 } catch (err) {
@@ -336,8 +394,13 @@ const CampaignList = ({ user }: CampaignListProps) => {
       minWidth: 150,
       flex: 0.45,
       renderCell: (cellValues) => {
-
-        return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.campaign_budget / 1e8 : cellValues?.row?.campaign_budget / Math.pow(10, Number(cellValues?.row?.decimals))}</span>;
+        return (
+          <span>
+            {cellValues?.row?.type === "HBAR"
+              ? cellValues?.row?.campaign_budget / 1e8
+              : cellValues?.row?.campaign_budget / Math.pow(10, Number(cellValues?.row?.decimals))}
+          </span>
+        );
       },
     },
     {
@@ -345,7 +408,13 @@ const CampaignList = ({ user }: CampaignListProps) => {
       headerName: "Amount Spent",
       width: 150,
       renderCell: (cellValues) => {
-        return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.amount_spent / 1e8 : cellValues?.row?.amount_spent}</span>;
+        return (
+          <span>
+            {cellValues?.row?.type === "HBAR"
+              ? cellValues?.row?.amount_spent / 1e8
+              : cellValues?.row?.amount_spent / Math.pow(10, Number(cellValues?.row?.decimals))}
+          </span>
+        );
       },
     },
     {
@@ -353,7 +422,13 @@ const CampaignList = ({ user }: CampaignListProps) => {
       headerName: "Amount Claimed",
       width: 150,
       renderCell: (cellValues) => {
-        return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.amount_claimed / 1e8 : cellValues?.row?.amount_claimed}</span>;
+        return (
+          <span>
+            {cellValues?.row?.type === "HBAR"
+              ? cellValues?.row?.amount_claimed / 1e8
+              : cellValues?.row?.amount_claimed / Math.pow(10, Number(cellValues?.row?.decimals))}
+          </span>
+        );
       },
     },
     { field: "campaign_stats", headerName: "Campaign Status", minWidth: 150, flex: 0.75 },
@@ -384,10 +459,10 @@ const CampaignList = ({ user }: CampaignListProps) => {
                 : cellValues.row.campaign_stats === "Campaign Active" ||
                   cellValues.row.campaign_stats === "Under Review" ||
                   cellValues.row.campaign_stats === "Campaign Declined"
-                  ? "Start"
-                  : cellValues.row.campaign_stats === "Running"
-                    ? "Stop"
-                    : "Update"}
+                ? "Start"
+                : cellValues.row.campaign_stats === "Running"
+                ? "Stop"
+                : "Update"}
             </Button>
             <div className="info-icon" onClick={() => handleCard(cellValues.row.id)}>
               <InfoIcon />
@@ -422,7 +497,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
             amount_claimed: item?.amount_claimed,
             fungible_token_id: item?.fungible_token_id,
             type: item?.type,
-            decimals: item?.decimals
+            decimals: item?.decimals,
           };
         });
       }
@@ -450,7 +525,12 @@ const CampaignList = ({ user }: CampaignListProps) => {
         component={Card}
       >
         <Box sx={{ p: 2 }}>
-          <Stack direction={"row"} justifyContent="space-between" alignItems={"center"}>
+          <Stack
+            direction={{ xs: "column", sm: "column", md: "row" }}
+            spacing={{ xs: 2, sm: 2 }}
+            justifyContent="space-between"
+            alignItems={{ xs: "left", sm: "left", md: "center" }}
+          >
             <Stack direction={"row"}>
               <Box sx={{ marginRight: 1 }}>
                 <InfoOutlinedIcon />
@@ -478,7 +558,6 @@ const CampaignList = ({ user }: CampaignListProps) => {
             <AssociateModal open={openAssociateModal} onClose={() => setOpenAssociateModal(false)} />
           </Stack>
           <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
-            
             <Button
               size="large"
               variant={activeTab === "all" ? "contained" : "outlined"}
@@ -486,41 +565,25 @@ const CampaignList = ({ user }: CampaignListProps) => {
               onClick={() => {
                 // setActiveTableRows(rows);
                 // setActiveTableColumns(columns);
-                setActiveTab('all')
+                setActiveTab("all");
               }}
             >
               All
             </Button>
             {process.env.REACT_APP_ADMIN_ADDRESS === currentUser?.hedera_wallet_id ? (
-            <>
-              <Button
-                size="large"
-                variant={activeTab === "pending" ? "contained" : "outlined"}
-                disableElevation
-                onClick={() => {
-                  // setActiveTableRows(adminPendingCards);
-                  // setActiveTableColumns(ADMINCOLUMNS);
-                  setActiveTab('pending')
-
-                }}
-              >
-                Pending
-              </Button>
-              <Button
+              <>
+                <Button
                   size="large"
-                  variant={activeTab === "claimRewards" ? "contained" : "outlined"}
+                  variant={activeTab === "pending" ? "contained" : "outlined"}
                   disableElevation
                   onClick={() => {
                     // setActiveTableRows(adminPendingCards);
                     // setActiveTableColumns(ADMINCOLUMNS);
-                    setActiveTab('claimRewards')
-  
+                    setActiveTab("pending");
                   }}
                 >
-                  Claim Rewards
+                  Pending
                 </Button>
-            </>):(
-              
                 <Button
                   size="large"
                   variant={activeTab === "claimRewards" ? "contained" : "outlined"}
@@ -528,41 +591,48 @@ const CampaignList = ({ user }: CampaignListProps) => {
                   onClick={() => {
                     // setActiveTableRows(adminPendingCards);
                     // setActiveTableColumns(ADMINCOLUMNS);
-                    setActiveTab('claimRewards')
-  
+                    setActiveTab("claimRewards");
                   }}
                 >
                   Claim Rewards
                 </Button>
-
+              </>
+            ) : (
+              <Button
+                size="large"
+                variant={activeTab === "claimRewards" ? "contained" : "outlined"}
+                disableElevation
+                onClick={() => {
+                  // setActiveTableRows(adminPendingCards);
+                  // setActiveTableColumns(ADMINCOLUMNS);
+                  setActiveTab("claimRewards");
+                }}
+              >
+                Claim Rewards
+              </Button>
             )}
           </div>
         </Box>
 
-
         <Divider sx={{ borderColor: cardStyle.borderColor }} />
         <Box sx={{ height: "calc(100vh - 436px)" }}>
-          {process.env.REACT_APP_ADMIN_ADDRESS === currentUser?.hedera_wallet_id ?(
+          {process.env.REACT_APP_ADMIN_ADDRESS === currentUser?.hedera_wallet_id ? (
             <>
-            <DataGrid
-            rows={activeTab === 'pending' ? adminPendingCards : activeTab==='claimRewards'? claimPendingRewards: rows}
-            columns={activeTab === 'pending' ? ADMINCOLUMNS : activeTab==='claimRewards'? CLAIMREWARDS: columns}
-            paginationMode="server"
-            rowsPerPageOptions={[20]}
-          />
-         
+              <DataGrid
+                rows={activeTab === "pending" ? adminPendingCards : activeTab === "claimRewards" ? claimPendingRewards : rows}
+                columns={activeTab === "pending" ? ADMINCOLUMNS : activeTab === "claimRewards" ? CLAIMREWARDS : columns}
+                paginationMode="server"
+                rowsPerPageOptions={[20]}
+              />
             </>
-            
-
-          ):(
+          ) : (
             <DataGrid
-            rows={activeTab === 'claimRewards' ? claimPendingRewards : rows}
-            columns={activeTab === 'claimRewards' ? CLAIMREWARDS : columns}
-            paginationMode="server"
-            rowsPerPageOptions={[20]}
-          />
+              rows={activeTab === "claimRewards" ? claimPendingRewards : rows}
+              columns={activeTab === "claimRewards" ? CLAIMREWARDS : columns}
+              paginationMode="server"
+              rowsPerPageOptions={[20]}
+            />
           )}
-          
         </Box>
       </Box>
       <DetailsModal open={open} setOpen={setOpen} data={modalData} />
