@@ -8,6 +8,7 @@ import { AppState } from "../types/state";
 
 // Defines the type for the context including the AppState and an update function.
 interface StoreContextType extends AppState {
+  checkRefresh: boolean,
   updateState: React.Dispatch<React.SetStateAction<AppState>>;
   authCheckPing: () => Promise<{ ping: boolean }>;
   checkAndUpdateEntityBalances: () => Promise<any>;
@@ -29,6 +30,7 @@ const INITIAL_STATE = {
     status: false,
     hedera_wallet_id: "",
   },
+  checkRefresh: false,
   balances: [],
   toasts: [],
 };
@@ -78,7 +80,7 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
               entitySymbol: "",
               entityId: d.token_id,
               entityType: d.token_type,
-              decimals:d.decimals
+              decimals: d.decimals
             });
           }
         }
@@ -92,7 +94,7 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
   const authCheckPing = React.useCallback(async () => {
     try {
       const data = await Auth.authPing();
-      if (data.hedera_wallet_id) updateState((_state) => ({ ..._state, ping: { status: true, hedera_wallet_id: data.hedera_wallet_id } }));
+      if (data.hedera_wallet_id) updateState((_state) => ({ ..._state, checkRefresh: true, ping: { status: true, hedera_wallet_id: data.hedera_wallet_id } }));
       return { ping: true };
     } catch (error) {
       updateState(JSON.parse(JSON.stringify(INITIAL_STATE)));
