@@ -12,12 +12,13 @@ export interface AppState {
     status: boolean;
     hedera_wallet_id: string;
   };
+  checkRefresh: boolean,
   currentUser?: CurrentUser;
   campaigns?: Campaign[];
   auth?: AuthCred;
   balances: EntityBalances[];
   contractInfo?: ContractInfo;
-  toasts:{type:"error"|"info"|"success" , message:string}[]
+  toasts: { type: "error" | "info" | "success", message: string }[]
 }
 
 export interface EntityBalances {
@@ -26,7 +27,7 @@ export interface EntityBalances {
   entityIcon: React.ReactNode;
   entityId: string;
   entityType: string;
-  decimals?:number
+  decimals?: number
 }
 
 export type BalOperation = "topup" | "reimburse";

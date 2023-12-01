@@ -13,6 +13,7 @@ const Landing = () => {
   const { pairingData, handleAuthenticate, authStatusLog } = useHashconnectService();
   const navigate = useNavigate();
   const ping = store?.ping;
+  console.log(store, "Storei")
   const pairedAccount = pairingData?.accountIds[0];
 
   React.useEffect(() => {
@@ -22,12 +23,11 @@ const Landing = () => {
   }, [cookies.aSToken, navigate, pairedAccount, ping?.status]);
 
   React.useEffect(() => {
-    if (pairedAccount && !ping?.status) {
-      console.log(pairingData, "testing");
+    if (pairedAccount && !ping?.status && store?.checkRefresh) {
       handleAuthenticate();
     }
     // console.log(ping,pairingData?.accountIds[0])
-  }, [pairedAccount, ping?.status]);
+  }, [pairedAccount, ping?.status, store?.checkRefresh]);
 
   return (
     <Box
