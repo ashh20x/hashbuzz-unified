@@ -23,11 +23,11 @@ const Landing = () => {
   }, [cookies.aSToken, navigate, pairedAccount, ping?.status]);
 
   React.useEffect(() => {
-    if (pairedAccount && !ping?.status && store?.checkRefresh) {
+    if (pairedAccount && !ping?.status && !cookies?.aSToken) {
       handleAuthenticate();
     }
     // console.log(ping,pairingData?.accountIds[0])
-  }, [pairedAccount, ping?.status, store?.checkRefresh]);
+  }, [pairedAccount, ping?.status, cookies]);
 
   return (
     <Box
