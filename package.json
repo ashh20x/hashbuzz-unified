@@ -18,6 +18,7 @@
     "hashconnect": "^0.2.4",
     "react": "^17.0.2",
     "react-cookie": "^4.1.1",
+    "react-countdown": "^2.3.5",
     "react-dom": "^17.0.2",
     "react-qr-code": "^2.0.11",
     "react-responsive": "^9.0.0-beta.6",
