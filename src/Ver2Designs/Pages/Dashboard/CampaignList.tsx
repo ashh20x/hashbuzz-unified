@@ -13,6 +13,7 @@ import InfoIcon from "@mui/icons-material/Info";
 import { useStore } from "../../../Store/StoreProvider";
 import DetailsModal from "../../../components/PreviewModal/DetailsModal";
 import { getErrorMessage } from "../../../Utilities/helpers";
+import Countdown from "react-countdown";
 
 interface CampaignListProps {
   user?: CurrentUser;
@@ -461,7 +462,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
                   cellValues.row.campaign_stats === "Campaign Declined"
                 ? "Start"
                 : cellValues.row.campaign_stats === "Running"
-                ? "Stop"
+                ? <Countdown date={Date.now() + 10000} />
                 : "Update"}
             </Button>
             <div className="info-icon" onClick={() => handleCard(cellValues.row.id)}>
