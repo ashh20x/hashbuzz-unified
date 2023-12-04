@@ -121,6 +121,8 @@ export const useHashconnectService = () => {
   const value = React.useContext(HashconectServiceContext);
   const { topic, pairingData, network, setState } = value;
   const { Auth } = useApiInstance();
+  const [cookies, setCookie, removeCookie] = useCookies(["token", "refreshToken"]);
+  
   const store = useStore();
   const [_, setCookies, removeCookies] = useCookies(["aSToken"]);
   const [authStatusLog, setAuthStatusLog] = React.useState<AuthenticationLog[]>([{ type: "info", message: "Authentication Called" }]);
@@ -304,6 +306,9 @@ let amount =  data.amount.value * Math.pow(10,data.decimals)
           .catch((err) => {
             //! Error while authentication.
             console.log("Error from authenticate", err);
+            removeCookie("refreshToken");
+            localStorage.clear();
+            removeCookie("token");
             setAuthStatusLog((_d) => [..._d, { type: "error", message: "Error while Authenticating::-" + err.message }]);
           });
       }
