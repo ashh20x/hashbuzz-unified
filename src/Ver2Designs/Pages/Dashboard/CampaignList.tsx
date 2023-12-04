@@ -455,15 +455,17 @@ const CampaignList = ({ user }: CampaignListProps) => {
                 handleClick(cellValues.row);
               }}
             >
-              {cellValues.row.campaign_stats === "Campaign Complete, Initiating Rewards" || cellValues.row.campaign_stats === "Rewards Disbursed"
-                ? "Completed"
-                : cellValues.row.campaign_stats === "Campaign Active" ||
-                  cellValues.row.campaign_stats === "Under Review" ||
-                  cellValues.row.campaign_stats === "Campaign Declined"
-                ? "Start"
-                : cellValues.row.campaign_stats === "Running"
-                ? <Countdown date={Date.now() + 10000} />
-                : "Update"}
+              {cellValues.row.campaign_stats === "Campaign Complete, Initiating Rewards" || cellValues.row.campaign_stats === "Rewards Disbursed" ? (
+                "Completed"
+              ) : cellValues.row.campaign_stats === "Campaign Active" ||
+                cellValues.row.campaign_stats === "Under Review" ||
+                cellValues.row.campaign_stats === "Campaign Declined" ? (
+                "Start"
+              ) : cellValues.row.campaign_stats === "Running" ? (
+                <Countdown date={ new Date().getTime() + 86400 } />
+              ) : (
+                "Update"
+              )}
             </Button>
             <div className="info-icon" onClick={() => handleCard(cellValues.row.id)}>
               <InfoIcon />
@@ -498,6 +500,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
             amount_claimed: item?.amount_claimed,
             fungible_token_id: item?.fungible_token_id,
             type: item?.type,
+            campaign_start_time: item?.campaign_start_time,
             decimals: item?.decimals,
           };
         });
