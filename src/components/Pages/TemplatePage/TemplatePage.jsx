@@ -405,68 +405,70 @@ export const TemplatePage = () => {
               </label>
             </IconsWrap>
           ) : null}
-          {isYoutube ? <CustomInput placeholder="http/123/reward/taskbar" value={media} onChange={handleLink} /> : null}
-
-          {displayMedia.length > 0 ? (
-            displayMedia.length === 3 ? (
-              <IconsWrap>
-                <div>
-                  {displayMedia[0] ? (
-                    <SimpleDiv>
-                      <ShowImage ind={0} setremoveImage={() => setremoveImage} src={displayMedia[0]} alt="" />
-                      <br />
-                    </SimpleDiv>
-                  ) : null}
-                  {displayMedia[1] ? (
-                    <SimpleDiv>
-                      <ShowImage ind={1} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[1]} alt="" />{" "}
-                    </SimpleDiv>
-                  ) : null}
-                </div>
-
+          {isYoutube && addMedia ? <><CustomInput placeholder="http/123/reward/taskbar" value={media} onChange={handleLink} />
+            {displayMedia.length > 0 ? (
+              displayMedia.length === 3 ? (
                 <IconsWrap>
-                  {displayMedia[2] ? (
-                    <SimpleDiv>
-                      <ShowImage ind={2} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[2]} alt="" />
-                    </SimpleDiv>
-                  ) : null}
-                </IconsWrap>
-              </IconsWrap>
-            ) : (
-              <>
-                <IconsWrap>
-                  {displayMedia[0] ? (
-                    <SimpleDiv>
-                      <ShowImage ind={0} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[0]} alt="" />
-                      <br />
-                    </SimpleDiv>
-                  ) : null}
-                  {displayMedia[1] ? (
-                    <SimpleDiv>
-                      <ShowImage ind={1} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[1]} alt="" />
-                      <br />
-                    </SimpleDiv>
-                  ) : null}
-                </IconsWrap>
+                  <div>
+                    {displayMedia[0] ? (
+                      <SimpleDiv>
+                        <ShowImage ind={0} setremoveImage={() => setremoveImage} src={displayMedia[0]} alt="" />
+                        <br />
+                      </SimpleDiv>
+                    ) : null}
+                    {displayMedia[1] ? (
+                      <SimpleDiv>
+                        <ShowImage ind={1} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[1]} alt="" />{" "}
+                      </SimpleDiv>
+                    ) : null}
+                  </div>
 
-                <IconsWrap>
-                  {displayMedia[2] ? (
-                    <SimpleDiv>
-                      <ShowImage ind={2} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[2]} alt="" />
-                      <br />
-                    </SimpleDiv>
-                  ) : null}
-                  {displayMedia[3] ? (
-                    <SimpleDiv>
-                      <ShowImage ind={3} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[3]} alt="" />
-                    </SimpleDiv>
-                  ) : null}
+                  <IconsWrap>
+                    {displayMedia[2] ? (
+                      <SimpleDiv>
+                        <ShowImage ind={2} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[2]} alt="" />
+                      </SimpleDiv>
+                    ) : null}
+                  </IconsWrap>
                 </IconsWrap>
-              </>
-            )
-          ) : addMedia ? (
-            <CustomIframe src={srcLink} id="tutorial" frameborder="0" allow="autoplay; encrypted-media" title="video"></CustomIframe>
-          ) : null}
+              ) : (
+                <>
+                  <IconsWrap>
+                    {displayMedia[0] ? (
+                      <SimpleDiv>
+                        <ShowImage ind={0} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[0]} alt="" />
+                        <br />
+                      </SimpleDiv>
+                    ) : null}
+                    {displayMedia[1] ? (
+                      <SimpleDiv>
+                        <ShowImage ind={1} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[1]} alt="" />
+                        <br />
+                      </SimpleDiv>
+                    ) : null}
+                  </IconsWrap>
+
+                  <IconsWrap>
+                    {displayMedia[2] ? (
+                      <SimpleDiv>
+                        <ShowImage ind={2} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[2]} alt="" />
+                        <br />
+                      </SimpleDiv>
+                    ) : null}
+                    {displayMedia[3] ? (
+                      <SimpleDiv>
+                        <ShowImage ind={3} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[3]} alt="" />
+                      </SimpleDiv>
+                    ) : null}
+                  </IconsWrap>
+                </>
+              )
+            ) : addMedia ? (
+              <CustomIframe src={srcLink} id="tutorial" frameborder="0" allow="autoplay; encrypted-media" title="video"></CustomIframe>
+            ) : null}
+          </> : null}
+
+
           {/* <ContentWrap>
             <TextWrap>
               <Typography theme={main}>Reward scheme: </Typography>
