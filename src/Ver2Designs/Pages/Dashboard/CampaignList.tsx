@@ -449,7 +449,8 @@ const CampaignList = ({ user }: CampaignListProps) => {
                 cellValues.row.approve === false ||
                 cellValues.row.campaign_stats === "Under Review" ||
                 cellValues.row.campaign_stats === "Campaign Declined" ||
-                cellValues.row.campaign_stats === "Rewards Disbursed"
+                cellValues.row.campaign_stats === "Rewards Disbursed" ||
+                cellValues.row.campaign_stats === "Running"
               }
               onClick={() => {
                 handleClick(cellValues.row);
@@ -462,7 +463,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
                 cellValues.row.campaign_stats === "Campaign Declined" ? (
                 "Start"
               ) : cellValues.row.campaign_stats === "Running" ? (
-                <Countdown date={ new Date().getTime() + 86400 } />
+                <Countdown date={ new Date(cellValues?.row?.campaign_start_time).getTime() + 86400000 } />
               ) : (
                 "Update"
               )}
