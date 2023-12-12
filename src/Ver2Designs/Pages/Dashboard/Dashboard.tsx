@@ -14,6 +14,7 @@ import { toast } from "react-toastify";
 import { useApiInstance } from "../../../APIConfig/api";
 import { getErrorMessage } from "../../../Utilities/helpers";
 import SpeedDialActions from "../../Components/SpeedDialActions";
+import styled from "styled-components";
 // import { useTheme } from "@emotion/react";
 
 const Dashboard = () => {
@@ -50,10 +51,28 @@ const Dashboard = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const StyledCardGenUtility = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 10px;
+
+  @media only screen and (max-width: 1000px) {
+    grid-template-columns: repeat(2,1fr);
+    gap: 20px;
+  }
+  @media only screen and (max-width: 500px) {
+    grid-template-columns: repeat(1,1fr);
+    gap: 20px;
+  }
+  width: 100%;
+    
+  `
+
   return (
     <React.Fragment>
-      <Grid container spacing={3}>
+      {/* <Grid container spacing={3}> */}
         {/* Card for wallet info */}
+        <StyledCardGenUtility>
         <CardGenUtility
           startIcon={<AccountBalanceWalletIcon color="inherit" fontSize={"inherit"} />}
           title={"Hedera Account ID"}
@@ -92,7 +111,8 @@ const Dashboard = () => {
 
         {/* Card for account balance */}
         <Balances />
-      </Grid>
+      {/* </Grid> */}
+      </StyledCardGenUtility>
 
       {/* Campaign List section */}
       <CampaignList user={currentUser} />
@@ -104,9 +124,9 @@ const Dashboard = () => {
       {!currentUser?.consent ? <ConsentModal user={currentUser!} /> : null} */}
 
       {/* Show modal to admin user for updating email and password */}
-      {currentUser && !currentUser?.adminActive && ["SUPER_ADMIN", "ADMIN"].includes(currentUser?.role!) ? (
+      {/* {currentUser && !currentUser?.adminActive && ["SUPER_ADMIN", "ADMIN"].includes(currentUser?.role!) ? (
         <AdminPasswordSetup user={currentUser} />
-      ) : null}
+      ) : null} */}
     </React.Fragment>
   );
 };
