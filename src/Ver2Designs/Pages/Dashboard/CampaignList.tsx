@@ -541,9 +541,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
                 <InfoOutlinedIcon />
               </Box>
               <Typography sx={{ maxWidth: 700 }} variant="caption">
-                During the beta phase, there is a limitation of running a single campaign concurrently. Each campaign will conclude automatically 24
-                hours after its initiation, unless you choose to end it earlier. We anticipate relaxing these constraints gradually. Additionally,
-                your recharged balance is available for unlimited use across various campaigns.
+              In the current beta phase, please note that only one campaign can be run at a time. Each initiated campaign will automatically end 24 hours after its start. We plan to incrementally ease these restrictions in the future. Also, be informed that your balance can be used without any limits across different campaigns.
               </Typography>
             </Stack>
             {process.env.REACT_APP_ADMIN_ADDRESS === currentUser?.hedera_wallet_id && (
@@ -551,6 +549,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
                 Associate
               </Button>
             )}
+            <a style={{textDecoration: "none",fontSize: "16px", color: "white", background: "#10A37F",borderRadius:"4px", padding: "10px", textAlign:"center"}} href="https://chat.openai.com/g/g-cGD9GbBPY-hashbuzz" target="_blank">CONNECT WITH CHATGPT</a>
             <Button
               size="large"
               variant="contained"

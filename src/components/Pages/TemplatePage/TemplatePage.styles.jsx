@@ -164,6 +164,17 @@ font-size: 18px;
 display: flex;
 width: 100%;
 justify-content: end;
+.chat-icon{
+  width: 35px;
+  height: 35px;
+  padding-right: 20px;
+  padding-top: 5px;
+  img{
+    width: 100%;
+    height: 100%;
+  }
+  
+}
 `;
 
 export const IconsWrap = styled.div`
