@@ -154,6 +154,7 @@ export const useApiInstance = () => {
     addCampaign: (data: addCampaignBody): Promise<any> => requests.post("/api/campaign/add-new", { ...data }),
     getCampaigns: (): Promise<any> => requests.get("/api/campaign/all"),
     updateCampaignStatus: (data: updateCampaignStatusBody): Promise<any> => requests.post("/api/campaign/update-status", { ...data }),
+    chatResponse: (data: any): Promise<any> => requests.post("/api/campaign/chatgpt", data)
   };
 
   return { User, Auth, Admin, MirrorNodeRestAPI, Transaction, Integrations, Campaign };

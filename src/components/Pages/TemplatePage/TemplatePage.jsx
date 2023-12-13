@@ -34,9 +34,11 @@ import {
 import { YoutubeIcon } from "./YoutubeIcon";
 import { InputLabel, MenuItem, Select } from "@mui/material";
 import { useApiInstance } from "../../../APIConfig/api";
+import ChatgptModal from "./ChatgptModal/ChatgptModal";
 export const TemplatePage = () => {
   let navigate = useNavigate();
   const [srcLink, setSrcLink] = useState("https://www.youtube.com/embed/1lzba8D4FCU");
+  const [showChatModal, setShowChatModal] = useState(false);
 
   const [buttonTags, setButtonTags] = useState([]);
   const [Text, setText] = useState("");
@@ -51,7 +53,9 @@ export const TemplatePage = () => {
   const [open, setOpen] = useState(false);
   const [showEmojis, setShowEmojis] = useState(false);
   const [isYoutube, setYoutube] = useState(false);
-  const [media, setMedia] = useState(["https://www.youtube.com/watch?time_continue=1&v=1lzba8D4FCU&embeds_referring_euri=http%3A%2F%2Flocalhost%3A3000%2F&source_ve_path=Mjg2NjY&feature=emb_logo"]);
+  const [media, setMedia] = useState([
+    "https://www.youtube.com/watch?time_continue=1&v=1lzba8D4FCU&embeds_referring_euri=http%3A%2F%2Flocalhost%3A3000%2F&source_ve_path=Mjg2NjY&feature=emb_logo",
+  ]);
   const [displayMedia, setDisplayMedia] = useState([]);
   const [gifSelected, setGifSelect] = useState(false);
   // const [cookies, setCookie] = useCookies(["token"]);
@@ -64,6 +68,8 @@ export const TemplatePage = () => {
   const [userData, setUserData] = useState({});
   const [allTokens, setAllTokens] = useState([]);
   const [selectedToken, setSelectedToken] = useState(allTokens?.[0]?.value);
+  const [errorNameMessage, setErrorNameMessage] = useState("");
+  const [errorTextMessage, setErrorTextMessage] = useState("");
   console.log(allTokens, "aall");
   const getTokens = async () => {
     const response = await User.getTokenBalances();
@@ -73,7 +79,7 @@ export const TemplatePage = () => {
       if (item?.available_balance > 0) {
         updatedTokens.push({
           value: item?.token_id,
-          token_symbol: item?.token_symbol
+          token_symbol: item?.token_symbol,
         });
       }
     });
@@ -120,6 +126,11 @@ export const TemplatePage = () => {
     let x = textInput.split(" ").filter((item) => item[0] === "#");
     setButtonTags(x);
     setText(textInput);
+    if (event.target.value === "") {
+      setErrorTextMessage("Please enter some value");
+    } else {
+      setErrorTextMessage("");
+    }
   };
 
   const handleImageChange = async (event) => {
@@ -194,10 +205,16 @@ export const TemplatePage = () => {
     setMedia([event.target.value]);
     setDisplayMedia([]);
   };
-  const handleClose = (event) => { };
+  const handleClose = (event) => {};
 
   const handleName = (event) => {
+    console.log(event.target.value);
     setName(event.target.value);
+    if (event.target.value === "") {
+      setErrorNameMessage("Please enter some value");
+    } else {
+      setErrorNameMessage("");
+    }
   };
 
   const handleTokenId = (e) => {
@@ -231,8 +248,8 @@ export const TemplatePage = () => {
       } else {
         setBudgetMessage(
           `You have exceeded the total budget of ${
-          // Number(Number(currentToken?.[0]?.entityBalance)) * Math.pow(10, Number(currentToken?.[0]?.decimals))
-          currentToken?.[0]?.entityBalance
+            // Number(Number(currentToken?.[0]?.entityBalance)) * Math.pow(10, Number(currentToken?.[0]?.decimals))
+            currentToken?.[0]?.entityBalance
           } ${currentToken?.[0]?.entityIcon}`
         );
         setButtonDisabled(true);
@@ -295,7 +312,8 @@ export const TemplatePage = () => {
       <Typography theme={theme}>Campaign</Typography>
       <Wrapper>
         <LeftSec>
-          <CustomInput style={{ width: "100%", height: "100px" }} placeholder="Enter Campaign title" onChange={handleName} />
+          <CustomInput style={{ width: "100%", height: "100px" }} placeholder="Enter Campaign title" onChange={handleName} required />
+          <ErrorTextWrap>{errorNameMessage}</ErrorTextWrap>
           <Select
             style={{ margin: "20px 0" }}
             labelId="token_type"
@@ -325,8 +343,20 @@ export const TemplatePage = () => {
             </Select>
           )}
           {/* <FormHelperText error={formData.amount.error}>{formData.amount.helperText}</FormHelperText> */}
-          <CustomParagraph onChange={handleText} value={Text} type="textarea" maxLength={271} placeholder="Start typing your tweet campaign" />
+          <CustomParagraph
+            onChange={handleText}
+            value={Text}
+            type="textarea"
+            maxLength={271}
+            placeholder="Start typing your tweet campaign"
+            required
+          />
+          <ErrorTextWrap>{errorTextMessage}</ErrorTextWrap>
           <WordsWrap>
+            <div className="chat-icon" onClick={() => setShowChatModal(true)}>
+              <img src="/images/chatgpt.png" />
+            </div>
+            <ChatgptModal showChatModal={showChatModal} setShowChatModal={setShowChatModal} />
             <EmoBtnWrap className="button" onClick={() => setShowEmojis(!showEmojis)}>
               😊 &nbsp;
             </EmoBtnWrap>
@@ -371,6 +401,7 @@ export const TemplatePage = () => {
             // }}
             step="0.1"
             type="number"
+            required
             min="1"
             // max={
             //   type === "HBAR"
@@ -405,69 +436,71 @@ export const TemplatePage = () => {
               </label>
             </IconsWrap>
           ) : null}
-          {isYoutube && addMedia ? <><CustomInput placeholder="http/123/reward/taskbar" value={media} onChange={handleLink} />
-            {displayMedia.length > 0 ? (
-              displayMedia.length === 3 ? (
-                <IconsWrap>
-                  <div>
-                    {displayMedia[0] ? (
-                      <SimpleDiv>
-                        <ShowImage ind={0} setremoveImage={() => setremoveImage} src={displayMedia[0]} alt="" />
-                        <br />
-                      </SimpleDiv>
-                    ) : null}
-                    {displayMedia[1] ? (
-                      <SimpleDiv>
-                        <ShowImage ind={1} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[1]} alt="" />{" "}
-                      </SimpleDiv>
-                    ) : null}
-                  </div>
-
+          {isYoutube && addMedia ? (
+            <>
+              <CustomInput placeholder="http/123/reward/taskbar" value={media} onChange={handleLink} />
+              {displayMedia.length > 0 ? (
+                displayMedia.length === 3 ? (
                   <IconsWrap>
-                    {displayMedia[2] ? (
-                      <SimpleDiv>
-                        <ShowImage ind={2} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[2]} alt="" />
-                      </SimpleDiv>
-                    ) : null}
-                  </IconsWrap>
-                </IconsWrap>
-              ) : (
-                <>
-                  <IconsWrap>
-                    {displayMedia[0] ? (
-                      <SimpleDiv>
-                        <ShowImage ind={0} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[0]} alt="" />
-                        <br />
-                      </SimpleDiv>
-                    ) : null}
-                    {displayMedia[1] ? (
-                      <SimpleDiv>
-                        <ShowImage ind={1} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[1]} alt="" />
-                        <br />
-                      </SimpleDiv>
-                    ) : null}
-                  </IconsWrap>
+                    <div>
+                      {displayMedia[0] ? (
+                        <SimpleDiv>
+                          <ShowImage ind={0} setremoveImage={() => setremoveImage} src={displayMedia[0]} alt="" />
+                          <br />
+                        </SimpleDiv>
+                      ) : null}
+                      {displayMedia[1] ? (
+                        <SimpleDiv>
+                          <ShowImage ind={1} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[1]} alt="" />{" "}
+                        </SimpleDiv>
+                      ) : null}
+                    </div>
 
-                  <IconsWrap>
-                    {displayMedia[2] ? (
-                      <SimpleDiv>
-                        <ShowImage ind={2} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[2]} alt="" />
-                        <br />
-                      </SimpleDiv>
-                    ) : null}
-                    {displayMedia[3] ? (
-                      <SimpleDiv>
-                        <ShowImage ind={3} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[3]} alt="" />
-                      </SimpleDiv>
-                    ) : null}
+                    <IconsWrap>
+                      {displayMedia[2] ? (
+                        <SimpleDiv>
+                          <ShowImage ind={2} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[2]} alt="" />
+                        </SimpleDiv>
+                      ) : null}
+                    </IconsWrap>
                   </IconsWrap>
-                </>
-              )
-            ) : addMedia ? (
-              <CustomIframe src={srcLink} id="tutorial" frameborder="0" allow="autoplay; encrypted-media" title="video"></CustomIframe>
-            ) : null}
-          </> : null}
+                ) : (
+                  <>
+                    <IconsWrap>
+                      {displayMedia[0] ? (
+                        <SimpleDiv>
+                          <ShowImage ind={0} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[0]} alt="" />
+                          <br />
+                        </SimpleDiv>
+                      ) : null}
+                      {displayMedia[1] ? (
+                        <SimpleDiv>
+                          <ShowImage ind={1} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[1]} alt="" />
+                          <br />
+                        </SimpleDiv>
+                      ) : null}
+                    </IconsWrap>
 
+                    <IconsWrap>
+                      {displayMedia[2] ? (
+                        <SimpleDiv>
+                          <ShowImage ind={2} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[2]} alt="" />
+                          <br />
+                        </SimpleDiv>
+                      ) : null}
+                      {displayMedia[3] ? (
+                        <SimpleDiv>
+                          <ShowImage ind={3} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[3]} alt="" />
+                        </SimpleDiv>
+                      ) : null}
+                    </IconsWrap>
+                  </>
+                )
+              ) : addMedia ? (
+                <CustomIframe src={srcLink} id="tutorial" frameborder="0" allow="autoplay; encrypted-media" title="video"></CustomIframe>
+              ) : null}
+            </>
+          ) : null}
 
           {/* <ContentWrap>
             <TextWrap>
@@ -490,7 +523,7 @@ export const TemplatePage = () => {
               onclick={handlePreview}
               colors="#2546EB"
               border="1px solid #2546EB"
-              disabled={buttonDisabled || !budget}
+              disabled={buttonDisabled ||!budget|| !name|| !Text}
             />
             {/* <PrimaryButton text="Submit" onclick={handleSubmit} /> */}
           </ButtonWrapPrimary>
