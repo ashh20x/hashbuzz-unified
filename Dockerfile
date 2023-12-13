@@ -1,5 +1,5 @@
 # Set the base image to node:1-6alpine
-FROM node:16-alpine as build
+FROM node:18-alpine as build
 
 # Specify where our app will live in the container
 WORKDIR /app
@@ -12,9 +12,14 @@ RUN npm install
 #RUN npm install react-scripts@3.2.0 -g
 # We want the production version
 
-ENV REACT_APP_NETWORK "testnet"
-ENV REACT_APP_BASE_URL "https://sea-lion-app-dhl7x.ondigitalocean.app"
-ENV REACT_APP_DAPP_API "https://dapp-backend9-ws9ps.ondigitalocean.app"
+
+ENV REACT_APP_NETWORK="testnet"
+ENV REACT_APP_BASE_URL="http://api-v1.hashbuzz.social"
+ENV REACT_APP_DAPP_API="http://api-v1.hashbuzz.social"
+ENV REACT_APP_MIRROR_NODE_LINK="https://testnet.mirrornode.hedera.com"
+ENV REACT_APP_ADMIN_ADDRESS="0.0.5866123"
+ENV REACT_APP_CONTRACT_ADDRESS="0.0.5984115"
+
 
 RUN npm run build
 
