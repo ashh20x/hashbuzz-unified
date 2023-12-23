@@ -1,0 +1,9 @@
+logs
+# Keep environment variables out of version control
+.env
+.env.sample
+node_modules
+build
+.vscode
+SmartContract-v1
+ver-0.1.10
