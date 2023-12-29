@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import { StyledChatgptModal } from "./ChatgptModal.styles";
-import { Box, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
+import { useState } from "react";
 import { IoIosSend } from "react-icons/io";
+import { RxCross2 } from "react-icons/rx";
 import { useApiInstance } from "../../../../APIConfig/api";
 import { Loader } from "../../../Loader/Loader";
-import { RxCross2 } from "react-icons/rx";
+import { StyledChatgptModal } from "./ChatgptModal.styles";
 
 const ChatgptModal = ({ showChatModal, setShowChatModal }) => {
   const { Campaign } = useApiInstance();

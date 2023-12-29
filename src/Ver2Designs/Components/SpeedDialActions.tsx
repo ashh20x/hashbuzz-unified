@@ -12,8 +12,6 @@ import { useCookies } from "react-cookie";
 import QRCode from "react-qr-code";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useApiInstance } from "../../APIConfig/api";
-import ℏicon from "../../IconsPng/ℏicon.png";
 import HashbuzzIcon from "../../SVGR/HashbuzzIcon";
 import HashpackIcon from "../../SVGR/HashpackIcon";
 import { useStore } from "../../Store/StoreProvider";
@@ -49,10 +47,9 @@ const SpeedDialActions = () => {
   const [open, setOpen] = React.useState(false);
   const theme = useTheme();
   const [qrCodeOpen, setQrCodeOpen] = React.useState(false);
-  const { pairingString, pairingData, connectToExtension, availableExtension, disconnect } = useHashconnectService();
+  const { pairingString,  connectToExtension, availableExtension, disconnect } = useHashconnectService();
   const isDeviceIsSm = useMediaQuery(theme.breakpoints.down("sm"));
   const store = useStore();
-  const { Auth } = useApiInstance();
   const navigate = useNavigate();
   const [cookies] = useCookies(["aSToken"]);
 
@@ -60,7 +57,7 @@ const SpeedDialActions = () => {
   const handleClose = React.useCallback(() => setOpen(false), []);
 
   const connectWalletProcess = () => {
-    console.log("Connect logo");
+    // console.log("Connect logo");
   };
   const showSnackBar = () => {};
 

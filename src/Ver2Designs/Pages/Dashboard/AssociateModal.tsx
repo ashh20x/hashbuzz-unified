@@ -1,34 +1,21 @@
-import React, { useContext, useEffect, useState } from "react";
+import { Close as CloseIcon } from "@mui/icons-material";
+import { LoadingButton } from "@mui/lab";
 import {
-  Box,
+  Button,
   Dialog,
+  DialogActions,
   DialogContent,
   DialogTitle,
-  DialogActions,
-  Button,
-  Typography,
-  List,
-  ListItem,
   Grid,
-  InputAdornment,
-  Stack,
-  Divider,
   IconButton,
-  Select,
   MenuItem,
+  Select
 } from "@mui/material";
-import { Close as CloseIcon } from "@mui/icons-material";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import OutlinedInput from "@mui/material/OutlinedInput";
-import FormHelperText from "@mui/material/FormHelperText";
-import { EntityBalances, BalOperation, FormFelid } from "../../../types";
-import { useSmartContractServices } from "../../../Wallet/smartcontractService";
+import React, { useState } from "react";
 import { toast } from "react-toastify";
-import { useHashconnectService } from "../../../Wallet";
-import { LoadingButton } from "@mui/lab";
-import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
-import { unstable_batchedUpdates } from "react-dom";
 import { useApiInstance } from "../../../APIConfig/api";
 import { useStore } from "../../../Store/StoreProvider";
 interface TopupModalProps {
@@ -43,13 +30,6 @@ type CurrentFormState = {
   decimals: Number
 };
 
-const INITIAL_HBAR_BALANCE_ENTITY = {
-  entityBalance: "00.00",
-  entityIcon: "ℏ",
-  entitySymbol: "ℏ",
-  entityId: "",
-  entityType: "HBAR",
-};
 
 const FORM_INITIAL_STATE: CurrentFormState = {
   token_id: '',
@@ -59,7 +39,7 @@ const FORM_INITIAL_STATE: CurrentFormState = {
   decimals: 0
 };
 
-const calculateCharge = (amt: number) => amt * 0.1;
+// const calculateCharge = (amt: number) => amt * 0.1;
 
 const AssociateModal = ({ open, onClose }: TopupModalProps) => {
   const [formData, setFromData] = React.useState<CurrentFormState>(JSON.parse(JSON.stringify(FORM_INITIAL_STATE)));
@@ -151,12 +131,9 @@ const AssociateModal = ({ open, onClose }: TopupModalProps) => {
               placeholder="Enter the Token Id"
               fullWidth
               disabled={loading}
-              //   error={formData.amount.error}
-              //   value={formData.amount.value}
-              //   endAdornment={<InputAdornment position="end">{data?.entityIcon}</InputAdornment>}
+
               onChange={inputChangeHandler}
             />
-            {/* <FormHelperText error={formData.amount.error}>{formData.amount.helperText}</FormHelperText> */}
           </FormControl>
         </Grid>
         <Grid item md={5}>
@@ -171,30 +148,22 @@ const AssociateModal = ({ open, onClose }: TopupModalProps) => {
               placeholder="Enter the decimals"
               fullWidth
               disabled={loading}
-              //   error={formData.amount.error}
-              //   value={formData.amount.value}
-              //   endAdornment={<InputAdornment position="end">{data?.entityIcon}</InputAdornment>}
               onChange={inputChangeHandler}
             />
-            {/* <FormHelperText error={formData.amount.error}>{formData.amount.helperText}</FormHelperText> */}
           </FormControl>
           <FormControl fullWidth sx={{ marginBottom: 1.25 }} required>
             <InputLabel htmlFor="token_symbol">Token Symbol</InputLabel>
             <OutlinedInput
               label="Token Symbol"
               type={"text"}
-              //   ref={inputRef}
               name="token_symbol"
               id="token_symbol"
               placeholder="Enter the Token Symbol"
               fullWidth
               disabled={loading}
-              //   error={formData.amount.error}
-              //   value={formData.amount.value}
-              //   endAdornment={<InputAdornment position="end">{data?.entityIcon}</InputAdornment>}
+
               onChange={inputChangeHandler}
             />
-            {/* <FormHelperText error={formData.amount.error}>{formData.amount.helperText}</FormHelperText> */}
           </FormControl>
           <FormControl fullWidth sx={{ marginBottom: 1.25 }} required>
             <InputLabel htmlFor="token_type">Token Type</InputLabel>
@@ -202,32 +171,29 @@ const AssociateModal = ({ open, onClose }: TopupModalProps) => {
               labelId="token_type"
               id="token_type"
               label="Token Type"
-              //   error={formData.amount.error}
-              //   value={formData.amount.value}              label="Age"
+
               onChange={inputSelectChangeHandler}
             >
               <MenuItem value={'fungible'}>Fungible</MenuItem>
-              {/* <MenuItem value={'nonfungible'}>Non Fungible</MenuItem> */}
+
             </Select>
-            {/* <FormHelperText error={formData.amount.error}>{formData.amount.helperText}</FormHelperText> */}
+
           </FormControl>
           <FormControl fullWidth sx={{ marginBottom: 1.25 }} required>
             <InputLabel htmlFor="tokendata">Token Data</InputLabel>
             <OutlinedInput
               label="Enter Token Data"
               type={"text"}
-              //   ref={inputRef}
+
               name="tokendata"
               id="tokendata"
               placeholder="Enter the Token Data"
               fullWidth
               disabled={loading}
-              //   error={formData.amount.error}
-              //   value={formData.amount.value}
-              //   endAdornment={<InputAdornment position="end">{data?.entityIcon}</InputAdornment>}
+
               onChange={inputChangeHandler}
             />
-            {/* <FormHelperText error={formData.amount.error}>{formData.amount.helperText}</FormHelperText> */}
+
           </FormControl>
 
         </Grid>

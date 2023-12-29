@@ -115,6 +115,7 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
 
   React.useEffect(() => {
     if (accountId) checkAndUpdateEntityBalances();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accountId]);
 
   React.useEffect(() => {

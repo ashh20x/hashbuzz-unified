@@ -27,7 +27,7 @@ const Landing = () => {
     if (pairedAccount && !ping?.status && !cookies?.aSToken) {
       handleAuthenticate();
     }
-    // console.log(ping,pairingData?.accountIds[0])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pairedAccount, ping?.status, cookies]);
 
   const StyledText = styled.div`
@@ -47,9 +47,8 @@ const Landing = () => {
   return (
     <Box
       sx={{
+        background: "linear-gradient(to right bottom, #071159, #07114d, #091140, #0b0f34, #0d0c28, #0c0a23, #0a081f, #08061a, #07051b, #05051c, #03041e, #01041f)",
         backgroundImage: `url("./images/landing-bg-2.jpg")`,
-        // backgroundColor: "rgba(255, 255, 255 , 0.5)",
-        // background:"linear-gradient(rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.25)), url('./images/landing-bg-2.jpg')",
         minHeight: "100vh",
         backgroundRepeat: "no-repeat",
         paddingBottom: "20px",

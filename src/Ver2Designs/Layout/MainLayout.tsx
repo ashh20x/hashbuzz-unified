@@ -1,6 +1,6 @@
 import { Box, Container } from "@mui/material";
 import React from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useApiInstance } from "../../APIConfig/api";
 import { useStore } from "../../Store/StoreProvider";
@@ -10,7 +10,7 @@ import { DashboardHeader } from "../Components";
 const MainLayout = () => {
   const store = useStore();
   const { User } = useApiInstance();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
 
   const getUserData = React.useCallback(async () => {

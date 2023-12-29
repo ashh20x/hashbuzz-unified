@@ -1,8 +1,9 @@
 import { Dialog } from "@mui/material";
 import { useState } from "react";
-import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
-import { useDappAPICall } from "../../APIConfig/dAppApiServices";
+import { toast } from "react-toastify";
+import { useApiInstance } from "../../APIConfig/api";
+import { useStore } from "../../Store/StoreProvider";
 import Typography from "../../Typography/Typography";
 import PrimaryButton from "../Buttons/PrimaryButton";
 import { Loader } from "../Loader/Loader";
@@ -20,9 +21,6 @@ import {
   TextWrap,
   Wrapper,
 } from "./PreviewModal.styles";
-import { useApiInstance } from "../../APIConfig/api";
-import { toast } from "react-toastify";
-import { useStore } from "../../Store/StoreProvider";
 const PreviewModal = ({
   type,
   open,
@@ -44,9 +42,9 @@ const PreviewModal = ({
   quote,
 }) => {
   let navigate = useNavigate();
-  const [cookies, setCookie] = useCookies(["token"]);
+
   const [showLoading, setShowLoading] = useState(false);
-  const { dAppAPICall } = useDappAPICall();
+
   const store = useStore();
   const { Campaign } = useApiInstance();
   const handleClose = () => setOpen(false);
@@ -68,15 +66,15 @@ const PreviewModal = ({
     const postData = {
       name: name,
       tweet_text: Text,
-      "fungible_token_id": type === 'HBAR' ? "" : selectedToken,
+      fungible_token_id: type === "HBAR" ? "" : selectedToken,
       comment_reward: reply,
       retweet_reward: retweet,
       like_reward: like,
       type: type,
       quote_reward: quote,
       // "follow_reward": follow,
-      campaign_budget: budget == "" ? 0 : budget,
-      ...(addMedia && { media: media })
+      campaign_budget: budget === "" ? 0 : budget,
+      ...(addMedia && { media: media }),
     };
     try {
       // const response = await APICall("/campaign/twitter-card/", "POST", {}, postData, false, cookies.token);
@@ -93,9 +91,7 @@ const PreviewModal = ({
       notify("Something went wrong! Please try again later");
     }
   };
-  let currentToken = store?.balances?.filter(item =>
-    item?.entityId === selectedToken
-  );
+  let currentToken = store?.balances?.filter((item) => item?.entityId === selectedToken);
   return (
     <Dialog
       open={open}
@@ -163,12 +159,6 @@ const PreviewModal = ({
             <TextWrap>
               <Typography theme={body}>{videoTitle}</Typography>
             </TextWrap>
-
-            {/* <CustomParagraph>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus a
-              finibus nisl, ut porta felis. Etiam vitae mollis purus. isl, ut
-              porta felis. Etiam vitae mollis purus.
-            </CustomParagraph> */}
           </LeftSec>
           <RightSec>
             <TableSection>
