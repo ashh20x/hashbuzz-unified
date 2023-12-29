@@ -41,7 +41,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
     } catch (err) {
       console.log(err);
     }
-  }, []);
+  }, [Admin]);
   const getClaimAllRewards = useCallback(async () => {
     try {
       const response = await User.getClaimRewards();
@@ -50,7 +50,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
     } catch (error) {
       console.log(error);
     }
-  }, []);
+  }, [User]);
   const getUserData = React.useCallback(async () => {
     try {
       const currentUser = await User.getCurrentUser();
@@ -328,7 +328,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
     },
   ];
 
-  const balances = store?.balances;
+  // const balances = store?.balances;
   const [runningCampaigns, setRunningCampaigns] = useState(false);
   const handleTemplate = () => {
     navigate("/campaign");
@@ -514,6 +514,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
 
   React.useEffect(() => {
     getAllCampaigns();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -549,7 +550,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
                 Associate
               </Button>
             )}
-            <a style={{textDecoration: "none",fontSize: "16px", color: "white", background: "#10A37F",borderRadius:"4px", padding: "10px", textAlign:"center"}} href="https://chat.openai.com/g/g-cGD9GbBPY-hashbuzz" target="_blank">CONNECT WITH CHATGPT</a>
+            <a style={{textDecoration: "none",fontSize: "16px", color: "white", backgroundColor: "#10A37F",borderRadius:"4px", padding: "10px", textAlign:"center"}} href="https://chat.openai.com/g/g-cGD9GbBPY-hashbuzz" target="_blank" rel="noreferrer">CONNECT WITH CHATGPT</a>
             <Button
               size="large"
               variant="contained"

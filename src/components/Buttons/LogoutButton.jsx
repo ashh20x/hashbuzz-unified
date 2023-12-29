@@ -1,11 +1,11 @@
-import React from "react";
-import PrimaryButton from "./PrimaryButton";
-import { LinkContainer } from "../Pages/CreateCard/CreateTwitterPage.styles";
 import { useCookies } from "react-cookie";
-import { useDappAPICall } from "../../APIConfig/dAppApiServices";
 import { useNavigate } from "react-router-dom";
+import { useDappAPICall } from "../../APIConfig/dAppApiServices";
+import { LinkContainer } from "../Pages/CreateCard/CreateTwitterPage.styles";
+import PrimaryButton from "./PrimaryButton";
 export const LogoutButton = () => {
-  const [cookies, setCookie, removeCookie] = useCookies(["token", "refreshToken"]);
+  // eslint-disable-next-line no-unused-vars
+  const [cookies, _setCookie, removeCookie] = useCookies(["token", "refreshToken"]);
   const { dAppAuthAPICall } = useDappAPICall();
   const navigate = useNavigate();
   const handleLogOut = async () => {

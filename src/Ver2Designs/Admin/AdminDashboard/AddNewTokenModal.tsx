@@ -1,19 +1,18 @@
-import * as React from "react";
+import SaveIcon from "@mui/icons-material/Save";
+import { LoadingButton } from "@mui/lab";
+import { Avatar, Card, Divider, Stack, Typography } from "@mui/material";
 import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+import TextField from "@mui/material/TextField";
+import { Box } from "@mui/system";
+import * as React from "react";
+import { unstable_batchedUpdates } from "react-dom";
 import { useApiInstance } from "../../../APIConfig/api";
 import { TokenDataObj, TokenInfo } from "../../../types";
-import { Avatar, Card, Divider, Stack, Typography } from "@mui/material";
-import { LoadingButton } from "@mui/lab";
-import SaveIcon from "@mui/icons-material/Save";
-import { Box } from "@mui/system";
-import { unstable_batchedUpdates } from "react-dom";
-import { toast } from "react-toastify";
 interface AddNewTokenModalProps {
   open: boolean;
   onClose: (data?:TokenDataObj) => void;
@@ -23,7 +22,7 @@ export default function AddNewTokenModal({ open, onClose }: AddNewTokenModalProp
   // const [open, setOpen] = React.useState(false);
   const [tokenId, setTokenId] = React.useState("");
   const [tokenInfo, setTokenInfo] = React.useState<TokenInfo | null>(null);
-  const { MirrorNodeRestAPI, Admin } = useApiInstance();
+  const { MirrorNodeRestAPI } = useApiInstance();
   const [loading, setLoading] = React.useState(false);
 
   const getTokenInfo = async () => {

@@ -1,9 +1,7 @@
 import { Dialog } from "@mui/material";
-import React from 'react';
 import Typography from "../../Typography/Typography";
 import {
-    BoxCont,
-    CustomParagraph
+    BoxCont
 } from "./PreviewModal.styles";
 
 const DetailsModal = ({

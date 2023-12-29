@@ -1,40 +1,21 @@
+import { MenuItem, Select } from "@mui/material";
 import Picker from "emoji-picker-react";
 import { useEffect, useState } from "react";
-import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
-// import { APICall } from "../../../APIConfig/APIServices";
+import { useApiInstance } from "../../../APIConfig/api";
+import Image from "../../../IconsPng/arrow-symbol.png";
+import { useStore } from "../../../Store/StoreProvider";
 import Typography from "../../../Typography/Typography";
 import PrimaryButton from "../../Buttons/PrimaryButton";
 import SecondaryButton from "../../Buttons/SecondaryButton";
 import { ContainerStyled } from "../../ContainerStyled/ContainerStyled";
 import PreviewModal from "../../PreviewModal/PreviewModal";
 import { TemplateTable } from "../../Tables/TemplateTable";
-// import "emoji-mart/css/emoji-mart.css";
-import Image from "../../../IconsPng/arrow-symbol.png";
-import { useStore } from "../../../Store/StoreProvider";
-import { ShowImage } from "./ShowImage";
-import {
-  ButtonWrap,
-  ButtonWrapPrimary,
-  CustomCheckboxInput,
-  CustomIframe,
-  CustomInput,
-  CustomParagraph,
-  EmoBtnWrap,
-  ErrorTextWrap,
-  IconsWrap,
-  ImgWrap,
-  LeftSec,
-  RightSec,
-  SimpleDiv,
-  TableSection,
-  WordsWrap,
-  Wrapper,
-} from "./TemplatePage.styles";
-import { YoutubeIcon } from "./YoutubeIcon";
-import { InputLabel, MenuItem, Select } from "@mui/material";
-import { useApiInstance } from "../../../APIConfig/api";
 import ChatgptModal from "./ChatgptModal/ChatgptModal";
+import { ShowImage } from "./ShowImage";
+import { ButtonWrap, ButtonWrapPrimary, CustomCheckboxInput, CustomIframe, CustomInput, CustomParagraph, EmoBtnWrap, ErrorTextWrap, IconsWrap, ImgWrap, LeftSec, RightSec, SimpleDiv, TableSection, WordsWrap, Wrapper } from "./TemplatePage.styles";
+import { YoutubeIcon } from "./YoutubeIcon";
+
 export const TemplatePage = () => {
   let navigate = useNavigate();
   const [srcLink, setSrcLink] = useState("https://www.youtube.com/embed/1lzba8D4FCU");
@@ -53,9 +34,7 @@ export const TemplatePage = () => {
   const [open, setOpen] = useState(false);
   const [showEmojis, setShowEmojis] = useState(false);
   const [isYoutube, setYoutube] = useState(false);
-  const [media, setMedia] = useState([
-    "https://www.youtube.com/watch?time_continue=1&v=1lzba8D4FCU&embeds_referring_euri=http%3A%2F%2Flocalhost%3A3000%2F&source_ve_path=Mjg2NjY&feature=emb_logo",
-  ]);
+  const [media, setMedia] = useState(["https://www.youtube.com/watch?time_continue=1&v=1lzba8D4FCU&embeds_referring_euri=http%3A%2F%2Flocalhost%3A3000%2F&source_ve_path=Mjg2NjY&feature=emb_logo"]);
   const [displayMedia, setDisplayMedia] = useState([]);
   const [gifSelected, setGifSelect] = useState(false);
   // const [cookies, setCookie] = useCookies(["token"]);
@@ -65,12 +44,12 @@ export const TemplatePage = () => {
   const [budgetMessage, setBudgetMessage] = useState("");
   const [budget, setBudget] = useState(0);
   const [buttonDisabled, setButtonDisabled] = useState(false);
-  const [userData, setUserData] = useState({});
+  // const [userData, setUserData] = useState({});
   const [allTokens, setAllTokens] = useState([]);
   const [selectedToken, setSelectedToken] = useState(allTokens?.[0]?.value);
   const [errorNameMessage, setErrorNameMessage] = useState("");
   const [errorTextMessage, setErrorTextMessage] = useState("");
-  console.log(allTokens, "aall");
+
   const getTokens = async () => {
     const response = await User.getTokenBalances();
     console.log(response, "responses");
@@ -84,26 +63,10 @@ export const TemplatePage = () => {
       }
     });
     setAllTokens(updatedTokens);
-  };
-  useEffect(() => {
-    setSelectedToken(allTokens?.[0]?.value);
-  }, [allTokens]);
-  console.log(allTokens, "allTokens");
-  useEffect(() => {
-    getTokens();
-  }, []);
+  }; 
   const store = useStore();
 
-  console.log(store, store?.currentUser, "store");
 
-  useEffect(() => {
-    let mounted = true;
-    if (mounted) {
-      const user = JSON.parse(localStorage.getItem("user"));
-      setUserData(user);
-    }
-    return () => (mounted = false);
-  }, []);
 
   const theme = {
     weight: 500,
@@ -112,12 +75,9 @@ export const TemplatePage = () => {
     sizeRes: "28px",
   };
   const handlePreview = () => {
-    // navigate("/invoice");
     setOpen(true);
   };
-  const handleSubmit = () => {
-    navigate("/onboarding");
-  };
+ 
   const handleText = (event) => {
     if (271 - Text?.length === 0) {
       console.log("message for reached text enter limit!");
@@ -145,8 +105,6 @@ export const TemplatePage = () => {
       data.append("media_file", file);
       data.append("media_type", "image");
       try {
-        // const response = await APICall("/campaign/media/", "POST", {}, data, true, cookies.token);
-        // setMedia([...media, response.data.id]);
       } catch (err) {
         console.error("/campaign/media/:", err);
       }
@@ -157,8 +115,6 @@ export const TemplatePage = () => {
         data.append("media_file", file);
         data.append("media_type", "image");
         try {
-          // const response = await APICall("/campaign/media/", "POST", {}, data, true, cookies.token);
-          // setMedia([...media, response.data.id]);O
         } catch (err) {
           console.error("/campaign/media/:", err);
         }
@@ -205,7 +161,7 @@ export const TemplatePage = () => {
     setMedia([event.target.value]);
     setDisplayMedia([]);
   };
-  const handleClose = (event) => {};
+ 
 
   const handleName = (event) => {
     console.log(event.target.value);
@@ -217,10 +173,7 @@ export const TemplatePage = () => {
     }
   };
 
-  const handleTokenId = (e) => {
-    setTokenId(e?.target?.value);
-  };
-  console.log(tokenId, "tokenId");
+  
   const handleBudget = (event) => {
     // 1habr = Math.pow(10,8) tinyhabrs;
     console.log(event.target.value);
@@ -236,10 +189,7 @@ export const TemplatePage = () => {
     } else {
       console.log(store?.balances, selectedToken, "store?.balances?.[selectedToken]?.entityBalance");
       let currentToken = store?.balances?.filter((item) => item?.entityId === selectedToken);
-      // console.log(event.target.value, currentToken?.[0]?.entityBalance, "currenToken");
       if (
-        // Math.round(Number(event.target.value) * Math.pow(10, Number(currentToken?.[0]?.decimals))) <=
-        // Number(Number(currentToken?.[0]?.entityBalance) * Math.pow(10, Number(currentToken?.[0]?.decimals)))
         Number(event.target.value) <= currentToken?.[0]?.entityBalance
       ) {
         setBudget(event.target.value);
@@ -248,7 +198,6 @@ export const TemplatePage = () => {
       } else {
         setBudgetMessage(
           `You have exceeded the total budget of ${
-            // Number(Number(currentToken?.[0]?.entityBalance)) * Math.pow(10, Number(currentToken?.[0]?.decimals))
             currentToken?.[0]?.entityBalance
           } ${currentToken?.[0]?.entityIcon}`
         );
@@ -272,9 +221,6 @@ export const TemplatePage = () => {
   };
   const handleQuote = (e) => {
     setQuote(e.target.value);
-  };
-  const handleFollow = (e) => {
-    setFollow(e.target.value);
   };
   const inputSelectChangeHandler = (event) => {
     event.preventDefault();
@@ -304,6 +250,15 @@ export const TemplatePage = () => {
     setDisplayMedia(imagesArr);
   };
 
+
+  useEffect(() => {
+    setSelectedToken(allTokens?.[0]?.value);
+  }, [allTokens]);
+  useEffect(() => {
+    getTokens();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <ContainerStyled>
       <ImgWrap onClick={handleBack}>
@@ -314,15 +269,7 @@ export const TemplatePage = () => {
         <LeftSec>
           <CustomInput style={{ width: "100%", height: "100px" }} placeholder="Enter Campaign title" onChange={handleName} required />
           <ErrorTextWrap>{errorNameMessage}</ErrorTextWrap>
-          <Select
-            style={{ margin: "20px 0" }}
-            labelId="token_type"
-            id="token_type"
-            //   error={formData.amount.error}
-            value={type}
-            label="Age"
-            onChange={inputSelectChangeHandler}
-          >
+          <Select style={{ margin: "20px 0" }} labelId="token_type" id="token_type" value={type} label="Age" onChange={inputSelectChangeHandler}>
             <MenuItem value={"FUNGIBLE"}>Fungible</MenuItem>
             <MenuItem value={"HBAR"}>HBAR</MenuItem>
           </Select>
@@ -332,7 +279,6 @@ export const TemplatePage = () => {
               labelId="token_id"
               id="token_id"
               placeholder="Select Token Id"
-              //   error={formData.amount.error}
               value={selectedToken}
               label="Token Id"
               onChange={selectTokenIdHandler}
@@ -343,14 +289,7 @@ export const TemplatePage = () => {
             </Select>
           )}
           {/* <FormHelperText error={formData.amount.error}>{formData.amount.helperText}</FormHelperText> */}
-          <CustomParagraph
-            onChange={handleText}
-            value={Text}
-            type="textarea"
-            maxLength={271}
-            placeholder="Start typing your tweet campaign"
-            required
-          />
+          <CustomParagraph onChange={handleText} value={Text} type="textarea" maxLength={271} placeholder="Start typing your tweet campaign" required />
           <ErrorTextWrap>{errorTextMessage}</ErrorTextWrap>
           <WordsWrap>
             <div className="chat-icon" onClick={() => setShowChatModal(true)}>
@@ -369,48 +308,16 @@ export const TemplatePage = () => {
             </div>
           )}
           <ButtonWrap>
-            {/* {buttonTags.slice(0, 2).map((item) => (
-              <SecondaryButton text={item.replace(item[0], "")} />
-            ))} */}
             {buttonTags.map((item) => (
               <SecondaryButton text={item.replace(item[0], "")} />
             ))}
-            {/* <SecondaryButton text="hashbuzz" />
-            <SecondaryButton text="TestNet" /> */}
           </ButtonWrap>
           <TableSection>
-            <TemplateTable
-              handleReply={handleReply}
-              handleRetweet={handleRetweet}
-              handleLike={handleLike}
-              handleDownload={handleQuote}
-              reply={reply}
-              selectedToken={selectedToken}
-              retweet={retweet}
-              like={like}
-              quote={quote}
-            />
+            <TemplateTable handleReply={handleReply} handleRetweet={handleRetweet} handleLike={handleLike} handleDownload={handleQuote} reply={reply} selectedToken={selectedToken} retweet={retweet} like={like} quote={quote} />
           </TableSection>
         </LeftSec>
         <RightSec>
-          <CustomInput
-            // onKeyPress={(event) => {
-            //   if (event.code === "Minus") {
-            //     event.preventDefault();
-            //   }
-            // }}
-            step="0.1"
-            type="number"
-            required
-            min="1"
-            // max={
-            //   type === "HBAR"
-            //     ? Math.round(store.currentUser.available_budget / Math.pow(10, 8))
-            //     : store.balances.filter((item) => item.token_id === selectedToken)[0]?.available_balance
-            // }
-            placeholder="Enter campaign budget"
-            onChange={handleBudget}
-          />
+          <CustomInput step="0.1" type="number" required min="1" placeholder="Enter campaign budget" onChange={handleBudget} />
           <ErrorTextWrap>{budgetMessage}</ErrorTextWrap>
           <IconsWrap>
             <CustomCheckboxInput type="checkbox" onChange={handleAddMedia} />
@@ -421,14 +328,7 @@ export const TemplatePage = () => {
               <label for="file">
                 <span> {/* <ImageIcon /> */}</span>
               </label>
-              <CustomInput
-                type="file"
-                alt=""
-                id="file"
-                style={{ display: "none" }}
-                accept="image/png, image/gif, image/jpeg,image/jpg, video/*"
-                onChange={handleImageChange}
-              />
+              <CustomInput type="file" alt="" id="file" style={{ display: "none" }} accept="image/png, image/gif, image/jpeg,image/jpg, video/*" onChange={handleImageChange} />
               <label onClick={handleYouTubeClick}>
                 <span>
                   <YoutubeIcon />
@@ -502,55 +402,12 @@ export const TemplatePage = () => {
             </>
           ) : null}
 
-          {/* <ContentWrap>
-            <TextWrap>
-              <Typography theme={main}>Reward scheme: </Typography>
-              <Typography theme={body}>xk reply yk Retweet</Typography>
-            </TextWrap>
-            <TextWrap>
-              <Typography theme={main}>To receive reward</Typography>
-              <SecondaryButton text="Connect here" />
-            </TextWrap>
-            <TextWrap>
-              <Typography theme={main}>Campaign status:</Typography>{" "}
-              <Typography theme={body}> Running</Typography>
-            </TextWrap>
-          </ContentWrap> */}
           <ButtonWrapPrimary>
-            <PrimaryButton
-              text="Preview"
-              inverse={true}
-              onclick={handlePreview}
-              colors="#2546EB"
-              border="1px solid #2546EB"
-              disabled={buttonDisabled ||!budget|| !name|| !Text}
-            />
-            {/* <PrimaryButton text="Submit" onclick={handleSubmit} /> */}
+            <PrimaryButton text="Preview" inverse={true} onclick={handlePreview} colors="#2546EB" border="1px solid #2546EB" disabled={buttonDisabled || !budget || !name || !Text} />
           </ButtonWrapPrimary>
         </RightSec>
       </Wrapper>
-      <PreviewModal
-        open={open}
-        setOpen={setOpen}
-        Text={Text + " #hashbuzz #TestNet"}
-        buttonTags={buttonTags}
-        reply={reply}
-        tokenId={tokenId}
-        retweet={retweet}
-        type={type}
-        like={like}
-        selectedToken={selectedToken}
-        follow={follow}
-        srcLink={srcLink}
-        name={name}
-        media={media}
-        displayMedia={displayMedia}
-        isYoutube={isYoutube}
-        videoTitle={videoTitle}
-        addMedia={addMedia}
-        budget={budget}
-        quote={quote}
-      />
+      <PreviewModal open={open} setOpen={setOpen} Text={Text + " #hashbuzz #TestNet"} buttonTags={buttonTags} reply={reply} tokenId={tokenId} retweet={retweet} type={type} like={like} selectedToken={selectedToken} follow={follow} srcLink={srcLink} name={name} media={media} displayMedia={displayMedia} isYoutube={isYoutube} videoTitle={videoTitle} addMedia={addMedia} budget={budget} quote={quote} />
     </ContainerStyled>
   );
 };

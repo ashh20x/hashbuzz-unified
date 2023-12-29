@@ -1,7 +1,5 @@
-import React from "react";
-import { CardContainer, IconWrapper, TextWrapper } from "./Card.styles";
-import WalletSVG from "../../SVGR/Wallet";
 import Typography from "../../Typography/Typography";
+import { CardContainer, IconWrapper, TextWrapper } from "./Card.styles";
 export const Card = ({ title, icon}) => {
   const theme = {
     color: "#696969",

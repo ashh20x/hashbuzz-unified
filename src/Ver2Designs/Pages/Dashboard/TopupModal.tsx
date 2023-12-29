@@ -1,36 +1,33 @@
-import React, { useEffect } from "react";
+import { Close as CloseIcon } from "@mui/icons-material";
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
+import { LoadingButton } from "@mui/lab";
 import {
   Box,
   Dialog,
+  DialogActions,
   DialogContent,
   DialogTitle,
-  DialogActions,
-  Button,
-  Typography,
+  Divider,
+  Grid,
+  IconButton,
+  InputAdornment,
   List,
   ListItem,
-  Grid,
-  InputAdornment,
   Stack,
-  Divider,
-  IconButton,
+  Typography
 } from "@mui/material";
-import { Close as CloseIcon } from "@mui/icons-material";
 import FormControl from "@mui/material/FormControl";
+import FormHelperText from "@mui/material/FormHelperText";
 import InputLabel from "@mui/material/InputLabel";
 import OutlinedInput from "@mui/material/OutlinedInput";
-import FormHelperText from "@mui/material/FormHelperText";
-import { EntityBalances, BalOperation, FormFelid } from "../../../types";
-import { useSmartContractServices } from "../../../Wallet/smartcontractService";
-import { toast } from "react-toastify";
-import { useHashconnectService } from "../../../Wallet";
-import { LoadingButton } from "@mui/lab";
-import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
+import React, { useEffect } from "react";
 import { unstable_batchedUpdates } from "react-dom";
-import { transactionData } from "../../../Data/InvoiceTransactions";
+import { toast } from "react-toastify";
 import { useApiInstance } from "../../../APIConfig/api";
-import { getErrorMessage } from "../../../Utilities/helpers";
 import { useStore } from "../../../Store/StoreProvider";
+import { useHashconnectService } from "../../../Wallet";
+import { useSmartContractServices } from "../../../Wallet/smartcontractService";
+import { BalOperation, EntityBalances, FormFelid } from "../../../types";
 interface TopupModalProps {
   data: EntityBalances | null;
   open: boolean;
@@ -216,9 +213,6 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
                 <ListItem>
                   <Typography variant="caption"> Refunds are provided at no cost.</Typography>
                 </ListItem>
-                {/* <ListItem>
-                  <Typography variant="caption"> reimbursements are free of charge</Typography>
-                </ListItem> */}
               </React.Fragment>
             )}
           </List>

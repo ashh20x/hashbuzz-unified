@@ -1,12 +1,12 @@
+import { AccountAllowanceApproveTransaction, AccountId, ContractExecuteTransaction, ContractFunctionParameters, ContractId } from "@hashgraph/sdk";
+import BigNumber from "bignumber.js";
 import { HashConnect, HashConnectTypes, MessageTypes } from "hashconnect";
 import { HashConnectConnectionState } from "hashconnect/dist/types";
 import React, { useCallback } from "react";
 import { useCookies } from "react-cookie";
+import { toast } from "react-toastify";
 import { useApiInstance } from "../APIConfig/api";
 import { useStore } from "../Store/StoreProvider";
-import { toast } from "react-toastify";
-import { AccountAllowanceApproveTransaction, AccountId, ContractExecuteTransaction, ContractFunctionParameters, ContractId } from "@hashgraph/sdk";
-import BigNumber from "bignumber.js";
 
 export const fetchAccountIfoKey = async (accountId: string) => {
   const url = "https://testnet.mirrornode.hedera.com/api/v1/accounts/" + accountId;
@@ -121,9 +121,11 @@ export const useHashconnectService = () => {
   const value = React.useContext(HashconectServiceContext);
   const { topic, pairingData, network, setState } = value;
   const { Auth } = useApiInstance();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [cookies, setCookie, removeCookie] = useCookies(["token", "refreshToken"]);
-  
+
   const store = useStore();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, setCookies, removeCookies] = useCookies(["aSToken"]);
   const [authStatusLog, setAuthStatusLog] = React.useState<AuthenticationLog[]>([{ type: "info", message: "Authentication Called" }]);
 
@@ -149,47 +151,47 @@ export const useHashconnectService = () => {
     return transactionResponse;
   };
 
-  const approveToken = async(accountId:any,data:any)=>{
-    let contract_address:any = process.env.REACT_APP_CONTRACT_ADDRESS;
+  const approveToken = async (accountId: any, data: any) => {
+    let contract_address: any = process.env.REACT_APP_CONTRACT_ADDRESS;
     const provider = hashconnect.getProvider("testnet", topic!, accountId);
     const signer = hashconnect.getSigner(provider);
-const approvedToken =
-    new AccountAllowanceApproveTransaction().approveTokenAllowance(
-      data?.entityId,
-      accountId,
-      contract_address,
-      data.amount.value * Math.pow(10,data.decimals)
-    );
+    const approvedToken =
+      new AccountAllowanceApproveTransaction().approveTokenAllowance(
+        data?.entityId,
+        accountId,
+        contract_address,
+        data.amount.value * Math.pow(10, data.decimals)
+      );
 
-  const approveTokenSign = await approvedToken
-    .freezeWithSigner(signer)
-   
+    const approveTokenSign = await approvedToken
+      .freezeWithSigner(signer)
+
     const signApprove = await approveTokenSign.signWithSigner(signer);
     const responseApprove = await signApprove.executeWithSigner(signer);
     return responseApprove
   }
 
-  const transferTokenToContract = async (accountId: any,data:any) => {
-try{
-let amount =  data.amount.value * Math.pow(10,data.decimals)
-  const provider = hashconnect.getProvider("testnet", topic!, accountId);
-  const signer = hashconnect.getSigner(provider);
-  let contract_address:any = process.env.REACT_APP_CONTRACT_ADDRESS
-  console.log(accountId,data,"TESTING")
-  
-  const tx = await new ContractExecuteTransaction()
-  .setContractId(ContractId.fromString(contract_address))
-  .setGas(3000000)
-  .setFunction('transferTokenToContract', new ContractFunctionParameters().addAddress(AccountId.fromString(data?.entityId).toSolidityAddress()).addAddress(AccountId.fromString(accountId).toSolidityAddress()).addInt64((new BigNumber(data?.amount?.value* Math.pow(10,data.decimals)))))
-  .setTransactionMemo("transfer Token").freezeWithSigner(signer);
-  const sign = await tx.signWithSigner(signer);
-  const response = await sign.executeWithSigner(signer);
-  
-  return response;
-}catch(err){
-  console.log(err);
-  return err
-}
+  const transferTokenToContract = async (accountId: any, data: any) => {
+    try {
+      // let amount =  data.amount.value * Math.pow(10,data.decimals)
+      const provider = hashconnect.getProvider("testnet", topic!, accountId);
+      const signer = hashconnect.getSigner(provider);
+      let contract_address: any = process.env.REACT_APP_CONTRACT_ADDRESS
+      console.log(accountId, data, "TESTING")
+
+      const tx = await new ContractExecuteTransaction()
+        .setContractId(ContractId.fromString(contract_address))
+        .setGas(3000000)
+        .setFunction('transferTokenToContract', new ContractFunctionParameters().addAddress(AccountId.fromString(data?.entityId).toSolidityAddress()).addAddress(AccountId.fromString(accountId).toSolidityAddress()).addInt64((new BigNumber(data?.amount?.value * Math.pow(10, data.decimals)))))
+        .setTransactionMemo("transfer Token").freezeWithSigner(signer);
+      const sign = await tx.signWithSigner(signer);
+      const response = await sign.executeWithSigner(signer);
+
+      return response;
+    } catch (err) {
+      console.log(err);
+      return err
+    }
   }
 
   const disconnect = React.useCallback(async () => {
@@ -212,7 +214,7 @@ let amount =  data.amount.value * Math.pow(10,data.decimals)
       );
     }
     return logoutResponse;
-  }, [Auth, pairingData?.topic, removeCookies, setState]);
+  }, [Auth, pairingData?.topic, removeCookies, setState, store]);
 
   const requestAccountInfo = React.useCallback(async () => {
     const request: MessageTypes.AdditionalAccountRequest = {
@@ -319,7 +321,7 @@ let amount =  data.amount.value * Math.pow(10,data.decimals)
 
       setAuthStatusLog((_d) => [..._d, { type: "error", message: "Error from validation::-" + err.message }]);
     }
-  }, [Auth, pairingData?.accountIds, setCookies, store, topic]);
+  }, [Auth, pairingData?.accountIds, removeCookie, setCookies, store, topic]);
 
   return {
     ...value,

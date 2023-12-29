@@ -2,7 +2,6 @@ import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import Logout from "@mui/icons-material/Logout";
 import Settings from "@mui/icons-material/Settings";
 import TwitterIcon from "@mui/icons-material/Twitter";
-import { Typography } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
@@ -13,10 +12,10 @@ import MenuItem from "@mui/material/MenuItem";
 import Tooltip from "@mui/material/Tooltip";
 import * as React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import HederaIcon from "../../SVGR/HederaIcon";
 import { useStore } from "../../Store/StoreProvider";
 import { useHashconnectService } from "../../Wallet";
-import { toast } from "react-toastify";
 
 const HeaderMenu = () => {
   const store = useStore();

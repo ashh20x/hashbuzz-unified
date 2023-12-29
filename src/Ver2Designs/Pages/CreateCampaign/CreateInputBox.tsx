@@ -1,6 +1,5 @@
 import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticon";
 import { IconButton, Stack, TextField, Typography } from "@mui/material";
-import { EmojiClickData } from "emoji-picker-react"; // Assuming you have an emoji picker component
 import React, { useState } from "react";
 const TwitterTextField = () => {
   const [text, setText] = useState("");
@@ -13,13 +12,7 @@ const TwitterTextField = () => {
     setText(inputText);
   };
 
-  const handleEmojiSelect = (emoji: EmojiClickData) => {
-    setText((prevText) => prevText + emoji.emoji);
-  };
-
-  const handlePreviewClick = () => {
-    // Implement URL OG data preview logic here
-  };
+ 
 
   return (
     <Stack sx={{ p:1, paddingBottom:0, border: "1px solid #cccc" , borderRadius:1 }}>

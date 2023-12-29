@@ -1,25 +1,22 @@
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import BusinessIcon from "@mui/icons-material/Business";
 import TwitterIcon from "@mui/icons-material/Twitter";
-import { Button, Grid, Typography } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import React from "react";
 import { useStore } from "../../../Store/StoreProvider";
-import AdminPasswordSetup from "./AdminPasswordSetup";
 import Balances from "./Balances";
 import CampaignList from "./CampaignList";
 import { CardGenUtility } from "./CardGenUtility";
-import ConsentModal from "./ConsentModal";
-
 import { toast } from "react-toastify";
+import styled from "styled-components";
 import { useApiInstance } from "../../../APIConfig/api";
 import { getErrorMessage } from "../../../Utilities/helpers";
 import SpeedDialActions from "../../Components/SpeedDialActions";
-import styled from "styled-components";
 // import { useTheme } from "@emotion/react";
 
 const Dashboard = () => {
   const store = useStore();
-  console.log(store, "store");
+  // console.log(store, "store");
 
   const { Integrations } = useApiInstance();
   const currentUser = store?.currentUser;

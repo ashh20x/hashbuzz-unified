@@ -1,7 +1,7 @@
 import { toast } from "react-toastify";
 import { useApiInstance } from "../APIConfig/api";
 import { useStore } from "../Store/StoreProvider";
-import { CreateTransactionEntity, TransactionResponse } from "../types";
+import { CreateTransactionEntity } from "../types";
 import { useHashconnectService } from "./hashconnectService";
 const INITIAL_HBAR_BALANCE_ENTITY = {
   entityBalance: "00.00",
@@ -23,7 +23,7 @@ export const useSmartContractServices = () => {
         if(entity?.entityType ==='HBAR'){
           const transactionBytes = await Transaction.createTransactionBytes({ entity, connectedAccountId: pairingData?.accountIds[0] });
           const updateBalanceTransaction = await sendTransaction(transactionBytes, pairingData?.accountIds[0]!, false, false);
-          const transactionResponse = updateBalanceTransaction.response as TransactionResponse;
+          // const transactionResponse = updateBalanceTransaction.response as TransactionResponse;
           
           if (updateBalanceTransaction.success) {
             const getBal = await Transaction.setTransactionAmount({ entity, 
@@ -79,7 +79,7 @@ export const useSmartContractServices = () => {
         });
         return updateBalanceTransaction;
       }else{
-        const res =await  approveToken(pairingData?.accountIds[0],entity);
+        await  approveToken(pairingData?.accountIds[0],entity);
         const response = await transferTokenToContract(pairingData?.accountIds[0],entity);
         if(response){
           const getBal = await Transaction.setTransactionAmount({ entity });
