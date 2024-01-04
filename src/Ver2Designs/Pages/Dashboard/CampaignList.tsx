@@ -19,6 +19,8 @@ interface CampaignListProps {
   user?: CurrentUser;
 }
 
+
+
 const CampaignList = ({ user }: CampaignListProps) => {
   const navigate = useNavigate();
   const [openAssociateModal, setOpenAssociateModal] = useState<boolean>(false);
@@ -41,7 +43,8 @@ const CampaignList = ({ user }: CampaignListProps) => {
     } catch (err) {
       console.log(err);
     }
-  }, [Admin]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const getClaimAllRewards = useCallback(async () => {
     try {
       const response = await User.getClaimRewards();
@@ -50,7 +53,8 @@ const CampaignList = ({ user }: CampaignListProps) => {
     } catch (error) {
       console.log(error);
     }
-  }, [User]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const getUserData = React.useCallback(async () => {
     try {
       const currentUser = await User.getCurrentUser();
@@ -555,7 +559,8 @@ const CampaignList = ({ user }: CampaignListProps) => {
               size="large"
               variant="contained"
               disableElevation
-              disabled={!user?.available_budget || runningCampaigns || !user?.hedera_wallet_id || !user?.business_twitter_handle}
+              disabled={ !store?.balances.find(ent => +ent.entityBalance > 0) || runningCampaigns || !user?.hedera_wallet_id || !user?.business_twitter_handle}
+              // disabled={!store?.balances.find(ent => +ent.entityBalance > 0)}
               onClick={handleTemplate}
             >
               Create Campaign
