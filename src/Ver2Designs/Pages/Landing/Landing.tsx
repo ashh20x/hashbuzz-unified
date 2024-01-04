@@ -48,7 +48,7 @@ const Landing = () => {
     <Box
       sx={{
         background: "linear-gradient(to right bottom, #071159, #07114d, #091140, #0b0f34, #0d0c28, #0c0a23, #0a081f, #08061a, #07051b, #05051c, #03041e, #01041f)",
-        backgroundImage: `url("./images/landing-bg-2.jpg")`,
+        // backgroundImage: `url("./images/landing-bg-2.jpg")`,
         minHeight: "100vh",
         backgroundRepeat: "no-repeat",
         paddingBottom: "20px",
@@ -76,7 +76,7 @@ const Landing = () => {
             background: "linear-gradient(rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15))",
             p: 3,
             borderRadius: 1,
-            maxWidth: 600,
+            maxWidth: 650,
             marginTop: 5,
             marginLeft: "auto",
             marginRight: "auto",
@@ -116,7 +116,7 @@ const Landing = () => {
               Ready to get started? 
               <div>
               * Learn how to launch your very first promo [{" "}
-              <Typography component={Link} style={{ color: "red" }}>
+              <Typography component={Link} style={{ color: "red" }} href="#">
                 here
               </Typography>
               ].
@@ -124,7 +124,7 @@ const Landing = () => {
               </div>
               <div>
               * To request the whitelisting of your token, simply submit a request [
-              <Typography component={Link} style={{ color: "red" }}>
+              <Typography component={Link} style={{ color: "red" }} href={"https://about.hashbuzz.social/whitelist-token"}>
                 here
               </Typography>
               ].

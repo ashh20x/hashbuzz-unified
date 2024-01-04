@@ -60,17 +60,18 @@ export const useApiInstance = () => {
     (response) => response,
     (error) => {
       console.log("error from instance", error);
-      toast.error(error?.response?.data?.message);
+      // console.log(getErrorMessage(error))
+      toast.error(getErrorMessage(error));
       // whatever you want to do with the error
       if (error?.response?.status === 401) {
         // handleLogout();
       }
       // throw error;
-      toast.error(getErrorMessage(error));
+      // toast.error(getErrorMessage(error));
     }
   );
 
-  const responseBody = (response: AxiosResponse) => response.data;
+  const responseBody = (response: AxiosResponse) => response?.data;
 
   React.useEffect(() => {
     instance.current = axios.create({

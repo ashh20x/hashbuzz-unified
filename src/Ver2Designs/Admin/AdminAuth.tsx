@@ -42,9 +42,9 @@ const AdminAuth = () => {
   const [cookies, setCookies] = useCookies(["adminToken"]);
   const navigate = useNavigate();
 
-  React.useEffect(() =>{
+  React.useEffect(() => {
     navigate("/admin");
-  },[cookies.adminToken, navigate])
+  }, [cookies.adminToken, navigate])
 
   const handleClickShowPassword = () => {
     setFormData((__prev) => {
@@ -70,23 +70,22 @@ const AdminAuth = () => {
   const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const validation = validateForm(formData, setFormData);
-    try {
-      if (validation) {
-        const response = await Auth.adminLogin({
-          password: formData.password.value,
-        });
-        if (response.adminToken) toast.success("Logged in successfully");
+
+    if (validation) {
+      const response = await Auth.adminLogin({
+        password: formData.password.value,
+      });
+      if (response?.adminToken) {
+        toast.success("Logged in successfully");
         setCookies("adminToken", response.adminToken);
-        // if (response.user && store?.updateState) store.updateState((_d) => ({ ..._d, currentUser: response.user }));
-        // unstable_batchedUpdates(() => {
-        //   setAdminPassModalOpen(false);
-        //   setFormData(JSON.parse(JSON.stringify(FORM_INITIAL_STATE)));
-        // });
       }
-    } catch (err) {
-      //@ts-ignore
-      toast.error(getErrorMessage(err));
+      // if (response.user && store?.updateState) store.updateState((_d) => ({ ..._d, currentUser: response.user }));
+      // unstable_batchedUpdates(() => {
+      //   setAdminPassModalOpen(false);
+      //   setFormData(JSON.parse(JSON.stringify(FORM_INITIAL_STATE)));
+      // });
     }
+
   };
 
   return (

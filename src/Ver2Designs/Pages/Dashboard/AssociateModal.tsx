@@ -202,7 +202,7 @@ const AssociateModal = ({ open, onClose }: TopupModalProps) => {
         <Button autoFocus onClick={onClose} color="error" variant="outlined">
           Close
         </Button>
-        <LoadingButton onClick={onSubmitHandler} autoFocus variant="contained" loadingPosition="start" >
+        <LoadingButton onClick={onSubmitHandler} autoFocus variant="contained"  >
           Associate
         </LoadingButton>
 

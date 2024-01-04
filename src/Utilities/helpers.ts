@@ -8,7 +8,7 @@ export const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 // };
 
 export const getErrorMessage = (err: any) => {
-  if (err?.response?.data) return err?.response?.data.error ?? err?.response?.data.message;
+  if (err?.response?.data) return err?.response?.data?.error?.description  ?? err?.response?.data.message;
   if (err?.message) return err?.message;
   return "Server response error";
 };
