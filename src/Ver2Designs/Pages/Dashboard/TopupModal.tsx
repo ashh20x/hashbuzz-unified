@@ -1,21 +1,7 @@
 import { Close as CloseIcon } from "@mui/icons-material";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import { LoadingButton } from "@mui/lab";
-import {
-  Box,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Divider,
-  Grid,
-  IconButton,
-  InputAdornment,
-  List,
-  ListItem,
-  Stack,
-  Typography
-} from "@mui/material";
+import { Box, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Grid, IconButton, InputAdornment, List, ListItem, Stack, Typography } from "@mui/material";
 import FormControl from "@mui/material/FormControl";
 import FormHelperText from "@mui/material/FormHelperText";
 import InputLabel from "@mui/material/InputLabel";
@@ -57,6 +43,12 @@ const FORM_INITIAL_STATE: CurrentFormState = {
 const calculateCharge = (amt: number) => amt * 0.1;
 const calculateTotal = (amt: number) => amt + calculateCharge(amt);
 
+
+const getTheBalOfEntity = (balances:EntityBalances[] , tokenId:string):number => {
+  const bal  = balances.find(en => en.entityId === tokenId)?.entityBalance;
+  return bal? +bal : 0;
+} 
+
 const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
   const [formData, setFromData] = React.useState<CurrentFormState>(JSON.parse(JSON.stringify(FORM_INITIAL_STATE)));
   const inputRef = React.createRef<HTMLInputElement>();
@@ -90,7 +82,7 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
           entityId: data?.entityId,
           amount: { value, fee, total },
           senderId: pairingData?.accountIds[0],
-          decimals: data?.decimals
+          decimals: data?.decimals,
         });
         if (req?.success) {
           toast.success("Transaction successfully completed.");
@@ -125,7 +117,9 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
   useEffect(() => {
     if (inputRef.current) inputRef.current.focus();
   }, [inputRef]);
+
   const reimburse = async () => {
+    if (store?.balances && data?.entityId && formData.amount.value >  getTheBalOfEntity(store?.balances ,data.entityId )) return toast.error("Wrong amount entered.");
     setLoading(true);
     try {
       const response = await Transaction.reimburseAmount({ type: data?.entityType?.toUpperCase(), token_id: data?.entityId, amount: formData?.amount?.value });
@@ -167,12 +161,12 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
       setLoading(false);
     }
   };
-  console.log(data, 'data')
+  // console.log(data, 'data')
 
   return (
     <Dialog open={open}>
       <DialogTitle>
-        {loading ? "Payment in progress..." : `${operation === 'topup' ? " Add funds from your wallet" : "Refund to your wallet"} ${data?.entityType === "HBAR" ? "hbar(ℏ)" : `(token ${data?.entityIcon})`}`}
+        {loading ? "Payment in progress..." : `${operation === "topup" ? " Add funds from your wallet" : "Refund to your wallet"} ${data?.entityType === "HBAR" ? "hbar(ℏ)" : `(token ${data?.entityIcon})`}`}
         <IconButton
           onClick={modalClose}
           color="error"
@@ -192,23 +186,19 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
             {operation === "topup" ? (
               <React.Fragment>
                 <ListItem>
-                  <Typography variant="caption">The stated amount does not include Hedera network fees.
-                  </Typography>
+                  <Typography variant="caption">The stated amount does not include Hedera network fees.</Typography>
                 </ListItem>
                 <ListItem>
-                  <Typography variant="caption">The stated amount can be allocated across various campaigns.
-                  </Typography>
+                  <Typography variant="caption">The stated amount can be allocated across various campaigns.</Typography>
                 </ListItem>
                 <ListItem>
-                  <Typography variant="caption">Hashbuzz imposes a 10% service fee on the designated amount.
-                  </Typography>
+                  <Typography variant="caption">Hashbuzz imposes a 10% service fee on the designated amount.</Typography>
                 </ListItem>
               </React.Fragment>
             ) : (
               <React.Fragment>
                 <ListItem>
                   <Typography variant="caption"> The stated amount does not include Hedera network fees.</Typography>
-
                 </ListItem>
                 <ListItem>
                   <Typography variant="caption"> Refunds are provided at no cost.</Typography>
@@ -222,20 +212,7 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
             <Grid item md={5}>
               <FormControl fullWidth sx={{ marginBottom: 1.25 }} required>
                 <InputLabel htmlFor="topup-amount-input">Amount</InputLabel>
-                <OutlinedInput
-                  label="Enter amount"
-                  type={"number"}
-                  ref={inputRef}
-                  name="Topup Amount"
-                  id="topup-amount-input"
-                  placeholder="Enter the Topup amount"
-                  fullWidth
-                  disabled={loading}
-                  error={formData.amount.error}
-                  value={formData.amount.value}
-                  endAdornment={<InputAdornment position="end">{data?.entityIcon}</InputAdornment>}
-                  onChange={inputChangeHandler}
-                />
+                <OutlinedInput label="Enter amount" type={"number"} ref={inputRef} name="Topup Amount" id="topup-amount-input" placeholder="Enter the Topup amount" fullWidth disabled={loading} error={formData.amount.error} value={formData.amount.value} endAdornment={<InputAdornment position="end">{data?.entityIcon}</InputAdornment>} onChange={inputChangeHandler} />
                 <FormHelperText error={formData.amount.error}>{formData.amount.helperText}</FormHelperText>
               </FormControl>
             </Grid>
@@ -247,17 +224,7 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
             <Grid item md={4}>
               <FormControl fullWidth sx={{ marginBottom: 1.25 }}>
                 <InputLabel htmlFor="hashbuzz-charge-input">Fees</InputLabel>
-                <OutlinedInput
-                  label="Hashbuzz chnarge"
-                  type={"number"}
-                  name="Charge"
-                  id="hashbuzz-charge-input"
-                  placeholder="00.00"
-                  fullWidth
-                  value={calculateCharge(formData.amount.value).toFixed(4)}
-                  endAdornment={<InputAdornment position="end">{data?.entityIcon}</InputAdornment>}
-                  readOnly
-                />
+                <OutlinedInput label="Hashbuzz chnarge" type={"number"} name="Charge" id="hashbuzz-charge-input" placeholder="00.00" fullWidth value={calculateCharge(formData.amount.value).toFixed(4)} endAdornment={<InputAdornment position="end">{data?.entityIcon}</InputAdornment>} readOnly />
               </FormControl>
             </Grid>
             <Grid item md={12}>
@@ -275,19 +242,7 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
           <Box>
             <FormControl fullWidth sx={{ marginBottom: 1.25 }} required>
               <InputLabel htmlFor="reimburse-amount-input">Reimburse Amount</InputLabel>
-              <OutlinedInput
-                label="Enter amount"
-                type={"number"}
-                ref={inputRef}
-                name="Reimburse Amount"
-                id="reimburse-amount-input"
-                placeholder="Enter the Topup amount"
-                fullWidth
-                error={formData.amount.error}
-                value={formData.amount.value}
-                endAdornment={<InputAdornment position="end">{data?.entityIcon}</InputAdornment>}
-                onChange={inputChangeHandler}
-              />
+              <OutlinedInput label="Enter amount" type={"number"} ref={inputRef} name="Reimburse Amount" id="reimburse-amount-input" placeholder="Enter the Topup amount" fullWidth error={formData.amount.error} value={formData.amount.value} endAdornment={<InputAdornment position="end">{data?.entityIcon}</InputAdornment>} onChange={inputChangeHandler} />
               <FormHelperText error={formData.amount.error}>{formData.amount.helperText}</FormHelperText>
             </FormControl>
           </Box>
@@ -302,15 +257,7 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
             Reimburse
           </LoadingButton>
         ) : (
-          <LoadingButton
-            autoFocus
-            onClick={handleTopup}
-            variant="contained"
-            loading={loading}
-            loadingPosition="start"
-            startIcon={<AccountBalanceWalletIcon />}
-            disabled={loading}
-          >
+          <LoadingButton autoFocus onClick={handleTopup} variant="contained" loading={loading} loadingPosition="start" startIcon={<AccountBalanceWalletIcon />} disabled={loading}>
             Topup<i>{` ( ${calculateTotal(formData.amount.value).toFixed(4)}  ${data?.entityIcon} )`}</i>
           </LoadingButton>
         )}

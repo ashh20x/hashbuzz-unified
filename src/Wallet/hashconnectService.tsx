@@ -190,7 +190,7 @@ export const useHashconnectService = () => {
       return response;
     } catch (err) {
       console.log(err);
-      return err
+      throw err
     }
   }
 
