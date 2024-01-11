@@ -1,4 +1,4 @@
-import { Box, Container, Link, Stack, Typography, Grid, Alert } from "@mui/material";
+import { Box, Container, Link, Stack, Typography, Grid, Alert, useTheme } from "@mui/material";
 import HashbuzzLogo from "../../../SVGR/HashbuzzLogo";
 import React from "react";
 import { useCookies } from "react-cookie";
@@ -10,6 +10,7 @@ import styled from "styled-components";
 
 const Landing = () => {
   const store = useStore();
+  const theme = useTheme();
   const [cookies] = useCookies(["aSToken"]);
   const { pairingData, handleAuthenticate, authStatusLog } = useHashconnectService();
   const navigate = useNavigate();
@@ -48,12 +49,15 @@ const Landing = () => {
     <Box
       sx={{
         background: "linear-gradient(to right bottom, #071159, #07114d, #091140, #0b0f34, #0d0c28, #0c0a23, #0a081f, #08061a, #07051b, #05051c, #03041e, #01041f)",
-        // backgroundImage: `url("./images/landing-bg-2.jpg")`,
+        backgroundImage: `url("./images/landing-bg-2.jpg")`,
         minHeight: "100vh",
         backgroundRepeat: "no-repeat",
-        paddingBottom: "20px",
+        // paddingBottom: "20px",
         backgroundSize: "cover",
         backgroundPosition: "right bottom",
+        [theme.breakpoints.between("md","xl")]:{
+          backgroundPosition: "top right",
+        },
         backdropFilter: "blur(20px)",
       }}
     >
@@ -76,8 +80,20 @@ const Landing = () => {
             background: "linear-gradient(rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15))",
             p: 3,
             borderRadius: 1,
-            maxWidth: 650,
-            marginTop: 5,
+            [theme.breakpoints.up("md")]:{
+              maxWidth:"unset",
+              width:"100%",
+              marginTop: 2
+            },
+            // maxWidth: 1250,
+            [theme.breakpoints.up("lg")]:{
+              maxWidth:1150,
+              marginTop: 3
+            },
+            [theme.breakpoints.up("xl")]:{
+              maxWidth:700,
+              marginTop: 5
+            },
             marginLeft: "auto",
             marginRight: "auto",
           }}
@@ -111,8 +127,6 @@ const Landing = () => {
             </Typography>
             <Typography>
             <StyledText>
-
-
               Ready to get started? 
               <div>
               * Learn how to launch your very first promo [{" "}
@@ -128,7 +142,6 @@ const Landing = () => {
                 here
               </Typography>
               ].
-
               </div>
               <div>
               * Stay in the loop with our latest updates and announcements by following us on{" "}
@@ -140,16 +153,10 @@ const Landing = () => {
                 Discord
               </Typography>
               .
-
               </div>
-               {" "}
               </StyledText>
-
-
             </Typography>
-
             <Typography>Join us in revolutionizing the way we share and validate information on social media.</Typography>
-
           </Stack>
         </Box>
       </Container>

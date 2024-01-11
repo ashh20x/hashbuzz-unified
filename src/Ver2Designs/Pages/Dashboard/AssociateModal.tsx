@@ -1,16 +1,6 @@
 import { Close as CloseIcon } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Grid,
-  IconButton,
-  MenuItem,
-  Select
-} from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, MenuItem, Select } from "@mui/material";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import OutlinedInput from "@mui/material/OutlinedInput";
@@ -23,55 +13,62 @@ interface TopupModalProps {
   onClose: () => void;
 }
 type CurrentFormState = {
-  token_id: string,
-  tokendata: string,
-  token_type: string,
-  token_symbol: string,
-  decimals: Number
+  token_id: string;
+  tokendata: string;
+  token_type: string;
+  token_symbol: string;
+  decimals: Number;
 };
 
-
 const FORM_INITIAL_STATE: CurrentFormState = {
-  token_id: '',
-  tokendata: '',
-  token_type: '',
-  token_symbol: '',
-  decimals: 0
+  token_id: "",
+  tokendata: "",
+  token_type: "",
+  token_symbol: "",
+  decimals: 0,
 };
 
 // const calculateCharge = (amt: number) => amt * 0.1;
 
 const AssociateModal = ({ open, onClose }: TopupModalProps) => {
   const [formData, setFromData] = React.useState<CurrentFormState>(JSON.parse(JSON.stringify(FORM_INITIAL_STATE)));
-  const { Admin, User } = useApiInstance();
-  const [loading, setLoading] = useState(false)
+  const { Admin, User, MirrorNodeRestAPI } = useApiInstance();
+  const [loading, setLoading] = useState(false);
   const store = useStore();
 
-  console.log(formData, 'formdata')
+  const getTokenInfo = async (tokenId: string) => {
+    try {
+      const tokenInfoReq = await MirrorNodeRestAPI.getTokenInfo(tokenId);
+      const tokenInfo = tokenInfoReq.data;
+      setFromData((_prev) => ({ ..._prev, token_symbol: tokenInfo.symbol, token_type: tokenInfo.type === "FUNGIBLE_COMMON" ? "fungible" : "nonfungible", decimals: +tokenInfo.decimals }));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  // console.log(formData, "formdata");
   const inputChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
     setFromData((_d) => ({
-
       ..._d,
-      [event.target.name]: (event.target.value),
-
+      [event.target.name]: event.target.value,
     }));
   };
+
   const inputSelectChangeHandler = (event: any) => {
     event.preventDefault();
     setFromData((_d) => ({
       ..._d,
-      "token_type": (event.target.value),
-
+      token_type: event.target.value,
     }));
   };
 
   const onSubmitHandler = async () => {
     try {
-      setLoading(true)
+      setLoading(true);
       const data = {
         ...formData,
-        decimals: Number(formData.decimals)
+        decimals: Number(formData.decimals),
       };
       const tokenInfoReq = await Admin.addNewToken(data);
       const balancesData = await User.getTokenBalances();
@@ -92,15 +89,18 @@ const AssociateModal = ({ open, onClose }: TopupModalProps) => {
       });
 
       toast.success(tokenInfoReq.message);
-      setLoading(false)
+      setLoading(false);
       onClose();
-
     } catch (err) {
       console.log(err);
-      setLoading(false)
+      setLoading(false);
     }
+  };
 
-  }
+  const handleTokenIdInputBlur = (event: React.FocusEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    if (value && value.length > 6) getTokenInfo(value);
+  };
 
   return (
     <Dialog open={open}>
@@ -129,9 +129,9 @@ const AssociateModal = ({ open, onClose }: TopupModalProps) => {
               name="token_id"
               id="token_id"
               placeholder="Enter the Token Id"
+              onBlur={handleTokenIdInputBlur}
               fullWidth
               disabled={loading}
-
               onChange={inputChangeHandler}
             />
           </FormControl>
@@ -143,6 +143,7 @@ const AssociateModal = ({ open, onClose }: TopupModalProps) => {
               label="Enter decimals"
               type={"number"}
               //   ref={inputRef}
+              value={formData.decimals}
               name="decimals"
               id="decimals"
               placeholder="Enter the decimals"
@@ -153,59 +154,27 @@ const AssociateModal = ({ open, onClose }: TopupModalProps) => {
           </FormControl>
           <FormControl fullWidth sx={{ marginBottom: 1.25 }} required>
             <InputLabel htmlFor="token_symbol">Token Symbol</InputLabel>
-            <OutlinedInput
-              label="Token Symbol"
-              type={"text"}
-              name="token_symbol"
-              id="token_symbol"
-              placeholder="Enter the Token Symbol"
-              fullWidth
-              disabled={loading}
-
-              onChange={inputChangeHandler}
-            />
+            <OutlinedInput label="Token Symbol" type={"text"} name="token_symbol" id="token_symbol" placeholder="Enter the Token Symbol" fullWidth disabled={loading} onChange={inputChangeHandler} value={formData.token_symbol} />
           </FormControl>
           <FormControl fullWidth sx={{ marginBottom: 1.25 }} required>
             <InputLabel htmlFor="token_type">Token Type</InputLabel>
-            <Select
-              labelId="token_type"
-              id="token_type"
-              label="Token Type"
-
-              onChange={inputSelectChangeHandler}
-            >
-              <MenuItem value={'fungible'}>Fungible</MenuItem>
-
+            <Select labelId="token_type" id="token_type" label="Token Type" onChange={inputSelectChangeHandler}  value={formData.token_type}>
+              <MenuItem value={"fungible"}>Fungible</MenuItem>
             </Select>
-
           </FormControl>
           <FormControl fullWidth sx={{ marginBottom: 1.25 }} required>
             <InputLabel htmlFor="tokendata">Token Data</InputLabel>
-            <OutlinedInput
-              label="Enter Token Data"
-              type={"text"}
-
-              name="tokendata"
-              id="tokendata"
-              placeholder="Enter the Token Data"
-              fullWidth
-              disabled={loading}
-
-              onChange={inputChangeHandler}
-            />
-
+            <OutlinedInput label="Enter Token Data" type={"text"} name="tokendata" id="tokendata" placeholder="Enter the Token Data" fullWidth disabled={loading} onChange={inputChangeHandler} />
           </FormControl>
-
         </Grid>
       </DialogContent>
       <DialogActions>
         <Button autoFocus onClick={onClose} color="error" variant="outlined">
           Close
         </Button>
-        <LoadingButton onClick={onSubmitHandler} autoFocus variant="contained"  >
+        <LoadingButton onClick={onSubmitHandler} autoFocus variant="contained">
           Associate
         </LoadingButton>
-
       </DialogActions>
     </Dialog>
   );
