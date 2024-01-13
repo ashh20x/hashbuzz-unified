@@ -313,7 +313,7 @@ export const TemplatePage = () => {
             ))}
           </ButtonWrap>
           <TableSection>
-            <TemplateTable handleReply={handleReply} handleRetweet={handleRetweet} handleLike={handleLike} handleDownload={handleQuote} reply={reply} selectedToken={selectedToken} retweet={retweet} like={like} quote={quote} />
+            <TemplateTable handleReply={handleReply} handleRetweet={handleRetweet} handleLike={handleLike} handleDownload={handleQuote} reply={reply} selectedToken={selectedToken} type={type} retweet={retweet} like={like} quote={quote} />
           </TableSection>
         </LeftSec>
         <RightSec>
@@ -326,7 +326,7 @@ export const TemplatePage = () => {
           {addMedia ? (
             <IconsWrap>
               <label for="file">
-                <span> {/* <ImageIcon /> */}</span>
+                <span> </span>
               </label>
               <CustomInput type="file" alt="" id="file" style={{ display: "none" }} accept="image/png, image/gif, image/jpeg,image/jpg, video/*" onChange={handleImageChange} />
               <label onClick={handleYouTubeClick}>
