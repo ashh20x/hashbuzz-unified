@@ -485,7 +485,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
     try {
       // const tokenInfo =  await Admin.getTokenInfo(tokenId);
       const allCampaigns = await Campaign.getCampaigns();
-      console.log(allCampaigns, "allcampaigns");
+      // console.log(allCampaigns, "allcampaigns");
       let data = [];
       allCampaigns?.forEach((item: any) => {
         console.log(item.card_status, "Card_status");
