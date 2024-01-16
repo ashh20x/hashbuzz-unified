@@ -10,7 +10,7 @@ export const tableHeadRow = [
 
 export const displayTableHeadRow = [
   { id: "Like", label: "Like", width: 60, align: "center" },
-  { id: "Retweet", label: "Retweet", width: 85, align: "center" },
+  { id: "Retweet", label: "Repost", width: 85, align: "center" },
   { id: "Quote", label: "Quote", width: 85, align: "center" },
   { id: "Comment", label: "Comment", width: 85, align: "center" }
 ];

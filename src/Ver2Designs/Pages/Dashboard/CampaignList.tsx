@@ -111,7 +111,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
     },
     {
       field: "retweet_reward",
-      headerName: "Retweet Reward",
+      headerName: "Repost Reward",
       width: 150,
       renderCell: (cellValues) => {
         return (
@@ -467,7 +467,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
                 cellValues.row.campaign_stats === "Campaign Declined" ? (
                 "Start"
               ) : cellValues.row.campaign_stats === "Running" ? (
-                <Countdown date={ new Date(cellValues?.row?.campaign_start_time).getTime() + 86400000 } />
+                <Countdown date={ new Date(cellValues?.row?.campaign_start_time).getTime() + (+(process.env.REACT_APP_CAMPAIGN_DURATION??1440)*60*1000) } />
               ) : (
                 "Update"
               )}
