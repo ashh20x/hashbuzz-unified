@@ -162,7 +162,7 @@ const PreviewModal = ({
           </LeftSec>
           <RightSec>
             <TableSection>
-              <ModalTable currentToken={currentToken} reply={reply} retweet={retweet} like={like} quote={quote} />
+              <ModalTable currentToken={currentToken} reply={reply} retweet={retweet} like={like} quote={quote} type={type}/>
             </TableSection>
             <CustomParagraph>Campaign Budget: {budget}</CustomParagraph>
             <CustomParagraph>

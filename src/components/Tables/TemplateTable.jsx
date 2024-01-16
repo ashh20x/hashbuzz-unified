@@ -68,7 +68,7 @@ export const TemplateTable = ({ handleReply, handleRetweet, handleLike, handleDo
                   }
                 }}
                 step="0.1"
-                name="retweet"
+                name="repost"
                 onChange={(e) => handleRetweet(e)}
                 placeholder={retweet}
               />
