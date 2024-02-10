@@ -7,6 +7,7 @@ import { useCookies } from "react-cookie";
 import { toast } from "react-toastify";
 import { useApiInstance } from "../APIConfig/api";
 import { useStore } from "../Store/StoreProvider";
+import { NETWORK } from "../Utilities/helpers";
 
 export const fetchAccountIfoKey = async (accountId: string) => {
   const url = "https://testnet.mirrornode.hedera.com/api/v1/accounts/" + accountId;
@@ -153,7 +154,7 @@ export const useHashconnectService = () => {
 
   const approveToken = async (accountId: any, data: any) => {
     let contract_address: any = process.env.REACT_APP_CONTRACT_ADDRESS;
-    const provider = hashconnect.getProvider("testnet", topic!, accountId);
+    const provider = hashconnect.getProvider(NETWORK, topic!, accountId);
     const signer = hashconnect.getSigner(provider);
     const approvedToken =
       new AccountAllowanceApproveTransaction().approveTokenAllowance(
