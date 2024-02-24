@@ -49,6 +49,7 @@ export type CreateTransactionByteBody = {
 export type SetTransactionBody = {
   entity: CreateTransactionEntity;
   transactionId?: string;
+  response?:string
 };
 
 export type TopUpResponse = {
