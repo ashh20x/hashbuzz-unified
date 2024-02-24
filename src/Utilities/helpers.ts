@@ -1,6 +1,9 @@
 import { EntityBalances } from "../types";
 export const NETWORK = process.env.REACT_APP_NETWORK ?? "testnet";
 export const dAppApiURL = process.env.REACT_APP_DAPP_API;
+export const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS;
+export const COLLECTOR_ACCOUNT = process.env.REACT_APP_COLLECTOR_ACCOUNT
+
 export const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 // const _delete_cookie = (name: string) => {
