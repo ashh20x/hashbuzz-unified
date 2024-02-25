@@ -20,9 +20,9 @@ export const useSmartContractServices = () => {
   const topUpAccount = async (entity: CreateTransactionEntity) => {
     try {
       if (pairingData?.accountIds) {
-        // if (entity?.entityType === "fungible") {
-        //   await approveToken(pairingData?.accountIds[0], entity);
-        // }
+        if (entity?.entityType === "fungible") {
+          await approveToken(pairingData?.accountIds[0], entity);
+        }
         const transactionBytes = await Transaction.createTransactionBytes({ entity, connectedAccountId: pairingData?.accountIds[0] });
         const updateBalanceTransaction = await sendTransaction(transactionBytes, pairingData?.accountIds[0]!, false, false);
         const transactionResponse = updateBalanceTransaction?.response;
