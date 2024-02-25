@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { useApiInstance } from "../APIConfig/api";
 import { getErrorMessage } from "../Utilities/helpers";
 import { CurrentUser } from "../types";
-import { AppState } from "../types/state";
+import { AppState, EntityBalances } from "../types/state";
 
 // Defines the type for the context including the AppState and an update function.
 interface StoreContextType extends AppState {
@@ -12,6 +12,7 @@ interface StoreContextType extends AppState {
   updateState: React.Dispatch<React.SetStateAction<AppState>>;
   authCheckPing: () => Promise<{ ping: boolean }>;
   checkAndUpdateEntityBalances: () => Promise<any>;
+  startBalanceQueryTimer:() => void;
 }
 
 export const INITIAL_HBAR_BALANCE_ENTITY = {
@@ -39,6 +40,7 @@ const INITIAL_STATE = {
 // It manages the state of the application including user data and token information.
 export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
   const [cookies] = useCookies(["aSToken"]);
+  const [balanceQueryTimer, setBalanceQueryTimer] = React.useState<NodeJS.Timeout | null>(null);
   const [state, updateState] = React.useState<AppState>(JSON.parse(JSON.stringify(INITIAL_STATE)));
   const { Auth, User } = useApiInstance();
 
@@ -59,13 +61,19 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [cookies]);
 
-  const checkAndUpdateEntityBalances = React.useCallback(async () => {
+  const checkAndUpdateEntityBalances = React.useCallback(async (topup?:boolean) => {
     try {
       const balancesData = await User.getTokenBalances();
-      const available_budget = state.currentUser?.available_budget;
-      console.log(balancesData, "balancesdat");
+      let available_budget = 0;
+      if(!topup) available_budget = Number(state.currentUser?.available_budget);
+      else {
+        const currentUser = await User.getCurrentUser();
+        available_budget = currentUser?.available_budget
+      }
+
       updateState((_state) => {
-        _state.balances.push({
+        const bal:EntityBalances[] = []
+        bal.push({
           ...INITIAL_HBAR_BALANCE_ENTITY,
           entityBalance: (available_budget ?? 0 / 1e8).toFixed(4),
           entityId: state?.currentUser?.hedera_wallet_id ?? "",
@@ -74,7 +82,7 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
         if (balancesData.length > 0) {
           for (let index = 0; index < balancesData.length; index++) {
             const d = balancesData[index];
-            _state.balances.push({
+            bal.push({
               entityBalance: d.available_balance.toFixed(4),
               entityIcon: d.token_symbol,
               entitySymbol: "",
@@ -84,8 +92,10 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
             });
           }
         }
+        _state.balances = [...bal]
         return { ..._state };
       });
+      toast.success("Balance is updated successfully.")
     } catch (err) {
       toast.error(getErrorMessage(err));
     }
@@ -101,6 +111,16 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
       return { ping: false };
     }
   }, [Auth]);
+
+
+   /**
+    * @description Function to start the timer FOR Balance query after 35s.
+    * @param duration timer duration in seconds
+    */
+   const startBalanceQueryTimer = React.useCallback(() => {
+    if (balanceQueryTimer) clearTimeout(balanceQueryTimer);
+    setBalanceQueryTimer(setTimeout(() => checkAndUpdateEntityBalances(true), 35000)); // 35 seconds
+  }, [balanceQueryTimer, checkAndUpdateEntityBalances]);
 
   React.useEffect(() => {
     if (cookies?.aSToken) {
@@ -149,6 +169,7 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+
   const value = React.useMemo(
     () => ({
       state,
@@ -156,11 +177,11 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
       authCheckPing,
       checkAndUpdateEntityBalances,
     }),
-    [authCheckPing, state, checkAndUpdateEntityBalances]
+    [state, authCheckPing, checkAndUpdateEntityBalances]
   );
 
   return (
-    <StoreContext.Provider value={{ ...value.state, updateState: value.updateState, authCheckPing, checkAndUpdateEntityBalances }}>
+    <StoreContext.Provider value={{ ...value.state, updateState: value.updateState, authCheckPing, checkAndUpdateEntityBalances , startBalanceQueryTimer }}>
       {children}
     </StoreContext.Provider>
   );
