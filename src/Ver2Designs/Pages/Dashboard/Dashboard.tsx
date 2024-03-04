@@ -79,7 +79,7 @@ const Dashboard = () => {
         {/* card for personal twitter handle */}
         <CardGenUtility
           startIcon={<TwitterIcon color="inherit" fontSize={"inherit"} />}
-          title={"Individual X Account"}
+          title={"Personal X Account"}
           content={
             currentUser?.personal_twitter_handle ? (
               <Typography variant="h5">{"@" + currentUser?.personal_twitter_handle}</Typography>
@@ -116,14 +116,6 @@ const Dashboard = () => {
 
       {/* speed dial  action button */}
       <SpeedDialActions />
-
-      {/* Concent modal for requesting concent form user
-      {!currentUser?.consent ? <ConsentModal user={currentUser!} /> : null} */}
-
-      {/* Show modal to admin user for updating email and password */}
-      {/* {currentUser && !currentUser?.adminActive && ["SUPER_ADMIN", "ADMIN"].includes(currentUser?.role!) ? (
-        <AdminPasswordSetup user={currentUser} />
-      ) : null} */}
     </React.Fragment>
   );
 };
