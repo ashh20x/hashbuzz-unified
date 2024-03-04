@@ -201,7 +201,7 @@ const Balances = () => {
                         formatBalance(balances[activeIndex])
                       }
                       entityIcon={balances[activeIndex]?.entityIcon}
-                      entitySymbol={balances[activeIndex]?.entitySymbol}
+                      // entitySymbol={balances[activeIndex]?.entitySymbol}
                       key="balance_card"
                     />
                     <Button
@@ -278,10 +278,9 @@ const Balances = () => {
 interface BalanceCardProps {
   entityBal: string | number;
   entityIcon: React.ReactNode;
-  entitySymbol: string;
 }
 
-const BalanceCard = ({ entityBal, entityIcon, entitySymbol }: BalanceCardProps) => {
+const BalanceCard = ({ entityBal, entityIcon }: BalanceCardProps) => {
   const theme = useTheme();
   return (
     <Stack
@@ -291,11 +290,11 @@ const BalanceCard = ({ entityBal, entityIcon, entitySymbol }: BalanceCardProps) 
       sx={{ padding: 0.5, display: "inline-flex", margin: "0 auto", borderRadius: 0, border: 1, borderColor: theme.palette.primary.main }}
     >
       <Avatar variant="rounded" sx={{ width: "auto", height: "auto",padding:"5px" }}>
-        {entityIcon ?? "ℏ"}
+        {entityIcon ?? "HBAR"}
       </Avatar>
       <Stack spacing={0.25} sx={{ marginLeft: 0.5, marginRight: 0.5 }}>
         <Typography fontWeight={500} sx={{ textAlign: "center" }}>
-          {entityBal ?? "124.5678"} {entitySymbol ?? "ℏ"}
+          {entityBal ?? "124.5678"}
         </Typography>
       </Stack>
     </Stack>

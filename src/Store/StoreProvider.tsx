@@ -17,7 +17,7 @@ interface StoreContextType extends AppState {
 
 export const INITIAL_HBAR_BALANCE_ENTITY = {
   entityBalance: "00.00",
-  entityIcon: "ℏ",
+  entityIcon: "HBAR",
   entitySymbol: "ℏ",
   entityId: "",
   entityType: "HBAR",

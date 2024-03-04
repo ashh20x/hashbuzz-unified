@@ -15,7 +15,6 @@ const Landing = () => {
   const { pairingData, handleAuthenticate, authStatusLog } = useHashconnectService();
   const navigate = useNavigate();
   const ping = store?.ping;
-  console.log(store, "Storei")
   const pairedAccount = pairingData?.accountIds[0];
 
   React.useEffect(() => {
@@ -28,22 +27,20 @@ const Landing = () => {
     if (pairedAccount && !ping?.status && !cookies?.aSToken) {
       handleAuthenticate();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pairedAccount, ping?.status, cookies]);
 
   const StyledText = styled.div`
-  display: flex;
-  flex-direction: column;
-  font-family: "Roboto","Helvetica","Arial",sans-serif !important;
-  gap: 10px;
-  
-  p{
-    width: 100%;
-  word-wrap: break-word;
-  }
+    display: flex;
+    flex-direction: column;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif !important;
+    gap: 10px;
 
-    
-  `
+    p {
+      width: 100%;
+      word-wrap: break-word;
+    }
+  `;
 
   return (
     <Box
@@ -55,7 +52,7 @@ const Landing = () => {
         // paddingBottom: "20px",
         backgroundSize: "cover",
         backgroundPosition: "right bottom",
-        [theme.breakpoints.between("md","xl")]:{
+        [theme.breakpoints.between("md", "xl")]: {
           backgroundPosition: "top right",
         },
         backdropFilter: "blur(20px)",
@@ -77,22 +74,22 @@ const Landing = () => {
         </Stack>
         <Box
           sx={{
-            background: "linear-gradient(rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15))",
+            background: "linear-gradient(rgba(0, 96, 231, 0.5), rgba(80, 360, 350, 0.7))",
             p: 3,
             borderRadius: 1,
-            [theme.breakpoints.up("md")]:{
-              maxWidth:"unset",
-              width:"100%",
-              marginTop: 2
+            [theme.breakpoints.up("md")]: {
+              maxWidth: "900",
+              width: "75%",
+              marginTop: 2,
             },
             // maxWidth: 1250,
-            [theme.breakpoints.up("lg")]:{
-              maxWidth:1150,
-              marginTop: 3
+            [theme.breakpoints.up("lg")]: {
+              maxWidth: 1150,
+              marginTop: 3,
             },
-            [theme.breakpoints.up("xl")]:{
-              maxWidth:700,
-              marginTop: 5
+            [theme.breakpoints.up("xl")]: {
+              maxWidth: 800,
+              marginTop: 5,
             },
             marginLeft: "auto",
             marginRight: "auto",
@@ -104,56 +101,53 @@ const Landing = () => {
                 <Typography variant="h4">{pairedAccount}</Typography>
               </Grid>
               <Grid item sm={6} xs={12}>
-                {authStatusLog.length > 0 ? (
-                  <Alert severity={authStatusLog[authStatusLog.length - 1]?.type ?? "info"}>
-                    {authStatusLog[authStatusLog.length - 1]?.message ?? "Message"}
-                  </Alert>
-                ) : null}
+                {authStatusLog.length > 0 ? <Alert severity={authStatusLog[authStatusLog.length - 1]?.type ?? "info"}>{authStatusLog[authStatusLog.length - 1]?.message ?? "Message"}</Alert> : null}
               </Grid>
             </Grid>
           ) : null}
           <Stack sx={{ color: "rgb(255, 255, 255)" }} spacing={2}>
-
             <Typography variant="subtitle1">
-              Welcome to a world where sharing verified information on X is as easy as sending a tweet! We're talking about a groundbreaking social DAO (Decentralized Autonomous Organization) that empowers local communities to validate information right from its source.
+              Discover the power of hashbuzz, a dynamic platform that elevates brand communities through incentivized Xposts. By leveraging project tokens, brands can significantly boost their visibility and exposure. This approach not only enhances token adoption within the community but also transforms regular posts into viral sensations. Expect a substantial increase in overall engagement, as your audience becomes more interactive and invested in your brand's success. Additionally, hashbuzz
+              drives authentic interactions, builds long-term brand loyalty, and taps into new audience segments, fostering a stronger, more vibrant community around your brand.
             </Typography>
 
-            <Typography>
-            Our current Proof of Concept (PoC) is just the beginning of this grand vision. In this PoC, campaigners can run tweet promotions and reward their dedicated influencers with either hbar or from a selection of whitelisted fungible HTS tokens.
-            </Typography>
+            <Typography>In this proof of concept, campaigners can run Xpost promos and reward their dedicated influencers with either HBAR or from a selection of whitelisted fungible HTS tokens.</Typography>
 
+            <Typography>Our goal is to create a seamless rewarding mechanism that bridges both web2 and web3. It's all about ensuring that the right individuals receive recognition for their contributions.</Typography>
             <Typography>
-            Our goal with this PoC is to create a seamless rewarding mechanism that bridges both web2 and web3. It's all about ensuring that the right individuals receive recognition for their contributions.{" "}
-            </Typography>
-            <Typography>
-            <StyledText>
-              Ready to get started? 
-              <div>
-              * Learn how to launch your very first promo [{" "}
-              <Typography component={Link} style={{ color: "red" }} href="#">
-                here
-              </Typography>
-              ].
-
-              </div>
-              <div>
-              * To request the whitelisting of your token, simply submit a request [
-              <Typography component={Link} style={{ color: "red" }} href={"https://about.hashbuzz.social/whitelist-token"}>
-                here
-              </Typography>
-              ].
-              </div>
-              <div>
-              * Stay in the loop with our latest updates and announcements by following us on{" "}
-              <Typography component={Link} href={"https://x.com/hbuzzs"} style={{ color: "red" }}>
-                X
-              </Typography>{" "}
-              -{" "}
-              <Typography component={Link} href={"https://discord.com/invite/Zq6UAQ63Vc"} style={{ color: "red" }}>
-                Discord
-              </Typography>
-              .
-              </div>
+              <StyledText>
+                Ready to get started?
+                <div>
+                  * Learn how to launch your very first promo [{" "}
+                  <Typography component={Link} style={{ color: "red" }} href="#">
+                    here
+                  </Typography>
+                  ].
+                </div>
+                <div>
+                  * To request the whitelisting of your token, simply submit a request [
+                  <Typography component={Link} style={{ color: "red" }} href={"https://about.hashbuzz.social/whitelist-token"}>
+                    here
+                  </Typography>
+                  ].
+                </div>
+                <div>
+                  * Stay in the loop with our latest updates and announcements by following us on{" "}
+                  <Typography component={Link} href={"https://x.com/hbuzzs"} style={{ color: "red" }}>
+                    X
+                  </Typography>{" "}
+                  -{" "}
+                  <Typography component={Link} href={"https://discord.com/invite/Zq6UAQ63Vc"} style={{ color: "red" }}>
+                    Discord
+                  </Typography>
+                </div>
+                <div>
+                  * Read our terms and conditions, and privacy policy [
+                  <Typography component={Link} style={{ color: "red" }} href={"/#"}>
+                    here
+                  </Typography>
+                  ].
+                </div>
               </StyledText>
             </Typography>
             <Typography>Join us in revolutionizing the way we share and validate information on social media.</Typography>
