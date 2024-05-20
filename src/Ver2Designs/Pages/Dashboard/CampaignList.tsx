@@ -1,5 +1,5 @@
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import { Box, Button, Card, Divider, Stack, Typography } from "@mui/material";
+import { Box, Button, Card, Dialog, DialogActions, DialogContent, DialogTitle, Divider, IconButton, Stack, Typography } from "@mui/material";
 import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
 import { CurrentUser } from "../../../types";
 import { cardStyle } from "./CardGenUtility";
@@ -14,6 +14,10 @@ import { useStore } from "../../../Store/StoreProvider";
 import DetailsModal from "../../../components/PreviewModal/DetailsModal";
 import { getErrorMessage } from "../../../Utilities/helpers";
 import Countdown from "react-countdown";
+import ApproveIcon from "@mui/icons-material/Done";
+import RejectedIcon from "@mui/icons-material/Cancel";
+import PreviewIcon from "@mui/icons-material/RemoveRedEye";
+import RefreshICon from '@mui/icons-material/Cached';
 
 interface CampaignListProps {
   user?: CurrentUser;
@@ -43,7 +47,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
     } catch (err) {
       console.log(err);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const getClaimAllRewards = useCallback(async () => {
     try {
@@ -53,7 +57,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
     } catch (error) {
       console.log(error);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const getUserData = React.useCallback(async () => {
     try {
@@ -202,28 +206,6 @@ const CampaignList = ({ user }: CampaignListProps) => {
             >
               Claim Rewards
             </Button>
-            {/* <Button
-              variant="contained"
-              color="primary"
-              style={{ marginLeft: "10px" }}
-              onClick={async () => {
-                const data = {
-                  approve: false,
-                  id: cellValues?.row?.id,
-                };
-                try {
-                  const response = await Admin.updateStatus(data);
-                  getAllPendingCampaigns();
-                  getAllCampaigns()
-                  console.log(response, "update status");
-                  toast(response?.message);
-                } catch (err) {
-                  console.log(err);
-                }
-              }}
-            >
-              Reject
-            </Button>{" "} */}
           </>
         );
       },
@@ -283,9 +265,14 @@ const CampaignList = ({ user }: CampaignListProps) => {
         console.log(cellValues, "cellValues");
         return (
           <>
-            <Button
-              variant="contained"
-              color="primary"
+            <IconButton aria-label="Preview Campaign" title="Preview Campaign" onClick={() => setPreviewCard(cellValues.row)}>
+              <PreviewIcon />
+            </IconButton>
+            <IconButton
+              aria-label="Approve Campaign"
+              title="Approve Campaign"
+              // variant="contained"
+              // color="primary"
               onClick={async () => {
                 const data = {
                   approve: true,
@@ -302,11 +289,14 @@ const CampaignList = ({ user }: CampaignListProps) => {
                 }
               }}
             >
-              Approve
-            </Button>
-            <Button
-              variant="contained"
-              color="primary"
+              <ApproveIcon />
+            </IconButton>
+            <IconButton
+              // variant="contained"
+              // color="primary"
+              color="error"
+              aria-label="Reject Icon "
+              title="Reject Campaign"
               style={{ marginLeft: "10px" }}
               onClick={async () => {
                 const data = {
@@ -324,8 +314,9 @@ const CampaignList = ({ user }: CampaignListProps) => {
                 }
               }}
             >
-              Reject
-            </Button>{" "}
+              <RejectedIcon />
+            </IconButton>
+          
           </>
         );
       },
@@ -341,9 +332,8 @@ const CampaignList = ({ user }: CampaignListProps) => {
   const [rows, setRows] = React.useState<GridRowsProp>([]);
   const { Campaign } = useApiInstance();
   const [loading, setLoading] = React.useState(false);
-  // useEffect(() => {
-  //   setActiveTableRows(rows)
-  // }, [rows])
+  const [previewCard, setPreviewCard] = useState<any>(null);
+
   const handleCard = async (id: number) => {
     const res = await User.getCardEngagement({ id: id });
     console.log(res, "CardEngagement");
@@ -467,7 +457,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
                 cellValues.row.campaign_stats === "Campaign Declined" ? (
                 "Start"
               ) : cellValues.row.campaign_stats === "Running" ? (
-                <Countdown date={ new Date(cellValues?.row?.campaign_start_time).getTime() + (+(process.env.REACT_APP_CAMPAIGN_DURATION??1440)*60*1000) } />
+                <Countdown date={new Date(cellValues?.row?.campaign_start_time).getTime() + (+(process.env.REACT_APP_CAMPAIGN_DURATION ?? 1440) * 60 * 1000)} />
               ) : (
                 "Update"
               )}
@@ -518,8 +508,12 @@ const CampaignList = ({ user }: CampaignListProps) => {
 
   React.useEffect(() => {
     getAllCampaigns();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const handleCardsRefresh = () => {
+    getAllCampaigns();
+  }
 
   return (
     <Box>
@@ -546,7 +540,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
                 <InfoOutlinedIcon />
               </Box>
               <Typography sx={{ maxWidth: 700 }} variant="caption">
-              In the current beta phase, please note that only one campaign can be run at a time. Each initiated campaign will automatically end 24 hours after its start. We plan to incrementally ease these restrictions in the future. Also, be informed that your balance can be used without any limits across different campaigns.
+                In the current beta phase, please note that only one campaign can be run at a time. Each initiated campaign will automatically end 24 hours after its start. We plan to incrementally ease these restrictions in the future. Also, be informed that your balance can be used without any limits across different campaigns.
               </Typography>
             </Stack>
             {process.env.REACT_APP_ADMIN_ADDRESS === currentUser?.hedera_wallet_id && (
@@ -554,12 +548,12 @@ const CampaignList = ({ user }: CampaignListProps) => {
                 Associate
               </Button>
             )}
-            <a style={{textDecoration: "none",fontSize: "16px", color: "white", backgroundColor: "#10A37F",borderRadius:"4px", padding: "10px", textAlign:"center"}} href="https://chat.openai.com/g/g-cGD9GbBPY-hashbuzz" target="_blank" rel="noreferrer">CONNECT WITH CHATGPT</a>
+            <a style={{ textDecoration: "none", fontSize: "16px", color: "white", backgroundColor: "#10A37F", borderRadius: "4px", padding: "10px", textAlign: "center" }} href="https://chat.openai.com/g/g-cGD9GbBPY-hashbuzz" target="_blank" rel="noreferrer">CONNECT WITH CHATGPT</a>
             <Button
               size="large"
               variant="contained"
               disableElevation
-              disabled={ !store?.balances.find(ent => +ent.entityBalance > 0) || runningCampaigns || !user?.hedera_wallet_id || !user?.business_twitter_handle}
+              disabled={!store?.balances.find(ent => +ent.entityBalance > 0) || runningCampaigns || !user?.hedera_wallet_id || !user?.business_twitter_handle}
               // disabled={!store?.balances.find(ent => +ent.entityBalance > 0)}
               onClick={handleTemplate}
             >
@@ -567,14 +561,12 @@ const CampaignList = ({ user }: CampaignListProps) => {
             </Button>
             <AssociateModal open={openAssociateModal} onClose={() => setOpenAssociateModal(false)} />
           </Stack>
-          <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+          <div style={{ display: "flex", gap: "10px", marginTop: "10px", alignItems: "center" }}>
             <Button
               size="large"
               variant={activeTab === "all" ? "contained" : "outlined"}
               disableElevation
               onClick={() => {
-                // setActiveTableRows(rows);
-                // setActiveTableColumns(columns);
                 setActiveTab("all");
               }}
             >
@@ -587,8 +579,6 @@ const CampaignList = ({ user }: CampaignListProps) => {
                   variant={activeTab === "pending" ? "contained" : "outlined"}
                   disableElevation
                   onClick={() => {
-                    // setActiveTableRows(adminPendingCards);
-                    // setActiveTableColumns(ADMINCOLUMNS);
                     setActiveTab("pending");
                   }}
                 >
@@ -599,8 +589,6 @@ const CampaignList = ({ user }: CampaignListProps) => {
                   variant={activeTab === "claimRewards" ? "contained" : "outlined"}
                   disableElevation
                   onClick={() => {
-                    // setActiveTableRows(adminPendingCards);
-                    // setActiveTableColumns(ADMINCOLUMNS);
                     setActiveTab("claimRewards");
                   }}
                 >
@@ -613,15 +601,19 @@ const CampaignList = ({ user }: CampaignListProps) => {
                 variant={activeTab === "claimRewards" ? "contained" : "outlined"}
                 disableElevation
                 onClick={() => {
-                  // setActiveTableRows(adminPendingCards);
-                  // setActiveTableColumns(ADMINCOLUMNS);
                   setActiveTab("claimRewards");
                 }}
               >
                 Claim Rewards
               </Button>
             )}
+            <Box sx={{ marginLeft: "auto" }}>
+              <IconButton aria-label="Update Cards list" title="Update campaign cards" onClick={handleCardsRefresh}>
+                <RefreshICon fontSize="inherit" />
+              </IconButton>
+            </Box>
           </div>
+
         </Box>
 
         <Divider sx={{ borderColor: cardStyle.borderColor }} />
@@ -646,9 +638,46 @@ const CampaignList = ({ user }: CampaignListProps) => {
         </Box>
       </Box>
       <DetailsModal open={open} setOpen={setOpen} data={modalData} />
+      <CampaignCardDetailModal open={Boolean(previewCard)} data={previewCard} onClose={() => setPreviewCard(null)} />
       <Loader open={loading} />
     </Box>
   );
 };
+
+interface Props {
+  open: boolean,
+  data: any,
+  onClose: () => void,
+}
+
+const CampaignCardDetailModal = ({ open, onClose, data }: Props) => {
+  const handleClose = () => {
+    if (onClose) onClose();
+  }
+  if (!data) return null;
+  return (
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth="sm"
+      PaperProps={{
+        style: {
+          borderRadius: 11,
+          padding: 0,
+          scrollbarWidth: "none",
+          background: "#E1D9FF"
+        },
+      }}
+    >
+      <DialogTitle>{data.name}</DialogTitle>
+      <DialogContent>
+        <Typography>{data.tweet_text}</Typography>
+      </DialogContent>
+      <DialogActions>
+          <Button onClick={handleClose} variant="contained" color="error">Close</Button>
+      </DialogActions>
+    </Dialog>
+  )
+}
 
 export default CampaignList;
