@@ -7,13 +7,22 @@ import SecondaryButton from "../../Buttons/SecondaryButton";
 import { ContainerStyled } from "../../ContainerStyled/ContainerStyled";
 import notify from "../../Toaster/toaster";
 
-import { Link, TableBody, TableRow } from "@mui/material";
+import { IconButton, Link, TableBody, TableRow } from "@mui/material";
+import ApproveIcon from "@mui/icons-material/Done";
+import RejectedIcon from "@mui/icons-material/Cancel";
+import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import { useCookies } from "react-cookie";
 import { toast } from "react-toastify";
 import { adminTableHeadRow } from "../../../Data/TwitterTable";
 import { Loader } from "../../Loader/Loader";
 import { CustomRowHead, CustomTable2, CustomTableBodyCell, CustomTableHeadCell } from "../../Tables/CreateTable.styles";
 import { ImgWrap, TableSection, WrappeText } from "./TwitterCardList.styles";
+
+const ICONS_MAPPING = {
+  Approve: <ApproveIcon />,
+  Reject: <RejectedIcon />,
+  Preview: <RemoveRedEyeIcon />,
+};
 
 export const TwitterCardScreen = () => {
   let navigate = useNavigate();
@@ -78,7 +87,7 @@ export const TwitterCardScreen = () => {
       case "Running":
         return ["Pause", "Stop"];
       case "Pending":
-        return ["Approved", "Reject"];
+        return ["Approve", "Reject", "Preview"];
       case "Pause":
         return ["Run", "Stop"];
       case "Completed":
@@ -162,7 +171,7 @@ export const TwitterCardScreen = () => {
                 <CustomTableBodyCell>
                   <p>{item.tweet_text}</p>
                 </CustomTableBodyCell>
-                <CustomTableBodyCell>{(item.campaign_budget/1e8).toFixed(4)}</CustomTableBodyCell>
+                <CustomTableBodyCell>{(item.campaign_budget / 1e8).toFixed(4)}</CustomTableBodyCell>
                 <CustomTableBodyCell>
                   <Link href={`https://twitter.com/${item?.user_user?.business_twitter_handle}`} target="_blank">
                     {`@${item?.user_user?.business_twitter_handle}`}
@@ -170,9 +179,16 @@ export const TwitterCardScreen = () => {
                 </CustomTableBodyCell>
                 <CustomTableBodyCell>
                   {!item.isbutton && item.card_status !== "Completed"
-                    ? handleActionButon(item.card_status).map((element) => (
-                        <SecondaryButton text={element} margin="5%" onclick={() => handleAction(element, item)} />
-                      ))
+                    ? handleActionButon(item.card_status).map((element, index) => {
+                        if (["Approve", "Reject", "Preview"].includes(element)) {
+                          return (
+                            <IconButton  onclick={() => handleAction(element, item)}  size="sm" key={index} aria-label={`Campaign ${element.toLowerCase()}`} title={`Campaign ${element.toLowerCase()}`}>
+                              {ICONS_MAPPING[element]}
+                            </IconButton>
+                          );
+                        }
+                        return <SecondaryButton key={index} text={element} margin="5%" onclick={() => handleAction(element, item)} />;
+                      })
                     : "Promotion ended"}
                 </CustomTableBodyCell>
               </TableRow>
