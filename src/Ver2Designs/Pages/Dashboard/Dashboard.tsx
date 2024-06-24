@@ -68,8 +68,8 @@ const Dashboard = () => {
   return (
     <React.Fragment>
       {/* <Grid container spacing={3}> */}
-        {/* Card for wallet info */}
-        <StyledCardGenUtility>
+      {/* Card for wallet info */}
+      <StyledCardGenUtility>
         <CardGenUtility
           startIcon={<AccountBalanceWalletIcon color="inherit" fontSize={"inherit"} />}
           title={"Hedera Account ID"}
@@ -108,7 +108,7 @@ const Dashboard = () => {
 
         {/* Card for account balance */}
         <Balances />
-      {/* </Grid> */}
+        {/* </Grid> */}
       </StyledCardGenUtility>
 
       {/* Campaign List section */}
