@@ -672,6 +672,7 @@ const CampaignCardDetailModal = ({ open, onClose, data }: Props) => {
       <DialogTitle>{data.name}</DialogTitle>
       <DialogContent>
         <Typography>{data.tweet_text}</Typography>
+        <Typography variant="subtitle2" sx={{mt:3}}>Total string count: {String(data.tweet_text).length}</Typography>
       </DialogContent>
       <DialogActions>
           <Button onClick={handleClose} variant="contained" color="error">Close</Button>
