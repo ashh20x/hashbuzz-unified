@@ -195,14 +195,13 @@ const CampaignList = ({ user }: CampaignListProps) => {
                   getAllCampaigns();
                   toast(response?.message);
                   setButtonDisabled(false);
-                  console.log(response, "update status");
                 } catch (err) {
                   console.log(err);
                   setButtonDisabled(false);
                 }
               }}
             >
-              Claim Rewards
+              {cellValues?.row?.campaign_stats === "Rewards Disbursed" ? "Campaign Expired" : "Claim Rewards"}
             </Button>
           </>
         );
