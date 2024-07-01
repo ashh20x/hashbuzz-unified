@@ -18,6 +18,7 @@ import ApproveIcon from "@mui/icons-material/Done";
 import RejectedIcon from "@mui/icons-material/Cancel";
 import PreviewIcon from "@mui/icons-material/RemoveRedEye";
 import RefreshICon from "@mui/icons-material/Cached";
+import { uniq } from "lodash";
 
 interface CampaignListProps {
   user?: CurrentUser;
@@ -73,7 +74,8 @@ const CampaignList = ({ user }: CampaignListProps) => {
     try {
       const response = await User.getClaimRewards();
       console.log(response, "ClaimRewardsResponse");
-      setClaimPendingRewards(response.rewardDetails);
+      //@ts-ignore;
+      setClaimPendingRewards((prev) => uniq([...prev, ...response.rewardDetails]));
     } catch (error) {
       console.log(error);
     }
