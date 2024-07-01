@@ -17,13 +17,33 @@ import Countdown from "react-countdown";
 import ApproveIcon from "@mui/icons-material/Done";
 import RejectedIcon from "@mui/icons-material/Cancel";
 import PreviewIcon from "@mui/icons-material/RemoveRedEye";
-import RefreshICon from '@mui/icons-material/Cached';
+import RefreshICon from "@mui/icons-material/Cached";
 
 interface CampaignListProps {
   user?: CurrentUser;
 }
 
+const isButtonDisabled = (campaignStats: string, approve: boolean) => {
+  const disabledStatuses = ["Campaign Complete, Initiating Rewards", "Under Review", "Campaign Declined", "Rewards Disbursed", "Running"];
 
+  return disabledStatuses.includes(campaignStats) || approve === false;
+};
+
+const getButtonLabel = (campaignStats: string, campaignStartTime: number) => {
+  switch (campaignStats) {
+    case "Campaign Complete, Initiating Rewards":
+    case "Rewards Disbursed":
+      return "Completed";
+    case "Campaign Active":
+    case "Under Review":
+    case "Campaign Declined":
+      return "Start";
+    case "Running":
+      return <Countdown date={new Date(campaignStartTime).getTime() + +(process.env.REACT_APP_CAMPAIGN_DURATION ?? 1440) * 60 * 1000} />;
+    default:
+      return "Update";
+  }
+};
 
 const CampaignList = ({ user }: CampaignListProps) => {
   const navigate = useNavigate();
@@ -118,13 +138,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
       headerName: "Repost Reward",
       width: 150,
       renderCell: (cellValues) => {
-        return (
-          <span>
-            {cellValues?.row?.type === "HBAR"
-              ? cellValues?.row?.retweet_reward / 1e8
-              : cellValues?.row?.retweet_reward / Math.pow(10, Number(cellValues?.row?.decimals))}
-          </span>
-        );
+        return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.retweet_reward / 1e8 : cellValues?.row?.retweet_reward / Math.pow(10, Number(cellValues?.row?.decimals))}</span>;
       },
     },
     {
@@ -133,13 +147,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
       minWidth: 150,
       flex: 0.75,
       renderCell: (cellValues) => {
-        return (
-          <span>
-            {cellValues?.row?.type === "HBAR"
-              ? cellValues?.row?.like_reward / 1e8
-              : cellValues?.row?.like_reward / Math.pow(10, Number(cellValues?.row?.decimals))}
-          </span>
-        );
+        return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.like_reward / 1e8 : cellValues?.row?.like_reward / Math.pow(10, Number(cellValues?.row?.decimals))}</span>;
       },
     },
     {
@@ -148,13 +156,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
       minWidth: 150,
       flex: 0.75,
       renderCell: (cellValues) => {
-        return (
-          <span>
-            {cellValues?.row?.type === "HBAR"
-              ? cellValues?.row?.quote_reward / 1e8
-              : cellValues?.row?.quote_reward / Math.pow(10, Number(cellValues?.row?.decimals))}
-          </span>
-        );
+        return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.quote_reward / 1e8 : cellValues?.row?.quote_reward / Math.pow(10, Number(cellValues?.row?.decimals))}</span>;
       },
     },
     {
@@ -163,13 +165,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
       minWidth: 150,
       flex: 0.75,
       renderCell: (cellValues) => {
-        return (
-          <span>
-            {cellValues?.row?.type === "HBAR"
-              ? cellValues?.row?.comment_reward / 1e8
-              : cellValues?.row?.comment_reward / Math.pow(10, Number(cellValues?.row?.decimals))}
-          </span>
-        );
+        return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.comment_reward / 1e8 : cellValues?.row?.comment_reward / Math.pow(10, Number(cellValues?.row?.decimals))}</span>;
       },
     },
 
@@ -230,13 +226,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
       minWidth: 150,
       flex: 0.45,
       renderCell: (cellValues) => {
-        return (
-          <span>
-            {cellValues?.row?.type === "HBAR"
-              ? cellValues?.row?.campaign_budget / 1e8
-              : cellValues?.row?.campaign_budget / Math.pow(10, Number(cellValues?.row?.decimals))}
-          </span>
-        );
+        return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.campaign_budget / 1e8 : cellValues?.row?.campaign_budget / Math.pow(10, Number(cellValues?.row?.decimals))}</span>;
       },
     },
     {
@@ -316,7 +306,6 @@ const CampaignList = ({ user }: CampaignListProps) => {
             >
               <RejectedIcon />
             </IconButton>
-          
           </>
         );
       },
@@ -389,13 +378,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
       minWidth: 150,
       flex: 0.45,
       renderCell: (cellValues) => {
-        return (
-          <span>
-            {cellValues?.row?.type === "HBAR"
-              ? cellValues?.row?.campaign_budget / 1e8
-              : cellValues?.row?.campaign_budget / Math.pow(10, Number(cellValues?.row?.decimals))}
-          </span>
-        );
+        return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.campaign_budget / 1e8 : cellValues?.row?.campaign_budget / Math.pow(10, Number(cellValues?.row?.decimals))}</span>;
       },
     },
     {
@@ -403,13 +386,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
       headerName: "Amount Spent",
       width: 150,
       renderCell: (cellValues) => {
-        return (
-          <span>
-            {cellValues?.row?.type === "HBAR"
-              ? cellValues?.row?.amount_spent / 1e8
-              : cellValues?.row?.amount_spent / Math.pow(10, Number(cellValues?.row?.decimals))}
-          </span>
-        );
+        return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.amount_spent / 1e8 : cellValues?.row?.amount_spent / Math.pow(10, Number(cellValues?.row?.decimals))}</span>;
       },
     },
     {
@@ -417,13 +394,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
       headerName: "Amount Claimed",
       width: 150,
       renderCell: (cellValues) => {
-        return (
-          <span>
-            {cellValues?.row?.type === "HBAR"
-              ? cellValues?.row?.amount_claimed / 1e8
-              : cellValues?.row?.amount_claimed / Math.pow(10, Number(cellValues?.row?.decimals))}
-          </span>
-        );
+        return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.amount_claimed / 1e8 : cellValues?.row?.amount_claimed / Math.pow(10, Number(cellValues?.row?.decimals))}</span>;
       },
     },
     { field: "campaign_stats", headerName: "Campaign Status", minWidth: 150, flex: 0.75 },
@@ -435,32 +406,8 @@ const CampaignList = ({ user }: CampaignListProps) => {
       renderCell: (cellValues) => {
         return (
           <>
-            <Button
-              variant="contained"
-              color="primary"
-              disabled={
-                cellValues.row.campaign_stats === "Campaign Complete, Initiating Rewards" ||
-                cellValues.row.approve === false ||
-                cellValues.row.campaign_stats === "Under Review" ||
-                cellValues.row.campaign_stats === "Campaign Declined" ||
-                cellValues.row.campaign_stats === "Rewards Disbursed" ||
-                cellValues.row.campaign_stats === "Running"
-              }
-              onClick={() => {
-                handleClick(cellValues.row);
-              }}
-            >
-              {cellValues.row.campaign_stats === "Campaign Complete, Initiating Rewards" || cellValues.row.campaign_stats === "Rewards Disbursed" ? (
-                "Completed"
-              ) : cellValues.row.campaign_stats === "Campaign Active" ||
-                cellValues.row.campaign_stats === "Under Review" ||
-                cellValues.row.campaign_stats === "Campaign Declined" ? (
-                "Start"
-              ) : cellValues.row.campaign_stats === "Running" ? (
-                <Countdown date={new Date(cellValues?.row?.campaign_start_time).getTime() + (+(process.env.REACT_APP_CAMPAIGN_DURATION ?? 1440) * 60 * 1000)} />
-              ) : (
-                "Update"
-              )}
+            <Button variant="contained" color="primary" disabled={isButtonDisabled(cellValues.row.campaign_stats, cellValues.row.approve)} onClick={() => handleClick(cellValues.row)}>
+              {getButtonLabel(cellValues.row.campaign_stats, cellValues.row.campaign_start_time)}
             </Button>
             <div className="info-icon" onClick={() => handleCard(cellValues.row.id)}>
               <InfoIcon />
@@ -513,7 +460,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
 
   const handleCardsRefresh = () => {
     getAllCampaigns();
-  }
+  };
 
   return (
     <Box>
@@ -529,12 +476,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
         component={Card}
       >
         <Box sx={{ p: 2 }}>
-          <Stack
-            direction={{ xs: "column", sm: "column", md: "row" }}
-            spacing={{ xs: 2, sm: 2 }}
-            justifyContent="space-between"
-            alignItems={{ xs: "left", sm: "left", md: "center" }}
-          >
+          <Stack direction={{ xs: "column", sm: "column", md: "row" }} spacing={{ xs: 2, sm: 2 }} justifyContent="space-between" alignItems={{ xs: "left", sm: "left", md: "center" }}>
             <Stack direction={"row"}>
               <Box sx={{ marginRight: 1 }}>
                 <InfoOutlinedIcon />
@@ -548,12 +490,14 @@ const CampaignList = ({ user }: CampaignListProps) => {
                 Associate
               </Button>
             )}
-            <a style={{ textDecoration: "none", fontSize: "16px", color: "white", backgroundColor: "#10A37F", borderRadius: "4px", padding: "10px", textAlign: "center" }} href="https://chat.openai.com/g/g-cGD9GbBPY-hashbuzz" target="_blank" rel="noreferrer">CONNECT WITH CHATGPT</a>
+            <a style={{ textDecoration: "none", fontSize: "16px", color: "white", backgroundColor: "#10A37F", borderRadius: "4px", padding: "10px", textAlign: "center" }} href="https://chat.openai.com/g/g-cGD9GbBPY-hashbuzz" target="_blank" rel="noreferrer">
+              CONNECT WITH CHATGPT
+            </a>
             <Button
               size="large"
               variant="contained"
               disableElevation
-              disabled={!store?.balances.find(ent => +ent.entityBalance > 0) || runningCampaigns || !user?.hedera_wallet_id || !user?.business_twitter_handle}
+              disabled={!store?.balances.find((ent) => +ent.entityBalance > 0) || runningCampaigns || !user?.hedera_wallet_id || !user?.business_twitter_handle}
               // disabled={!store?.balances.find(ent => +ent.entityBalance > 0)}
               onClick={handleTemplate}
             >
@@ -570,7 +514,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
                 setActiveTab("all");
               }}
             >
-              All
+              Campaigns
             </Button>
             {process.env.REACT_APP_ADMIN_ADDRESS === currentUser?.hedera_wallet_id ? (
               <>
@@ -613,27 +557,16 @@ const CampaignList = ({ user }: CampaignListProps) => {
               </IconButton>
             </Box>
           </div>
-
         </Box>
 
         <Divider sx={{ borderColor: cardStyle.borderColor }} />
         <Box sx={{ height: "calc(100vh - 436px)" }}>
           {process.env.REACT_APP_ADMIN_ADDRESS === currentUser?.hedera_wallet_id ? (
             <>
-              <DataGrid
-                rows={activeTab === "pending" ? adminPendingCards : activeTab === "claimRewards" ? claimPendingRewards : rows}
-                columns={activeTab === "pending" ? ADMINCOLUMNS : activeTab === "claimRewards" ? CLAIMREWARDS : columns}
-                paginationMode="server"
-                rowsPerPageOptions={[20]}
-              />
+              <DataGrid rows={activeTab === "pending" ? adminPendingCards : activeTab === "claimRewards" ? claimPendingRewards : rows} columns={activeTab === "pending" ? ADMINCOLUMNS : activeTab === "claimRewards" ? CLAIMREWARDS : columns} paginationMode="server" rowsPerPageOptions={[20]} />
             </>
           ) : (
-            <DataGrid
-              rows={activeTab === "claimRewards" ? claimPendingRewards : rows}
-              columns={activeTab === "claimRewards" ? CLAIMREWARDS : columns}
-              paginationMode="server"
-              rowsPerPageOptions={[20]}
-            />
+            <DataGrid rows={activeTab === "claimRewards" ? claimPendingRewards : rows} columns={activeTab === "claimRewards" ? CLAIMREWARDS : columns} paginationMode="server" rowsPerPageOptions={[20]} />
           )}
         </Box>
       </Box>
@@ -645,15 +578,15 @@ const CampaignList = ({ user }: CampaignListProps) => {
 };
 
 interface Props {
-  open: boolean,
-  data: any,
-  onClose: () => void,
+  open: boolean;
+  data: any;
+  onClose: () => void;
 }
 
 const CampaignCardDetailModal = ({ open, onClose, data }: Props) => {
   const handleClose = () => {
     if (onClose) onClose();
-  }
+  };
   if (!data) return null;
   return (
     <Dialog
@@ -665,20 +598,24 @@ const CampaignCardDetailModal = ({ open, onClose, data }: Props) => {
           borderRadius: 11,
           padding: 0,
           scrollbarWidth: "none",
-          background: "#E1D9FF"
+          background: "#E1D9FF",
         },
       }}
     >
       <DialogTitle>{data.name}</DialogTitle>
       <DialogContent>
         <Typography>{data.tweet_text}</Typography>
-        <Typography variant="subtitle2" sx={{mt:3}}>Total string count: {String(data.tweet_text).length}</Typography>
+        <Typography variant="subtitle2" sx={{ mt: 3 }}>
+          Total string count: {String(data.tweet_text).length}
+        </Typography>
       </DialogContent>
       <DialogActions>
-          <Button onClick={handleClose} variant="contained" color="error">Close</Button>
+        <Button onClick={handleClose} variant="contained" color="error">
+          Close
+        </Button>
       </DialogActions>
     </Dialog>
-  )
-}
+  );
+};
 
 export default CampaignList;
