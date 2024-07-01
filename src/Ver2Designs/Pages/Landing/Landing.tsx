@@ -119,7 +119,7 @@ const Landing = () => {
                 Ready to get started?
                 <div>
                   * Learn how to launch your very first promo [{" "}
-                  <Typography component={Link} style={{ color: "red" }} href="#">
+                  <Typography component={Link} style={{ color: "red" }} target="_blank" href="https://www.youtube.com/watch?v=e0cv-B9aWTE&t=2s">
                     here
                   </Typography>
                   ].
@@ -137,7 +137,7 @@ const Landing = () => {
                     X
                   </Typography>{" "}
                   -{" "}
-                  <Typography component={Link} href={"https://discord.com/invite/Zq6UAQ63Vc"} style={{ color: "red" }}>
+                  <Typography component={Link} href={"https://discord.gg/6Yrg4u8bvB"} target="_blank" style={{ color: "red" }}>
                     Discord
                   </Typography>
                 </div>
