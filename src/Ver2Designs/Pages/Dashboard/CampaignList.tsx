@@ -1,24 +1,24 @@
+import RefreshICon from "@mui/icons-material/Cached";
+import RejectedIcon from "@mui/icons-material/Cancel";
+import ApproveIcon from "@mui/icons-material/Done";
+import InfoIcon from "@mui/icons-material/Info";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import PreviewIcon from "@mui/icons-material/RemoveRedEye";
 import { Box, Button, Card, Dialog, DialogActions, DialogContent, DialogTitle, Divider, IconButton, Stack, Typography } from "@mui/material";
 import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
-import { CurrentUser } from "../../../types";
-import { cardStyle } from "./CardGenUtility";
-import { useNavigate } from "react-router-dom";
+import { uniqBy } from "lodash";
 import React, { useCallback, useEffect, useState } from "react";
-import { useApiInstance } from "../../../APIConfig/api";
-import { toast } from "react-toastify";
-import { Loader } from "../../../components/Loader/Loader";
-import AssociateModal from "./AssociateModal";
-import InfoIcon from "@mui/icons-material/Info";
-import { useStore } from "../../../Store/StoreProvider";
-import DetailsModal from "../../../components/PreviewModal/DetailsModal";
-import { getErrorMessage } from "../../../Utilities/helpers";
 import Countdown from "react-countdown";
-import ApproveIcon from "@mui/icons-material/Done";
-import RejectedIcon from "@mui/icons-material/Cancel";
-import PreviewIcon from "@mui/icons-material/RemoveRedEye";
-import RefreshICon from "@mui/icons-material/Cached";
-import { uniq } from "lodash";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useApiInstance } from "../../../APIConfig/api";
+import { useStore } from "../../../Store/StoreProvider";
+import { getErrorMessage } from "../../../Utilities/helpers";
+import { Loader } from "../../../components/Loader/Loader";
+import DetailsModal from "../../../components/PreviewModal/DetailsModal";
+import { CurrentUser } from "../../../types";
+import AssociateModal from "./AssociateModal";
+import { cardStyle } from "./CardGenUtility";
 
 interface CampaignListProps {
   user?: CurrentUser;
@@ -75,7 +75,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
       const response = await User.getClaimRewards();
       console.log(response, "ClaimRewardsResponse");
       //@ts-ignore;
-      setClaimPendingRewards((prev) => uniq([...prev, ...response.rewardDetails]));
+      setClaimPendingRewards((prev) => uniqBy([...prev, ...response.rewardDetails], "id"));
     } catch (error) {
       console.log(error);
     }
@@ -565,10 +565,10 @@ const CampaignList = ({ user }: CampaignListProps) => {
         <Box sx={{ height: "calc(100vh - 436px)" }}>
           {process.env.REACT_APP_ADMIN_ADDRESS === currentUser?.hedera_wallet_id ? (
             <>
-              <DataGrid rows={activeTab === "pending" ? adminPendingCards : activeTab === "claimRewards" ? claimPendingRewards : rows} columns={activeTab === "pending" ? ADMINCOLUMNS : activeTab === "claimRewards" ? CLAIMREWARDS : columns} paginationMode="server" rowsPerPageOptions={[20]} />
+              <DataGrid rows={activeTab === "pending" ? adminPendingCards : activeTab === "claimRewards" ? uniqBy(claimPendingRewards,"id" ): uniqBy(rows,"id")} columns={activeTab === "pending" ? ADMINCOLUMNS : activeTab === "claimRewards" ? CLAIMREWARDS : columns} paginationMode="server" rowsPerPageOptions={[20]} />
             </>
           ) : (
-            <DataGrid rows={activeTab === "claimRewards" ? claimPendingRewards : rows} columns={activeTab === "claimRewards" ? CLAIMREWARDS : columns} paginationMode="server" rowsPerPageOptions={[20]} />
+            <DataGrid rows={activeTab === "claimRewards" ? uniqBy(claimPendingRewards , "id") : uniqBy(rows , "id")} columns={activeTab === "claimRewards" ? CLAIMREWARDS : columns} paginationMode="server" rowsPerPageOptions={[20]} />
           )}
         </Box>
       </Box>
