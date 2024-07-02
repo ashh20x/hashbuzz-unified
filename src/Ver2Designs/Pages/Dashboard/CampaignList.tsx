@@ -363,10 +363,10 @@ const CampaignList = ({ user }: CampaignListProps) => {
 
   const columns: GridColDef[] = [
     { field: "id", headerName: "Card No.", width: 100, align: "center" },
-    { field: "name", headerName: "Campaign Name", minWidth: 150, flex: 0.75 },
+    { field: "name", headerName: "Name", minWidth: 150, flex: 0.75 },
     {
       field: "type",
-      headerName: "Campaign Type",
+      headerName: "Token Reward",
       minWidth: 150,
       flex: 0.75,
       renderCell: (cellValues) => {
@@ -375,7 +375,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
     },
     {
       field: "campaign_budget",
-      headerName: "Campaign Budget",
+      headerName: "Allocated Budget",
       minWidth: 150,
       flex: 0.45,
       renderCell: (cellValues) => {
@@ -398,7 +398,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
         return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.amount_claimed / 1e8 : cellValues?.row?.amount_claimed / Math.pow(10, Number(cellValues?.row?.decimals))}</span>;
       },
     },
-    { field: "campaign_stats", headerName: "Campaign Status", minWidth: 150, flex: 0.75 },
+    { field: "campaign_stats", headerName: "Status", minWidth: 150, flex: 0.75 },
 
     {
       field: "action",
