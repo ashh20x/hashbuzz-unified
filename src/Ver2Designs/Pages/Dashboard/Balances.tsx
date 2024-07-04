@@ -30,7 +30,7 @@ import HederaIcon from "../../../SVGR/HederaIcon";
 import { BalOperation, EntityBalances } from "../../../types";
 import { cardStyle } from "./CardGenUtility";
 import TopupModal from "./TopupModal";
-import { isAnyBalancesIsAvailable } from "../../../Utilities/helpers";
+import { isAllowedToCmapigner, isAnyBalancesIsAvailable } from "../../../Utilities/helpers";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 const formatBalance = (balObj: EntityBalances): string => {
@@ -135,11 +135,13 @@ const Balances = () => {
     <Button
       key="reimburse"
       startIcon={<RemoveCircle />}
+      disabled={!isAllowedToCmapigner(store?.currentUser?.role)}
       title="Reimburse from hashbuzz contract to your wallet"
       onClick={() => handleTopupOrReimClick("reimburse")}
     />,
     <Button
       key="top-up"
+      disabled={!isAllowedToCmapigner(store?.currentUser?.role)}
       startIcon={<AddCircle />}
       onClick={() => handleTopupOrReimClick("topup")}
       title="Topup your hashbuzz account for the campaign"
@@ -220,6 +222,7 @@ const Balances = () => {
                     sx={{ width: 120, margin: "0  auto" }}
                     // startIcon={<HederaIcon size={20} fill="white" />}
                     startIcon={"ℏ"}
+                    disabled={!isAllowedToCmapigner(store?.currentUser?.role)}
                     endIcon={<KeyboardArrowDownIcon />}
                     onClick={(event) => handleTopupOrReimClick("topup", event)}
                   >
@@ -250,7 +253,7 @@ const Balances = () => {
                   <ClickAwayListener onClickAway={handleCloseEntityList}>
                     <MenuList id="entityList-for-topup" autoFocusItem>
                       {balances!.map((bal, index) => (
-                        <MenuItem onClick={(event) => handleMenuItemClick(event, index)}>
+                        <MenuItem disabled={!isAllowedToCmapigner(store?.currentUser?.role)} onClick={(event) => handleMenuItemClick(event, index)}>
                           <ListItemAvatar>{bal?.entityIcon}</ListItemAvatar>
                           <ListItemText>
                             {formatBalance(bal)} {bal.entitySymbol + " "}

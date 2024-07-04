@@ -3,29 +3,7 @@ import React, { useRef } from "react";
 import { useCookies } from "react-cookie";
 import { toast } from "react-toastify";
 
-import {
-  addCampaignBody,
-  AdminLoginResponse,
-  AdminUpdatePassword,
-  AllTokensQuery,
-  AuthCred,
-  BalanceResponse,
-  Challenge,
-  ContractInfo,
-  CreateTransactionByteBody,
-  CurrentUser,
-  GenerateAstPayload,
-  GnerateReseponse,
-  LogoutResponse,
-  reimburseAmountBody,
-  SetTransactionBody,
-  TokenBalances,
-  TokenDataObj,
-  TokenInfo,
-  TopUpResponse,
-  updateCampaignStatusBody,
-  UpdatePasswordResponse,
-} from "../types";
+import { addCampaignBody, AdminLoginResponse, AdminUpdatePassword, AllTokensQuery, AuthCred, BalanceResponse, Challenge, ContractInfo, CreateTransactionByteBody, CurrentUser, GenerateAstPayload, GnerateReseponse, LogoutResponse, reimburseAmountBody, SetTransactionBody, TokenBalances, TokenDataObj, TokenInfo, TopUpResponse, updateCampaignStatusBody, UpdatePasswordResponse } from "../types";
 import { getErrorMessage } from "../Utilities/helpers";
 
 export const getCookie = (cname: string) => {
@@ -98,8 +76,7 @@ export const useApiInstance = () => {
     getTokenBalances: (): Promise<TokenBalances[]> => requests.get("/api/users/token-balances"),
     getCardEngagement: (data: { id: number }): Promise<any> => requests.get("/api/campaign/card-status", { ...data }),
     getClaimRewards: (): Promise<any> => requests.get("/api/campaign/reward-details"),
-    buttonClaimRewards: (data: any): Promise<any> => requests.put("api/campaign/claim-reward",data),
-
+    buttonClaimRewards: (data: any): Promise<any> => requests.put("api/campaign/claim-reward", data),
   };
 
   const Auth = {
@@ -115,33 +92,21 @@ export const useApiInstance = () => {
     updatePassword: (data: AdminUpdatePassword): Promise<UpdatePasswordResponse> => requests.put("/api/admin/update-password", { ...data }),
     getTokenInfo: (tokenId: string): Promise<TokenInfo> => requests.post("/api/admin/token-info", { tokenId }),
     getPendingCards: () => requests.get("/api/admin/twitter-pending-cards"),
-    addNewToken: ({
-      token_id,
-      tokendata,
-      token_type,
-      token_symbol,
-      decimals
-    }: {
-      token_id: string;
-      tokendata: any;
-      token_type: string;
-      token_symbol: String;
-      decimals: Number;
-    }): Promise<{ message: string; data: TokenDataObj }> => requests.post("/api/admin/list-token", { token_id, token_symbol, tokendata, decimals, token_type }),
+    addNewToken: ({ token_id, tokendata, token_type, token_symbol, decimals }: { token_id: string; tokendata: any; token_type: string; token_symbol: String; decimals: Number }): Promise<{ message: string; data: TokenDataObj }> => requests.post("/api/admin/list-token", { token_id, token_symbol, tokendata, decimals, token_type }),
     getListedTokens: (tokenId?: string): Promise<AllTokensQuery> => requests.get(`/api/admin/listed-tokens${tokenId ? `?tokenId=${tokenId}` : ""}`),
     getActiveContractInfo: (): Promise<ContractInfo> => requests.get("/api/admin/active-contract"),
-    updateStatus: (data: any) => requests.put("/api/admin/update-status", data)
+    updateStatus: (data: any) => requests.put("/api/admin/update-status", data),
+    getAllUsers: (data?: { limit: number; offset: number }): Promise<{ users: CurrentUser[]; count: number }> => requests.post("/api/admin/user/all", data ?? {}),
+    allowUserAsCampaigner: (id: number): Promise<{ user: CurrentUser; success: true }> => requests.patch("/api/admin/user/allowCampaigner", { id }),
   };
 
   const MirrorNodeRestAPI = {
     getTokenInfo: (tokenId: string) => axios.get<TokenInfo>(`${process.env.REACT_APP_MIRROR_NODE_LINK}/api/v1/tokens/${tokenId}`),
-    getBalancesForAccountId: (accountId: string) =>
-      axios.get<BalanceResponse>(`${process.env.REACT_APP_MIRROR_NODE_LINK}/api/v1/balances?account.id=${accountId}`),
+    getBalancesForAccountId: (accountId: string) => axios.get<BalanceResponse>(`${process.env.REACT_APP_MIRROR_NODE_LINK}/api/v1/balances?account.id=${accountId}`),
   };
 
   const Transaction = {
-    createTransactionBytes: (data: CreateTransactionByteBody): Promise<Uint8Array> =>
-      requests.post("/api/transaction/create-topup-transaction", { ...data }),
+    createTransactionBytes: (data: CreateTransactionByteBody): Promise<Uint8Array> => requests.post("/api/transaction/create-topup-transaction", { ...data }),
     setTransactionAmount: (data: SetTransactionBody): Promise<TopUpResponse> => requests.post("/api/transaction/top-up", { ...data }),
     reimburseAmount: (data: reimburseAmountBody): Promise<any> => requests.post("/api/transaction/reimbursement", { ...data }),
   };
@@ -155,7 +120,7 @@ export const useApiInstance = () => {
     addCampaign: (data: addCampaignBody): Promise<any> => requests.post("/api/campaign/add-new", { ...data }),
     getCampaigns: (): Promise<any> => requests.get("/api/campaign/all"),
     updateCampaignStatus: (data: updateCampaignStatusBody): Promise<any> => requests.post("/api/campaign/update-status", { ...data }),
-    chatResponse: (data: any): Promise<any> => requests.post("/api/campaign/chatgpt", data)
+    chatResponse: (data: any): Promise<any> => requests.post("/api/campaign/chatgpt", data),
   };
 
   return { User, Auth, Admin, MirrorNodeRestAPI, Transaction, Integrations, Campaign };

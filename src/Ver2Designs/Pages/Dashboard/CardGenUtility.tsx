@@ -3,15 +3,11 @@ import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import React from "react";
 
-
-
-
 interface CardGenUtilityProps {
   title: string;
   content: React.ReactNode;
   startIcon: React.ReactNode;
 }
-
 
 export const cardStyle = {
   height: 100,
@@ -19,9 +15,6 @@ export const cardStyle = {
   p: 2,
   border: 3,
   borderColor: "hsl(252, 100%, 88%)",
-  // background: "rgb(241,241,241)",
-  // background: "linear-gradient(190deg, rgba(241,241,241,1) 0%, rgba(255,255,255,1) 35%, rgba(225,217,255,1) 100%)",
-  // background: "radial-gradient(circle, rgba(225,217,255,1) 0%, rgba(255,255,255,1) 100%)",
 };
 
 export const CardGenUtility = ({ title, content, startIcon }: CardGenUtilityProps) => {
@@ -30,7 +23,7 @@ export const CardGenUtility = ({ title, content, startIcon }: CardGenUtilityProp
   return (
     <Grid item lg={3} xl={3} md={4} sm={6} xs={6}>
       <Card elevation={0} sx={cardStyle}>
-        <Stack direction={aboveXs ? "row" : "column"} alignItems={aboveXs ? "flex-start" : "normal"} sx={{ height: "100%", width: "100%", overflowY: "scroll", }}>
+        <Stack direction={aboveXs ? "row" : "column"} alignItems={aboveXs ? "flex-start" : "normal"} sx={{ height: "100%", width: "100%", overflowY: "scroll" }}>
           <Stack
             direction={"row"}
             alignItems="center"
