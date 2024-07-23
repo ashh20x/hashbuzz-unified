@@ -154,11 +154,11 @@ const Balances = () => {
                 <Typography variant="h6" sx={{ lineHeight: 1 }}>
                   {"Balances"}
                 </Typography>
-                {balances  && balances[activeIndex] && balances[activeIndex].entityType !== "HBAR" && (
+                {/* {balances  && balances[activeIndex] && balances[activeIndex].entityType !== "HBAR" && (
                   <IconButton size="small" title="sync balance from contract" onClick={syncBalance}>
                     <SyncIcon fontSize="inherit" />
                   </IconButton>
-                )}
+                )} */}
                 {balances && balances?.length > 0 ? (
                   <ButtonGroup size="small" aria-label="Balance update group" sx={{ ".MuiButton-startIcon": { margin: 0 }, justifyContent: "center" }} ref={topUpButtonsListRef}>
                     {topUpButtons}
