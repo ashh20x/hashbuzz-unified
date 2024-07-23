@@ -77,6 +77,7 @@ export const useApiInstance = () => {
     getCardEngagement: (data: { id: number }): Promise<any> => requests.get("/api/campaign/card-status", { ...data }),
     getClaimRewards: (): Promise<any> => requests.get("/api/campaign/reward-details"),
     buttonClaimRewards: (data: any): Promise<any> => requests.put("api/campaign/claim-reward", data),
+    syncTokenBal:(tokenId:string):Promise<{balance:number}> => requests.get("/api/users/sync-bal/"+tokenId)
   };
 
   const Auth = {
