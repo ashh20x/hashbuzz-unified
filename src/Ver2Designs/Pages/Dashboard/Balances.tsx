@@ -1,21 +1,5 @@
 import { AddCircle, ArrowBackIos, ArrowForwardIos, RemoveCircle } from "@mui/icons-material";
-import {
-  Avatar,
-  Box,
-  Button,
-  ButtonGroup,
-  Card,
-  Divider,
-  Grid,
-  Grow,
-  ListItemAvatar,
-  ListItemText,
-  Paper,
-  Stack,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+import { Avatar, Box, Button, ButtonGroup, Card, Divider, Grid, Grow, IconButton, ListItemAvatar, ListItemText, Paper, Stack, Typography, useMediaQuery, useTheme } from "@mui/material";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
 import MenuItem from "@mui/material/MenuItem";
 import MenuList from "@mui/material/MenuList";
@@ -32,6 +16,7 @@ import { cardStyle } from "./CardGenUtility";
 import TopupModal from "./TopupModal";
 import { isAllowedToCmapigner, isAnyBalancesIsAvailable } from "../../../Utilities/helpers";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import SyncIcon from "@mui/icons-material/Sync";
 
 const formatBalance = (balObj: EntityBalances): string => {
   if (balObj) {
@@ -46,13 +31,13 @@ const Balances = () => {
   const aboveXs = useMediaQuery(theme.breakpoints.up("sm"));
   const store = useStore();
   const balances = store?.balances;
-  console.log(balances, "balances");
+
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const [topupModalData, setTopupModalData] = useState<EntityBalances | null>(null);
 
   const { pairingData, connectToExtension } = useHashconnectService();
 
-  const { MirrorNodeRestAPI } = useApiInstance();
+  const { MirrorNodeRestAPI, User } = useApiInstance();
   // const [popOverOpen, setPopOverOpen] = React.useState(false);
   const [balanceList, setBalanceList] = React.useState<{ operation: BalOperation }>({ operation: "topup" });
   const topUpButtonsListRef = React.useRef<HTMLDivElement>(null);
@@ -101,9 +86,7 @@ const Balances = () => {
           }
         } else {
           const tokenBalance = accountBal?.tokens.find((t) => t.token_id === entity.entityId);
-          tokenBalance && tokenBalance.balance > 0
-            ? setTopupModalData(entity)
-            : toast.warning(`Paired account have insufficient token balance for the token ${entity?.entityIcon}.`);
+          tokenBalance && tokenBalance.balance > 0 ? setTopupModalData(entity) : toast.warning(`Paired account have insufficient token balance for the token ${entity?.entityIcon}.`);
         }
       }
       setBalanceList((_d) => ({ ..._d, open: false }));
@@ -131,28 +114,26 @@ const Balances = () => {
     }
   };
 
-  const topUpButtons = [
-    <Button
-      key="reimburse"
-      startIcon={<RemoveCircle />}
-      disabled={!isAllowedToCmapigner(store?.currentUser?.role)}
-      title="Reimburse from hashbuzz contract to your wallet"
-      onClick={() => handleTopupOrReimClick("reimburse")}
-    />,
-    <Button
-      key="top-up"
-      disabled={!isAllowedToCmapigner(store?.currentUser?.role)}
-      startIcon={<AddCircle />}
-      onClick={() => handleTopupOrReimClick("topup")}
-      title="Topup your hashbuzz account for the campaign"
-    />,
-  ];
+  const syncBalance = async (evennt: React.MouseEvent) => {
+    const tokenId = balances![activeIndex].entityId;
+    const data = await User.syncTokenBal(tokenId);
+    console.log(data);
+    store?.updateState((prevState) => {
+      prevState.balances = prevState.balances.map((bal) => {
+        if (bal.entityId !== tokenId) return bal;
+        return { ...bal, entityBalance: (data.balance/10**(bal.decimals??6)).toFixed(4) };
+      });
+      return { ...prevState };
+    });
+  };
+
+  const topUpButtons = [<Button key="reimburse" startIcon={<RemoveCircle />} disabled={!isAllowedToCmapigner(store?.currentUser?.role)} title="Reimburse from hashbuzz contract to your wallet" onClick={() => handleTopupOrReimClick("reimburse")} />, <Button key="top-up" disabled={!isAllowedToCmapigner(store?.currentUser?.role)} startIcon={<AddCircle />} onClick={() => handleTopupOrReimClick("topup")} title="Topup your hashbuzz account for the campaign" />];
 
   return (
     <React.Fragment>
       <Grid item lg={3} xl={3} md={4} sm={6} xs={6}>
         <Card elevation={0} sx={cardStyle}>
-          <Stack direction={aboveXs ? "row" : "column"} alignItems={aboveXs ? "flex-start" : "normal"} sx={{ height: "100%", width: "100%", overflowY: "auto", }}>
+          <Stack direction={aboveXs ? "row" : "column"} alignItems={aboveXs ? "flex-start" : "normal"} sx={{ height: "100%", width: "100%", overflowY: "auto" }}>
             <Stack
               direction={"row"}
               alignItems="center"
@@ -169,34 +150,25 @@ const Balances = () => {
             </Stack>
             <Divider orientation={aboveXs ? "vertical" : "horizontal"} />
             <Box sx={{ flexGrow: 1, flexBasis: 0, maxWidth: "100%", textAlign: "left", paddingLeft: 1, paddingRight: 1 }}>
-              <Stack direction={"row"} alignItems="center" justifyContent={"space-between"} sx={{ marginBottom: 2 }}>
+              <Stack direction={"row"} alignItems="center" justifyContent={"space-between"} sx={{ marginBottom: 2, height: 30 }}>
                 <Typography variant="h6" sx={{ lineHeight: 1 }}>
                   {"Balances"}
                 </Typography>
+                {balances  && balances[activeIndex] && balances[activeIndex].entityType !== "HBAR" && (
+                  <IconButton size="small" title="sync balance from contract" onClick={syncBalance}>
+                    <SyncIcon fontSize="inherit" />
+                  </IconButton>
+                )}
                 {balances && balances?.length > 0 ? (
-                  <ButtonGroup
-                    size="small"
-                    aria-label="Balance update group"
-                    sx={{ ".MuiButton-startIcon": { margin: 0 }, justifyContent: "center" }}
-                    ref={topUpButtonsListRef}
-                  >
+                  <ButtonGroup size="small" aria-label="Balance update group" sx={{ ".MuiButton-startIcon": { margin: 0 }, justifyContent: "center" }} ref={topUpButtonsListRef}>
                     {topUpButtons}
                   </ButtonGroup>
                 ) : null}
               </Stack>
               {balances && isAnyBalancesIsAvailable(balances) ? (
                 <Box sx={{ display: "flex", justifyContent: "center" }}>
-                  <ButtonGroup
-                    size="small"
-                    aria-label="Balance display card"
-                    sx={{ ".MuiButton-startIcon": { margin: 0 }, justifyContent: "center" }}
-                  >
-                    <Button
-                      key="next_button"
-                      startIcon={<ArrowBackIos />}
-                      disabled={activeIndex === 0}
-                      onClick={() => handleBalanceNavigator("prev")}
-                    />
+                  <ButtonGroup size="small" aria-label="Balance display card" sx={{ ".MuiButton-startIcon": { margin: 0 }, justifyContent: "center" }}>
+                    <Button key="next_button" startIcon={<ArrowBackIos />} disabled={activeIndex === 0} onClick={() => handleBalanceNavigator("prev")} />
                     <BalanceCard
                       entityBal={
                         //balances![activeIndex].entityType === "HBAR" ? (parseFloat(balances![activeIndex].entityBalance)/1e8).toFixed(4):balances![activeIndex].entityBalance}
@@ -206,12 +178,7 @@ const Balances = () => {
                       // entitySymbol={balances[activeIndex]?.entitySymbol}
                       key="balance_card"
                     />
-                    <Button
-                      key="prev_button"
-                      startIcon={<ArrowForwardIos />}
-                      disabled={activeIndex === balances!.length - 1}
-                      onClick={() => handleBalanceNavigator("next")}
-                    />
+                    <Button key="prev_button" startIcon={<ArrowForwardIos />} disabled={activeIndex === balances!.length - 1} onClick={() => handleBalanceNavigator("next")} />
                   </ButtonGroup>
                 </Box>
               ) : (
@@ -286,13 +253,8 @@ interface BalanceCardProps {
 const BalanceCard = ({ entityBal, entityIcon }: BalanceCardProps) => {
   const theme = useTheme();
   return (
-    <Stack
-      direction={"row"}
-      component={Card}
-      elevation={0}
-      sx={{ padding: 0.5, display: "inline-flex", margin: "0 auto", borderRadius: 0, border: 1, borderColor: theme.palette.primary.main }}
-    >
-      <Avatar variant="rounded" sx={{ width: "auto", height: "auto",padding:"5px" }}>
+    <Stack direction={"row"} component={Card} elevation={0} sx={{ padding: 0.5, display: "inline-flex", margin: "0 auto", borderRadius: 0, border: 1, borderColor: theme.palette.primary.main }}>
+      <Avatar variant="rounded" sx={{ width: "auto", height: "auto", padding: "5px" }}>
         {entityIcon ?? "HBAR"}
       </Avatar>
       <Stack spacing={0.25} sx={{ marginLeft: 0.5, marginRight: 0.5 }}>
