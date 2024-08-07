@@ -279,7 +279,7 @@ export const useHashconnectService = () => {
               //? Requesting for verifications of the signatures
               setAuthStatusLog((_d) => [..._d, { type: "info", message: "Signature verification initialized" }]);
 
-              const { ast } = await Auth.generateAuth({
+              const { ast , deviceId } = await Auth.generateAuth({
                 payload: signedPayload.originalPayload,
                 clientPayload: signedPayload,
                 signatures: {
@@ -292,7 +292,10 @@ export const useHashconnectService = () => {
               });
               console.log(ast, "checking");
 
-              if (ast) {
+              if (ast  && deviceId) {
+                // Set device id to localstorag 
+                localStorage.setItem("device_id", deviceId);
+
                 //? Signatures verifies successfully and token received.
                 setAuthStatusLog((_d) => [..._d, { type: "success", message: "Verifies successfully." }]);
 

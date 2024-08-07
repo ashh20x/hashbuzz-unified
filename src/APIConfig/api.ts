@@ -1,10 +1,7 @@
-import axios, { AxiosInstance, AxiosResponse } from "axios";
-import React, { useRef } from "react";
-import { useCookies } from "react-cookie";
-import { toast } from "react-toastify";
+import axios, { AxiosResponse } from "axios";
 
 import { addCampaignBody, AdminLoginResponse, AdminUpdatePassword, AllTokensQuery, AuthCred, BalanceResponse, Challenge, ContractInfo, CreateTransactionByteBody, CurrentUser, GenerateAstPayload, GnerateReseponse, LogoutResponse, reimburseAmountBody, SetTransactionBody, TokenBalances, TokenDataObj, TokenInfo, TopUpResponse, updateCampaignStatusBody, UpdatePasswordResponse } from "../types";
-import { getErrorMessage } from "../Utilities/helpers";
+import { useAxios } from "./AxiosProvider";
 
 export const getCookie = (cname: string) => {
   let name = cname + "=";
@@ -21,53 +18,108 @@ export const getCookie = (cname: string) => {
   return "";
 };
 
+const getDeviceId = () => {
+  // Your logic to get device ID
+  const deviceId = "your-device-id"; // Replace with actual logic
+  console.log("Device ID:", deviceId);
+  return deviceId;
+};
+
 export const useApiInstance = () => {
-  const [cookies] = useCookies(["aSToken"]);
-  const instance = useRef<AxiosInstance>(
-    axios.create({
-      baseURL: process.env.REACT_APP_DAPP_API,
-      timeout: 15000,
-      headers: {
-        Authorization: `aSToken ${cookies.aSToken}`,
-        "Content-type": "application/json",
-      },
-    })
-  );
+  const axiosInstance =  useAxios();
+  // const [cookies] = useCookies(["aSToken"]);
+  // const instance = useRef<AxiosInstance>(
+  //   axios.create({
+  //     baseURL: process.env.REACT_APP_DAPP_API,
+  //     timeout: 15000,
+  //     headers: {
+  //       "Content-type": "application/json",
+  //     },
+  //   })
+  // );
+  
 
-  instance.current.interceptors.response.use(
-    (response) => response,
-    (error) => {
-      console.log("error from instance", error);
-      // console.log(getErrorMessage(error))
-      toast.error(getErrorMessage(error));
-      // whatever you want to do with the error
-      if (error?.response?.status === 401) {
-        // handleLogout();
-      }
-      // throw error;
-      // toast.error(getErrorMessage(error));
-    }
-  );
 
+  
   const responseBody = (response: AxiosResponse) => response?.data;
 
-  React.useEffect(() => {
-    instance.current = axios.create({
-      baseURL: process.env.REACT_APP_DAPP_API,
-      timeout: 30000,
-      headers: {
-        Authorization: `aSToken ${cookies.aSToken}`,
-        "Content-type": "application/json",
-      },
-    });
-  }, [cookies.aSToken]);
+  // React.useEffect(() => {
+  //   instance.current = axios.create({
+  //     baseURL: process.env.REACT_APP_DAPP_API,
+  //     timeout: 30000,
+  //     headers: {
+  //       Authorization: `aSToken ${cookies.aSToken}`,
+  //       "Content-type": "application/json",
+  //     },
+  //   });
+  // }, [cookies.aSToken]);
+
+  // React.useEffect(() => {
+  //   instance.current.interceptors.request.use(
+  //     (config) => {
+  //       const deviceId = getDeviceId();
+  //       if (config.headers && deviceId) {
+  //         config.headers['X-Device-ID'] = deviceId;
+  //       }
+
+  //       const token = cookies.aSToken;
+  //       if (token && config.headers) {
+  //         config.headers['Authorization'] = `aSToken ${token}`;
+  //       }
+
+  //       return config;
+  //     },
+  //     (error) => {
+  //       return Promise.reject(error);
+  //     }
+  //   );
+
+  //   instance.current.interceptors.response.use(
+  //     (response) => {
+  //       // If the response is successful, simply return it
+  //       return response;
+  //     },
+  //     (error) => {
+  //       console.log("error from instance", error);
+    
+  //       // Handle offline or network error
+  //       if (!error.response) {
+  //         // The request was made but no response was received
+  //         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+  //         // http.ClientRequest in node.js
+  //         console.error("Network error or server is offline:", error.message);
+  //         toast.error("Unable to connect to the server. Please check your network connection or try again later.");
+  //       } else {
+  //         // Handle specific error statuses
+  //         const status = error.response.status;
+    
+  //         switch (status) {
+  //           case 401:
+  //             // Handle unauthorized error (e.g., redirect to login)
+  //             // handleLogout();
+  //             toast.error("Unauthorized access. Please log in again.");
+  //             break;
+  //           case 500:
+  //             // Handle internal server error
+  //             toast.error("An internal server error occurred. Please try again later.");
+  //             break;
+  //           // Handle other status codes as needed
+  //           default:
+  //             toast.error(getErrorMessage(error));
+  //         }
+  //       }
+    
+  //       return Promise.reject(error);
+  //     }
+  //   );
+  // }, [cookies.aSToken]);
 
   const requests = {
-    get: (url: string, params?: {}) => instance.current.get(url, { params: params ?? {} }).then(responseBody),
-    post: (url: string, body: {}) => instance.current.post(url, body).then(responseBody),
-    put: (url: string, body: {}) => instance.current.put(url, body).then(responseBody),
-    delete: (url: string) => instance.current.delete(url).then(responseBody),
-    patch: (url: string, body: {}) => instance.current.patch(url, body).then(responseBody),
+    get: (url: string, params?: {}) => axiosInstance.get(url, { params: params ?? {} }).then(responseBody),
+    post: (url: string, body: {}) => axiosInstance.post(url, body).then(responseBody),
+    put: (url: string, body: {}) => axiosInstance.put(url, body).then(responseBody),
+    delete: (url: string) => axiosInstance.delete(url).then(responseBody),
+    patch: (url: string, body: {}) => axiosInstance.patch(url, body).then(responseBody),
   };
   const User = {
     getCurrentUser: (): Promise<CurrentUser> => requests.get("/api/users/current"),
@@ -84,7 +136,7 @@ export const useApiInstance = () => {
     refreshToken: (refreshToken: string): Promise<AuthCred> => requests.post("/auth/refreshToken", { refreshToken }),
     doLogout: (): Promise<LogoutResponse> => requests.post("/auth/logout", {}),
     adminLogin: (data: { password: string }): Promise<AdminLoginResponse> => requests.post("/auth/admin-login", { ...data }),
-    authPing: (): Promise<{ hedera_wallet_id: string }> => requests.get("/auth/ping"),
+    authPing: (): Promise<{ hedera_wallet_id: string  , status:string , device_id:string }> => requests.get("/auth/ping"),
     createChallenge: (data: { url: string }): Promise<Challenge> => requests.get("/auth/challenge", { ...data }),
     generateAuth: (data: GenerateAstPayload): Promise<GnerateReseponse> => requests.post("/auth/generate", { ...data }),
   };
