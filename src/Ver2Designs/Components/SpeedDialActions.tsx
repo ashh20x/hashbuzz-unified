@@ -99,9 +99,9 @@ const SpeedDialActions = () => {
         else showSnackBar();
         break;
       case "logout":
-        const logout = await disconnect();
+        await disconnect();
         toast.info("Logout Successfully.");
-        if (logout.success) navigate("/");
+        navigate("/");
         break;
       case "qr-connect":
         handleQrCodeGen();

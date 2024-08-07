@@ -33,32 +33,20 @@ const HeaderMenu = () => {
   };
 
   const handleLogout = async () => {
-    try{
-
-      const logout = await disconnect();
-      if (logout.success) navigate("/");
+    try {
+      await disconnect();
+      navigate("/");
       toast.info("Logout Successfully");
-    }catch(err){
-  console.log(err);
-  }
-  }
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <Box sx={{ position: "absolute", right: 10, top: 20 }}>
       <Tooltip title="Account Options">
-        <IconButton
-          onClick={handleClick}
-          size="small"
-          sx={{ ml: 2 }}
-          aria-controls={open ? "account-menu" : undefined}
-          aria-haspopup="true"
-          aria-expanded={open ? "true" : undefined}
-        >
-          {store?.currentUser?.profile_image_url ? (
-            <Avatar src={store.currentUser.profile_image_url} sx={{ width: 32, height: 32 }} />
-          ) : (
-            <Avatar sx={{ width: 32, height: 32 }} />
-          )}
+        <IconButton onClick={handleClick} size="small" sx={{ ml: 2 }} aria-controls={open ? "account-menu" : undefined} aria-haspopup="true" aria-expanded={open ? "true" : undefined}>
+          {store?.currentUser?.profile_image_url ? <Avatar src={store.currentUser.profile_image_url} sx={{ width: 32, height: 32 }} /> : <Avatar sx={{ width: 32, height: 32 }} />}
         </IconButton>
       </Tooltip>
 
@@ -103,7 +91,7 @@ const HeaderMenu = () => {
           </Avatar>
           {store?.currentUser?.hedera_wallet_id ?? ""}
         </MenuItem>
-        <MenuItem >
+        <MenuItem>
           <Avatar sx={{ height: 35, width: 35 }}>
             <TwitterIcon fontSize="inherit" />
           </Avatar>
