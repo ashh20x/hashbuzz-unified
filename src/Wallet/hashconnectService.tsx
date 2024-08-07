@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import { useApiInstance } from "../APIConfig/api";
 import { useStore } from "../Store/StoreProvider";
 import { COLLECTOR_ACCOUNT, CONTRACT_ADDRESS, NETWORK } from "../Utilities/helpers";
+import { useAuth } from "../Store/useAuth";
 
 export const fetchAccountIfoKey = async (accountId: string) => {
   const url = "https://testnet.mirrornode.hedera.com/api/v1/accounts/" + accountId;
@@ -122,6 +123,7 @@ interface AuthenticationLog {
 
 export const useHashconnectService = () => {
   const value = React.useContext(HashconectServiceContext);
+  const  {authCheckPing} = useAuth()
   const { topic, pairingData, network, hashconnect, setState } = value;
   const { Auth } = useApiInstance();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -213,21 +215,10 @@ export const useHashconnectService = () => {
     const logoutResponse = await Auth.doLogout();
     if (logoutResponse.success) {
       removeCookies("aSToken");
-      store?.updateState(
-        JSON.parse(
-          JSON.stringify({
-            ping: {
-              status: false,
-              hedera_wallet_id: "",
-            },
-            balances: [],
-            toasts: [],
-          })
-        )
-      );
+      store.dispatch({type:"RESET_STATE"})
     }
     return logoutResponse;
-  }, [Auth, hashconnect, pairingData?.topic, removeCookies, setState, store]);
+  }, [Auth, hashconnect, pairingData?.topic, store]);
 
   const requestAccountInfo = React.useCallback(async () => {
     const request: MessageTypes.AdditionalAccountRequest = {
@@ -304,11 +295,12 @@ export const useHashconnectService = () => {
                   sameSite: true,
                   maxAge: 24 * 60 * 60,
                 });
-                store?.updateState((_prevState) => ({ ..._prevState, auth: { ..._prevState.auth, aSToken: ast } }));
+                // store?.updateState((_prevState) => ({ ..._prevState, auth: { ..._prevState.auth, aSToken: ast } }));
+
 
                 setAuthStatusLog((_d) => [..._d, { type: "success", message: "Authentication Completed." }]);
                 await delay(1500);
-                await store?.authCheckPing();
+                await authCheckPing();
                 toast.info("Login Successful");
                 return { auth: true, ast };
               }
@@ -337,7 +329,7 @@ export const useHashconnectService = () => {
 
       setAuthStatusLog((_d) => [..._d, { type: "error", message: "Error from validation::-" + err.message }]);
     }
-  }, [Auth, hashconnect, pairingData?.accountIds, removeCookie, setCookies, store, topic]);
+  }, [Auth, hashconnect, pairingData?.accountIds, store, topic]);
 
   return {
     ...value,

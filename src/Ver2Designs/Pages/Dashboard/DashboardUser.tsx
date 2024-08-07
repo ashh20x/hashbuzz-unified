@@ -44,8 +44,7 @@ const Dashboard = () => {
   React.useEffect(() => {
     const toastsMessage = store?.toasts;
     toastsMessage?.map((t) => toast(t.message, { type: t.type }));
-    store?.updateState((_d) => ({ ..._d, toasts: [] }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    store.dispatch({"type":"RESET_TOAST"})
   }, []);
 
   return (

@@ -8,6 +8,7 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { useApiInstance } from "../../../APIConfig/api";
 import { useStore } from "../../../Store/StoreProvider";
+import { EntityBalances } from "../../../types";
 interface TopupModalProps {
   open: boolean;
   onClose: () => void;
@@ -72,22 +73,16 @@ const AssociateModal = ({ open, onClose }: TopupModalProps) => {
       };
       const tokenInfoReq = await Admin.addNewToken(data);
       const balancesData = await User.getTokenBalances();
-      store?.updateState((_state) => {
-        if (balancesData.length > 0) {
-          for (let index = 0; index < balancesData.length; index++) {
-            const d = balancesData[index];
-            _state.balances.push({
-              entityBalance: d.available_balance.toFixed(4),
-              entityIcon: d.token_symbol,
-              entitySymbol: "",
-              entityId: d.token_id,
-              entityType: d.token_type,
-            });
-          }
-        }
-        return { ..._state };
+      const balances: EntityBalances[] = balancesData.map((d) => {
+        return {
+          entityBalance: d.available_balance.toFixed(4),
+          entityIcon: d.token_symbol,
+          entitySymbol: "",
+          entityId: d.token_id,
+          entityType: d.token_type,
+        };
       });
-
+      store.dispatch({ type: "SET_BALANCES", payload: balances });
       toast.success(tokenInfoReq.message);
       setLoading(false);
       onClose();
@@ -158,7 +153,7 @@ const AssociateModal = ({ open, onClose }: TopupModalProps) => {
           </FormControl>
           <FormControl fullWidth sx={{ marginBottom: 1.25 }} required>
             <InputLabel htmlFor="token_type">Token Type</InputLabel>
-            <Select labelId="token_type" id="token_type" label="Token Type" onChange={inputSelectChangeHandler}  value={formData.token_type}>
+            <Select labelId="token_type" id="token_type" label="Token Type" onChange={inputSelectChangeHandler} value={formData.token_type}>
               <MenuItem value={"fungible"}>Fungible</MenuItem>
             </Select>
           </FormControl>

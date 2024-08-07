@@ -29,7 +29,7 @@ const ConsentModal = ({ user }: ConsentModalProps) => {
   const handleConcentAgree = async () => {
     try {
       const updateUser = await User.updateConsent({ consent: true });
-      if (store?.updateState) store.updateState((_d) => ({ ..._d, currentUser: updateUser }));
+       store.dispatch({type:"UPDATE_CURRENT_USER", payload:updateUser});
       setConsentModalOpen(false);
     } catch (error) {
       //@ts-ignore

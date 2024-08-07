@@ -124,35 +124,22 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
     try {
       const response = await Transaction.reimburseAmount({ type: data?.entityType?.toUpperCase(), token_id: data?.entityId, amount: formData?.amount?.value });
       const currentUser = await User.getCurrentUser();
-      store?.updateState((prev) => {
-        return {
-          ...prev,
-          currentUser: currentUser,
-          balances: [
-            {
-              ...INITIAL_HBAR_BALANCE_ENTITY,
-              entityBalance: (currentUser?.available_budget ?? 0 / 1e8).toFixed(4),
-              entityId: currentUser?.hedera_wallet_id ?? "",
-            },
-          ],
-        };
-      });
       const balancesData = await User.getTokenBalances();
-      store?.updateState((_state) => {
-        if (balancesData.length > 0) {
-          for (let index = 0; index < balancesData.length; index++) {
-            const d = balancesData[index];
-            _state.balances.push({
-              entityBalance: d.available_balance.toFixed(4),
-              entityIcon: d.token_symbol,
-              entitySymbol: "",
-              entityId: d.token_id,
-              entityType: d.token_type,
-            });
-          }
-        }
-        return { ..._state };
-      });
+      const balances:EntityBalances[] = [
+        {
+          ...INITIAL_HBAR_BALANCE_ENTITY,
+          entityBalance: (currentUser?.available_budget ?? 0 / 1e8).toFixed(4),
+          entityId: currentUser?.hedera_wallet_id ?? "",
+        },
+        ...(balancesData.map((d) => ({ entityBalance: d.available_balance.toFixed(4),
+          entityIcon: d.token_symbol,
+          entitySymbol: "",
+          entityId: d.token_id,
+          entityType: d.token_type,})))
+      ]
+      store.dispatch({type:"UPDATE_CURRENT_USER", payload:currentUser})
+      store.dispatch({type:"SET_BALANCES", payload:balances})
+    
       toast.info(response?.message);
       setLoading(false);
       if (onClose) onClose();
