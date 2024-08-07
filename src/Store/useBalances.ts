@@ -47,7 +47,7 @@ export const useBalances = () => {
       } catch (err) {
         toast.error(getErrorMessage(err));
       }
-    }, [User, currentUser, dispatch]);
+    }, [User, currentUser , dispatch]);
   
     const startBalanceQueryTimer = useCallback(() => {
       if (balanceQueryTimer) clearTimeout(balanceQueryTimer);
@@ -58,7 +58,7 @@ export const useBalances = () => {
       if (currentUser?.hedera_wallet_id) {
         checkAndUpdateEntityBalances();
       }
-    }, [currentUser?.hedera_wallet_id, checkAndUpdateEntityBalances]);
+    }, [currentUser?.hedera_wallet_id]);
   
     return {
       checkAndUpdateEntityBalances,

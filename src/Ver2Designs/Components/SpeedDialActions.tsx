@@ -16,6 +16,8 @@ import HashbuzzIcon from "../../SVGR/HashbuzzIcon";
 import HashpackIcon from "../../SVGR/HashpackIcon";
 import { useStore } from "../../Store/StoreProvider";
 import { useHashconnectService } from "../../Wallet";
+import { useConnectToExtension } from "../../Wallet/useConnectToExtension";
+import { useDisconnect } from "../../Wallet/useDisconnect";
 
 const postAuthActions = [
   // {
@@ -47,7 +49,9 @@ const SpeedDialActions = () => {
   const [open, setOpen] = React.useState(false);
   const theme = useTheme();
   const [qrCodeOpen, setQrCodeOpen] = React.useState(false);
-  const { pairingString,  connectToExtension, availableExtension, disconnect } = useHashconnectService();
+  const { pairingString, availableExtension } = useHashconnectService();
+  const connectToExtension = useConnectToExtension();
+  const disconnect = useDisconnect();
   const isDeviceIsSm = useMediaQuery(theme.breakpoints.down("sm"));
   const store = useStore();
   const navigate = useNavigate();

@@ -20,9 +20,9 @@ export const useUser = () => {
         }
     }, [dispatch]);
 
-    useEffect(() => {
-        checkAndUpdateLoggedInUser();
-    }, [checkAndUpdateLoggedInUser]);
+    // useEffect(() => {
+    //     checkAndUpdateLoggedInUser();
+    // }, []);
 
     return {
         checkAndUpdateLoggedInUser,

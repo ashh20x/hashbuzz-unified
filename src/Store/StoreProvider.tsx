@@ -22,7 +22,7 @@ const storeReducer = (state: AppState, action: Action): AppState => {
     case "SET_PING":
       return {
         ...state,
-        ping: action.payload,
+        ping: {...action.payload},
         checkRefresh: true,
       };
     case "UPDATE_STATE":
@@ -65,7 +65,7 @@ const storeReducer = (state: AppState, action: Action): AppState => {
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
 
 export const StoreProvider = ({ children }: { children: ReactNode }) => {
-  const [state, dispatch] = useReducer(storeReducer, INITIAL_STATE);
+  const [state, dispatch] = useReducer(storeReducer, JSON.parse(JSON.stringify(INITIAL_STATE)));
 
   return <StoreContext.Provider value={{ ...state, dispatch }}>{children}</StoreContext.Provider>;
 };

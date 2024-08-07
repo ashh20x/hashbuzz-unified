@@ -15,14 +15,14 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import HederaIcon from "../../SVGR/HederaIcon";
 import { useStore } from "../../Store/StoreProvider";
-import { useHashconnectService } from "../../Wallet";
+import { useDisconnect } from "../../Wallet/useDisconnect";
 
 const HeaderMenu = () => {
   const store = useStore();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const { disconnect } = useHashconnectService();
+  const disconnect = useDisconnect();
 
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {

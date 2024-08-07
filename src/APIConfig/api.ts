@@ -45,7 +45,7 @@ export const useApiInstance = () => {
     refreshToken: (refreshToken: string): Promise<AuthCred> => requests.post("/auth/refreshToken", { refreshToken }),
     doLogout: (): Promise<LogoutResponse> => requests.post("/auth/logout", {}),
     adminLogin: (data: { password: string }): Promise<AdminLoginResponse> => requests.post("/auth/admin-login", { ...data }),
-    authPing: (): Promise<{ hedera_wallet_id: string; status: string; device_id: string }> => requests.get("/auth/ping"),
+    authPing: (): Promise<{ wallet_id: string; status: string; device_id: string }> => requests.get("/auth/ping"),
     createChallenge: (data: { url: string }): Promise<Challenge> => requests.get("/auth/challenge", { ...data }),
     generateAuth: (data: GenerateAstPayload): Promise<GnerateReseponse> => requests.post("/auth/generate", { ...data }),
   };

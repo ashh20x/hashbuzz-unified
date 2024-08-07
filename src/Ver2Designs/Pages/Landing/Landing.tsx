@@ -7,28 +7,32 @@ import { useStore } from "../../../Store/StoreProvider";
 import { useHashconnectService } from "../../../Wallet";
 import { SpeedDialActions } from "../../Components";
 import styled from "styled-components";
+import { useHandleAuthenticate } from "../../../Wallet/useHandleAuthenticate";
 
 const Landing = () => {
   const store = useStore();
   const theme = useTheme();
   const [cookies] = useCookies(["aSToken"]);
-  const { pairingData, handleAuthenticate, authStatusLog } = useHashconnectService();
+  const { pairingData } = useHashconnectService();
+  const {handleAuthenticate, authStatusLog} = useHandleAuthenticate()
   const navigate = useNavigate();
-  const ping = store?.ping;
+  const ping = store.ping;
   const pairedAccount = pairingData?.accountIds[0];
 
-  React.useEffect(() => {
-    if (cookies.aSToken && ping?.status && pairedAccount) {
-      navigate("/dashboard");
-    }
-  }, [cookies.aSToken, navigate, pairedAccount, ping?.status]);
+  console.log("ping", ping)
 
   React.useEffect(() => {
-    if (pairedAccount && !ping?.status && !cookies?.aSToken) {
+    if (cookies.aSToken && ping.status && pairedAccount) {
+      navigate("/dashboard");
+    }
+  }, [cookies.aSToken, navigate, pairedAccount, ping]);
+
+  React.useEffect(() => {
+    if (pairedAccount && !ping.status && !cookies.aSToken) {
       handleAuthenticate();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pairedAccount, ping?.status, cookies]);
+  }, [pairedAccount, ping, cookies]);
 
   const StyledText = styled.div`
     display: flex;
