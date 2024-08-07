@@ -5,7 +5,7 @@ import { useStore } from "./StoreProvider";
 import debounce from "lodash/debounce";
 
 export const useAuth = () => {
-  console.log("UseAuth is called")
+  const [cookies] = useCookies(["aSToken"])
   const { dispatch } = useStore();
   const { Auth } = useApiInstance();
 
@@ -25,13 +25,13 @@ export const useAuth = () => {
   const debouncedAuthCheckPing = useCallback(debounce(authCheckPing, 2000), [authCheckPing]);
 
   useEffect(() => {
-    debouncedAuthCheckPing();
+    if(cookies.aSToken) debouncedAuthCheckPing();
 
     // Clean up the debounce effect on unmount
     return () => {
       debouncedAuthCheckPing.cancel();
     };
-  }, []);
+  }, [cookies.aSToken]);
 
   return {
     authCheckPing: debouncedAuthCheckPing,
