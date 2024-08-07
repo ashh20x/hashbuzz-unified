@@ -13,9 +13,10 @@ import AddNewTokenModal from "./AddNewTokenModal";
 const AdminDashboard = () => {
   const [tokenModalOpen, setTokenModalOpen] = React.useState(false);
   const [listedTokens, setListedTokens] = React.useState<AllTokensQuery | null>(null);
+  const { dispatch , contractInfo} = useStore();
 
   const { Admin } = useApiInstance();
-  const store = useStore();
+  // const store = useStore();
 
   React.useEffect(() => {
     (async () => {
@@ -30,7 +31,7 @@ const AdminDashboard = () => {
     try {
       (async () => {
         const contractInfo = await Admin.getActiveContractInfo();
-        store?.updateState((_state) => ({ ..._state, contractInfo: contractInfo }));
+        dispatch({type:"SET_CONTRACT_INFO" ,payload:contractInfo})
       })();
     } catch (err) {
       toast.error(getErrorMessage(err));
@@ -55,7 +56,7 @@ const AdminDashboard = () => {
                   {"Admin Dashboard"}
                 </Typography>
                 {/* https://hashscan.io/testnet/contract/0.0.3980646 */}
-                <Typography>Active contract Id:- <Link href={`https://hashscan.io/testnet/contract/${store?.contractInfo?.contract_id}`} target="_blank"> {store?.contractInfo?.contract_id ?? ""}</Link></Typography>
+                <Typography>Active contract Id:- <Link href={`https://hashscan.io/testnet/contract/${contractInfo?.contract_id}`} target="_blank"> {contractInfo?.contract_id ?? ""}</Link></Typography>
               </Box>
             </Grid>
             <Grid md={6}>

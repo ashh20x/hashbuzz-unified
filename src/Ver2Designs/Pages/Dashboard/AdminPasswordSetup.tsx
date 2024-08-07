@@ -89,7 +89,8 @@ const AdminPasswordSetup = ({ user }: AdminPasswordSetupProps) => {
           password: formData.password.value,
         });
         if (response.message) toast.success(response.message);
-        if (response.user && store?.updateState) store.updateState((_d) => ({ ..._d, currentUser: response.user }));
+        // if (response.user && store?.updateState) store.updateState((_d) => ({ ..._d, currentUser: response.user }));
+        if(response.user) store.dispatch({"type":"UPDATE_CURRENT_USER", payload:response.user})
         unstable_batchedUpdates(() => {
           setAdminPassModalOpen(false);
           setFormData(JSON.parse(JSON.stringify(FORM_INITIAL_STATE)));

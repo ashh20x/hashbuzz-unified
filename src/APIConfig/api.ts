@@ -18,101 +18,10 @@ export const getCookie = (cname: string) => {
   return "";
 };
 
-const getDeviceId = () => {
-  // Your logic to get device ID
-  const deviceId = "your-device-id"; // Replace with actual logic
-  console.log("Device ID:", deviceId);
-  return deviceId;
-};
-
 export const useApiInstance = () => {
-  const axiosInstance =  useAxios();
-  // const [cookies] = useCookies(["aSToken"]);
-  // const instance = useRef<AxiosInstance>(
-  //   axios.create({
-  //     baseURL: process.env.REACT_APP_DAPP_API,
-  //     timeout: 15000,
-  //     headers: {
-  //       "Content-type": "application/json",
-  //     },
-  //   })
-  // );
-  
+  const axiosInstance = useAxios();
 
-
-  
   const responseBody = (response: AxiosResponse) => response?.data;
-
-  // React.useEffect(() => {
-  //   instance.current = axios.create({
-  //     baseURL: process.env.REACT_APP_DAPP_API,
-  //     timeout: 30000,
-  //     headers: {
-  //       Authorization: `aSToken ${cookies.aSToken}`,
-  //       "Content-type": "application/json",
-  //     },
-  //   });
-  // }, [cookies.aSToken]);
-
-  // React.useEffect(() => {
-  //   instance.current.interceptors.request.use(
-  //     (config) => {
-  //       const deviceId = getDeviceId();
-  //       if (config.headers && deviceId) {
-  //         config.headers['X-Device-ID'] = deviceId;
-  //       }
-
-  //       const token = cookies.aSToken;
-  //       if (token && config.headers) {
-  //         config.headers['Authorization'] = `aSToken ${token}`;
-  //       }
-
-  //       return config;
-  //     },
-  //     (error) => {
-  //       return Promise.reject(error);
-  //     }
-  //   );
-
-  //   instance.current.interceptors.response.use(
-  //     (response) => {
-  //       // If the response is successful, simply return it
-  //       return response;
-  //     },
-  //     (error) => {
-  //       console.log("error from instance", error);
-    
-  //       // Handle offline or network error
-  //       if (!error.response) {
-  //         // The request was made but no response was received
-  //         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-  //         // http.ClientRequest in node.js
-  //         console.error("Network error or server is offline:", error.message);
-  //         toast.error("Unable to connect to the server. Please check your network connection or try again later.");
-  //       } else {
-  //         // Handle specific error statuses
-  //         const status = error.response.status;
-    
-  //         switch (status) {
-  //           case 401:
-  //             // Handle unauthorized error (e.g., redirect to login)
-  //             // handleLogout();
-  //             toast.error("Unauthorized access. Please log in again.");
-  //             break;
-  //           case 500:
-  //             // Handle internal server error
-  //             toast.error("An internal server error occurred. Please try again later.");
-  //             break;
-  //           // Handle other status codes as needed
-  //           default:
-  //             toast.error(getErrorMessage(error));
-  //         }
-  //       }
-    
-  //       return Promise.reject(error);
-  //     }
-  //   );
-  // }, [cookies.aSToken]);
 
   const requests = {
     get: (url: string, params?: {}) => axiosInstance.get(url, { params: params ?? {} }).then(responseBody),
@@ -129,14 +38,14 @@ export const useApiInstance = () => {
     getCardEngagement: (data: { id: number }): Promise<any> => requests.get("/api/campaign/card-status", { ...data }),
     getClaimRewards: (): Promise<any> => requests.get("/api/campaign/reward-details"),
     buttonClaimRewards: (data: any): Promise<any> => requests.put("api/campaign/claim-reward", data),
-    syncTokenBal:(tokenId:string):Promise<{balance:number}> => requests.get("/api/users/sync-bal/"+tokenId)
+    syncTokenBal: (tokenId: string): Promise<{ balance: number }> => requests.get("/api/users/sync-bal/" + tokenId),
   };
 
   const Auth = {
     refreshToken: (refreshToken: string): Promise<AuthCred> => requests.post("/auth/refreshToken", { refreshToken }),
     doLogout: (): Promise<LogoutResponse> => requests.post("/auth/logout", {}),
     adminLogin: (data: { password: string }): Promise<AdminLoginResponse> => requests.post("/auth/admin-login", { ...data }),
-    authPing: (): Promise<{ hedera_wallet_id: string  , status:string , device_id:string }> => requests.get("/auth/ping"),
+    authPing: (): Promise<{ hedera_wallet_id: string; status: string; device_id: string }> => requests.get("/auth/ping"),
     createChallenge: (data: { url: string }): Promise<Challenge> => requests.get("/auth/challenge", { ...data }),
     generateAuth: (data: GenerateAstPayload): Promise<GnerateReseponse> => requests.post("/auth/generate", { ...data }),
   };

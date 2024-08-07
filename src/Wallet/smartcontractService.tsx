@@ -3,6 +3,7 @@ import { useApiInstance } from "../APIConfig/api";
 import { useStore } from "../Store/StoreProvider";
 import { CreateTransactionEntity } from "../types";
 import { useHashconnectService } from "./hashconnectService";
+import { useBalances } from "../Store/useBalances";
 const INITIAL_HBAR_BALANCE_ENTITY = {
   entityBalance: "00.00",
   entityIcon: "ℏ",
@@ -14,6 +15,7 @@ const INITIAL_HBAR_BALANCE_ENTITY = {
 export const useSmartContractServices = () => {
   const { pairingData, sendTransaction, transferTokenToContract, approveToken } = useHashconnectService();
   const { Transaction, User } = useApiInstance();
+  const {startBalanceQueryTimer}  = useBalances()
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const store = useStore()!;
 
@@ -40,7 +42,7 @@ export const useSmartContractServices = () => {
           if (getBal.message) {
             getBal.error ? toast.error(getBal.message ?? "Error with request for balance update.") : toast.info(getBal.message);
           }
-          store.startBalanceQueryTimer();
+          startBalanceQueryTimer();
           return updateBalanceTransaction;
           //   if (getBal.balance) {
           //     store.updateState((_state) => {

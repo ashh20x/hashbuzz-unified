@@ -16,7 +16,7 @@ const MainLayout = () => {
   const getUserData = React.useCallback(async () => {
     try {
       const currentUser = await User.getCurrentUser();
-      store?.updateState((perv) => ({ ...perv, currentUser }));
+      store.dispatch({type:"UPDATE_CURRENT_USER" , payload:currentUser})
     } catch (error) {
       toast.error(getErrorMessage(error) ?? "Error while getting current user details.");
     }

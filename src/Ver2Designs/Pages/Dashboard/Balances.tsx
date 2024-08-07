@@ -118,13 +118,11 @@ const Balances = () => {
     const tokenId = balances![activeIndex].entityId;
     const data = await User.syncTokenBal(tokenId);
     console.log(data);
-    store?.updateState((prevState) => {
-      prevState.balances = prevState.balances.map((bal) => {
-        if (bal.entityId !== tokenId) return bal;
-        return { ...bal, entityBalance: (data.balance/10**(bal.decimals??6)).toFixed(4) };
-      });
-      return { ...prevState };
+    const newBalnnces =  store.balances.map((bal) => {
+      if (bal.entityId !== tokenId) return bal;
+      return { ...bal, entityBalance: (data.balance/10**(bal.decimals??6)).toFixed(4) };
     });
+    store.dispatch({type:"SET_BALANCES", payload:[...newBalnnces]});
   };
 
   const topUpButtons = [<Button key="reimburse" startIcon={<RemoveCircle />} disabled={!isAllowedToCmapigner(store?.currentUser?.role)} title="Reimburse from hashbuzz contract to your wallet" onClick={() => handleTopupOrReimClick("reimburse")} />, <Button key="top-up" disabled={!isAllowedToCmapigner(store?.currentUser?.role)} startIcon={<AddCircle />} onClick={() => handleTopupOrReimClick("topup")} title="Topup your hashbuzz account for the campaign" />];

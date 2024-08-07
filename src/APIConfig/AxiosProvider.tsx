@@ -15,7 +15,7 @@ const refreshTokenInterval = 10 * 60 * 1000; // Refresh token every 10 minutes
 const useRefreshToken = true; // Flag to enable/disable token refresh
 
 // Create a context
-const AxiosContext = createContext<AxiosInstance | null>(null);
+export const AxiosContext = createContext<AxiosInstance | null>(null);
 
 const AxiosProvider: React.FC = ({ children }) => {
   const [cookies, setCookie] = useCookies(["aSToken" , "refreshToken"]);
