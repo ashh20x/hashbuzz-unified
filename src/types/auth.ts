@@ -37,4 +37,8 @@ export type GenerateAstPayload = {
 
 export type GnerateReseponse = {
   ast: string;
+  deviceId:string,
+  refreshToken:string,
+  message:string,
+  auth:true
 };
