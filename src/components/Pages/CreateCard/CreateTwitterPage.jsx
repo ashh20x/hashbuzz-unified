@@ -20,6 +20,8 @@ import StatusCard from "../../StatusCard/StatusCard";
 import { CustomRowHead, CustomTable2, CustomTableBodyCell, CustomTableHeadCell } from "../../Tables/CreateTable.styles";
 import notify from "../../Toaster/toaster";
 import { CardSection, LinkContainer, StatusSection, TableSection } from "./CreateTwitterPage.styles";
+import { useConnectToExtension } from "../../../Wallet/useConnectToExtension";
+import { useDisconnect } from "../../../Wallet/useDisconnect";
 
 export const CreateTwitterPage = () => {
   const [tableData, setTableData] = useState([]);
@@ -42,7 +44,9 @@ export const CreateTwitterPage = () => {
   const isDeviceIsSm = useMediaQuery(theme.breakpoints.down("sm"));
 
   //Hashpack hook init
-  const { connectToExtension, disconnect, availableExtension, state, pairingData } = useHashconnectService();
+  const { availableExtension, pairingData } = useHashconnectService();
+  const connectToExtension = useConnectToExtension();
+  const disconnect = useDisconnect();
   //Hashpack Effects
   useEffect(() => {
     if (pairingData && pairingData.accountIds.length > 0) {
@@ -69,9 +73,7 @@ export const CreateTwitterPage = () => {
       } else {
         // await sendMarkOFwalletInstall();
         // Taskbar Alert - Hashpack browser extension not installed, please click on <Go> to visit HashPack website and install their wallet on your browser
-        alert(
-          "Alert - HashPack browser extension not installed, please click on <<OK>> to visit HashPack website and install their wallet on your browser.  Once installed you might need to restart your browser for Taskbar to detect wallet extension first time."
-        );
+        alert("Alert - HashPack browser extension not installed, please click on <<OK>> to visit HashPack website and install their wallet on your browser.  Once installed you might need to restart your browser for Taskbar to detect wallet extension first time.");
         window.open("https://www.hashpack.app");
       }
     } catch (e) {
@@ -191,17 +193,6 @@ export const CreateTwitterPage = () => {
   const updateCampaignItem = async (data) => {
     try {
       setShowLoading(true);
-      // if(data.card_status === "Completed")
-      //   await dAppAPICall({
-      //     url:"campaign/update-status",
-      //     method:"POST",
-      //     data:{
-      //       card_status:"completed",
-      //       card_id:data.card_id
-      //     }
-      //   })
-      // else
-      //   await APICall("/campaign/twitter-card/card_status/", "POST", null, data, false, cookies.token);
       await dAppAPICall({
         url: "campaign/update-status",
         method: "POST",
@@ -248,14 +239,11 @@ export const CreateTwitterPage = () => {
       case "Connect brand handle":
         (async () => {
           try {
-            // setShowLoading(true);
-            // const response = await APIAuthCall("/user/profile/request-brand-twitter-connect", "GET", {}, {}, cookies.token);
             const response = await dAppAuthAPICall({
               url: "brand-handle",
               method: "GET",
             });
             if (response.url) {
-              // setShowLoading(false);
               const { url } = response;
               localStorage.setItem("firstTime", false);
               setTwitterLoginURL(url);
@@ -263,7 +251,6 @@ export const CreateTwitterPage = () => {
             }
           } catch (error) {
             console.error("error===", error);
-            // setShowLoading(false);
           }
         })();
         break;
@@ -301,31 +288,9 @@ export const CreateTwitterPage = () => {
             else connectHashpack();
           }}
         />
-        <StatusCard
-          title={"Available Budget"}
-          content={(store?.available_budget / Math.pow(10, 8)).toFixed(3) + " ℏ"}
-          buttonTag={["Top-Up", "Reimburse"]}
-          isButton={true}
-          text={""}
-          isDisable={!store?.user?.hedera_wallet_id}
-          buttonClick={(e) => handleButtonClick(e)}
-        />
-        <StatusCard
-          title={"Brand Twitter Handle"}
-          content={store?.user?.business_twitter_handle ? "@" + store?.user?.business_twitter_handle : ""}
-          buttonTag={[!store?.user?.business_twitter_handle ? "Connect brand handle" : "Reconnect"]}
-          isButton={!store?.user?.business_twitter_handle}
-          text={""}
-          buttonClick={(e) => handleButtonClick(e)}
-          isDisable={store?.currentStatus}
-        />
-        <StatusCard
-          title={"Personal Twitter Handle"}
-          content={store?.user?.personal_twitter_handle ? "@" + store?.user?.personal_twitter_handle : ""}
-          buttonTag={["ReConnect"]}
-          isButton={false}
-          text={""}
-        />
+        <StatusCard title={"Available Budget"} content={(store?.available_budget / Math.pow(10, 8)).toFixed(3) + " ℏ"} buttonTag={["Top-Up", "Reimburse"]} isButton={true} text={""} isDisable={!store?.user?.hedera_wallet_id} buttonClick={(e) => handleButtonClick(e)} />
+        <StatusCard title={"Brand Twitter Handle"} content={store?.user?.business_twitter_handle ? "@" + store?.user?.business_twitter_handle : ""} buttonTag={[!store?.user?.business_twitter_handle ? "Connect brand handle" : "Reconnect"]} isButton={!store?.user?.business_twitter_handle} text={""} buttonClick={(e) => handleButtonClick(e)} isDisable={store?.currentStatus} />
+        <StatusCard title={"Personal Twitter Handle"} content={store?.user?.personal_twitter_handle ? "@" + store?.user?.personal_twitter_handle : ""} buttonTag={["ReConnect"]} isButton={false} text={""} />
         {tableData.length > 0 ? <StatusCard title={"Status"} content={store?.currentStatus} /> : null}
         {/* {cardDataArr.map((item, i) => (
           <StatusCard
@@ -367,34 +332,14 @@ export const CreateTwitterPage = () => {
                 <CustomTableBodyCell>{(item.campaign_budget / Math.pow(10, 8)).toFixed(4)}</CustomTableBodyCell>
                 <CustomTableBodyCell>{(item.amount_spent / Math.pow(10, 8)).toFixed(4)}</CustomTableBodyCell>
                 <CustomTableBodyCell>{(item.amount_claimed / Math.pow(10, 8)).toFixed(4)}</CustomTableBodyCell>
-                <CustomTableBodyCell>
-                  {!item.isbutton && item.card_status !== "Completed"
-                    ? item.card_status == "Rejected"
-                      ? "Rejected"
-                      : handleActionButon(item.card_status).map((element) => (
-                          <SecondaryButton text={element} margin="5%" onclick={() => handleAction(element, item)} />
-                        ))
-                    : "Promotion ended"}
-                </CustomTableBodyCell>
+                <CustomTableBodyCell>{!item.isbutton && item.card_status !== "Completed" ? (item.card_status == "Rejected" ? "Rejected" : handleActionButon(item.card_status).map((element) => <SecondaryButton text={element} margin="5%" onclick={() => handleAction(element, item)} />)) : "Promotion ended"}</CustomTableBodyCell>
               </TableRow>
             ))}
           </TableBody>
         </CustomTable2>
       </TableSection>
-      <StatusSection>
-      During the beta phase, there is a limitation of running a single campaign concurrently. Each campaign will conclude automatically 24 hours after its initiation, unless you choose to end it earlier. We anticipate relaxing these constraints gradually. Additionally, your recharged balance is available for unlimited use across various campaigns.
-      </StatusSection>
-      <PrimaryButton
-        text="CREATE CAMPAIGN"
-        variant="contained"
-        onclick={handleTemplate}
-        disabled={
-          buttonDisabled ||
-          !store?.currentUser?.available_budget ||
-          !store?.currentUser?.hedera_wallet_id ||
-          !store?.currentUser?.business_twitter_handle
-        }
-      />
+      <StatusSection>During the beta phase, there is a limitation of running a single campaign concurrently. Each campaign will conclude automatically 24 hours after its initiation, unless you choose to end it earlier. We anticipate relaxing these constraints gradually. Additionally, your recharged balance is available for unlimited use across various campaigns.</StatusSection>
+      <PrimaryButton text="CREATE CAMPAIGN" variant="contained" onclick={handleTemplate} disabled={buttonDisabled || !store?.currentUser?.available_budget || !store?.currentUser?.hedera_wallet_id || !store?.currentUser?.business_twitter_handle} />
       {/* (userData?.available_budget === 0 || userData?.available_budget === null) */}
       <TopUpModal open={openTopup} setOpen={setTopUpOpen} isTopUp={isTopUp} />
       {open ? <DisplayTableModal open={open} setOpen={setOpen} item={selectedCampaign}></DisplayTableModal> : null}

@@ -104,11 +104,11 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
     console.log("Auth" , Auth);
     try {
       const data = await Auth.authPing();
-      if (data.hedera_wallet_id) {
+      if (data.wallet_id) {
         updateState((prevState) => ({
           ...prevState,
           checkRefresh: true,
-          ping: { status: true, hedera_wallet_id: data.hedera_wallet_id },
+          ping: { status: true, hedera_wallet_id: data.wallet_id },
         }));
       }
       return { ping: true };

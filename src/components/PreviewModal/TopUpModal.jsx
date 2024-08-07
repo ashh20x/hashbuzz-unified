@@ -11,11 +11,13 @@ import { delay } from "../../Utilities/helpers";
 import PrimaryButton from "../Buttons/PrimaryButton";
 import { ErrorTextWrap } from "../Pages/TemplatePage/TemplatePage.styles";
 import { BoxCont, ButtonWrapPrimary, CustomInput, CustomParagraph, Label, OverlayBox, Row } from "./PreviewModal.styles";
+import { useConnectToExtension } from "../../Wallet/useConnectToExtension";
 const TopUpModal = ({ open, setOpen, isTopUp }) => {
   const [amount, setAmount] = useState(0);
   const [paymentStatus, setPaymentStatus] = useState(null);
   const { topUpAccount } = useSmartContractServices();
-  const { pairingData, connectToExtension } = useHashconnectService();
+  const { pairingData } = useHashconnectService();
+  const connectToExtension = useConnectToExtension();
   const [fee, setfee] = useState(0);
 
   const [budgetMessage, setBudgetMessage] = useState("");

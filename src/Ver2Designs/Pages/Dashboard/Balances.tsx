@@ -17,6 +17,7 @@ import TopupModal from "./TopupModal";
 import { isAllowedToCmapigner, isAnyBalancesIsAvailable } from "../../../Utilities/helpers";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import SyncIcon from "@mui/icons-material/Sync";
+import { useConnectToExtension } from "../../../Wallet/useConnectToExtension";
 
 const formatBalance = (balObj: EntityBalances): string => {
   if (balObj) {
@@ -35,7 +36,8 @@ const Balances = () => {
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const [topupModalData, setTopupModalData] = useState<EntityBalances | null>(null);
 
-  const { pairingData, connectToExtension } = useHashconnectService();
+  const { pairingData } = useHashconnectService();
+  const connectToExtension = useConnectToExtension();
 
   const { MirrorNodeRestAPI, User } = useApiInstance();
   // const [popOverOpen, setPopOverOpen] = React.useState(false);

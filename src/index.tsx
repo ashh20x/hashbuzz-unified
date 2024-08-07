@@ -5,13 +5,11 @@ import AppRouter from "./AppRouter";
 import { HashconnectAPIProvider } from "./Wallet";
 import "./index.css";
 import { CookiesProvider } from "react-cookie";
-// import { StoreProvider } from "./Store/StoreProvider";
 import { NETWORK } from "./Utilities/helpers";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AxiosProvider from "./APIConfig/AxiosProvider";
 import { StoreProvider } from "./Store/StoreProvider";
-// import { StoreProvider } from "./Store/StoreProvider";
 
 const theme = createTheme();
 
