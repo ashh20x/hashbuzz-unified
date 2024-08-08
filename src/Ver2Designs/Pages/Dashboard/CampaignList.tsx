@@ -24,21 +24,25 @@ interface CampaignListProps {
   user?: CurrentUser;
 }
 
-const isButtonDisabled = (campaignStats: string, approve: boolean) => {
-  const disabledStatuses = ["Campaign Complete, Initiating Rewards", "Under Review", "Campaign Declined", "Rewards Disbursed", "Running"];
-
+const isButtonDisabled = (campaignStats: CampaignStatus, approve: boolean) => {
+  const disabledStatuses: CampaignStatus[] = [
+    CampaignStatus.RewardDistributionInProgress,
+    CampaignStatus.CampaignDeclined,
+    CampaignStatus.RewardsDistributed,
+    CampaignStatus.CampaignRunning
+  ];
   return disabledStatuses.includes(campaignStats) || approve === false;
 };
 
 const getButtonLabel = (campaignStats: CampaignStatus, campaignStartTime: number) => {
   switch (campaignStats) {
-    case "RewardDistributionInProgress":
-    case "RewardsDistributed":
+    case CampaignStatus.RewardDistributionInProgress:
+    case CampaignStatus.RewardsDistributed:
       return "Completed";
-    case "ApprovalPending":
-    case "CampaignApproved":
+    case CampaignStatus.ApprovalPending:
+    case CampaignStatus.CampaignApproved:
       return "Start";
-    case "CampaignRunning":
+    case CampaignStatus.CampaignRunning:
       return <Countdown date={new Date(campaignStartTime).getTime() + +(process.env.REACT_APP_CAMPAIGN_DURATION ?? 1440) * 60 * 1000} />;
     default:
       return "Update";
