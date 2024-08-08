@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useApiInstance } from "../../../APIConfig/api";
 import { useStore } from "../../../Store/StoreProvider";
-import { getErrorMessage } from "../../../Utilities/helpers";
+import { CampaignStatus, getCardStausText, getErrorMessage } from "../../../Utilities/helpers";
 import { Loader } from "../../../components/Loader/Loader";
 import DetailsModal from "../../../components/PreviewModal/DetailsModal";
 import { CurrentUser } from "../../../types";
@@ -398,7 +398,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
         return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.amount_claimed / 1e8 : cellValues?.row?.amount_claimed / Math.pow(10, Number(cellValues?.row?.decimals))}</span>;
       },
     },
-    { field: "campaign_stats", headerName: "Status", minWidth: 150, flex: 0.75 },
+    { field: "campaign_stats", headerName: "Status", minWidth: 150, flex: 0.75 , valueGetter:({value}) => getCardStausText(value as CampaignStatus) },
 
     {
       field: "action",

@@ -52,7 +52,6 @@ export const TemplatePage = () => {
 
   const getTokens = async () => {
     const response = await User.getTokenBalances();
-    console.log(response, "responses");
     const updatedTokens = [];
     response?.forEach((item) => {
       if (item?.available_balance > 0) {
