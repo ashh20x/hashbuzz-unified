@@ -30,16 +30,15 @@ const isButtonDisabled = (campaignStats: string, approve: boolean) => {
   return disabledStatuses.includes(campaignStats) || approve === false;
 };
 
-const getButtonLabel = (campaignStats: string, campaignStartTime: number) => {
+const getButtonLabel = (campaignStats: CampaignStatus, campaignStartTime: number) => {
   switch (campaignStats) {
-    case "Campaign Complete, Initiating Rewards":
-    case "Rewards Disbursed":
+    case "RewardDistributionInProgress":
+    case "RewardsDistributed":
       return "Completed";
-    case "Campaign Active":
-    case "Under Review":
-    case "Campaign Declined":
+    case "ApprovalPending":
+    case "CampaignApproved":
       return "Start";
-    case "Running":
+    case "CampaignRunning":
       return <Countdown date={new Date(campaignStartTime).getTime() + +(process.env.REACT_APP_CAMPAIGN_DURATION ?? 1440) * 60 * 1000} />;
     default:
       return "Update";
@@ -332,7 +331,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
   };
 
   const handleClick = async (values: any) => {
-    console.log(values, "rtyuio");
+
     try {
       setLoading(true);
       let status = "";
