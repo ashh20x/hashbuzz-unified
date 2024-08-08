@@ -5,6 +5,28 @@ export const dAppApiURL = process.env.REACT_APP_DAPP_API;
 export const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS;
 export const COLLECTOR_ACCOUNT = process.env.REACT_APP_COLLECTOR_ACCOUNT;
 
+export enum CampaignStatus {
+  ApprovalPending = "ApprovalPending",
+  CampaignApproved = "CampaignApproved",
+  CampaignDeclined = "CampaignDeclined",
+  CampaignStarted = "CampaignStarted",
+  CampaignRunning = "CampaignRunning",
+  RewardDistributionInProgress = "RewardDistributionInProgress",
+  RewardsDistributed = "RewardsDistributed",
+  InternalError = "InternalError",
+}
+
+export const  CampaignStatusTexts = {
+  ApprovalPending : "Approval Pending",
+  CampaignApproved:"Campaign Approved",
+  CampaignDeclined: "Campaign Declined",
+  CampaignStarted: "Campaign Started",
+  CampaignRunning: "Campaign Running",
+  RewardDistributionInProgress:"Reward Distribution In Progress",
+  RewardsDistributed:"Rewards Distributed",
+  InternalError:"Internal Error",
+}
+
 export const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 // const _delete_cookie = (name: string) => {
@@ -33,3 +55,5 @@ export const isAllowedToCmapigner = (role?: user_roles): boolean => {
   if(!role) return false;
   return ["USER", "ADMIN", "SUPER_ADMIN"].includes(role);
 };
+
+export const getCardStausText = (value:CampaignStatus) =>  CampaignStatusTexts[value];
