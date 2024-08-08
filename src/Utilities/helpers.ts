@@ -16,15 +16,15 @@ export enum CampaignStatus {
   InternalError = "InternalError",
 }
 
-export const  CampaignStatusTexts = {
-  ApprovalPending : "Approval Pending",
-  CampaignApproved:"Campaign Approved",
-  CampaignDeclined: "Campaign Declined",
-  CampaignStarted: "Campaign Started",
-  CampaignRunning: "Campaign Running",
-  RewardDistributionInProgress:"Reward Distribution In Progress",
-  RewardsDistributed:"Rewards Distributed",
-  InternalError:"Internal Error",
+export const CampaignStatusTexts = {
+  [CampaignStatus.ApprovalPending]: "Approval Pending",
+  [CampaignStatus.CampaignApproved]: "Campaign Approved",
+  [CampaignStatus.CampaignDeclined]: "Campaign Declined",
+  [CampaignStatus.CampaignStarted]: "Campaign Started",
+  [CampaignStatus.CampaignRunning]: "Campaign Running",
+  [CampaignStatus.RewardDistributionInProgress]: "Reward Distribution In Progress",
+  [CampaignStatus.RewardsDistributed]: "Rewards Distributed",
+  [CampaignStatus.InternalError]: "Internal Error",
 }
 
 export const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
