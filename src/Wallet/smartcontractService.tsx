@@ -10,7 +10,7 @@ export const useSmartContractServices = () => {
   const { pairingData } = useHashconnectService();
   
   const sendTransaction = useSendTransaction();
-  const { Transaction, User } = useApiInstance();
+  const { Transaction } = useApiInstance();
   const { startBalanceQueryTimer } = useBalances();
 
   const topUpAccount = async (entity: CreateTransactionEntity) => {

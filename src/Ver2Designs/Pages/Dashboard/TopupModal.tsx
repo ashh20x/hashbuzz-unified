@@ -53,11 +53,11 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
   const [formData, setFromData] = React.useState<CurrentFormState>(JSON.parse(JSON.stringify(FORM_INITIAL_STATE)));
   const inputRef = React.createRef<HTMLInputElement>();
   const [loading, setLoading] = React.useState(false);
-  const { User } = useApiInstance();
+
 
   const { topUpAccount } = useSmartContractServices();
   const { pairingData } = useHashconnectService();
-  const { Transaction } = useApiInstance();
+  const { Transaction  ,User} = useApiInstance();
   const store = useStore();
   const inputChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
@@ -236,9 +236,7 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
         )}
       </DialogContent>
       <DialogActions>
-        {/* <Button autoFocus onClick={modalClose} color="error" variant="outlined">
-          Close
-        </Button> */}
+       
         {operation === "reimburse" ? (
           <LoadingButton onClick={reimburse} autoFocus variant="contained" loading={loading} loadingPosition="start" disabled={loading}>
             Reimburse

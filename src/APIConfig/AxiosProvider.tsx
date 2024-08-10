@@ -11,7 +11,7 @@ const getDeviceId = () => {
   return deviceId;
 };
 
-const refreshTokenInterval = 10 * 60 * 1000; // Refresh token every 10 minutes
+const refreshTokenInterval = 12 * 60 * 1000; // Refresh token every 12 minutes
 const useRefreshToken = true; // Flag to enable/disable token refresh
 
 // Create a context
@@ -38,7 +38,7 @@ const AxiosProvider: React.FC = ({ children }) => {
     setIsRefreshing(true);
     try {
       // Your logic to refresh the token
-      const response = await axios.post('/auth/refresh-token', {
+      const response = await axios.post("/auth/refreshToken", {
         refreshToken: cookies.refreshToken,
       });
       const newToken = response.data.accessToken;

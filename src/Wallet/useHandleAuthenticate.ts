@@ -32,7 +32,7 @@ export const useHandleAuthenticate = () => {
         .then(async (authResponse) => {
           if (authResponse.success && authResponse.signedPayload && authResponse.userSignature) {
             const { signedPayload, userSignature } = authResponse;
-            const { ast, deviceId } = await Auth.generateAuth({
+            const { ast, deviceId , refreshToken } = await Auth.generateAuth({
               payload: signedPayload.originalPayload,
               clientPayload: signedPayload,
               signatures: {
@@ -51,6 +51,7 @@ export const useHandleAuthenticate = () => {
                 sameSite: true,
                 maxAge: 24 * 60 * 60,
               });
+              setCookies("refreshToken" ,refreshToken ,{sameSite:true} )
               setAuthStatusLog((_d) => [..._d, { type: "success", message: "Authentication Completed." }]);
               await delay(1500);
               await authCheckPing();

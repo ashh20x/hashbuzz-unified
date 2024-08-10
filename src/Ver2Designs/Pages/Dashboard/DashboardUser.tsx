@@ -13,19 +13,15 @@ import { getErrorMessage, isAllowedToCmapigner } from "../../../Utilities/helper
 import SpeedDialActions from "../../Components/SpeedDialActions";
 import * as SC from "./styled";
 
-
 const Dashboard = () => {
   const store = useStore();
-  // console.log(store, "store");
-
   const { Integrations } = useApiInstance();
-  const currentUser = store?.currentUser;
+  const currentUser = store.currentUser;
 
   const personalHandleIntegration = async (event: React.MouseEvent<HTMLButtonElement>) => {
     try {
       event.preventDefault();
       const { url } = await Integrations.twitterPersonalHandle();
-      console.log({ url });
       window.location.href = url;
     } catch (err) {
       toast.error(getErrorMessage(err) ?? "Error while requesting personal handle integration.");
@@ -42,15 +38,13 @@ const Dashboard = () => {
   };
 
   React.useEffect(() => {
-    const toastsMessage = store?.toasts;
-    toastsMessage?.map((t) => toast(t.message, { type: t.type }));
-    store.dispatch({"type":"RESET_TOAST"})
+    const toastsMessage = store.toasts;
+    toastsMessage.map((t) => toast(t.message, { type: t.type }));
+    store.dispatch({ type: "RESET_TOAST" });
   }, []);
 
   return (
     <React.Fragment>
-      {/* <Grid container spacing={3}> */}
-      {/* Card for wallet info */}
       <SC.StyledCardGenUtility>
         <CardGenUtility startIcon={<AccountBalanceWalletIcon color="inherit" fontSize={"inherit"} />} title={"Hedera Account ID"} content={<Typography variant="h5">{currentUser?.hedera_wallet_id}</Typography>} />
 
@@ -77,7 +71,7 @@ const Dashboard = () => {
             currentUser?.business_twitter_handle ? (
               <Typography variant="h5">{"@" + currentUser?.business_twitter_handle}</Typography>
             ) : (
-              <Button type="button"  disabled={!isAllowedToCmapigner(currentUser?.role)} variant="contained" disableElevation startIcon={<TwitterIcon />} onClick={bizHandleIntegration}>
+              <Button type="button" disabled={!isAllowedToCmapigner(currentUser?.role)} variant="contained" disableElevation startIcon={<TwitterIcon />} onClick={bizHandleIntegration}>
                 Connect
               </Button>
             )

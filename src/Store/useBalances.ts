@@ -1,13 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
-import { useCookies } from "react-cookie";
 import { toast } from "react-toastify";
 import { useApiInstance } from "../APIConfig/api";
+import { EntityBalances } from "../types";
 import { getErrorMessage } from "../Utilities/helpers";
 import { useStore } from "./StoreProvider";
-import { EntityBalances } from "../types";
 
 const INITIAL_HBAR_BALANCE_ENTITY = {
-    entityBalance: "00.00",
+    entityBalance: 0.00,
     entityIcon: "HBAR",
     entitySymbol: "ℏ",
     entityId: "",
@@ -28,8 +27,8 @@ export const useBalances = () => {
   
         const balances: EntityBalances[] = [
           {
-            ...INITIAL_HBAR_BALANCE_ENTITY,
-            entityBalance: (availableBudget / 1e8).toFixed(4),
+            ...JSON.parse(JSON.stringify(INITIAL_HBAR_BALANCE_ENTITY)),
+            entityBalance: availableBudget,
             entityId: currentUser?.hedera_wallet_id ?? "",
           },
           ...balancesData.map((d) => ({
@@ -50,6 +49,7 @@ export const useBalances = () => {
     }, [User, currentUser , dispatch]);
   
     const startBalanceQueryTimer = useCallback(() => {
+      console.log("I have been called");
       if (balanceQueryTimer) clearTimeout(balanceQueryTimer);
       setBalanceQueryTimer(setTimeout(() => checkAndUpdateEntityBalances(true), 35000));
     }, [balanceQueryTimer, checkAndUpdateEntityBalances]);

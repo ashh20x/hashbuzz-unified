@@ -1,5 +1,6 @@
 import { AddCircle, ArrowBackIos, ArrowForwardIos, RemoveCircle } from "@mui/icons-material";
-import { Avatar, Box, Button, ButtonGroup, Card, Divider, Grid, Grow, IconButton, ListItemAvatar, ListItemText, Paper, Stack, Typography, useMediaQuery, useTheme } from "@mui/material";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import { Avatar, Box, Button, ButtonGroup, Card, Divider, Grid, Grow, ListItemAvatar, ListItemText, Paper, Stack, Typography, useMediaQuery, useTheme } from "@mui/material";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
 import MenuItem from "@mui/material/MenuItem";
 import MenuList from "@mui/material/MenuList";
@@ -8,16 +9,14 @@ import React, { useState } from "react";
 import { unstable_batchedUpdates } from "react-dom";
 import { toast } from "react-toastify";
 import { useApiInstance } from "../../../APIConfig/api";
-import { useHashconnectService } from "../../../Wallet";
 import { useStore } from "../../../Store/StoreProvider";
 import HederaIcon from "../../../SVGR/HederaIcon";
 import { BalOperation, EntityBalances } from "../../../types";
+import { isAllowedToCmapigner, isAnyBalancesIsAvailable } from "../../../Utilities/helpers";
+import { useHashconnectService } from "../../../Wallet";
+import { useConnectToExtension } from "../../../Wallet/useConnectToExtension";
 import { cardStyle } from "./CardGenUtility";
 import TopupModal from "./TopupModal";
-import { isAllowedToCmapigner, isAnyBalancesIsAvailable } from "../../../Utilities/helpers";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import SyncIcon from "@mui/icons-material/Sync";
-import { useConnectToExtension } from "../../../Wallet/useConnectToExtension";
 
 const formatBalance = (balObj: EntityBalances): string => {
   if (balObj) {
@@ -31,7 +30,7 @@ const Balances = () => {
   const theme = useTheme();
   const aboveXs = useMediaQuery(theme.breakpoints.up("sm"));
   const store = useStore();
-  const balances = store?.balances;
+  const balances = store.balances;
 
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const [topupModalData, setTopupModalData] = useState<EntityBalances | null>(null);
@@ -40,7 +39,6 @@ const Balances = () => {
   const connectToExtension = useConnectToExtension();
 
   const { MirrorNodeRestAPI, User } = useApiInstance();
-  // const [popOverOpen, setPopOverOpen] = React.useState(false);
   const [balanceList, setBalanceList] = React.useState<{ operation: BalOperation }>({ operation: "topup" });
   const topUpButtonsListRef = React.useRef<HTMLDivElement>(null);
   const [entityListEl, setEntityEl] = React.useState<HTMLElement | null>(null);
@@ -64,7 +62,6 @@ const Balances = () => {
       return;
     }
     setEntityEl(null);
-    // setBalanceList((_d) => ({ ..._d, open: false }));
   };
 
   const handleMenuItemClick = async (event: React.MouseEvent<HTMLLIElement, MouseEvent>, index: number) => {
@@ -116,18 +113,26 @@ const Balances = () => {
     }
   };
 
-  const syncBalance = async (evennt: React.MouseEvent) => {
-    const tokenId = balances![activeIndex].entityId;
-    const data = await User.syncTokenBal(tokenId);
-    console.log(data);
-    const newBalnnces =  store.balances.map((bal) => {
-      if (bal.entityId !== tokenId) return bal;
-      return { ...bal, entityBalance: (data.balance/10**(bal.decimals??6)).toFixed(4) };
-    });
-    store.dispatch({type:"SET_BALANCES", payload:[...newBalnnces]});
-  };
+  // const syncBalance = async (evennt: React.MouseEvent) => {
+  //   const tokenId = balances![activeIndex].entityId;
+  //   const data = await User.syncTokenBal(tokenId);
+  //   console.log(data);
+  //   const newBalnnces =  store.balances.map((bal) => {
+  //     if (bal.entityId !== tokenId) return bal;
+  //     return { ...bal, entityBalance: (data.balance/10**(bal.decimals??6)).toFixed(4) };
+  //   });
+  //   store.dispatch({type:"SET_BALANCES", payload:[...newBalnnces]});
+  // };
+
+  //update balance on the first mount
+  // useEffect(()=> {
+  //   console.log("i am calld")
+  //   // checkAndUpdateEntityBalances();
+  // },[])
 
   const topUpButtons = [<Button key="reimburse" startIcon={<RemoveCircle />} disabled={!isAllowedToCmapigner(store?.currentUser?.role)} title="Reimburse from hashbuzz contract to your wallet" onClick={() => handleTopupOrReimClick("reimburse")} />, <Button key="top-up" disabled={!isAllowedToCmapigner(store?.currentUser?.role)} startIcon={<AddCircle />} onClick={() => handleTopupOrReimClick("topup")} title="Topup your hashbuzz account for the campaign" />];
+
+
 
   return (
     <React.Fragment>
