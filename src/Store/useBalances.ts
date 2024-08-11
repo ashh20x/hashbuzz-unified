@@ -21,9 +21,14 @@ export const useBalances = () => {
     const checkAndUpdateEntityBalances = useCallback(async (topup?: boolean) => {
       try {
         const balancesData = await User.getTokenBalances();
-        const availableBudget = topup
-          ? (await User.getCurrentUser())?.available_budget
-          : Number(currentUser?.available_budget);
+        let availableBudget = 0;
+        if(topup){
+          const currentUserUpdated = await User.getCurrentUser();
+          availableBudget = currentUserUpdated.available_budget
+          dispatch({type:"UPDATE_CURRENT_USER", payload:currentUserUpdated})
+        }else{
+          availableBudget = Number(currentUser?.available_budget)
+        }
   
         const balances: EntityBalances[] = [
           {

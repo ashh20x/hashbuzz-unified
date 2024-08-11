@@ -3,12 +3,10 @@ import { IconButton, Stack, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
 const TwitterTextField = () => {
   const [text, setText] = useState("");
-  // const [wordCount, setWordCount] = useState(0);
-  const MAX_WORD_COUNT = 280;
+  const MAX_WORD_COUNT = 270;
 
   const handleTextChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const inputText = event.target.value;
-    // setWordCount(words.length);
     setText(inputText);
   };
 
@@ -19,10 +17,7 @@ const TwitterTextField = () => {
       <TextField
         multiline
         fullWidth
-        // sx={{p:2}}
-        // rows={""}
         variant="standard"
-        // label="What's happening?"
         placeholder="What's happening?"
         value={text}
         onChange={handleTextChange}
@@ -38,13 +33,6 @@ const TwitterTextField = () => {
           </IconButton>
         </Stack>
       </Stack>
-      {/*<Typography variant="body2" color={wordCount > MAX_WORD_COUNT ? 'error' : 'inherit'}>
-        {text.length}/{MAX_WORD_COUNT}
-      </Typography>*/}
-      {/* <EmojiPicker onEmojiClick={handleEmojiSelect} /> */}
-      {/* <Button variant="contained" onClick={handlePreviewClick}>
-        Preview
-      </Button>  */}
     </Stack>
   );
 };
