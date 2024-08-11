@@ -88,7 +88,7 @@ const AdminDashboard = () => {
         <StyledTab label="Admin Dashboard" {...a11yProps(1)} />
       </StyledTabs>
       <TabPanel value={value} index={1}>
-        <Box sx={{ paddingBottom: 2 , height:"100%"}} >
+        <Box className="usersList-Table" sx={{ paddingBottom: 2 , height:"100%" , minHeight:500}} >
           <Card elevation={0} sx={{ ...cardStyle, height: "100%" }}>
             <AdminViews />
           </Card>
