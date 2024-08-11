@@ -85,7 +85,7 @@ export const AdminViews = () => {
       <Typography variant="h5" sx={{ mb: 2 }}>
         User list
       </Typography>
-      <Box sx={{ height: "calc(100% - 50px)" }}>
+      <Box sx={{ height: "500px" , minHeight:500}}>
         <DataGrid rows={sortBy(allUsers, "id")} columns={cols} paginationMode="server" rowCount={count} pagination />
       </Box>
     </Box>
