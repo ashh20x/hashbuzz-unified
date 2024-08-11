@@ -72,7 +72,7 @@ export const AdminViews = () => {
       width: 200,
       renderCell: (cellValues) => {
         return (
-          <Button variant="contained" color="primary" onClick={() => handleActionClick(cellValues.row.id)}>
+          <Button variant="contained" color="primary" disabled={cellValues.row.role !== "GUEST_USER"} onClick={() => handleActionClick(cellValues.row.id)}>
             Allow as Cmapigner
           </Button>
         );
