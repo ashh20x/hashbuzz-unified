@@ -287,8 +287,7 @@ export const TemplatePage = () => {
               })}
             </Select>
           )}
-          {/* <FormHelperText error={formData.amount.error}>{formData.amount.helperText}</FormHelperText> */}
-          <CustomParagraph onChange={handleText} value={Text} type="textarea" maxLength={271} placeholder="Start typing your tweet campaign" required />
+          <CustomParagraph onChange={handleText} value={Text} type="textarea" maxLength={270} placeholder="Start typing your tweet campaign" required />
           <ErrorTextWrap>{errorTextMessage}</ErrorTextWrap>
           <WordsWrap>
             <div className="chat-icon" onClick={() => setShowChatModal(true)}>
@@ -299,7 +298,7 @@ export const TemplatePage = () => {
               😊 &nbsp;
             </EmoBtnWrap>
 
-            {271 - Text?.length == 0 ? 0 : <div>{271 - Text?.length || 271}</div>}
+            {270 - Text?.length === 0 ? 0 : <div>{270 - Text?.length || 270}</div>}
           </WordsWrap>
           {showEmojis && (
             <div>
