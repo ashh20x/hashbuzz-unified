@@ -1,5 +1,4 @@
-import { includes } from "lodash";
-import { CurrentUser, EntityBalances, user_roles } from "../types";
+import { EntityBalances, user_roles } from "../types";
 export const NETWORK = process.env.REACT_APP_NETWORK ?? "testnet";
 export const dAppApiURL = process.env.REACT_APP_DAPP_API;
 export const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS;
@@ -57,3 +56,17 @@ export const isAllowedToCmapigner = (role?: user_roles): boolean => {
 };
 
 export const getCardStausText = (value:CampaignStatus) =>  CampaignStatusTexts[value];
+
+export const getCardStatusFromStatusText = (statusText: string): keyof typeof CampaignStatusTexts | undefined => {
+  console.log({statusText});
+  // Find the key corresponding to the given statusText
+  const entry = Object.entries(CampaignStatusTexts).find(([_, text]) => text === statusText);
+
+  // If entry is found, return the key
+  if (entry) {
+    return entry[0] as keyof typeof CampaignStatusTexts;
+  }
+
+  // If no matching text is found, return undefined or handle the error as needed
+  return undefined;
+}

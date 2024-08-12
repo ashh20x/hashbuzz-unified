@@ -204,7 +204,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
                 }
               }}
             >
-              {cellValues?.row?.campaign_stats === "Rewards Disbursed" ? "Campaign Expired" : "Claim Rewards"}
+              {cellValues?.row?.card_status === CampaignStatus.RewardsDistributed ? "Campaign Expired" : "Claim Rewards"}
             </Button>
           </>
         );
@@ -301,7 +301,6 @@ const CampaignList = ({ user }: CampaignListProps) => {
                   const response = await Admin.updateStatus(data);
                   getAllPendingCampaigns();
                   getAllCampaigns();
-                  console.log(response, "update status");
                   toast(response?.message);
                 } catch (err) {
                   console.log(err);
@@ -329,7 +328,6 @@ const CampaignList = ({ user }: CampaignListProps) => {
 
   const handleCard = async (id: number) => {
     const res = await User.getCardEngagement({ id: id });
-    console.log(res, "CardEngagement");
     setModalData(res.data);
     setOpen(true);
   };
@@ -338,14 +336,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
 
     try {
       setLoading(true);
-      let status = "";
-      if (values?.campaign_stats === "Campaign Active") {
-        status = "running";
-        getUserData();
-      }
-      if (values?.campaign_stats === "Running") {
-        status = "completed";
-      }
+      const status = values?.card_status === CampaignStatus.CampaignApproved ? CampaignStatus.CampaignRunning : values?.card_status === CampaignStatus.CampaignRunning?CampaignStatus.RewardDistributionInProgress:undefined;
       const data = {
         card_id: values.id,
         card_status: status,
@@ -401,7 +392,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
         return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.amount_claimed / 1e8 : cellValues?.row?.amount_claimed / Math.pow(10, Number(cellValues?.row?.decimals))}</span>;
       },
     },
-    { field: "campaign_stats", headerName: "Status", minWidth: 150, flex: 0.75 , valueGetter:({value}) => getCardStausText(value as CampaignStatus) },
+    { field: "card_status", headerName: "Status", minWidth: 150, flex: 0.75 , valueGetter:({value}) => getCardStausText(value as CampaignStatus) },
 
     {
       field: "action",
@@ -410,8 +401,8 @@ const CampaignList = ({ user }: CampaignListProps) => {
       renderCell: (cellValues) => {
         return (
           <>
-            <Button variant="contained" color="primary" disabled={isButtonDisabled(cellValues.row.campaign_stats, cellValues.row.approve)} onClick={() => handleClick(cellValues.row)}>
-              {getButtonLabel(cellValues.row.campaign_stats, cellValues.row.campaign_start_time)}
+            <Button variant="contained" color="primary" disabled={isButtonDisabled(cellValues.row.card_status, cellValues.row.approve)} onClick={() => handleClick(cellValues.row)}>
+              {getButtonLabel(cellValues.row.card_status, cellValues.row.campaign_start_time)}
             </Button>
             <div className="info-icon" onClick={() => handleCard(cellValues.row.id)}>
               <InfoIcon />
@@ -439,7 +430,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
           return {
             id: item?.id,
             name: item?.name,
-            campaign_stats: item?.card_status,
+            card_status: item?.card_status,
             campaign_budget: item?.campaign_budget,
             amount_spent: item?.amount_spent,
             amount_claimed: item?.amount_claimed,

@@ -1,3 +1,4 @@
+import { CampaignStatus } from "../Utilities/helpers";
 import { TokenBalances } from "./users";
 import { CurrentUser } from "./users";
 
@@ -82,5 +83,5 @@ export type addCampaignBody = {
 
 export type updateCampaignStatusBody = {
   card_id: number,
-  card_status: string
+  card_status?: CampaignStatus
 }
