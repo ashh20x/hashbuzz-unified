@@ -11,14 +11,14 @@ import React, { useCallback, useEffect, useState } from "react";
 import Countdown from "react-countdown";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useApiInstance } from "../../../APIConfig/api";
-import { useStore } from "../../../Store/StoreProvider";
-import { CampaignStatus, getCardStausText, getErrorMessage } from "../../../Utilities/helpers";
-import { Loader } from "../../../components/Loader/Loader";
-import DetailsModal from "../../../components/PreviewModal/DetailsModal";
-import { CurrentUser } from "../../../types";
-import AssociateModal from "./AssociateModal";
-import { cardStyle } from "./CardGenUtility";
+import { useApiInstance } from "../../../../APIConfig/api";
+import { useStore } from "../../../../Store/StoreProvider";
+import { CampaignStatus, getCardStausText, getErrorMessage } from "../../../../Utilities/helpers";
+import { Loader } from "../../../../components/Loader/Loader";
+import DetailsModal from "../../../../components/PreviewModal/DetailsModal";
+import { CurrentUser } from "../../../../types";
+import AssociateModal from "../AssociateModal";
+import { cardStyle } from "../CardGenUtility";
 
 interface CampaignListProps {
   user?: CurrentUser;
@@ -29,7 +29,8 @@ const isButtonDisabled = (campaignStats: CampaignStatus, approve: boolean) => {
     CampaignStatus.RewardDistributionInProgress,
     CampaignStatus.CampaignDeclined,
     CampaignStatus.RewardsDistributed,
-    CampaignStatus.CampaignRunning
+    CampaignStatus.CampaignRunning,
+    CampaignStatus.ApprovalPending
   ];
   return disabledStatuses.includes(campaignStats) || approve === false;
 };
@@ -333,7 +334,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
   };
 
   const handleClick = async (values: any) => {
-
+    console.log("click_value" , values?.card_status)
     try {
       setLoading(true);
       const status = values?.card_status === CampaignStatus.CampaignApproved ? CampaignStatus.CampaignRunning : values?.card_status === CampaignStatus.CampaignRunning?CampaignStatus.RewardDistributionInProgress:undefined;
