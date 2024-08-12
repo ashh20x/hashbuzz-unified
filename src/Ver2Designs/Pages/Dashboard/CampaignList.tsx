@@ -421,16 +421,15 @@ const CampaignList = ({ user }: CampaignListProps) => {
       },
     },
   ];
-  // const [activeTableColumns, setActiveTableColumns] = useState(columns);
+
   const getAllCampaigns = async () => {
     try {
-      // const tokenInfo =  await Admin.getTokenInfo(tokenId);
+    
       const allCampaigns = await Campaign.getCampaigns();
-      // console.log(allCampaigns, "allcampaigns");
+      
       let data = [];
       allCampaigns?.forEach((item: any) => {
-        console.log(item.card_status, "Card_status");
-        if (item?.card_status === "Campaign Active" || item?.card_status === "Running" || item?.card_status === "Under Review") {
+        if (item?.card_status === CampaignStatus.RewardDistributionInProgress || item?.card_status === CampaignStatus.ApprovalPending|| item?.card_status === CampaignStatus.CampaignDeclined) {
           setRunningCampaigns(true);
           return;
         }
@@ -465,6 +464,16 @@ const CampaignList = ({ user }: CampaignListProps) => {
   const handleCardsRefresh = () => {
     getAllCampaigns();
   };
+
+  const handleCreateCampaignDisablity = React.useCallback(() => {
+    //If no Entity balance is grater that zero
+    const entityBal =  Boolean(store.balances.find(b => +b.entityBalance > 0));
+    // There there is any running card;
+    // Theere will be no business user handle connected to the system
+    return Boolean(!entityBal || runningCampaigns || user?.business_twitter_handle)
+  },[])
+
+  // !store?.balances.find((ent) => +ent.entityBalance > 0) || runningCampaigns || !user?.hedera_wallet_id || !user?.business_twitter_handle
 
   return (
     <Box>
@@ -501,8 +510,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
               size="large"
               variant="contained"
               disableElevation
-              disabled={!store?.balances.find((ent) => +ent.entityBalance > 0) || runningCampaigns || !user?.hedera_wallet_id || !user?.business_twitter_handle}
-              // disabled={!store?.balances.find(ent => +ent.entityBalance > 0)}
+              disabled={handleCreateCampaignDisablity()}
               onClick={handleTemplate}
             >
               Create Campaign
