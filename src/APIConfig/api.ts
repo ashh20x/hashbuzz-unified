@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 
-import { addCampaignBody, AdminLoginResponse, AdminUpdatePassword, AllTokensQuery, AuthCred, BalanceResponse, Challenge, ContractInfo, CreateTransactionByteBody, CurrentUser, GenerateAstPayload, GnerateReseponse, LogoutResponse, reimburseAmountBody, SetTransactionBody, TokenBalances, TokenDataObj, TokenInfo, TopUpResponse, updateCampaignStatusBody, UpdatePasswordResponse } from "../types";
+import { addCampaignBody, AdminLoginResponse, AdminUpdatePassword, AllTokensQuery, AuthCred, BalanceResponse, CampaignCards, Challenge, ContractInfo, CreateTransactionByteBody, CurrentUser, GenerateAstPayload, GnerateReseponse, LogoutResponse, reimburseAmountBody, SetTransactionBody, TokenBalances, TokenDataObj, TokenInfo, TopUpResponse, updateCampaignStatusBody, UpdatePasswordResponse } from "../types";
 import { useAxios } from "./AxiosProvider";
 
 export const getCookie = (cname: string) => {
@@ -80,7 +80,7 @@ export const useApiInstance = () => {
 
   const Campaign = {
     addCampaign: (data: addCampaignBody): Promise<any> => requests.post("/api/campaign/add-new", { ...data }),
-    getCampaigns: (): Promise<any> => requests.get("/api/campaign/all"),
+    getCampaigns: (): Promise<CampaignCards[]> => requests.get("/api/campaign/all"),
     updateCampaignStatus: (data: updateCampaignStatusBody): Promise<any> => requests.post("/api/campaign/update-status", { ...data }),
     chatResponse: (data: any): Promise<any> => requests.post("/api/campaign/chatgpt", data),
   };

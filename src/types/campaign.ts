@@ -24,3 +24,32 @@ export enum CampaignCommands {
   AdminRejectedCampaign = "Campaign::admin-rejected",
   UserNotAvalidCommand = "Campaign::not-valid-command"
 }
+
+export type CampaignCards = {
+  id: number;
+  tweet_id: string | null;
+  tweet_text: string;
+  retweet_reward: number;
+  like_reward: number;
+  quote_reward: number;
+  comment_reward: number;
+  media: any[];
+  amount_claimed: number;
+  amount_spent: number;
+  name: string;
+  owner_id: number;
+  campaign_budget: number;
+  campaign_expiry: string | null;
+  last_reply_checkedAt: string;
+  contract_id: string;
+  last_thread_tweet_id: string | null;
+  type: string;
+  fungible_token_id: string | null;
+  approve: boolean;
+  isRejected: boolean;
+  decimals: number | null;
+  campaign_start_time: string | null;
+  campaign_close_time: string | null;
+  is_added_to_queue: boolean;
+  card_status: string;
+};

@@ -16,7 +16,7 @@ import * as SC from "./styled";
 const Dashboard = () => {
   const store = useStore();
   const { Integrations } = useApiInstance();
-  const currentUser = store.currentUser;
+  const {currentUser , dispatch} = store;
 
   const personalHandleIntegration = async (event: React.MouseEvent<HTMLButtonElement>) => {
     try {
@@ -40,8 +40,8 @@ const Dashboard = () => {
   React.useEffect(() => {
     const toastsMessage = store.toasts;
     toastsMessage.map((t) => toast(t.message, { type: t.type }));
-    store.dispatch({ type: "RESET_TOAST" });
-  }, []);
+    dispatch({ type: "RESET_TOAST" });
+  }, [dispatch]);
 
   return (
     <React.Fragment>
