@@ -1,10 +1,6 @@
-import RefreshICon from "@mui/icons-material/Cached";
-import RejectedIcon from "@mui/icons-material/Cancel";
-import ApproveIcon from "@mui/icons-material/Done";
 import InfoIcon from "@mui/icons-material/Info";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import PreviewIcon from "@mui/icons-material/RemoveRedEye";
-import { Box, Button, Card, Divider, IconButton, Stack, Typography } from "@mui/material";
+import { Box, Button, Card, Divider, Stack, Typography } from "@mui/material";
 import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
 import { uniqBy } from "lodash";
 import React, { useCallback, useEffect, useState } from "react";
@@ -13,21 +9,23 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useApiInstance } from "../../../../APIConfig/api";
 import { useStore } from "../../../../Store/StoreProvider";
-import { CampaignStatus, getErrorMessage } from "../../../../Utilities/helpers";
+import { CampaignStatus } from "../../../../Utilities/helpers";
 import { Loader } from "../../../../components/Loader/Loader";
 import DetailsModal from "../../../../components/PreviewModal/DetailsModal";
-import { CampaignCommands, CurrentUser } from "../../../../types";
+import { CampaignCommands } from "../../../../types";
 import AssociateModal from "../AssociateModal";
 import { cardStyle } from "../CardGenUtility";
+import AdminActionButtons from "./AdminActionButtons";
 import CampaignCardDetailModal from "./CampaignCardDetailModal";
 import { campaignListColumnsAdmin } from "./CampaignListColumnsAdmin";
 import { claimRewardCampaignColumns } from "./ClaimRewardCampaignList";
+import TabNavigation, { TabsLabel } from "./TabNavigationComponent";
 import { campaignListColumns } from "./campaignListCoulmns";
 
-
 const isButtonDisabled = (campaignStats: CampaignStatus, approve: boolean) => {
-  const disabledStatuses: CampaignStatus[] = [CampaignStatus.RewardDistributionInProgress, CampaignStatus.CampaignDeclined, CampaignStatus.RewardsDistributed, CampaignStatus.CampaignRunning, CampaignStatus.ApprovalPending];
-  return disabledStatuses.includes(campaignStats) || !approve;
+  const disabledStatuses = new Set([CampaignStatus.RewardDistributionInProgress, CampaignStatus.CampaignDeclined, CampaignStatus.RewardsDistributed, CampaignStatus.CampaignRunning, CampaignStatus.ApprovalPending]);
+  const isDisabled =  disabledStatuses.has(campaignStats) || !approve;
+  return  isDisabled;
 };
 
 const getButtonLabel = (campaignStats: CampaignStatus, campaignStartTime: number) => {
@@ -65,19 +63,19 @@ const getCmapignCommand = (status: CampaignStatus): CampaignCommands => {
 
 const CampaignList = () => {
   const navigate = useNavigate();
-  const { User, Admin , Campaign } = useApiInstance();
+  const { User, Admin, Campaign } = useApiInstance();
   const store = useStore();
-  const currentUser = store.currentUser;
-  const balances = store.balances;
-  
+  const { currentUser, balances } = store;
+  const isAdmin = process.env.REACT_APP_ADMIN_ADDRESS === currentUser?.hedera_wallet_id;
+
   const [openAssociateModal, setOpenAssociateModal] = useState<boolean>(false);
   const [open, setOpen] = useState<boolean>(false);
   const [modalData, setModalData] = useState<Object>({});
   const [adminPendingCards, setAdminPendingCards] = useState([]);
   const [claimPendingRewards, setClaimPendingRewards] = useState([]);
-  const [activeTab, setActiveTab] = useState("all");
+  const [activeTab, setActiveTab] = useState<TabsLabel>("all");
   const [buttonDisabled, setButtonDisabled] = useState(false);
-  const [runningCampaigns, setRunningCampaigns] = useState(false)
+  const [runningCampaigns, setRunningCampaigns] = useState(false);
   const [rows, setRows] = React.useState<GridRowsProp>([]);
   const [loading, setLoading] = React.useState(false);
   const [previewCard, setPreviewCard] = useState<any>(null);
@@ -98,14 +96,13 @@ const CampaignList = () => {
   const getClaimAllRewards = useCallback(async () => {
     try {
       const response = await User.getClaimRewards();
-      console.log(response, "ClaimRewardsResponse");
       //@ts-ignore;
       setClaimPendingRewards((prev) => uniqBy([...prev, ...response.rewardDetails], "id"));
     } catch (error) {
       console.log(error);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   useEffect(() => {
     if (process.env.REACT_APP_ADMIN_ADDRESS === currentUser?.hedera_wallet_id) {
       getAllPendingCampaigns();
@@ -150,39 +147,39 @@ const CampaignList = () => {
   const getAllCampaigns = async () => {
     try {
       const allCampaigns = await Campaign.getCampaigns();
-
-      let data = [];
-      allCampaigns?.forEach((item: any) => {
-        if (item?.card_status === CampaignStatus.CampaignRunning || item?.card_status === CampaignStatus.ApprovalPending || item?.card_status === CampaignStatus.CampaignDeclined) {
-          setRunningCampaigns(true);
-          return;
-        }
-      });
-      if (allCampaigns?.length > 0) {
-        data = allCampaigns?.map((item: any) => {
-          return {
-            id: item?.id,
-            name: item?.name,
-            card_status: item?.card_status,
-            campaign_budget: item?.campaign_budget,
-            amount_spent: item?.amount_spent,
-            amount_claimed: item?.amount_claimed,
-            fungible_token_id: item?.fungible_token_id,
-            type: item?.type,
-            campaign_start_time: item?.campaign_start_time,
-            decimals: item?.decimals,
-          };
-        });
+  
+      if (!allCampaigns || allCampaigns.length === 0) {
+        setRows([]);
+        return;
       }
-      setRows(data);
+  
+      const isCampaignRunningOrPending = (status: CampaignStatus) => new Set([CampaignStatus.CampaignRunning, CampaignStatus.ApprovalPending, CampaignStatus.CampaignDeclined]).has(status);
+  
+      const campaignData = allCampaigns.map((item) => ({
+        id: item.id,
+        name: item.name,
+        card_status: item.card_status,
+        campaign_budget: item.campaign_budget,
+        amount_spent: item.amount_spent,
+        amount_claimed: item.amount_claimed,
+        fungible_token_id: item.fungible_token_id,
+        type: item.type,
+        campaign_start_time: item.campaign_start_time,
+        decimals: item.decimals,
+        approve: item.approve,
+      }));
+  
+      const hasRunningCampaigns = allCampaigns.some((item: any) => isCampaignRunningOrPending(item.card_status));
+      setRunningCampaigns(hasRunningCampaigns);
+      setRows(campaignData);
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   };
+  
 
   React.useEffect(() => {
     getAllCampaigns();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleCardsRefresh = () => {
@@ -192,7 +189,7 @@ const CampaignList = () => {
   const handleAdminAction = async (command: CampaignCommands.AdminRejectedCampaign | CampaignCommands.AdminApprovedCampaign, cellValues: any) => {
     try {
       const data = {
-        approve: Boolean(command ===  CampaignCommands.AdminApprovedCampaign),
+        approve: Boolean(command === CampaignCommands.AdminApprovedCampaign),
         id: cellValues?.row?.id,
       };
 
@@ -206,12 +203,10 @@ const CampaignList = () => {
   };
 
   const handleCreateCampaignDisablity = React.useCallback(() => {
-    //If no Entity balance is grater that zero
     const entityBal = Boolean(balances.find((b) => +b.entityBalance > 0));
     const isDisabled = Boolean(!entityBal || runningCampaigns || !currentUser?.business_twitter_handle);
-    console.log({isDisabled , entityBal , runningCampaigns , handle:currentUser?.business_twitter_handle })
     return isDisabled;
-  }, [currentUser , runningCampaigns , balances]);
+  }, [currentUser, runningCampaigns, balances]);
 
   /**
    * columns list for claim reward tab
@@ -287,34 +282,29 @@ const CampaignList = () => {
       field: "action",
       headerName: "Actions",
       width: 200,
-      renderCell: (cellValues) => {
-        console.log(cellValues, "cellValues");
-        return (
-          <>
-            <IconButton aria-label="Preview Campaign" title="Preview Campaign" onClick={() => setPreviewCard(cellValues.row)}>
-              <PreviewIcon />
-            </IconButton>
-            <IconButton
-              aria-label="Approve Campaign"
-              title="Approve Campaign"
-              onClick={() => handleAdminAction(CampaignCommands.AdminApprovedCampaign, cellValues)}
-            >
-              <ApproveIcon />
-            </IconButton>
-            <IconButton
-              color="error"
-              aria-label="Reject Icon "
-              title="Reject Campaign"
-              style={{ marginLeft: "10px" }}
-              onClick={() => handleAdminAction(CampaignCommands.AdminRejectedCampaign, cellValues)}
-            >
-              <RejectedIcon />
-            </IconButton>
-          </>
-        );
-      },
+      renderCell:(cellValues) => <AdminActionButtons cellValues={cellValues}   handleAdminAction={handleAdminAction} setPreviewCard={setPreviewCard} />
     },
   ];
+
+  const getRows = useCallback(() => {
+    if (activeTab === "pending" && isAdmin) {
+      return adminPendingCards;
+    }
+    if (activeTab === "claimRewards") {
+      return uniqBy(claimPendingRewards, "id");
+    }
+    return uniqBy(rows, "id");
+  }, [activeTab, isAdmin, adminPendingCards, claimPendingRewards, rows]);
+
+  const getColumns = useCallback(() => {
+    if (activeTab === "pending" && isAdmin) {
+      return ADMINCOLUMNS;
+    }
+    if (activeTab === "claimRewards") {
+      return CLAIMREWARDS;
+    }
+    return columns;
+  }, [activeTab, isAdmin, ADMINCOLUMNS, CLAIMREWARDS, columns]);
 
   return (
     <Box>
@@ -352,69 +342,12 @@ const CampaignList = () => {
             </Button>
             <AssociateModal open={openAssociateModal} onClose={() => setOpenAssociateModal(false)} />
           </Stack>
-          <div style={{ display: "flex", gap: "10px", marginTop: "10px", alignItems: "center" }}>
-            <Button
-              size="large"
-              variant={activeTab === "all" ? "contained" : "outlined"}
-              disableElevation
-              onClick={() => {
-                setActiveTab("all");
-              }}
-            >
-              Campaigns
-            </Button>
-            {process.env.REACT_APP_ADMIN_ADDRESS === currentUser?.hedera_wallet_id ? (
-              <>
-                <Button
-                  size="large"
-                  variant={activeTab === "pending" ? "contained" : "outlined"}
-                  disableElevation
-                  onClick={() => {
-                    setActiveTab("pending");
-                  }}
-                >
-                  Pending
-                </Button>
-                <Button
-                  size="large"
-                  variant={activeTab === "claimRewards" ? "contained" : "outlined"}
-                  disableElevation
-                  onClick={() => {
-                    setActiveTab("claimRewards");
-                  }}
-                >
-                  Claim Rewards
-                </Button>
-              </>
-            ) : (
-              <Button
-                size="large"
-                variant={activeTab === "claimRewards" ? "contained" : "outlined"}
-                disableElevation
-                onClick={() => {
-                  setActiveTab("claimRewards");
-                }}
-              >
-                Claim Rewards
-              </Button>
-            )}
-            <Box sx={{ marginLeft: "auto" }}>
-              <IconButton aria-label="Update Cards list" title="Update campaign cards" onClick={handleCardsRefresh}>
-                <RefreshICon fontSize="inherit" />
-              </IconButton>
-            </Box>
-          </div>
+          <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} isAdmin={isAdmin} handleCardsRefresh={handleCardsRefresh}  />
         </Box>
 
         <Divider sx={{ borderColor: cardStyle.borderColor }} />
         <Box sx={{ height: "calc(100vh - 436px)" }}>
-          {process.env.REACT_APP_ADMIN_ADDRESS === currentUser?.hedera_wallet_id ? (
-            <>
-              <DataGrid rows={activeTab === "pending" ? adminPendingCards : activeTab === "claimRewards" ? uniqBy(claimPendingRewards, "id") : uniqBy(rows, "id")} columns={activeTab === "pending" ? ADMINCOLUMNS : activeTab === "claimRewards" ? CLAIMREWARDS : columns} paginationMode="server" rowsPerPageOptions={[20]} />
-            </>
-          ) : (
-            <DataGrid rows={activeTab === "claimRewards" ? uniqBy(claimPendingRewards, "id") : uniqBy(rows, "id")} columns={activeTab === "claimRewards" ? CLAIMREWARDS : columns} paginationMode="server" rowsPerPageOptions={[20]} />
-          )}
+          <DataGrid rows={getRows()} columns={getColumns()} paginationMode="server" rowsPerPageOptions={[20]} />
         </Box>
       </Box>
       <DetailsModal open={open} setOpen={setOpen} data={modalData} />
