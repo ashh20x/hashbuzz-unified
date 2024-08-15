@@ -14,5 +14,13 @@ export interface Campaign {
   card_status: string;
   campaign_budget: number;
   campaign_expiry?: string;
-  campaign_stats?:string
+  campaign_stats?: string;
+}
+
+export enum CampaignCommands {
+  StartCampaign = "Campaign::satrt",
+  ClaimReward = "Campaign::reward-claim",
+  AdminApprovedCampaign = "Campaign::admin-approved",
+  AdminRejectedCampaign = "Campaign::admin-rejected",
+  UserNotAvalidCommand = "Campaign::not-valid-command"
 }

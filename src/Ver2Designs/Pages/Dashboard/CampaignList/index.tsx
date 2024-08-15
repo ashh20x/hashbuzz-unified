@@ -4,7 +4,7 @@ import ApproveIcon from "@mui/icons-material/Done";
 import InfoIcon from "@mui/icons-material/Info";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import PreviewIcon from "@mui/icons-material/RemoveRedEye";
-import { Box, Button, Card, Dialog, DialogActions, DialogContent, DialogTitle, Divider, IconButton, Stack, Typography } from "@mui/material";
+import { Box, Button, Card, Divider, IconButton, Stack, Typography } from "@mui/material";
 import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
 import { uniqBy } from "lodash";
 import React, { useCallback, useEffect, useState } from "react";
@@ -13,25 +13,23 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useApiInstance } from "../../../../APIConfig/api";
 import { useStore } from "../../../../Store/StoreProvider";
-import { CampaignStatus, getCardStausText, getErrorMessage } from "../../../../Utilities/helpers";
+import { CampaignStatus, getErrorMessage } from "../../../../Utilities/helpers";
 import { Loader } from "../../../../components/Loader/Loader";
 import DetailsModal from "../../../../components/PreviewModal/DetailsModal";
-import { CurrentUser } from "../../../../types";
+import { CampaignCommands, CurrentUser } from "../../../../types";
 import AssociateModal from "../AssociateModal";
 import { cardStyle } from "../CardGenUtility";
+import CampaignCardDetailModal from "./CampaignCardDetailModal";
+import { campaignListColumnsAdmin } from "./CampaignListColumnsAdmin";
+import { claimRewardCampaignColumns } from "./ClaimRewardCampaignList";
+import { campaignListColumns } from "./campaignListCoulmns";
 
 interface CampaignListProps {
   user?: CurrentUser;
 }
 
 const isButtonDisabled = (campaignStats: CampaignStatus, approve: boolean) => {
-  const disabledStatuses: CampaignStatus[] = [
-    CampaignStatus.RewardDistributionInProgress,
-    CampaignStatus.CampaignDeclined,
-    CampaignStatus.RewardsDistributed,
-    CampaignStatus.CampaignRunning,
-    CampaignStatus.ApprovalPending
-  ];
+  const disabledStatuses: CampaignStatus[] = [CampaignStatus.RewardDistributionInProgress, CampaignStatus.CampaignDeclined, CampaignStatus.RewardsDistributed, CampaignStatus.CampaignRunning, CampaignStatus.ApprovalPending];
   return disabledStatuses.includes(campaignStats) || approve === false;
 };
 
@@ -50,6 +48,24 @@ const getButtonLabel = (campaignStats: CampaignStatus, campaignStartTime: number
   }
 };
 
+const getCmapignCommand = (status: CampaignStatus): CampaignCommands => {
+  switch (status) {
+    case CampaignStatus.CampaignApproved:
+      return CampaignCommands.StartCampaign;
+    case CampaignStatus.RewardDistributionInProgress:
+      return CampaignCommands.ClaimReward;
+    case CampaignStatus.CampaignRunning:
+    case CampaignStatus.ApprovalPending:
+    case CampaignStatus.CampaignDeclined:
+    case CampaignStatus.RewardsDistributed:
+    case CampaignStatus.CampaignStarted:
+    case CampaignStatus.InternalError:
+      return CampaignCommands.UserNotAvalidCommand;
+    default:
+      return CampaignCommands.UserNotAvalidCommand;
+  }
+};
+
 const CampaignList = ({ user }: CampaignListProps) => {
   const navigate = useNavigate();
   const [openAssociateModal, setOpenAssociateModal] = useState<boolean>(false);
@@ -64,6 +80,16 @@ const CampaignList = ({ user }: CampaignListProps) => {
   const [activeTab, setActiveTab] = useState("all");
   const { User, Admin } = useApiInstance();
   const [buttonDisabled, setButtonDisabled] = useState(false);
+  // const balances = store?.balances;
+  const [runningCampaigns, setRunningCampaigns] = useState(false);
+  const handleTemplate = () => {
+    navigate("/campaign");
+    // navigate("/create-campaign");
+  };
+  const [rows, setRows] = React.useState<GridRowsProp>([]);
+  const { Campaign } = useApiInstance();
+  const [loading, setLoading] = React.useState(false);
+  const [previewCard, setPreviewCard] = useState<any>(null);
 
   const getAllPendingCampaigns = useCallback(async () => {
     try {
@@ -89,7 +115,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
     try {
       const currentUser = await User.getCurrentUser();
       console.log(currentUser, "currentUser");
-      store.dispatch({type:"UPDATE_CURRENT_USER", payload:currentUser});
+      store.dispatch({ type: "UPDATE_CURRENT_USER", payload: currentUser });
     } catch (error) {
       toast.error(getErrorMessage(error) ?? "Error while getting current user details.");
     }
@@ -101,80 +127,97 @@ const CampaignList = ({ user }: CampaignListProps) => {
     getClaimAllRewards();
   }, [getAllPendingCampaigns, currentUser?.hedera_wallet_id, getClaimAllRewards]);
 
+  const handleCard = async (id: number) => {
+    const res = await User.getCardEngagement({ id: id });
+    setModalData(res.data);
+    setOpen(true);
+  };
+
+  const handleClick = async (values: any) => {
+    try {
+      setLoading(true);
+
+      const campaign_command = getCmapignCommand(values?.card_status as CampaignStatus);
+
+      if (campaign_command === CampaignCommands.UserNotAvalidCommand) {
+        return toast.warning("Not a valid action for this capaign");
+      }
+
+      const data = {
+        card_id: values.id,
+        campaign_command,
+      };
+      const response = await Campaign.updateCampaignStatus(data);
+      if (response) {
+        getAllCampaigns();
+        toast.success(response.message);
+        setLoading(false);
+      }
+    } catch (err: any) {
+      console.log(err);
+      toast.error(err?.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getAllCampaigns = async () => {
+    try {
+      const allCampaigns = await Campaign.getCampaigns();
+
+      let data = [];
+      allCampaigns?.forEach((item: any) => {
+        if (item?.card_status === CampaignStatus.CampaignRunning || item?.card_status === CampaignStatus.ApprovalPending || item?.card_status === CampaignStatus.CampaignDeclined) {
+          setRunningCampaigns(true);
+          return;
+        }
+      });
+      if (allCampaigns?.length > 0) {
+        data = allCampaigns?.map((item: any) => {
+          return {
+            id: item?.id,
+            name: item?.name,
+            card_status: item?.card_status,
+            campaign_budget: item?.campaign_budget,
+            amount_spent: item?.amount_spent,
+            amount_claimed: item?.amount_claimed,
+            fungible_token_id: item?.fungible_token_id,
+            type: item?.type,
+            campaign_start_time: item?.campaign_start_time,
+            decimals: item?.decimals,
+          };
+        });
+      }
+      setRows(data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  React.useEffect(() => {
+    getAllCampaigns();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleCardsRefresh = () => {
+    getAllCampaigns();
+  };
+
+  const handleCreateCampaignDisablity = React.useCallback(() => {
+    //If no Entity balance is grater that zero
+    const entityBal = Boolean(store.balances.find((b) => +b.entityBalance > 0));
+    // There there is any running card;
+    // Theere will be no business user handle connected to the system
+    return Boolean(!entityBal || runningCampaigns || user?.business_twitter_handle);
+  }, []);
+
+  // !store?.balances.find((ent) => +ent.entityBalance > 0) || runningCampaigns || !user?.hedera_wallet_id || !user?.business_twitter_handle
+
+  /**
+   * columns list for claim reward tab
+   */
   const CLAIMREWARDS: GridColDef[] = [
-    {
-      field: "id",
-      headerName: "Card No.",
-      width: 100,
-      align: "center",
-      renderCell: (cellValues) => {
-        console.log(cellValues, "cellValues");
-        return <span>{cellValues?.row?.id || "HBAR"}</span>;
-      },
-    },
-    {
-      field: "tokenId ",
-      headerName: "Fungible Token ID",
-      minWidth: 150,
-      flex: 0.75,
-      renderCell: (cellValues) => {
-        return <span>{cellValues?.row?.token_id || "--"}</span>;
-      },
-    },
-    {
-      field: "title",
-      headerName: "Title",
-      minWidth: 150,
-      flex: 0.75,
-      renderCell: (cellValues) => {
-        return <span>{cellValues?.row?.name || "--"}</span>;
-      },
-    },
-
-    {
-      field: "engagement_type",
-      headerName: "Enagement Type",
-      width: 150,
-      renderCell: (cellValues) => {
-        return <span>{cellValues?.row?.engagement_type}</span>;
-      },
-    },
-    {
-      field: "retweet_reward",
-      headerName: "Repost Reward",
-      width: 150,
-      renderCell: (cellValues) => {
-        return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.retweet_reward / 1e8 : cellValues?.row?.retweet_reward / Math.pow(10, Number(cellValues?.row?.decimals))}</span>;
-      },
-    },
-    {
-      field: "like_reward",
-      headerName: "Like Reward",
-      minWidth: 150,
-      flex: 0.75,
-      renderCell: (cellValues) => {
-        return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.like_reward / 1e8 : cellValues?.row?.like_reward / Math.pow(10, Number(cellValues?.row?.decimals))}</span>;
-      },
-    },
-    {
-      field: "quote_reward",
-      headerName: "Quote Reward",
-      minWidth: 150,
-      flex: 0.75,
-      renderCell: (cellValues) => {
-        return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.quote_reward / 1e8 : cellValues?.row?.quote_reward / Math.pow(10, Number(cellValues?.row?.decimals))}</span>;
-      },
-    },
-    {
-      field: "comment_reward",
-      headerName: "Comment Reward",
-      minWidth: 150,
-      flex: 0.75,
-      renderCell: (cellValues) => {
-        return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.comment_reward / 1e8 : cellValues?.row?.comment_reward / Math.pow(10, Number(cellValues?.row?.decimals))}</span>;
-      },
-    },
-
+    ...claimRewardCampaignColumns,
     {
       field: "action",
       headerName: "Actions",
@@ -213,45 +256,33 @@ const CampaignList = ({ user }: CampaignListProps) => {
     },
   ];
 
-  const ADMINCOLUMNS: GridColDef[] = [
-    { field: "id", headerName: "Card No.", width: 100, align: "center" },
-    { field: "name", headerName: "Campaign Name", minWidth: 150, flex: 0.75 },
+  /** Column Def List for the user all campaign  list */
+  const columns: GridColDef[] = [
+    ...campaignListColumns,
     {
-      field: "type",
-      headerName: "Campaign Type",
-      minWidth: 150,
-      flex: 0.75,
+      field: "action",
+      headerName: "Actions",
+      width: 200,
       renderCell: (cellValues) => {
-        return <span>{cellValues?.row?.type || "HBAR"}</span>;
+        return (
+          <>
+            <Button variant="contained" color="primary" disabled={isButtonDisabled(cellValues.row.card_status, cellValues.row.approve)} onClick={() => handleClick(cellValues.row)}>
+              {getButtonLabel(cellValues.row.card_status, cellValues.row.campaign_start_time)}
+            </Button>
+            <div className="info-icon" onClick={() => handleCard(cellValues.row.id)}>
+              <InfoIcon />
+            </div>
+          </>
+        );
       },
     },
-    {
-      field: "campaign_budget",
-      headerName: "Campaign Budget",
-      minWidth: 150,
-      flex: 0.45,
-      renderCell: (cellValues) => {
-        return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.campaign_budget / 1e8 : cellValues?.row?.campaign_budget / Math.pow(10, Number(cellValues?.row?.decimals))}</span>;
-      },
-    },
-    {
-      field: "amount_spent",
-      headerName: "Amount Spent",
-      width: 150,
-      renderCell: (cellValues) => {
-        return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.amount_spent / 1e8 : cellValues?.row?.amount_spent}</span>;
-      },
-    },
-    {
-      field: "amount_claimed",
-      headerName: "Amount Claimed",
-      width: 150,
-      renderCell: (cellValues) => {
-        return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.amount_claimed / 1e8 : cellValues?.row?.amount_claimed}</span>;
-      },
-    },
-    { field: "card_status", headerName: "Campaign Status", minWidth: 150, flex: 0.75 },
+  ];
 
+  /**
+   * Coumns for addin table comuns
+   */
+  const ADMINCOLUMNS: GridColDef[] = [
+    ...campaignListColumnsAdmin,
     {
       field: "action",
       headerName: "Actions",
@@ -316,157 +347,6 @@ const CampaignList = ({ user }: CampaignListProps) => {
     },
   ];
 
-  // const balances = store?.balances;
-  const [runningCampaigns, setRunningCampaigns] = useState(false);
-  const handleTemplate = () => {
-    navigate("/campaign");
-    // navigate("/create-campaign");
-  };
-  const [rows, setRows] = React.useState<GridRowsProp>([]);
-  const { Campaign } = useApiInstance();
-  const [loading, setLoading] = React.useState(false);
-  const [previewCard, setPreviewCard] = useState<any>(null);
-
-  const handleCard = async (id: number) => {
-    const res = await User.getCardEngagement({ id: id });
-    setModalData(res.data);
-    setOpen(true);
-  };
-
-  const handleClick = async (values: any) => {
-    console.log("click_value" , values?.card_status)
-    try {
-      setLoading(true);
-      const status = values?.card_status === CampaignStatus.CampaignApproved ? CampaignStatus.CampaignRunning : values?.card_status === CampaignStatus.CampaignRunning?CampaignStatus.RewardDistributionInProgress:undefined;
-      const data = {
-        card_id: values.id,
-        card_status: status,
-      };
-      const response = await Campaign.updateCampaignStatus(data);
-      if (response) {
-        getAllCampaigns();
-        toast.success(response.message);
-        setLoading(false);
-      }
-    } catch (err: any) {
-      console.log(err);
-      toast.error(err?.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const columns: GridColDef[] = [
-    { field: "id", headerName: "Card No.", width: 100, align: "center" },
-    { field: "name", headerName: "Name", minWidth: 150, flex: 0.75 },
-    {
-      field: "type",
-      headerName: "Token Reward",
-      minWidth: 150,
-      flex: 0.75,
-      renderCell: (cellValues) => {
-        return <span>{cellValues?.row?.type || "HBAR"}</span>;
-      },
-    },
-    {
-      field: "campaign_budget",
-      headerName: "Allocated Budget",
-      minWidth: 150,
-      flex: 0.45,
-      renderCell: (cellValues) => {
-        return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.campaign_budget / 1e8 : cellValues?.row?.campaign_budget / Math.pow(10, Number(cellValues?.row?.decimals))}</span>;
-      },
-    },
-    {
-      field: "amount_spent",
-      headerName: "Amount Spent",
-      width: 150,
-      renderCell: (cellValues) => {
-        return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.amount_spent / 1e8 : cellValues?.row?.amount_spent / Math.pow(10, Number(cellValues?.row?.decimals))}</span>;
-      },
-    },
-    {
-      field: "amount_claimed",
-      headerName: "Amount Claimed",
-      width: 150,
-      renderCell: (cellValues) => {
-        return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.amount_claimed / 1e8 : cellValues?.row?.amount_claimed / Math.pow(10, Number(cellValues?.row?.decimals))}</span>;
-      },
-    },
-    { field: "card_status", headerName: "Status", minWidth: 150, flex: 0.75 , valueGetter:({value}) => getCardStausText(value as CampaignStatus) },
-
-    {
-      field: "action",
-      headerName: "Actions",
-      width: 200,
-      renderCell: (cellValues) => {
-        return (
-          <>
-            <Button variant="contained" color="primary" disabled={isButtonDisabled(cellValues.row.card_status, cellValues.row.approve)} onClick={() => handleClick(cellValues.row)}>
-              {getButtonLabel(cellValues.row.card_status, cellValues.row.campaign_start_time)}
-            </Button>
-            <div className="info-icon" onClick={() => handleCard(cellValues.row.id)}>
-              <InfoIcon />
-            </div>
-          </>
-        );
-      },
-    },
-  ];
-
-  const getAllCampaigns = async () => {
-    try {
-    
-      const allCampaigns = await Campaign.getCampaigns();
-      
-      let data = [];
-      allCampaigns?.forEach((item: any) => {
-        if (item?.card_status === CampaignStatus.RewardDistributionInProgress || item?.card_status === CampaignStatus.ApprovalPending|| item?.card_status === CampaignStatus.CampaignDeclined) {
-          setRunningCampaigns(true);
-          return;
-        }
-      });
-      if (allCampaigns?.length > 0) {
-        data = allCampaigns?.map((item: any) => {
-          return {
-            id: item?.id,
-            name: item?.name,
-            card_status: item?.card_status,
-            campaign_budget: item?.campaign_budget,
-            amount_spent: item?.amount_spent,
-            amount_claimed: item?.amount_claimed,
-            fungible_token_id: item?.fungible_token_id,
-            type: item?.type,
-            campaign_start_time: item?.campaign_start_time,
-            decimals: item?.decimals,
-          };
-        });
-      }
-      setRows(data);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  React.useEffect(() => {
-    getAllCampaigns();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const handleCardsRefresh = () => {
-    getAllCampaigns();
-  };
-
-  const handleCreateCampaignDisablity = React.useCallback(() => {
-    //If no Entity balance is grater that zero
-    const entityBal =  Boolean(store.balances.find(b => +b.entityBalance > 0));
-    // There there is any running card;
-    // Theere will be no business user handle connected to the system
-    return Boolean(!entityBal || runningCampaigns || user?.business_twitter_handle)
-  },[])
-
-  // !store?.balances.find((ent) => +ent.entityBalance > 0) || runningCampaigns || !user?.hedera_wallet_id || !user?.business_twitter_handle
-
   return (
     <Box>
       <Box
@@ -498,13 +378,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
             <a style={{ textDecoration: "none", fontSize: "16px", color: "white", backgroundColor: "#10A37F", borderRadius: "4px", padding: "10px", textAlign: "center" }} href="https://chat.openai.com/g/g-cGD9GbBPY-hashbuzz" target="_blank" rel="noreferrer">
               CONNECT WITH CHATGPT
             </a>
-            <Button
-              size="large"
-              variant="contained"
-              disableElevation
-              disabled={handleCreateCampaignDisablity()}
-              onClick={handleTemplate}
-            >
+            <Button size="large" variant="contained" disableElevation disabled={handleCreateCampaignDisablity()} onClick={handleTemplate}>
               Create Campaign
             </Button>
             <AssociateModal open={openAssociateModal} onClose={() => setOpenAssociateModal(false)} />
@@ -567,10 +441,10 @@ const CampaignList = ({ user }: CampaignListProps) => {
         <Box sx={{ height: "calc(100vh - 436px)" }}>
           {process.env.REACT_APP_ADMIN_ADDRESS === currentUser?.hedera_wallet_id ? (
             <>
-              <DataGrid rows={activeTab === "pending" ? adminPendingCards : activeTab === "claimRewards" ? uniqBy(claimPendingRewards,"id" ): uniqBy(rows,"id")} columns={activeTab === "pending" ? ADMINCOLUMNS : activeTab === "claimRewards" ? CLAIMREWARDS : columns} paginationMode="server" rowsPerPageOptions={[20]} />
+              <DataGrid rows={activeTab === "pending" ? adminPendingCards : activeTab === "claimRewards" ? uniqBy(claimPendingRewards, "id") : uniqBy(rows, "id")} columns={activeTab === "pending" ? ADMINCOLUMNS : activeTab === "claimRewards" ? CLAIMREWARDS : columns} paginationMode="server" rowsPerPageOptions={[20]} />
             </>
           ) : (
-            <DataGrid rows={activeTab === "claimRewards" ? uniqBy(claimPendingRewards , "id") : uniqBy(rows , "id")} columns={activeTab === "claimRewards" ? CLAIMREWARDS : columns} paginationMode="server" rowsPerPageOptions={[20]} />
+            <DataGrid rows={activeTab === "claimRewards" ? uniqBy(claimPendingRewards, "id") : uniqBy(rows, "id")} columns={activeTab === "claimRewards" ? CLAIMREWARDS : columns} paginationMode="server" rowsPerPageOptions={[20]} />
           )}
         </Box>
       </Box>
@@ -578,47 +452,6 @@ const CampaignList = ({ user }: CampaignListProps) => {
       <CampaignCardDetailModal open={Boolean(previewCard)} data={previewCard} onClose={() => setPreviewCard(null)} />
       <Loader open={loading} />
     </Box>
-  );
-};
-
-interface Props {
-  open: boolean;
-  data: any;
-  onClose: () => void;
-}
-
-const CampaignCardDetailModal = ({ open, onClose, data }: Props) => {
-  const handleClose = () => {
-    if (onClose) onClose();
-  };
-  if (!data) return null;
-  return (
-    <Dialog
-      open={open}
-      onClose={handleClose}
-      maxWidth="sm"
-      PaperProps={{
-        style: {
-          borderRadius: 11,
-          padding: 0,
-          scrollbarWidth: "none",
-          background: "#E1D9FF",
-        },
-      }}
-    >
-      <DialogTitle>{data.name}</DialogTitle>
-      <DialogContent>
-        <Typography>{data.tweet_text}</Typography>
-        <Typography variant="subtitle2" sx={{ mt: 3 }}>
-          Total string count: {String(data.tweet_text).length}
-        </Typography>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose} variant="contained" color="error">
-          Close
-        </Button>
-      </DialogActions>
-    </Dialog>
   );
 };
 
