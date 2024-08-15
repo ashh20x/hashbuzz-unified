@@ -24,13 +24,10 @@ import { campaignListColumnsAdmin } from "./CampaignListColumnsAdmin";
 import { claimRewardCampaignColumns } from "./ClaimRewardCampaignList";
 import { campaignListColumns } from "./campaignListCoulmns";
 
-interface CampaignListProps {
-  user?: CurrentUser;
-}
 
 const isButtonDisabled = (campaignStats: CampaignStatus, approve: boolean) => {
   const disabledStatuses: CampaignStatus[] = [CampaignStatus.RewardDistributionInProgress, CampaignStatus.CampaignDeclined, CampaignStatus.RewardsDistributed, CampaignStatus.CampaignRunning, CampaignStatus.ApprovalPending];
-  return disabledStatuses.includes(campaignStats) || approve === false;
+  return disabledStatuses.includes(campaignStats) || !approve;
 };
 
 const getButtonLabel = (campaignStats: CampaignStatus, campaignStartTime: number) => {
@@ -66,22 +63,22 @@ const getCmapignCommand = (status: CampaignStatus): CampaignCommands => {
   }
 };
 
-const CampaignList = ({ user }: CampaignListProps) => {
+const CampaignList = () => {
   const navigate = useNavigate();
-  const [openAssociateModal, setOpenAssociateModal] = useState<boolean>(false);
+  const { User, Admin , Campaign } = useApiInstance();
   const store = useStore();
   const currentUser = store.currentUser;
-
+  const balances = store.balances;
+  
+  const [openAssociateModal, setOpenAssociateModal] = useState<boolean>(false);
   const [open, setOpen] = useState<boolean>(false);
   const [modalData, setModalData] = useState<Object>({});
   const [adminPendingCards, setAdminPendingCards] = useState([]);
   const [claimPendingRewards, setClaimPendingRewards] = useState([]);
   const [activeTab, setActiveTab] = useState("all");
-  const { User, Admin } = useApiInstance();
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [runningCampaigns, setRunningCampaigns] = useState(false)
   const [rows, setRows] = React.useState<GridRowsProp>([]);
-  const { Campaign } = useApiInstance();
   const [loading, setLoading] = React.useState(false);
   const [previewCard, setPreviewCard] = useState<any>(null);
 
@@ -109,15 +106,6 @@ const CampaignList = ({ user }: CampaignListProps) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const getUserData = React.useCallback(async () => {
-    try {
-      const currentUser = await User.getCurrentUser();
-      console.log(currentUser, "currentUser");
-      store.dispatch({ type: "UPDATE_CURRENT_USER", payload: currentUser });
-    } catch (error) {
-      toast.error(getErrorMessage(error) ?? "Error while getting current user details.");
-    }
-  }, [User, store]);
   useEffect(() => {
     if (process.env.REACT_APP_ADMIN_ADDRESS === currentUser?.hedera_wallet_id) {
       getAllPendingCampaigns();
@@ -219,13 +207,11 @@ const CampaignList = ({ user }: CampaignListProps) => {
 
   const handleCreateCampaignDisablity = React.useCallback(() => {
     //If no Entity balance is grater that zero
-    const entityBal = Boolean(store.balances.find((b) => +b.entityBalance > 0));
-    // There there is any running card;
-    // Theere will be no business user handle connected to the system
-    return Boolean(!entityBal || runningCampaigns || !user?.business_twitter_handle);
-  }, []);
-
-  // !store?.balances.find((ent) => +ent.entityBalance > 0) || runningCampaigns || !user?.hedera_wallet_id || !user?.business_twitter_handle
+    const entityBal = Boolean(balances.find((b) => +b.entityBalance > 0));
+    const isDisabled = Boolean(!entityBal || runningCampaigns || !currentUser?.business_twitter_handle);
+    console.log({isDisabled , entityBal , runningCampaigns , handle:currentUser?.business_twitter_handle })
+    return isDisabled;
+  }, [currentUser , runningCampaigns , balances]);
 
   /**
    * columns list for claim reward tab

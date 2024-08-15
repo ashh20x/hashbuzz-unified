@@ -84,7 +84,7 @@ const Dashboard = () => {
       </SC.StyledCardGenUtility>
 
       {/* Campaign List section */}
-      <CampaignList user={currentUser} />
+      <CampaignList  />
 
       {/* speed dial  action button */}
       <SpeedDialActions />
