@@ -3,6 +3,7 @@ import axios, { AxiosInstance } from "axios";
 import { useCookies } from "react-cookie";
 import { toast } from "react-toastify";
 import { getErrorMessage } from "../Utilities/helpers";
+import { useStore } from "../Store/StoreProvider";
 
 const getDeviceId = () => {
   // Your logic to get device ID
@@ -20,6 +21,7 @@ export const AxiosContext = createContext<AxiosInstance | null>(null);
 const AxiosProvider: React.FC = ({ children }) => {
   const [cookies, setCookie] = useCookies(["aSToken" , "refreshToken"]);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const   {auth} = useStore()
 
   const axiosInstance = useRef<AxiosInstance>(
     axios.create({
@@ -76,6 +78,11 @@ const AxiosProvider: React.FC = ({ children }) => {
         if (token && config.headers) {
           config.headers["Authorization"] = `aSToken ${token}`;
         }
+
+        if(!token && config.headers && auth?.aSToken){
+          config.headers["Authorization"] = `aSToken ${auth.aSToken}`;
+        }
+
         return config;
       },
       (error) => Promise.reject(error)
