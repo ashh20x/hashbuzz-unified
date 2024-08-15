@@ -17,8 +17,8 @@ const App = () => {
   return (
     <React.StrictMode>
       <CookiesProvider>
-        <AxiosProvider>
-          <StoreProvider>
+        <StoreProvider>
+          <AxiosProvider>
             <HashconnectAPIProvider
               metaData={{
                 name: "hashbuzz would like to connect to your wallet.",
@@ -34,8 +34,8 @@ const App = () => {
                 <AppRouter />
               </ThemeProvider>
             </HashconnectAPIProvider>
-          </StoreProvider>
-        </AxiosProvider>
+          </AxiosProvider>
+        </StoreProvider>
         <ToastContainer />
       </CookiesProvider>
     </React.StrictMode>
