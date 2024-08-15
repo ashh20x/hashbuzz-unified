@@ -70,8 +70,7 @@ const CampaignList = ({ user }: CampaignListProps) => {
   const navigate = useNavigate();
   const [openAssociateModal, setOpenAssociateModal] = useState<boolean>(false);
   const store = useStore();
-
-  const currentUser = store?.currentUser;
+  const currentUser = store.currentUser;
 
   const [open, setOpen] = useState<boolean>(false);
   const [modalData, setModalData] = useState<Object>({});
@@ -80,16 +79,15 @@ const CampaignList = ({ user }: CampaignListProps) => {
   const [activeTab, setActiveTab] = useState("all");
   const { User, Admin } = useApiInstance();
   const [buttonDisabled, setButtonDisabled] = useState(false);
-  // const balances = store?.balances;
-  const [runningCampaigns, setRunningCampaigns] = useState(false);
-  const handleTemplate = () => {
-    navigate("/campaign");
-    // navigate("/create-campaign");
-  };
+  const [runningCampaigns, setRunningCampaigns] = useState(false)
   const [rows, setRows] = React.useState<GridRowsProp>([]);
   const { Campaign } = useApiInstance();
   const [loading, setLoading] = React.useState(false);
   const [previewCard, setPreviewCard] = useState<any>(null);
+
+  const handleTemplate = () => {
+    navigate("/campaign");
+  };
 
   const getAllPendingCampaigns = useCallback(async () => {
     try {
@@ -203,12 +201,28 @@ const CampaignList = ({ user }: CampaignListProps) => {
     getAllCampaigns();
   };
 
+  const handleAdminAction = async (command: CampaignCommands.AdminRejectedCampaign | CampaignCommands.AdminApprovedCampaign, cellValues: any) => {
+    try {
+      const data = {
+        approve: Boolean(command ===  CampaignCommands.AdminApprovedCampaign),
+        id: cellValues?.row?.id,
+      };
+
+      const response = await Admin.updateStatus(data);
+      getAllPendingCampaigns();
+      getAllCampaigns();
+      toast(response?.message);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const handleCreateCampaignDisablity = React.useCallback(() => {
     //If no Entity balance is grater that zero
     const entityBal = Boolean(store.balances.find((b) => +b.entityBalance > 0));
     // There there is any running card;
     // Theere will be no business user handle connected to the system
-    return Boolean(!entityBal || runningCampaigns || user?.business_twitter_handle);
+    return Boolean(!entityBal || runningCampaigns || !user?.business_twitter_handle);
   }, []);
 
   // !store?.balances.find((ent) => +ent.entityBalance > 0) || runningCampaigns || !user?.hedera_wallet_id || !user?.business_twitter_handle
@@ -297,47 +311,16 @@ const CampaignList = ({ user }: CampaignListProps) => {
             <IconButton
               aria-label="Approve Campaign"
               title="Approve Campaign"
-              // variant="contained"
-              // color="primary"
-              onClick={async () => {
-                const data = {
-                  approve: true,
-                  id: cellValues?.row?.id,
-                };
-                try {
-                  const response = await Admin.updateStatus(data);
-                  getAllPendingCampaigns();
-                  getAllCampaigns();
-                  toast(response?.message);
-                  console.log(response, "update status");
-                } catch (err) {
-                  console.log(err);
-                }
-              }}
+              onClick={() => handleAdminAction(CampaignCommands.AdminApprovedCampaign, cellValues)}
             >
               <ApproveIcon />
             </IconButton>
             <IconButton
-              // variant="contained"
-              // color="primary"
               color="error"
               aria-label="Reject Icon "
               title="Reject Campaign"
               style={{ marginLeft: "10px" }}
-              onClick={async () => {
-                const data = {
-                  approve: false,
-                  id: cellValues?.row?.id,
-                };
-                try {
-                  const response = await Admin.updateStatus(data);
-                  getAllPendingCampaigns();
-                  getAllCampaigns();
-                  toast(response?.message);
-                } catch (err) {
-                  console.log(err);
-                }
-              }}
+              onClick={() => handleAdminAction(CampaignCommands.AdminRejectedCampaign, cellValues)}
             >
               <RejectedIcon />
             </IconButton>
