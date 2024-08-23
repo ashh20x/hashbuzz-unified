@@ -32,7 +32,7 @@ export const useHandleAuthenticate = () => {
         .then(async (authResponse) => {
           if (authResponse.success && authResponse.signedPayload && authResponse.userSignature) {
             const { signedPayload, userSignature } = authResponse;
-            const { ast, deviceId , refreshToken } = await Auth.generateAuth({
+            const authGenResponse = await Auth.generateAuth({
               payload: signedPayload.originalPayload,
               clientPayload: signedPayload,
               signatures: {
@@ -43,8 +43,10 @@ export const useHandleAuthenticate = () => {
                 },
               },
             });
-            if (ast && deviceId) {
-              console.log("I am moving from here.")
+
+            if (authGenResponse && authGenResponse.deviceId && authGenResponse.ast) {
+              const {refreshToken , deviceId , ast} = authGenResponse
+        
               localStorage.setItem("device_id", deviceId);
               setCookies("aSToken", ast, {
                 expires: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),

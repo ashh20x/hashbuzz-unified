@@ -1,4 +1,5 @@
 import axios, { AxiosResponse } from "axios";
+import * as React from "react";
 
 import { addCampaignBody, AdminLoginResponse, AdminUpdatePassword, AllTokensQuery, AuthCred, BalanceResponse, CampaignCards, Challenge, ContractInfo, CreateTransactionByteBody, CurrentUser, GenerateAstPayload, GnerateReseponse, LogoutResponse, reimburseAmountBody, SetTransactionBody, TokenBalances, TokenDataObj, TokenInfo, TopUpResponse, updateCampaignStatusBody, UpdatePasswordResponse } from "../types";
 import { useAxios } from "./AxiosProvider";
@@ -20,16 +21,58 @@ export const getCookie = (cname: string) => {
 
 export const useApiInstance = () => {
   const axiosInstance = useAxios();
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const responseBody = (response: AxiosResponse) => response?.data;
 
   const requests = {
-    get: (url: string, params?: {}) => axiosInstance.get(url, { params: params ?? {} }).then(responseBody),
-    post: (url: string, body: {}) => axiosInstance.post(url, body).then(responseBody),
-    put: (url: string, body: {}) => axiosInstance.put(url, body).then(responseBody),
-    delete: (url: string) => axiosInstance.delete(url).then(responseBody),
-    patch: (url: string, body: {}) => axiosInstance.patch(url, body).then(responseBody),
+    get: async (url: string, params?: {}) => {
+      setIsLoading(true);
+      try {
+        const response = await axiosInstance.get(url, { params: params ?? {} });
+        return responseBody(response);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    post: async (url: string, body: {}) => {
+      setIsLoading(true);
+      try {
+        const response = await axiosInstance.post(url, body);
+        return responseBody(response);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    put: async (url: string, body: {}) => {
+      setIsLoading(true);
+      try {
+        const response = await axiosInstance.put(url, body);
+        return responseBody(response);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    delete: async (url: string) => {
+      setIsLoading(true);
+      try {
+        const response = await axiosInstance.delete(url);
+        return responseBody(response);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    patch: async (url: string, body: {}) => {
+      setIsLoading(true);
+      try {
+        const response = await axiosInstance.patch(url, body);
+        return responseBody(response);
+      } finally {
+        setIsLoading(false);
+      }
+    },
   };
+
   const User = {
     getCurrentUser: (): Promise<CurrentUser> => requests.get("/api/users/current"),
     updateConsent: (userData: { consent: boolean }): Promise<CurrentUser> => requests.patch(`/api/users/update-concent`, { ...userData }),
@@ -85,5 +128,5 @@ export const useApiInstance = () => {
     chatResponse: (data: any): Promise<any> => requests.post("/api/campaign/chatgpt", data),
   };
 
-  return { User, Auth, Admin, MirrorNodeRestAPI, Transaction, Integrations, Campaign };
+  return { isLoading, User, Auth, Admin, MirrorNodeRestAPI, Transaction, Integrations, Campaign };
 };

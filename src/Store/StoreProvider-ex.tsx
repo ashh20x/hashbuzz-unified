@@ -54,7 +54,7 @@ export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
         ...prevState,
         currentUser,
         auth: {
-          aSToken,
+          ast: aSToken, auth: true, deviceId: localStorage.getItem("device_id") ?? "", message: "", refreshTok: "" ,
         },
       }));
     }

@@ -1,5 +1,5 @@
 import { createContext, Dispatch, ReactNode, useContext, useReducer } from "react";
-import { AppState, ContractInfo, EntityBalances, CurrentUser } from "../types";
+import { AppState, ContractInfo, EntityBalances, CurrentUser, AuthCred } from "../types";
 
 interface StoreContextType extends AppState {
   dispatch: Dispatch<Action>;
@@ -15,7 +15,7 @@ const INITIAL_STATE: AppState = {
   toasts: [],
 };
 
-type Action = { type: "SET_PING"; payload: { status: boolean; hedera_wallet_id: string } } | { type: "UPDATE_STATE"; payload: Partial<AppState> } | { type: "SET_BALANCES"; payload: EntityBalances[] } | { type: "ADD_TOAST"; payload: { type: "success" | "error"; message: string } } | { type: "RESET_TOAST" } | { type: "RESET_STATE" } | { type: "SET_CONTRACT_INFO"; payload: ContractInfo } | { type: "UPDATE_CURRENT_USER"; payload: CurrentUser };
+type Action = { type: "SET_PING"; payload: { status: boolean; hedera_wallet_id: string } } | { type: "UPDATE_STATE"; payload: Partial<AppState> } | { type: "SET_BALANCES"; payload: EntityBalances[] } | { type: "ADD_TOAST"; payload: { type: "success" | "error"; message: string } } | { type: "RESET_TOAST" } | { type: "RESET_STATE" } | { type: "SET_CONTRACT_INFO"; payload: ContractInfo } | { type: "UPDATE_CURRENT_USER"; payload: CurrentUser } | {type:"SET_AUTH_CRED" , payload:AuthCred};
 
 const storeReducer = (state: AppState, action: Action): AppState => {
   switch (action.type) {
@@ -35,6 +35,11 @@ const storeReducer = (state: AppState, action: Action): AppState => {
         ...state,
         balances: action.payload,
       };
+    case "SET_AUTH_CRED":
+        return {
+          ...state,
+          auth:action.payload
+        }
     case "ADD_TOAST":
       return {
         ...state,

@@ -4,6 +4,7 @@ import { useApiInstance } from "../../../../APIConfig/api";
 import { CurrentUser } from "../../../../types";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { set, sortBy, unionBy } from "lodash";
+import { Details } from "@mui/icons-material";
 
 const ROLE_MAPPER = {
   SUPER_ADMIN: "Super Admin",
@@ -59,6 +60,15 @@ export const AdminViews = () => {
     setAllUsers((prevData) => unionBy([data.user], prevData, "id"));
   };
 
+  const handlePageChnage = async (page: number) => {
+    const data = await api.Admin.getAllUsers({
+      limit: 10,
+      offset: 10 * page,
+    });
+    setAllUsers(data.users);
+    setCount(data.count);
+  };
+
   React.useEffect(() => {
     getAllUsers();
   }, []);
@@ -85,8 +95,8 @@ export const AdminViews = () => {
       <Typography variant="h5" sx={{ mb: 2 }}>
         User list
       </Typography>
-      <Box sx={{ height: "500px" , minHeight:500}}>
-        <DataGrid rows={sortBy(allUsers, "id")} columns={cols} paginationMode="server" rowCount={count} pagination />
+      <Box sx={{ height: "500px", minHeight: 500 }}>
+        <DataGrid rows={sortBy(allUsers, "id")} columns={cols} rowCount={count} loading={api.isLoading} pageSize={10} pagination paginationMode="server" onPageChange={(page, Details) => handlePageChnage(page)} />
       </Box>
     </Box>
   );
