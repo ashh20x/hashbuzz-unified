@@ -79,8 +79,8 @@ const AxiosProvider: React.FC = ({ children }) => {
           config.headers["Authorization"] = `aSToken ${token}`;
         }
 
-        if(!token && config.headers && auth?.aSToken){
-          config.headers["Authorization"] = `aSToken ${auth.aSToken}`;
+        if(!token && config.headers && auth?.ast){
+          config.headers["Authorization"] = `aSToken ${auth.ast}`;
         }
 
         return config;

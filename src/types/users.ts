@@ -1,14 +1,16 @@
 export interface AuthCred {
-  aSToken: string;
-  user?: CurrentUser;
-  adminToken?: string;
+  ast: string;
+  auth: boolean;
+  deviceId: string;
+  message: string;
+  refreshTok: string;
 }
 export type user_roles = "SUPER_ADMIN" | "ADMIN" | "ANALYTICS" | "MARKETING" | "MANAGEMENT" | "USER" | "GUEST_USER";
 
 export interface CurrentUser {
   id: number;
   username: string;
-  name:string,
+  name: string;
   is_active: boolean;
   personal_twitter_handle?: string;
   business_twitter_handle?: string;
@@ -35,5 +37,5 @@ export type TokenBalances = {
   name: string;
   available_balance: number;
   entity_decimal: number;
-  decimals?:number
+  decimals?: number;
 };
