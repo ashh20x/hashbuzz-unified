@@ -21,7 +21,7 @@ export const AxiosContext = createContext<AxiosInstance | null>(null);
 const AxiosProvider: React.FC = ({ children }) => {
   const [cookies, setCookie] = useCookies(["aSToken" , "refreshToken"]);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const   {auth} = useStore()
+  const {auth} = useStore();
 
   const axiosInstance = useRef<AxiosInstance>(
     axios.create({
@@ -121,7 +121,7 @@ const AxiosProvider: React.FC = ({ children }) => {
       instance.interceptors.request.eject(requestInterceptor);
       instance.interceptors.response.eject(responseInterceptor);
     };
-  }, [cookies.aSToken]);
+  }, [cookies.aSToken , auth?.ast]);
 
   return <AxiosContext.Provider value={axiosInstance.current}>{children}</AxiosContext.Provider>;
 };

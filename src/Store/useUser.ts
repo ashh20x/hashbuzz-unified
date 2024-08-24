@@ -14,7 +14,7 @@ export const useUser = () => {
       const { aSToken } = cookies;
       dispatch({
         type: "UPDATE_STATE",
-        payload: { currentUser, auth: { ast: aSToken, auth: true, deviceId: localStorage.getItem("device_id") ?? "", message: "", refreshTok: "" } },
+        payload: { currentUser, auth: { ast: aSToken, auth: true, deviceId: localStorage.getItem("device_id") ?? "", message: "", refreshToken: "" } },
       });
     }
   }, [dispatch]);
