@@ -16,9 +16,9 @@ const TabNavigation = ({ activeTab, setActiveTab, handleCardsRefresh , isAdmin}:
     <Button size="large" variant={activeTab === "all" ? "contained" : "outlined"} onClick={() => setActiveTab("all")}>
       Campaigns
     </Button>
-    <Button size="large" variant={activeTab === "claimRewards" ? "contained" : "outlined"} onClick={() => setActiveTab("claimRewards")}>
+    {/* <Button size="large" variant={activeTab === "claimRewards" ? "contained" : "outlined"} onClick={() => setActiveTab("claimRewards")}>
       Claim Rewards
-    </Button>
+    </Button> */}
     {isAdmin && (
       <Button size="large" variant={activeTab === "pending" ? "contained" : "outlined"} onClick={() => setActiveTab("pending")}>
         Pending
