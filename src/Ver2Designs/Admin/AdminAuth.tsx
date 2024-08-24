@@ -8,7 +8,6 @@ import { toast } from "react-toastify";
 import { useApiInstance } from "../../APIConfig/api";
 import HashbuzzLogoMainTransparent from "../../SVGR/HashbuzzLogo";
 import { AdminPasswordFormState } from "../../types";
-import { getErrorMessage } from "../../Utilities/helpers";
 
 const FORM_INITIAL_STATE: AdminPasswordFormState = {
   password: {
@@ -44,7 +43,7 @@ const AdminAuth = () => {
 
   React.useEffect(() => {
     navigate("/admin");
-  }, [cookies.adminToken, navigate])
+  }, [cookies.adminToken, navigate]);
 
   const handleClickShowPassword = () => {
     setFormData((__prev) => {
@@ -79,13 +78,7 @@ const AdminAuth = () => {
         toast.success("Logged in successfully");
         setCookies("adminToken", response.adminToken);
       }
-      // if (response.user && store?.updateState) store.updateState((_d) => ({ ..._d, currentUser: response.user }));
-      // unstable_batchedUpdates(() => {
-      //   setAdminPassModalOpen(false);
-      //   setFormData(JSON.parse(JSON.stringify(FORM_INITIAL_STATE)));
-      // });
     }
-
   };
 
   return (
@@ -97,11 +90,7 @@ const AdminAuth = () => {
             Hashbuzz Admin
           </Typography>
         </Box>
-        <Box
-          component={"form"}
-          sx={{ boxShadow: theme.shadows[1], backgroundColor: "#E1D9FF", padding: 3, borderRadius: 2, marginTop: 15 }}
-          onSubmit={handleFormSubmit}
-        >
+        <Box component={"form"} sx={{ boxShadow: theme.shadows[1], backgroundColor: "#E1D9FF", padding: 3, borderRadius: 2, marginTop: 15 }} onSubmit={handleFormSubmit}>
           <FormControl fullWidth sx={{ marginBottom: 1.25 }} required>
             <InputLabel htmlFor="#admin-auth-password-input">Password</InputLabel>
             <OutlinedInput
@@ -116,12 +105,7 @@ const AdminAuth = () => {
               value={formData.password.value}
               endAdornment={
                 <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onClick={() => handleClickShowPassword()}
-                    onMouseDown={handleMouseDownPassword}
-                    edge="end"
-                  >
+                  <IconButton aria-label="toggle password visibility" onClick={() => handleClickShowPassword()} onMouseDown={handleMouseDownPassword} edge="end">
                     {formData.password.showPassword ? <VisibilityOff /> : <Visibility />}
                   </IconButton>
                 </InputAdornment>

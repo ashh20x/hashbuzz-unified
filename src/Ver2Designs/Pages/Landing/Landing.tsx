@@ -17,12 +17,11 @@ const Landing = () => {
   const {handleAuthenticate, authStatusLog} = useHandleAuthenticate()
   const navigate = useNavigate();
   const ping = store.ping;
+  const auth = store.auth;
   const pairedAccount = pairingData?.accountIds[0];
 
-  console.log("ping", ping)
-
   React.useEffect(() => {
-    if (cookies.aSToken && ping.status && pairedAccount) {
+    if (cookies.aSToken && ping.status && pairedAccount || auth?.auth) {
       navigate("/dashboard");
     }
   }, [cookies.aSToken, navigate, pairedAccount, ping]);
