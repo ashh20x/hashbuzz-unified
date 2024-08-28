@@ -1,10 +1,17 @@
 import * as React from "react";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, IconButton, Table, TableBody, TableCell, TableHead, TableRow, Typography } from "@mui/material";
 import { useApiInstance } from "../../../../APIConfig/api";
 import { CurrentUser } from "../../../../types";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import Dialog, { DialogProps } from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 import { set, sortBy, unionBy } from "lodash";
-import { Details } from "@mui/icons-material";
+import { Delete, Details } from "@mui/icons-material";
+import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
+import { toast } from "react-toastify";
 
 const ROLE_MAPPER = {
   SUPER_ADMIN: "Super Admin",
@@ -43,8 +50,9 @@ const UsersLIstCol: GridColDef[] = [
 ];
 
 export const AdminViews = () => {
-  const [allUsers, setAllUsers] = React.useState<CurrentUser[]>([]);
+  const [allUsers, setAllUsers] = React.useState<CurrentUser[]>([])
   const [count, setCount] = React.useState(0);
+  const [userInview , setUserInView] = React.useState<CurrentUser|null>(null)
 
   const api = useApiInstance();
 
@@ -69,6 +77,43 @@ export const AdminViews = () => {
     setCount(data.count);
   };
 
+  const handleViewClick = (userData:any) => {
+    const data  = userData as any as CurrentUser;
+    setUserInView(data);
+  }
+
+  const handleModalClose = () => {
+    setUserInView(null);
+  }
+
+  const handlePersonalHandleRemove = async (id:number) => {
+    try{
+      const updatedUser =  await api.Admin.removePerosnalHandle(id);
+      setUserInView(updatedUser.data);
+      toast.success(updatedUser.message)
+      setAllUsers(oldData => {
+        return oldData.map(d => d.id === updatedUser.data.id ? updatedUser.data : d)
+      })
+    }
+    catch(err){
+      toast.error("Something error handle while removing");
+    }
+  }
+
+  const handlebizHandleRemove = async (id:number) => {
+    try{
+      const updatedUser =  await api.Admin.removeBizHandle(id);
+      setUserInView(updatedUser.data);
+      toast.success(updatedUser.message);
+      setAllUsers(oldData => {
+        return oldData.map(d => d.id === updatedUser.data.id ? updatedUser.data : d)
+      })
+    }
+    catch(err){
+      toast.error("Something error handle while removing");
+    }
+  }
+
   React.useEffect(() => {
     getAllUsers();
   }, []);
@@ -88,9 +133,22 @@ export const AdminViews = () => {
         );
       },
     },
+    {
+      field:"action2",
+      headerName:"View Details",
+      minWidth:100,
+      width:200,
+      renderCell:(cellValues) => {
+        return (
+          <IconButton onClick={() => handleViewClick(cellValues.row)}>
+              <RemoveRedEyeIcon  fontSize="inherit" />
+          </IconButton>
+        )
+      }
+    }
   ];
 
-  return (
+  return (<>
     <Box sx={{ height: "100%" }}>
       <Typography variant="h5" sx={{ mb: 2 }}>
         User list
@@ -99,6 +157,71 @@ export const AdminViews = () => {
         <DataGrid rows={sortBy(allUsers, "id")} columns={cols} rowCount={count} loading={api.isLoading} pageSize={10} pagination paginationMode="server" onPageChange={(page, Details) => handlePageChnage(page)} />
       </Box>
     </Box>
+    <Dialog
+        maxWidth={"md"}
+        open={Boolean(userInview)}
+        onClose={handleModalClose}
+        fullWidth
+      >
+        <DialogTitle>User Wallet : {userInview?.hedera_wallet_id}</DialogTitle>
+        <DialogContent>
+            <Table>
+              <TableHead>
+                  <TableCell>
+                    User Metrics
+                  </TableCell>
+                  <TableCell>
+                    Values
+                  </TableCell>
+              </TableHead>
+              <TableBody>
+                <TableRow>
+                  <TableCell>
+                    Personal Handle
+                  </TableCell>
+                  <TableCell>
+                    {userInview?.personal_twitter_handle} 
+                    <IconButton title="Remove this handle" size="small" color="error" disabled={api.isLoading} sx={{marginLeft:2}} 
+                    onClick={() => handlePersonalHandleRemove(Number(userInview?.id))}>
+                      <Delete fontSize="inherit"/>
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>
+                    Biuieness Handle
+                   
+                  </TableCell>
+                  <TableCell>
+                    {userInview?.business_twitter_handle}
+                    <IconButton title="Remove this buesness handle" size="small" color="error" disabled={api.isLoading}
+                    sx={{marginLeft:2}} 
+                    onClick={() => handlebizHandleRemove(Number(userInview?.id))}>
+                      <Delete fontSize="inherit"/>
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>
+                    Hbar Balance 
+                  </TableCell>
+                  <TableCell>
+                    {userInview?.available_budget}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>
+                    Total reward gained 
+                  </TableCell>
+                  <TableCell>
+                    {userInview?.total_rewarded}
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </DialogContent>
+        </Dialog>
+    </>
   );
 };
 
