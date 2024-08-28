@@ -181,7 +181,7 @@ export const AdminViews = () => {
                   </TableCell>
                   <TableCell>
                     {userInview?.personal_twitter_handle ?? "NA"} 
-                    <IconButton title="Remove this handle" size="small" color="error" disabled={api.isLoading || Boolean(userInview?.personal_twitter_handle)} sx={{marginLeft:2}} 
+                    <IconButton title="Remove this handle" size="small" color="error" disabled={api.isLoading || !Boolean(userInview?.personal_twitter_handle)} sx={{marginLeft:2}} 
                     onClick={() => handlePersonalHandleRemove(Number(userInview?.id))}>
                       <Delete fontSize="inherit"/>
                     </IconButton>
@@ -194,7 +194,7 @@ export const AdminViews = () => {
                   </TableCell>
                   <TableCell>
                     {userInview?.business_twitter_handle ?? "NA"}
-                    <IconButton title="Remove this buesness handle" size="small" color="error" disabled={api.isLoading || Boolean(userInview?.business_twitter_handle)}
+                    <IconButton title="Remove this buesness handle" size="small" color="error" disabled={api.isLoading || !Boolean(userInview?.business_twitter_handle)}
                     sx={{marginLeft:2}} 
                     onClick={() => handlebizHandleRemove(Number(userInview?.id))}>
                       <Delete fontSize="inherit"/>
