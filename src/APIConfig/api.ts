@@ -103,6 +103,8 @@ export const useApiInstance = () => {
     updateStatus: (data: any) => requests.put("/api/admin/update-status", data),
     getAllUsers: (data?: { limit: number; offset: number }): Promise<{ users: CurrentUser[]; count: number }> => requests.post("/api/admin/user/all", data ?? {}),
     allowUserAsCampaigner: (id: number): Promise<{ user: CurrentUser; success: true }> => requests.patch("/api/admin/user/allowCampaigner", { id }),
+    removePerosnalHandle:(userId:number):Promise<{data:CurrentUser , message:string}> => requests.delete("/api/admin/personal-handle/"+userId),
+    removeBizHandle:(userId:number):Promise<{data:CurrentUser , message:string}> => requests.delete("/api/admin/biz-handle/"+userId)
   };
 
   const MirrorNodeRestAPI = {
