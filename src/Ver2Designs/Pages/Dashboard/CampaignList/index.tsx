@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useApiInstance } from "../../../../APIConfig/api";
 import { useStore } from "../../../../Store/StoreProvider";
-import { CampaignStatus } from "../../../../Utilities/helpers";
+import { ADMIN_ADDRESS, CampaignStatus } from "../../../../Utilities/helpers";
 import { Loader } from "../../../../components/Loader/Loader";
 import DetailsModal from "../../../../components/PreviewModal/DetailsModal";
 import { CampaignCommands } from "../../../../types";
@@ -66,7 +66,7 @@ const CampaignList = () => {
   const { User, Admin, Campaign } = useApiInstance();
   const store = useStore();
   const { currentUser, balances } = store;
-  const isAdmin = process.env.REACT_APP_ADMIN_ADDRESS === currentUser?.hedera_wallet_id;
+  const isAdmin = !!currentUser?.hedera_wallet_id && ADMIN_ADDRESS.includes(currentUser.hedera_wallet_id);
 
   const [openAssociateModal, setOpenAssociateModal] = useState<boolean>(false);
   const [open, setOpen] = useState<boolean>(false);
@@ -97,17 +97,17 @@ const CampaignList = () => {
     try {
       const response = await User.getClaimRewards();
       //@ts-ignore;
-      setClaimPendingRewards((prev) => uniqBy([...prev, ...response.rewardDetails], "id"));
+      // setClaimPendingRewards((prev) => uniqBy([...prev, ...response.rewardDetails], "id"));
     } catch (error) {
       console.log(error);
     }
   }, []);
 
   useEffect(() => {
-    if (process.env.REACT_APP_ADMIN_ADDRESS === currentUser?.hedera_wallet_id) {
+    if (isAdmin) {
       getAllPendingCampaigns();
     }
-    getClaimAllRewards();
+    // getClaimAllRewards();
   }, [getAllPendingCampaigns, currentUser?.hedera_wallet_id, getClaimAllRewards]);
 
   const handleCard = async (id: number) => {
@@ -329,7 +329,7 @@ const CampaignList = () => {
                 In the current beta phase, please note that only one campaign can be run at a time. Each initiated campaign will automatically end 24 hours after its start. We plan to incrementally ease these restrictions in the future. Also, be informed that your balance can be used without any limits across different campaigns.
               </Typography>
             </Stack>
-            {process.env.REACT_APP_ADMIN_ADDRESS === currentUser?.hedera_wallet_id && (
+            {isAdmin && (
               <Button size="large" variant="contained" disableElevation onClick={() => setOpenAssociateModal(true)}>
                 Associate
               </Button>
