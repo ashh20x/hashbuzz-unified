@@ -3,6 +3,7 @@ export const NETWORK = process.env.REACT_APP_NETWORK ?? "testnet";
 export const dAppApiURL = process.env.REACT_APP_DAPP_API;
 export const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS;
 export const COLLECTOR_ACCOUNT = process.env.REACT_APP_COLLECTOR_ACCOUNT;
+export const ADMIN_ADDRESS = String(process.env.REACT_APP_ADMIN_ADDRESS).split(",");
 
 export enum CampaignStatus {
   ApprovalPending = "ApprovalPending",
