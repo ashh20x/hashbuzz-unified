@@ -2,19 +2,22 @@ import { useContext } from 'react';
 import { HashconectServiceContext } from './hashconnectService';
 import { ContractExecuteTransaction, ContractFunctionParameters, AccountId, ContractId } from '@hashgraph/sdk';
 import BigNumber from 'bignumber.js';
-import { COLLECTOR_ACCOUNT, CONTRACT_ADDRESS, NETWORK } from '../Utilities/helpers';
+import { NETWORK } from '../Utilities/helpers';
+import { useStore } from '../Store/StoreProvider';
 
 export const useTransferTokenToContract = () => {
   const { topic, hashconnect } = useContext(HashconectServiceContext);
+  const store = useStore();
+  const { contractAddress, collecterAddress } = store.currentUser?.config || {};
 
   const transferTokenToContract = async (accountId: any, data: any) => {
     try {
       const provider = hashconnect?.getProvider(NETWORK, topic!, accountId);
       if (provider) {
         const signer = hashconnect?.getSigner(provider);
-        if (signer && CONTRACT_ADDRESS && COLLECTOR_ACCOUNT) {
-          const contract_address = ContractId.fromString(CONTRACT_ADDRESS);
-          const collector_account = AccountId.fromString(COLLECTOR_ACCOUNT);
+        if (signer && contractAddress && collecterAddress) {
+          const contract_address = ContractId.fromString(contractAddress);
+          const collector_account = AccountId.fromString(collecterAddress);
 
           const tx = await new ContractExecuteTransaction()
             .setContractId(contract_address)
