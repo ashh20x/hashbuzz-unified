@@ -22,6 +22,10 @@ export interface CurrentUser {
   adminActive: boolean;
   profile_image_url?: string;
   role: user_roles;
+  config: {
+    contractAddress: string;
+    collecterAddress: string
+  }
 }
 
 export type LogoutResponse = {
