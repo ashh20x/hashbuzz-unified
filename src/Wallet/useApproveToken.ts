@@ -1,17 +1,18 @@
 import { useContext } from 'react';
-
 import { HashconectServiceContext } from './hashconnectService';
 import { AccountAllowanceApproveTransaction } from '@hashgraph/sdk';
-import BigNumber from 'bignumber.js';
 import { NETWORK } from '../Utilities/helpers';
+import { useStore } from '../Store/StoreProvider';
 
 export const useApproveToken = () => {
   const { topic, hashconnect } = useContext(HashconectServiceContext);
+  const store = useStore();
+  const userConfig = store.currentUser?.config
 
   const approveToken = async (accountId: any, data: any) => {
-    let contract_address: any = process.env.REACT_APP_CONTRACT_ADDRESS;
+    let contract_address = userConfig?.contractAddress;
     const provider = hashconnect?.getProvider(NETWORK, topic!, accountId);
-    if (provider) {
+    if (provider && contract_address) {
       const signer = hashconnect?.getSigner(provider);
       const approvedToken = new AccountAllowanceApproveTransaction().approveTokenAllowance(
         data?.entityId,

@@ -1,9 +1,6 @@
 import { EntityBalances, user_roles } from "../types";
 export const NETWORK = process.env.REACT_APP_NETWORK ?? "testnet";
 export const dAppApiURL = process.env.REACT_APP_DAPP_API;
-export const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS;
-export const COLLECTOR_ACCOUNT = process.env.REACT_APP_COLLECTOR_ACCOUNT;
-export const ADMIN_ADDRESS = String(process.env.REACT_APP_ADMIN_ADDRESS).split(",");
 
 export enum CampaignStatus {
   ApprovalPending = "ApprovalPending",
@@ -25,7 +22,7 @@ export const CampaignStatusTexts = {
   [CampaignStatus.RewardDistributionInProgress]: "Reward Distribution In Progress",
   [CampaignStatus.RewardsDistributed]: "Rewards Distributed",
   [CampaignStatus.InternalError]: "Internal Error",
-}
+};
 
 export const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
@@ -52,14 +49,14 @@ export const isAnyBalancesIsAvailable = (entities: EntityBalances[]): boolean =>
 };
 
 export const isAllowedToCmapigner = (role?: user_roles): boolean => {
-  if(!role) return false;
+  if (!role) return false;
   return ["USER", "ADMIN", "SUPER_ADMIN"].includes(role);
 };
 
-export const getCardStausText = (value:CampaignStatus) =>  CampaignStatusTexts[value];
+export const getCardStausText = (value: CampaignStatus) => CampaignStatusTexts[value];
 
 export const getCardStatusFromStatusText = (statusText: string): keyof typeof CampaignStatusTexts | undefined => {
-  console.log({statusText});
+  console.log({ statusText });
   // Find the key corresponding to the given statusText
   const entry = Object.entries(CampaignStatusTexts).find(([_, text]) => text === statusText);
 
@@ -70,4 +67,9 @@ export const getCardStatusFromStatusText = (statusText: string): keyof typeof Ca
 
   // If no matching text is found, return undefined or handle the error as needed
   return undefined;
+};
+
+export const getSymbol = (entities: EntityBalances[], entityId: string) => {
+  const icon = entities.find((entity) => entity.entityId === entityId)?.entityIcon;
+  return icon;
 }
