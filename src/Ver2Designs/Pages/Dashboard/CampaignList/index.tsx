@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useApiInstance } from "../../../../APIConfig/api";
 import { useStore } from "../../../../Store/StoreProvider";
-import { ADMIN_ADDRESS, CampaignStatus } from "../../../../Utilities/helpers";
+import { CampaignStatus } from "../../../../Utilities/helpers";
 import { Loader } from "../../../../components/Loader/Loader";
 import DetailsModal from "../../../../components/PreviewModal/DetailsModal";
 import { CampaignCommands } from "../../../../types";
@@ -24,8 +24,8 @@ import { campaignListColumns } from "./campaignListCoulmns";
 
 const isButtonDisabled = (campaignStats: CampaignStatus, approve: boolean) => {
   const disabledStatuses = new Set([CampaignStatus.RewardDistributionInProgress, CampaignStatus.CampaignDeclined, CampaignStatus.RewardsDistributed, CampaignStatus.CampaignRunning, CampaignStatus.ApprovalPending]);
-  const isDisabled =  disabledStatuses.has(campaignStats) || !approve;
-  return  isDisabled;
+  const isDisabled = disabledStatuses.has(campaignStats) || !approve;
+  return isDisabled;
 };
 
 const getButtonLabel = (campaignStats: CampaignStatus, campaignStartTime: number) => {
@@ -66,7 +66,8 @@ const CampaignList = () => {
   const { User, Admin, Campaign } = useApiInstance();
   const store = useStore();
   const { currentUser, balances } = store;
-  const isAdmin = !!currentUser?.hedera_wallet_id && ADMIN_ADDRESS.includes(currentUser.hedera_wallet_id);
+  const userRole = currentUser?.role;
+  const isAdmin = userRole && ["ADMIN", "SUPER_ADMIN"].includes(userRole);
 
   const [openAssociateModal, setOpenAssociateModal] = useState<boolean>(false);
   const [open, setOpen] = useState<boolean>(false);
@@ -147,14 +148,14 @@ const CampaignList = () => {
   const getAllCampaigns = async () => {
     try {
       const allCampaigns = await Campaign.getCampaigns();
-  
+
       if (!allCampaigns || allCampaigns.length === 0) {
         setRows([]);
         return;
       }
-  
+
       const isCampaignRunningOrPending = (status: CampaignStatus) => new Set([CampaignStatus.CampaignRunning, CampaignStatus.ApprovalPending, CampaignStatus.CampaignDeclined]).has(status);
-  
+
       const campaignData = allCampaigns.map((item) => ({
         id: item.id,
         name: item.name,
@@ -168,7 +169,7 @@ const CampaignList = () => {
         decimals: item.decimals,
         approve: item.approve,
       }));
-  
+
       const hasRunningCampaigns = allCampaigns.some((item: any) => isCampaignRunningOrPending(item.card_status));
       setRunningCampaigns(hasRunningCampaigns);
       setRows(campaignData);
@@ -176,7 +177,7 @@ const CampaignList = () => {
       console.error(err);
     }
   };
-  
+
 
   React.useEffect(() => {
     getAllCampaigns();
@@ -282,7 +283,7 @@ const CampaignList = () => {
       field: "action",
       headerName: "Actions",
       width: 200,
-      renderCell:(cellValues) => <AdminActionButtons cellValues={cellValues}   handleAdminAction={handleAdminAction} setPreviewCard={setPreviewCard} />
+      renderCell: (cellValues) => <AdminActionButtons cellValues={cellValues} handleAdminAction={handleAdminAction} setPreviewCard={setPreviewCard} />
     },
   ];
 
@@ -342,7 +343,7 @@ const CampaignList = () => {
             </Button>
             <AssociateModal open={openAssociateModal} onClose={() => setOpenAssociateModal(false)} />
           </Stack>
-          <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} isAdmin={isAdmin} handleCardsRefresh={handleCardsRefresh}  />
+          <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} isAdmin={!!isAdmin} handleCardsRefresh={handleCardsRefresh} />
         </Box>
 
         <Divider sx={{ borderColor: cardStyle.borderColor }} />

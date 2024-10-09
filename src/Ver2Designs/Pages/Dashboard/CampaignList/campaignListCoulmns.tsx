@@ -1,5 +1,12 @@
-import { GridColDef } from "@mui/x-data-grid";
-import { CampaignStatus, getCardStausText } from "../../../../Utilities/helpers";
+import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
+import { CampaignStatus, getCardStausText, getSymbol } from "../../../../Utilities/helpers";
+import { useStore } from "../../../../Store/StoreProvider";
+
+const RenderSymbol = (props: GridRenderCellParams<any, any, any>) => {
+  const store = useStore();
+  const entities = store.balances;
+  return <span>{props.row?.type === "HBAR" ? "HBAR" : getSymbol(entities, props.row?.fungible_token_id)}</span>;
+}
 
 export const campaignListColumns: GridColDef[] = [
   { field: "id", headerName: "Card No.", width: 100, align: "center" },
@@ -9,9 +16,7 @@ export const campaignListColumns: GridColDef[] = [
     headerName: "Token Reward",
     minWidth: 150,
     flex: 0.75,
-    renderCell(params) {
-      return <span>{params.value?.type ?? "HBAR"}</span>;
-    },
+    renderCell: (params) => <RenderSymbol {...params} />,
   },
   {
     field: "campaign_budget",
