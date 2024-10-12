@@ -1,5 +1,5 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import { ProtectedRoute } from "./APIConfig/AuthGuard";
+import { ProtectedRoute, RedirectIfAuthenticated } from "./APIConfig/AuthGuard";
 import { CreateCampaign, Dashboard, Landing, PageNotfound } from "./Ver2Designs";
 import { AdminDashboard } from "./Ver2Designs/Admin";
 import AdminAuthGuard from "./Ver2Designs/Admin/AdminAuthGuard";
@@ -8,11 +8,17 @@ import StyledComponentTheme from "./theme/Theme";
 import { Template } from "./screens/Template";
 import { Invoice } from "./screens/Invoice";
 import { OnBoarding } from "./screens/OnBoarding";
+import React, { useEffect } from "react";
 
 const router = createBrowserRouter([
   {
+    path: "/",
     index: true,
-    element: <Landing />,
+    element: (
+      <RedirectIfAuthenticated>
+        <Landing />
+      </RedirectIfAuthenticated>
+    ),
   },
   {
     path: "/",
@@ -72,10 +78,12 @@ const router = createBrowserRouter([
   { path: "/*", element: <PageNotfound /> },
 ]);
 
-const AppRouter = () => (
-  <StyledComponentTheme>
-    <RouterProvider router={router} />
-  </StyledComponentTheme>
-);
+const AppRouter = () => {
+  return (
+    <StyledComponentTheme>
+      <RouterProvider router={router} />
+    </StyledComponentTheme>
+  );
+};
 
 export default AppRouter;
