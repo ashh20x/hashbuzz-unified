@@ -1,4 +1,4 @@
-import { createContext, Dispatch, ReactNode, useContext, useReducer } from "react";
+import { createContext, Dispatch, ReactNode, useContext, useEffect, useReducer } from "react";
 import { AppState, ContractInfo, EntityBalances, CurrentUser, AuthCred } from "../types";
 
 interface StoreContextType extends AppState {
@@ -15,14 +15,14 @@ const INITIAL_STATE: AppState = {
   toasts: [],
 };
 
-type Action = { type: "SET_PING"; payload: { status: boolean; hedera_wallet_id: string } } | { type: "UPDATE_STATE"; payload: Partial<AppState> } | { type: "SET_BALANCES"; payload: EntityBalances[] } | { type: "ADD_TOAST"; payload: { type: "success" | "error"; message: string } } | { type: "RESET_TOAST" } | { type: "RESET_STATE" } | { type: "SET_CONTRACT_INFO"; payload: ContractInfo } | { type: "UPDATE_CURRENT_USER"; payload: CurrentUser } | {type:"SET_AUTH_CRED" , payload:AuthCred};
+type Action = { type: "SET_PING"; payload: { status: boolean; hedera_wallet_id: string } } | { type: "UPDATE_STATE"; payload: Partial<AppState> } | { type: "SET_BALANCES"; payload: EntityBalances[] } | { type: "ADD_TOAST"; payload: { type: "success" | "error"; message: string } } | { type: "RESET_TOAST" } | { type: "RESET_STATE" } | { type: "SET_CONTRACT_INFO"; payload: ContractInfo } | { type: "UPDATE_CURRENT_USER"; payload: CurrentUser } | { type: "SET_AUTH_CRED"; payload: AuthCred };
 
 const storeReducer = (state: AppState, action: Action): AppState => {
   switch (action.type) {
     case "SET_PING":
       return {
         ...state,
-        ping: {...action.payload},
+        ping: { ...action.payload },
         checkRefresh: true,
       };
     case "UPDATE_STATE":
@@ -36,10 +36,10 @@ const storeReducer = (state: AppState, action: Action): AppState => {
         balances: action.payload,
       };
     case "SET_AUTH_CRED":
-        return {
-          ...state,
-          auth:action.payload
-        }
+      return {
+        ...state,
+        auth: action.payload,
+      };
     case "ADD_TOAST":
       return {
         ...state,
@@ -71,6 +71,19 @@ const StoreContext = createContext<StoreContextType | undefined>(undefined);
 
 export const StoreProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(storeReducer, JSON.parse(JSON.stringify(INITIAL_STATE)));
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const authStatus = urlParams.get("authStatus");
+    const message = urlParams.get("message");
+
+    if (authStatus || message) {
+      dispatch({
+        type: "ADD_TOAST",
+        payload: { type: authStatus === "fail" ? "error" : "success", message: message ?? "" },
+      });
+    }
+  }, []);
 
   return <StoreContext.Provider value={{ ...state, dispatch }}>{children}</StoreContext.Provider>;
 };

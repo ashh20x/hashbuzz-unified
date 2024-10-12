@@ -12,11 +12,14 @@ import { useApiInstance } from "../../../APIConfig/api";
 import { getErrorMessage, isAllowedToCmapigner } from "../../../Utilities/helpers";
 import SpeedDialActions from "../../Components/SpeedDialActions";
 import * as SC from "./styled";
+import XAccountConnectionWarning from "./XAccountConnectionWarning";
+import XPlatformIcon from "../../../SVGR/XPlatformIcon";
 
 const Dashboard = () => {
   const store = useStore();
   const { Integrations } = useApiInstance();
-  const {currentUser , dispatch} = store;
+  const { currentUser, dispatch } = store;
+  const [openXAlert, setOpenXAlert] = React.useState(false);
 
   const personalHandleIntegration = async (event: React.MouseEvent<HTMLButtonElement>) => {
     try {
@@ -50,13 +53,13 @@ const Dashboard = () => {
 
         {/* card for personal twitter handle */}
         <CardGenUtility
-          startIcon={<TwitterIcon color="inherit" fontSize={"inherit"} />}
-          title={"Personal X Account"}
+          startIcon={<XPlatformIcon color="inherit" size={40} />}
+          title={"Personal 𝕏 Account"}
           content={
             currentUser?.personal_twitter_handle ? (
               <Typography variant="h5">{"@" + currentUser?.personal_twitter_handle}</Typography>
             ) : (
-              <Button type="button" variant="contained" disableElevation startIcon={<TwitterIcon />} onClick={personalHandleIntegration}>
+              <Button type="button" variant="contained" disableElevation startIcon={<XPlatformIcon size={18} />} onClick={() => setOpenXAlert(true)}>
                 Connect
               </Button>
             )
@@ -66,12 +69,12 @@ const Dashboard = () => {
         {/* card for Brand twitter handle */}
         <CardGenUtility
           startIcon={<BusinessIcon color="inherit" fontSize={"inherit"} />}
-          title={"Brand X Account"}
+          title={"Brand 𝕏 Account"}
           content={
             currentUser?.business_twitter_handle ? (
               <Typography variant="h5">{"@" + currentUser?.business_twitter_handle}</Typography>
             ) : (
-              <Button type="button" disabled={!isAllowedToCmapigner(currentUser?.role)} variant="contained" disableElevation startIcon={<TwitterIcon />} onClick={bizHandleIntegration}>
+              <Button type="button" disabled={!isAllowedToCmapigner(currentUser?.role)} variant="contained" disableElevation startIcon={<XPlatformIcon size={18} />} onClick={bizHandleIntegration}>
                 Connect
               </Button>
             )
@@ -84,10 +87,11 @@ const Dashboard = () => {
       </SC.StyledCardGenUtility>
 
       {/* Campaign List section */}
-      <CampaignList  />
+      <CampaignList />
 
       {/* speed dial  action button */}
       <SpeedDialActions />
+      <XAccountConnectionWarning open={openXAlert} handleClose={() => setOpenXAlert(false)} handleAgree={personalHandleIntegration} />
     </React.Fragment>
   );
 };

@@ -19,9 +19,9 @@ const useRefreshToken = false; // Flag to enable/disable token refresh
 export const AxiosContext = createContext<AxiosInstance | null>(null);
 
 const AxiosProvider: React.FC = ({ children }) => {
-  const [cookies, setCookie] = useCookies(["aSToken" , "refreshToken"]);
+  const [cookies, setCookie] = useCookies(["aSToken", "refreshToken"]);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const {auth} = useStore();
+  const { auth } = useStore();
 
   const axiosInstance = useRef<AxiosInstance>(
     axios.create({
@@ -33,14 +33,14 @@ const AxiosProvider: React.FC = ({ children }) => {
     })
   );
 
-  console.log("cookies", cookies)
+  console.log("cookies", cookies);
 
   const refreshAccessToken = async () => {
     if (isRefreshing) return;
     setIsRefreshing(true);
     try {
       // Your logic to refresh the token
-      const response = await axiosInstance.current.post<{ast:string, message:string}>("/auth/refresh-token", {
+      const response = await axiosInstance.current.post<{ ast: string; message: string }>("/auth/refresh-token", {
         refreshToken: cookies.refreshToken,
       });
       const newToken = response.data.ast;
@@ -79,7 +79,7 @@ const AxiosProvider: React.FC = ({ children }) => {
           config.headers["Authorization"] = `aSToken ${token}`;
         }
 
-        if(!token && config.headers && auth?.ast){
+        if (!token && config.headers && auth?.ast) {
           config.headers["Authorization"] = `aSToken ${auth.ast}`;
         }
 
@@ -107,6 +107,14 @@ const AxiosProvider: React.FC = ({ children }) => {
             case 500:
               toast.error("An internal server error occurred. Please try again later.");
               break;
+            case 429:
+              toast.warn(
+                <div>
+                  <strong>Rate Limit Exceeded</strong>
+                  <p>You have made too many requests in a short period. Please wait a few minutes and try again.</p>
+                </div>
+              );
+              break;
             default:
               toast.error(getErrorMessage(error));
           }
@@ -121,7 +129,7 @@ const AxiosProvider: React.FC = ({ children }) => {
       instance.interceptors.request.eject(requestInterceptor);
       instance.interceptors.response.eject(responseInterceptor);
     };
-  }, [cookies.aSToken , auth?.ast]);
+  }, [cookies.aSToken, auth?.ast]);
 
   return <AxiosContext.Provider value={axiosInstance.current}>{children}</AxiosContext.Provider>;
 };
