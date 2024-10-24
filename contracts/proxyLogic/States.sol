@@ -5,6 +5,7 @@ pragma solidity ^0.8.17;
  * @title HashbuzzStates
  * @dev This contract is used to store the state of the Hashbuzz contract
  */
+
 contract HashbuzzStates {
     address internal owner;
 
@@ -56,28 +57,4 @@ contract HashbuzzStates {
         address tokenId,
         uint64 updatedBalance
     );
-
-    modifier onlyOwner() {
-        require(
-            msg.sender == owner,
-            "Unauthorize Access requested, Caller is not the owner"
-        );
-        _;
-    }
-
-    modifier onlyOwnerOrCampaigner() {
-        require(
-            msg.sender == owner || isCampaigner(msg.sender),
-            "Unauthorize Access requested, Caller must be owner or campaigner."
-        );
-        _;
-    }
-
-    /**
-     * @dev check capaigner is permiited
-     * @param _address  address of the campaigner
-     */
-    function isCampaigner(address _address) internal view returns (bool) {
-        return campaigners[_address];
-    }
 }
