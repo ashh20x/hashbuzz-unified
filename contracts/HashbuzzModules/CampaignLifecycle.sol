@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.17;
 
-import "./State.sol";
+import "./HashbuzzStates.sol";
+import "./Utils.sol";
 
 /**
  * @title CampaignLifecycle
  * @dev This contract manages the campaign's lifecycle calls and state changes.
  */
-contract Lifecycle is State {
+contract Lifecycle is HashbuzzStates, Utils {
     /**
      * @dev Add a new campaign
      * @param campaignAddress The db address of the campaign
@@ -19,12 +20,7 @@ contract Lifecycle is State {
         address campaigner,
         uint256 amount
     ) public onlyOwner {
-        require(bytes(campaignAddress).length > 0, "Invalid campaign address");
-        require(campaigner != address(0), "Invalid campaigner address");
-        require(
-            campaignBalances[campaignAddress] == 0,
-            "Campaign already exists"
-        );
+        require(isCampaigner(campaigner), "Campaign already exists");
         require(balances[campaigner] >= amount, "Insufficient balance");
 
         balances[campaigner] -= amount;
@@ -50,7 +46,7 @@ contract Lifecycle is State {
     ) public onlyOwner {
         require(tokenId != address(0), "Invalid token address");
         require(bytes(campaignAddress).length > 0, "Invalid campaign address");
-        require(campaigner != address(0), "Invalid campaigner address");
+        require(isCampaigner(campaigner), "Campaign already exists");
         require(tokenAmount > 0, "Token amount must be greater than zero");
 
         if (tokenType == FUNGIBLE) {
@@ -164,7 +160,7 @@ contract Lifecycle is State {
         uint256[] memory amounts
     ) external onlyOwner {
         require(tokenId != address(0), "Invalid token address");
-        require(campaigner != address(0), "Invalid campaigner address");
+        require(isCampaigner(campaigner), "Campaign already exists");
         require(bytes(campaignAddress).length > 0, "Invalid campaign address");
         require(tokenTotalAmount > 0, "Token amount must be greater than zero");
         require(
@@ -203,7 +199,7 @@ contract Lifecycle is State {
         address[] memory receiversAddresses,
         uint256[] memory amounts
     ) external onlyOwner {
-        require(campaigner != address(0), "Invalid campaigner address");
+        require(isCampaigner(campaigner), "Campaign already exists");
         require(bytes(campaignAddress).length > 0, "Invalid campaign address");
         require(totalAmount > 0, "Total amount must be greater than zero");
         require(

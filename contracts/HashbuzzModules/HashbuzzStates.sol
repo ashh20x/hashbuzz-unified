@@ -2,15 +2,16 @@
 pragma solidity ^0.8.17;
 
 /**
- * @title State
+ * @title HashbuzzStates
  * @dev This contract is used to store the state of the Hashbuzz contract
  */
-contract State {
+contract HashbuzzStates {
     uint32 public constant HBAR = 0;
     uint32 public constant FUNGIBLE = 1;
     uint32 public constant NFT = 2;
 
     address internal owner;
+    mapping(address => bool) internal campaigners;
     mapping(address => uint256) public balances;
     mapping(address => uint256) public rewardBalances;
     mapping(address => mapping(address => mapping(uint256 => uint64)))
@@ -56,7 +57,26 @@ contract State {
     );
 
     modifier onlyOwner() {
-        require(msg.sender == owner, "Caller is not the owner");
+        require(
+            msg.sender == owner,
+            "Unauthorize Access requested, Caller is not the owner"
+        );
         _;
+    }
+
+    modifier onlyOwnerOrCampaigner() {
+        require(
+            msg.sender == owner || isCampaigner(msg.sender),
+            "Unauthorize Access requested, Caller must be owner or campaigner."
+        );
+        _;
+    }
+
+    /**
+     * @dev check capaigner is permiited
+     * @param _address  address of the campaigner
+     */
+    function isCampaigner(address _address) internal view returns (bool) {
+        return campaigners[_address];
     }
 }
