@@ -36,14 +36,14 @@ In the provided contract, _`HashbuzzV201`_, the following key modules and functi
 
 The smart contract's logic is split into separate files for better code organization and maintainability:
 
-- **HashbuzzV201.sol:** The main contract that imports all the modules and serves as the entry point for users.
+- [**HashbuzzV201.sol:**](contracts/HashbuzzV201.sol) The main contract that imports all the modules and serves as the entry point for users.
   HashbuzzStates.sol: Handles state variables and ownership logic.
 
-- **Utils.sol:** Contains helper functions that assist the main logic.
+- [**Utils.sol:**](contracts/HashbuzzModules/Utils.sol) Contains helper functions that assist the main logic.
 
-- **CampaignLifecycle.sol:** Manages how campaigns are created, modified, and tracked within the contract.
+- [**CampaignLifecycle.sol:**](contracts/HashbuzzModules/CampaignLifecycle.sol) Manages how campaigns are created, modified, and tracked within the contract.
 
-- **Transactions.sol:** Deals with payments and transactional logic, like receiving and sending Ether.
+- [**Transactions.sol:**](contracts/HashbuzzModules/Transactions.sol) Deals with payments and transactional logic, like receiving and sending Ether.
 
 ---
 
@@ -77,7 +77,7 @@ _`HashbuzzProxy201`_ is an upgradeable smart contract system using the Proxy Pat
 
 2. **Logic Contract (HashbuzzLogicV201):** This contains the core logic of the application, such as campaign creation and management , rearding and other key utils.
 
-3. **Proxy Contract (HashbuzzProxy):** This delegates all calls to the logic contract while maintaining the same storage context in the state contract.
+3. **Proxy Contract (HashbuzzProxy201):** This delegates all calls to the logic contract while maintaining the same storage context in the state contract.
 
 By separating logic from state, we can upgrade the logic contract without modifying the state, ensuring that we can improve and patch the system as needed.
 
@@ -98,7 +98,7 @@ contracts
 
 ### Architecture
 
-#### 1. State Contract (HashbuzzState201.sol)
+#### 1. State Contract ([HashbuzzStateV201](contracts/HashbuzzProxyModules/HashbuzzStateV201.sol))
 
 The State Contract holds all the data (storage) for the application. This contract will never be upgraded to avoid losing data. It stores variables such as campaignCount, campaigns, and owner.
 
@@ -110,7 +110,7 @@ The State Contract holds all the data (storage) for the application. This contra
 
 - Link to the current Logic Contract address to ensure interaction consistency.
 
-#### 2. Logic Contract (HashbuzzLogicV201.sol)
+#### 2. Logic Contract ([HashbuzzLogicV201](contracts/HashbuzzProxyModules/HashbuzzLogicV201.sol))
 
 The Logic Contract contains the business logic for the system, such as creating campaigns, managing funds, and handling transactions. It interacts with the HashbuzzState contract to read and update the state.
 
@@ -120,7 +120,7 @@ The Logic Contract contains the business logic for the system, such as creating 
 - Read from and write to the HashbuzzState contract.
 - Be upgradeable via the proxy contract.
 
-#### 3. Proxy Contract (HashbuzzProxy.sol)
+#### 3. Proxy Contract ([HashbuzzProxy201](contracts/HashbuzzProxy201.sol))
 
 The Proxy Contract serves as the entry point for all interactions with the system. It delegates function calls to the Logic Contract and ensures that the State Contract is kept intact.
 
