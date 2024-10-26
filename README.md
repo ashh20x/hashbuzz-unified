@@ -16,6 +16,20 @@ In the provided contract, _`HashbuzzV201`_, the following key modules and functi
 
 - **Transaction Handling (Transactions):** Handles payments, fund transfers, and transactions that users can perform in the context of the application.
 
+#### Files and dir.
+
+[**Contracts**](contracts/HashbuzzModules/)
+
+```bash
+  contracts
+    - HashbuzzV201.sol # Main contract only imports modules no mehtods
+    HashbuzzModules
+      - CampaignLifecycle.sol #CampaignLifecycle Modules holds logic that will be called to derive and propogate cmapign lifecylce.
+      - HashbuzzStates.sol # State variable with modifiers
+      - Transactions.sol # Logic related to trnsactions
+      - Utils.sol # Utils mehtods
+```
+
 ---
 
 ### Code Refactoring Structure
@@ -51,11 +65,11 @@ The smart contract's logic is split into separate files for better code organiza
 
 ---
 
-## Hashbuzz Smart Contract (Proxy) Upgradeable Architecture
+## Hashbuzz Smart Contract (Proxy) Upgradeable Architecture ( in progress)
 
 ### Overview
 
-Hashbuzz201 is an upgradeable smart contract system using the Proxy Pattern by separating state storage and business logic. This allows for secure and efficient upgrades without disrupting existing state data.
+_`HashbuzzProxy201`_ is an upgradeable smart contract system using the Proxy Pattern by separating state storage and business logic. This allows for secure and efficient upgrades without disrupting existing state data.
 
 **The system is divided into three core contracts:**
 
@@ -66,6 +80,19 @@ Hashbuzz201 is an upgradeable smart contract system using the Proxy Pattern by s
 3. **Proxy Contract (HashbuzzProxy):** This delegates all calls to the logic contract while maintaining the same storage context in the state contract.
 
 By separating logic from state, we can upgrade the logic contract without modifying the state, ensuring that we can improve and patch the system as needed.
+
+#### Files and dir.
+
+[**Contracts**](contracts/HashbuzzProxyModules)
+
+```bash
+contracts
+  - HashbuzzProxy201.sol # Proxy Contract which will be called in actual
+  HashbuzzProxyModules
+    - _states.sol  #Pure state module
+    - HashbuzzStateV201.sol # Sate contract with state modifired methods
+    - HashbuzzLogicV201.sol # Logical functions
+```
 
 ---
 
