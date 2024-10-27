@@ -44,7 +44,10 @@ contract Lifecycle is HashbuzzStates, Utils {
         int64 tokenAmount,
         uint32 tokenType
     ) public onlyOwner {
-        require(tokenId != address(0), "Invalid token address");
+        require(
+            isTokenWhitelisted(tokenType, tokenId),
+            "Hashbuzz: Token not whitelisted"
+        );
         require(bytes(campaignAddress).length > 0, "Invalid campaign address");
         require(isCampaigner(campaigner), "Campaign already exists");
         require(tokenAmount > 0, "Token amount must be greater than zero");
@@ -159,7 +162,10 @@ contract Lifecycle is HashbuzzStates, Utils {
         address[] memory receiversAddresses,
         uint256[] memory amounts
     ) external onlyOwner {
-        require(tokenId != address(0), "Invalid token address");
+        require(
+            isTokenWhitelisted(tokenType, tokenId),
+            "Token not whitelisted"
+        );
         require(isCampaigner(campaigner), "Campaign already exists");
         require(bytes(campaignAddress).length > 0, "Invalid campaign address");
         require(tokenTotalAmount > 0, "Token amount must be greater than zero");

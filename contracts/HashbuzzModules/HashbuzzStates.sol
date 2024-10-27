@@ -15,6 +15,10 @@ contract HashbuzzStates {
     mapping(address => bool) internal campaigners;
     mapping(address => uint256) public balances;
     mapping(address => uint256) public rewardBalances;
+
+    mapping(uint32 => mapping(address => bool)) public whitelistedToken;
+    mapping(uint32 => address[]) internal whitelistedAddresses;
+
     mapping(address => mapping(address => mapping(uint256 => uint64)))
         public tokenBalances;
     mapping(address => mapping(address => mapping(uint256 => uint64)))
@@ -22,7 +26,7 @@ contract HashbuzzStates {
     mapping(string => uint256) public campaignBalances;
     mapping(string => mapping(address => mapping(uint256 => uint64)))
         public tokenCampaignBalances;
-    mapping(address => mapping(address => mapping(uint256 => bool))) associateCampainer;
+
     mapping(string => mapping(uint256 => uint256)) campaignEndTime;
     mapping(address => uint32) public nftCampaigner;
     mapping(string => mapping(uint256 => bool)) isCampaignClosed;

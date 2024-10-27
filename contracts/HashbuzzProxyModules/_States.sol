@@ -6,7 +6,7 @@ pragma solidity ^0.8.17;
  * @dev This contract is used to store the state of the Hashbuzz contract
  */
 
-contract HashbuzzStates {
+contract States {
     address public owner;
     address internal logicContract;
 

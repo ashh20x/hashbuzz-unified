@@ -3,7 +3,7 @@ pragma solidity ^0.8.17;
 
 import "./_States.sol";
 
-contract HashbuzzStateV201 is HashbuzzStates {
+contract HashbuzzStateV201 is States {
     /**
      * @dev Constructor to set the owner of the contract
      */
