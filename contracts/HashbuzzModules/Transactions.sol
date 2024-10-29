@@ -13,9 +13,6 @@ import "./Utils.sol";
 contract Transactions is HashbuzzStates, Utils {
     /** Deposite amount to user aaccount */
     function handleDeposit(address campaigner, uint256 amount) internal {
-        if (balances[campaigner] == 0) {
-            addCampaigner(campaigner);
-        }
         balances[campaigner] += amount;
         emit FundsDeposited(campaigner, amount);
     }

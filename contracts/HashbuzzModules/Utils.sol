@@ -77,7 +77,7 @@ contract Utils is HashbuzzStates {
      */
     function addCampaigner(address newCampaigner) public onlyOwner {
         require(newCampaigner != address(0), "Invalid campaigner address");
-        require(isCampaigner(newCampaigner), "Campaigner already exists");
+        require(!isCampaigner(newCampaigner), "Campaigner already exists");
         campaigners[newCampaigner] = true;
         balances[newCampaigner] = 0;
         emit CampaignerAdded(newCampaigner);
