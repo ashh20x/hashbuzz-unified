@@ -60,6 +60,11 @@ contract HashbuzzStates {
         address tokenId,
         uint64 updatedBalance
     );
+    event RewardsDistributed(
+        string campaignAddress,
+        uint256 totalAmount,
+        uint256 remainingBalance
+    );
 
     modifier onlyOwner() {
         require(

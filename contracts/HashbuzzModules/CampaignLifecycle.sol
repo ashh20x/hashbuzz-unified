@@ -19,66 +19,95 @@ contract Lifecycle is HashbuzzStates, Utils {
         string memory campaignAddress,
         address campaigner,
         uint256 amount
-    ) public onlyOwner {
-        require(!isCampaigner(campaigner), "Campaign already exists");
+    ) public onlyOwner returns (uint256) {
+        require(
+            isCampaigner(campaigner),
+            "Campaigner is not allowed to campaign"
+        );
         require(balances[campaigner] >= amount, "Insufficient balance");
 
         balances[campaigner] -= amount;
         campaignBalances[campaignAddress] = amount;
+
+        uint256 updatedBalance = balances[campaigner];
         emit NewCampaignIsAdded(campaignAddress, amount, HBAR);
+
+        return updatedBalance;
     }
 
     /**
-     * @dev Add a new campaign for fungible and NFT tokens
+     * @dev Add a new campaign for fungible tokens
      * @param tokenId The address of the token in solidity format
      * @param campaignAddress The db address of the campaign [string]
      * @param campaigner The solidity address of the campaigner or wallet address
      * @param tokenAmount The amount of tokens to be allocated to the campaign
-     * @param tokenType The type of the token (FUNGIBLE or NFT) [uint32] (1 for FUNGIBLE & 2 for NFT)
      */
-
-    function addFungibleAndNFTCampaign(
+    function addFungibleCampaign(
         address tokenId,
         string memory campaignAddress,
         address campaigner,
-        int64 tokenAmount,
-        uint32 tokenType
-    ) public onlyOwner {
+        int64 tokenAmount
+    ) public onlyOwner returns (int64) {
         require(
-            isTokenWhitelisted(tokenType, tokenId),
+            isTokenWhitelisted(FUNGIBLE, tokenId),
             "Hashbuzz: Token not whitelisted"
         );
         require(bytes(campaignAddress).length > 0, "Invalid campaign address");
         require(isCampaigner(campaigner), "Campaign already exists");
         require(tokenAmount > 0, "Token amount must be greater than zero");
 
-        if (tokenType == FUNGIBLE) {
-            uint64 amount = uint64(tokenAmount);
-            require(
-                tokenBalances[campaigner][tokenId][FUNGIBLE] >= amount,
-                "Insufficient balance"
-            );
-            require(
-                tokenCampaignBalances[campaignAddress][tokenId][FUNGIBLE] == 0,
-                "Current balance is non-zero"
-            );
+        uint64 amount = uint64(tokenAmount);
+        require(
+            tokenBalances[campaigner][tokenId][FUNGIBLE] >= amount,
+            "Insufficient balance"
+        );
+        require(
+            tokenCampaignBalances[campaignAddress][tokenId][FUNGIBLE] == 0,
+            "Current balance is non-zero"
+        );
 
-            tokenBalances[campaigner][tokenId][FUNGIBLE] -= amount;
-            tokenCampaignBalances[campaignAddress][tokenId][FUNGIBLE] = amount;
+        tokenBalances[campaigner][tokenId][FUNGIBLE] -= amount;
+        tokenCampaignBalances[campaignAddress][tokenId][FUNGIBLE] = amount;
 
-            emit NewCampaignIsAdded(campaignAddress, amount, FUNGIBLE);
-        } else if (tokenType == NFT) {
-            require(
-                tokenBalances[campaigner][tokenId][NFT] >= uint64(tokenAmount),
-                "Insufficient balance"
-            );
-            tokenCampaignBalances[campaignAddress][tokenId][NFT] = uint64(
-                tokenAmount
-            );
-            emit NewCampaignIsAdded(campaignAddress, uint64(tokenAmount), NFT);
-        } else {
-            revert("Invalid token type");
-        }
+        uint64 updatedBalance = tokenBalances[campaigner][tokenId][FUNGIBLE];
+
+        emit NewCampaignIsAdded(campaignAddress, amount, FUNGIBLE);
+        return int64(updatedBalance);
+    }
+
+    /**
+     * @dev Add a new campaign for NFT tokens
+     * @param tokenId The address of the token in solidity format
+     * @param campaignAddress The db address of the campaign [string]
+     * @param campaigner The solidity address of the campaigner or wallet address
+     * @param tokenAmount The amount of tokens to be allocated to the campaign
+     */
+    function addNFTCampaign(
+        address tokenId,
+        string memory campaignAddress,
+        address campaigner,
+        int64 tokenAmount
+    ) public onlyOwner returns (int64) {
+        require(
+            isTokenWhitelisted(NFT, tokenId),
+            "Hashbuzz: Token not whitelisted"
+        );
+        require(bytes(campaignAddress).length > 0, "Invalid campaign address");
+        require(isCampaigner(campaigner), "Campaign already exists");
+        require(tokenAmount > 0, "Token amount must be greater than zero");
+
+        require(
+            tokenBalances[campaigner][tokenId][NFT] >= uint64(tokenAmount),
+            "Insufficient balance"
+        );
+        tokenCampaignBalances[campaignAddress][tokenId][NFT] = uint64(
+            tokenAmount
+        );
+
+        uint64 updatedBalance = tokenBalances[campaigner][tokenId][NFT];
+
+        emit NewCampaignIsAdded(campaignAddress, uint64(tokenAmount), NFT);
+        return int64(updatedBalance);
     }
 
     /**
@@ -105,89 +134,51 @@ contract Lifecycle is HashbuzzStates, Utils {
     }
 
     /**
-     * @dev Close a campaign with fungible and NFT tokens
+     * @dev Close a campaign with fungible tokens
      * @param campaignAddress The db address of the campaign
      * @param campaignExpiryTime The expiry time of the campaign in seconds
-     * @param tokenType The type of the token (FUNGIBLE = 1 OR  NFT = 2)
      */
-    function closeFungibleAndNFTCampaign(
+    function closeFungibleCampaign(
         string memory campaignAddress,
-        uint256 campaignExpiryTime,
-        uint32 tokenType
+        uint256 campaignExpiryTime
     ) public onlyOwner {
         require(bytes(campaignAddress).length > 0, "Invalid campaign address");
         require(campaignExpiryTime > 0, "Invalid campaign expiry time");
+        require(
+            !isCampaignClosed[campaignAddress][FUNGIBLE],
+            "Campaign already closed"
+        );
 
-        if (tokenType == FUNGIBLE) {
-            require(
-                !isCampaignClosed[campaignAddress][FUNGIBLE],
-                "Campaign already closed"
-            );
-            isCampaignClosed[campaignAddress][FUNGIBLE] = true;
-            campaignEndTime[campaignAddress][FUNGIBLE] =
-                block.timestamp +
-                campaignExpiryTime;
-            emit campaignClosed(campaignAddress, FUNGIBLE);
-        } else if (tokenType == NFT) {
-            require(
-                !isCampaignClosed[campaignAddress][NFT],
-                "Campaign already closed"
-            );
-            isCampaignClosed[campaignAddress][NFT] = true;
-            campaignEndTime[campaignAddress][NFT] =
-                block.timestamp +
-                campaignExpiryTime;
-            emit campaignClosed(campaignAddress, NFT);
-        } else {
-            revert("Invalid token type");
-        }
+        isCampaignClosed[campaignAddress][FUNGIBLE] = true;
+        campaignEndTime[campaignAddress][FUNGIBLE] =
+            block.timestamp +
+            campaignExpiryTime;
+
+        emit campaignClosed(campaignAddress, FUNGIBLE);
     }
 
     /**
-     * @dev Distribute HBAR tokens to the campaigner
-     * @param tokenId The address of the token in solidity format
-     * @param campaigner The solidity address of the campaigner or wallet address
+     * @dev Close a campaign with NFT tokens
      * @param campaignAddress The db address of the campaign
-     * @param tokenTotalAmount The total amount of tokens to be distributed
-     * @param tokenType The type of the token (FUNGIBLE or NFT)
-     * @param receiversAddresses The addresses of the receivers take max 50 addresses in one call
-     * @param amounts The amounts to be distributed to each receiver
+     * @param campaignExpiryTime The expiry time of the campaign in seconds
      */
-    function distributeFungible(
-        address tokenId,
-        address campaigner,
+    function closeNFTCampaign(
         string memory campaignAddress,
-        int64 tokenTotalAmount,
-        uint32 tokenType,
-        address[] memory receiversAddresses,
-        uint256[] memory amounts
-    ) external onlyOwner {
-        require(
-            isTokenWhitelisted(tokenType, tokenId),
-            "Token not whitelisted"
-        );
-        require(isCampaigner(campaigner), "Campaign already exists");
+        uint256 campaignExpiryTime
+    ) public onlyOwner {
         require(bytes(campaignAddress).length > 0, "Invalid campaign address");
-        require(tokenTotalAmount > 0, "Token amount must be greater than zero");
+        require(campaignExpiryTime > 0, "Invalid campaign expiry time");
         require(
-            isCampaignClosed[campaignAddress][tokenType],
-            "Campaign is not closed"
+            !isCampaignClosed[campaignAddress][NFT],
+            "Campaign already closed"
         );
 
-        tokenCampaignBalances[campaignAddress][tokenId][tokenType] -= uint64(
-            tokenTotalAmount
-        );
-        for (uint i = 0; i < receiversAddresses.length; i++) {
-            address recipient = receiversAddresses[i];
-            uint256 amount = amounts[i];
-            if (rewardTokenBalances[recipient][tokenId][tokenType] == 0) {
-                rewardTokenBalances[recipient][tokenId][tokenType] = 0;
-            }
+        isCampaignClosed[campaignAddress][NFT] = true;
+        campaignEndTime[campaignAddress][NFT] =
+            block.timestamp +
+            campaignExpiryTime;
 
-            rewardTokenBalances[recipient][tokenId][tokenType] += uint64(
-                amount
-            );
-        }
+        emit campaignClosed(campaignAddress, NFT);
     }
 
     /**
@@ -198,14 +189,14 @@ contract Lifecycle is HashbuzzStates, Utils {
      * @param receiversAddresses The addresses of the receivers take max 50 addresses in one call
      * @param amounts The amounts to be distributed to each receiver
      */
-    function distributeBalance(
+    function rewardIntractors(
         address campaigner,
         string memory campaignAddress,
         uint256 totalAmount,
         address[] memory receiversAddresses,
         uint256[] memory amounts
-    ) external onlyOwner {
-        require(isCampaigner(campaigner), "Campaign already exists");
+    ) external onlyOwner returns (uint256) {
+        require(isCampaigner(campaigner), "Invalid campaigner address");
         require(bytes(campaignAddress).length > 0, "Invalid campaign address");
         require(totalAmount > 0, "Total amount must be greater than zero");
         require(
@@ -217,24 +208,99 @@ contract Lifecycle is HashbuzzStates, Utils {
             "Mismatched input arrays"
         );
 
-        // Ensure the campaign has enough balance to distribute
+        uint256 totalReward = 0;
+        for (uint i = 0; i < amounts.length; i++) {
+            totalReward += amounts[i];
+        }
+
+        // Ensure the total reward is not greater than the campaign balance
         require(
-            campaignBalances[campaignAddress] >= totalAmount,
-            "Insufficient campaign balance to distribute amount"
+            totalReward <= campaignBalances[campaignAddress],
+            "Total reward exceeds campaign balance"
         );
 
         // Deduct the distributed amount from the campaign's balance
-        campaignBalances[campaignAddress] -= totalAmount;
+        campaignBalances[campaignAddress] -= totalReward;
 
         for (uint i = 0; i < receiversAddresses.length; i++) {
             address recipient = receiversAddresses[i];
             uint256 amount = amounts[i];
-            if (rewardBalances[recipient] == 0) {
-                rewardBalances[recipient] = 0;
-            }
-
             rewardBalances[recipient] += amount;
         }
+
+        uint256 remainingBalance = campaignBalances[campaignAddress];
+
+        emit RewardsDistributed(campaignAddress, totalReward, remainingBalance);
+        return remainingBalance;
+    }
+
+    /**
+     * @dev Distribute fungible tokens to the campaigner
+     * @param tokenId The address of the token in solidity format
+     * @param campaigner The solidity address of the campaigner or wallet address
+     * @param campaignAddress The db address of the campaign
+     * @param tokenTotalAmount The total amount of tokens to be distributed
+     * @param tokenType The type of the token (FUNGIBLE or NFT)
+     * @param receiversAddresses The addresses of the receivers take max 50 addresses in one call
+     * @param amounts The amounts to be distributed to each receiver
+     */
+    function rewardIntractorsWithFungible(
+        address tokenId,
+        address campaigner,
+        string memory campaignAddress,
+        int64 tokenTotalAmount,
+        uint32 tokenType,
+        address[] memory receiversAddresses,
+        uint256[] memory amounts
+    ) external onlyOwner returns (uint256) {
+        require(
+            isTokenWhitelisted(tokenType, tokenId),
+            "Token not whitelisted"
+        );
+        require(isCampaigner(campaigner), "Invalid campaigner address");
+        require(bytes(campaignAddress).length > 0, "Invalid campaign address");
+        require(tokenTotalAmount > 0, "Token amount must be greater than zero");
+        require(
+            isCampaignClosed[campaignAddress][tokenType],
+            "Campaign is not closed"
+        );
+        require(
+            receiversAddresses.length == amounts.length,
+            "Mismatched input arrays"
+        );
+
+        uint256 totalReward = 0;
+        for (uint i = 0; i < amounts.length; i++) {
+            totalReward += amounts[i];
+        }
+
+        // Ensure the total reward is not greater than the campaign balance
+        require(
+            totalReward <=
+                tokenCampaignBalances[campaignAddress][tokenId][tokenType],
+            "Total reward exceeds campaign balance"
+        );
+
+        // Deduct the distributed amount from the campaign's balance
+        tokenCampaignBalances[campaignAddress][tokenId][tokenType] -= uint64(
+            totalReward
+        );
+
+        for (uint i = 0; i < receiversAddresses.length; i++) {
+            address recipient = receiversAddresses[i];
+            uint256 amount = amounts[i];
+            rewardTokenBalances[recipient][tokenId][tokenType] += uint64(
+                amount
+            );
+        }
+
+        uint256 remainingBalance = tokenCampaignBalances[campaignAddress][
+            tokenId
+        ][tokenType];
+
+        emit RewardsDistributed(campaignAddress, totalReward, remainingBalance);
+
+        return remainingBalance;
     }
 
     /**
