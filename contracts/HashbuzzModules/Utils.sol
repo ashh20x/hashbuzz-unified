@@ -2,6 +2,13 @@
 pragma solidity ^0.8.17;
 
 import "./HashbuzzStates.sol";
+/**
+ * @dev This contract is used to store the state of the Hashbuzz contract
+ * @title Utils
+ * @author Om Prakash
+ * @notice Deals with operations related to transactions.
+ */
+
 contract Utils is HashbuzzStates {
     /**
      * @dev Adds or removes a token from the whitelist.

@@ -20,7 +20,7 @@ contract Lifecycle is HashbuzzStates, Utils {
         address campaigner,
         uint256 amount
     ) public onlyOwner {
-        require(isCampaigner(campaigner), "Campaign already exists");
+        require(!isCampaigner(campaigner), "Campaign already exists");
         require(balances[campaigner] >= amount, "Insufficient balance");
 
         balances[campaigner] -= amount;
