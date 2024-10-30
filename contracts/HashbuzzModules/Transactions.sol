@@ -19,10 +19,7 @@ contract Transactions is HashbuzzStates, Utils {
 
     /** Hnalde Withdraw from user account */
     function handleWithdrawal(address campaigner, uint256 amount) internal {
-        require(
-            balances[campaigner] >= amount,
-            "Insufficient balance requested for withdraw"
-        );
+        require(balances[campaigner] >= amount, ERR_INSUFFICIENT_BALANCE);
         balances[campaigner] -= amount;
         emit FundsWithdrawn(campaigner, amount);
     }
@@ -38,8 +35,8 @@ contract Transactions is HashbuzzStates, Utils {
         uint256 amount,
         bool deposit
     ) public onlyOwner returns (uint256) {
-        require(campaigner != address(0), "Invalid campaigner address");
-        require(isCampaigner(campaigner), "Campaigner is not listed");
+        require(campaigner != address(0), ERR_INVALID_CAMPAIGN_ADDRESS);
+        require(isCampaigner(campaigner), ERR_CAMPAIGNER_NOT_ALLOWED);
 
         if (deposit) {
             handleDeposit(campaigner, amount);
@@ -63,7 +60,7 @@ contract Transactions is HashbuzzStates, Utils {
         address tokenId,
         int64 tokenAmount
     ) public onlyOwner returns (int64) {
-        require(isCampaigner(campaigner), "Campaigner is not listed.");
+        require(isCampaigner(campaigner), ERR_CAMPAIGNER_NOT_ALLOWED);
         tokenBalances[campaigner][tokenId][FUNGIBLE] += uint64(
             int64(tokenAmount)
         );
@@ -87,10 +84,10 @@ contract Transactions is HashbuzzStates, Utils {
         int64 amount,
         uint32 tokenType
     ) public onlyOwner returns (int64) {
-        require(tokenType == FUNGIBLE, "Token is not fungible");
+        require(tokenType == FUNGIBLE, ERR_TOKEN_IS_NOT_FUNGIBLE);
         require(
             tokenBalances[campaigner][tokenId][FUNGIBLE] >= uint64(amount),
-            "Insufficient fund requested for reimburse"
+            ERR_INSUFFICIENT_BALANCE
         );
         tokenBalances[campaigner][tokenId][FUNGIBLE] -= uint64(amount);
         uint64 updatedBalance = tokenBalances[campaigner][tokenId][FUNGIBLE];

@@ -20,11 +20,8 @@ contract Lifecycle is HashbuzzStates, Utils {
         address campaigner,
         uint256 amount
     ) public onlyOwner returns (uint256) {
-        require(
-            isCampaigner(campaigner),
-            "Campaigner is not allowed to campaign"
-        );
-        require(balances[campaigner] >= amount, "Insufficient balance");
+        require(isCampaigner(campaigner), ERR_CAMPAIGNER_NOT_ALLOWED);
+        require(balances[campaigner] >= amount, ERR_INSUFFICIENT_BALANCE);
 
         balances[campaigner] -= amount;
         campaignBalances[campaignAddress] = amount;
@@ -50,20 +47,23 @@ contract Lifecycle is HashbuzzStates, Utils {
     ) public onlyOwner returns (int64) {
         require(
             isTokenWhitelisted(FUNGIBLE, tokenId),
-            "Hashbuzz: Token not whitelisted"
+            ERR_TOKEN_NOT_WHITELISTED
         );
-        require(bytes(campaignAddress).length > 0, "Invalid campaign address");
-        require(isCampaigner(campaigner), "Campaign already exists");
-        require(tokenAmount > 0, "Token amount must be greater than zero");
+        require(
+            bytes(campaignAddress).length > 0,
+            ERR_INVALID_CAMPAIGN_ADDRESS
+        );
+        require(isCampaigner(campaigner), ERR_CAMPAIGNER_NOT_ALLOWED);
+        require(tokenAmount > 0, ERR_TOTAL_AMOUNT_MUST_BE_GREATER_THAN_ZERO);
 
         uint64 amount = uint64(tokenAmount);
         require(
             tokenBalances[campaigner][tokenId][FUNGIBLE] >= amount,
-            "Insufficient balance"
+            ERR_INSUFFICIENT_BALANCE
         );
         require(
             tokenCampaignBalances[campaignAddress][tokenId][FUNGIBLE] == 0,
-            "Current balance is non-zero"
+            CURRENT_BALANCE_IS_NON_ZERO
         );
 
         tokenBalances[campaigner][tokenId][FUNGIBLE] -= amount;
@@ -88,17 +88,17 @@ contract Lifecycle is HashbuzzStates, Utils {
         address campaigner,
         int64 tokenAmount
     ) public onlyOwner returns (int64) {
+        require(isTokenWhitelisted(NFT, tokenId), ERR_TOKEN_NOT_WHITELISTED);
         require(
-            isTokenWhitelisted(NFT, tokenId),
-            "Hashbuzz: Token not whitelisted"
+            bytes(campaignAddress).length > 0,
+            ERR_INVALID_CAMPAIGN_ADDRESS
         );
-        require(bytes(campaignAddress).length > 0, "Invalid campaign address");
-        require(isCampaigner(campaigner), "Campaign already exists");
-        require(tokenAmount > 0, "Token amount must be greater than zero");
+        require(isCampaigner(campaigner), ERR_CAMPAIGNER_NOT_ALLOWED);
+        require(tokenAmount > 0, ERR_TOTAL_AMOUNT_MUST_BE_GREATER_THAN_ZERO);
 
         require(
             tokenBalances[campaigner][tokenId][NFT] >= uint64(tokenAmount),
-            "Insufficient balance"
+            ERR_INSUFFICIENT_BALANCE
         );
         tokenCampaignBalances[campaignAddress][tokenId][NFT] = uint64(
             tokenAmount
@@ -119,11 +119,14 @@ contract Lifecycle is HashbuzzStates, Utils {
         string memory campaignAddress,
         uint256 campaignExpiryTime
     ) public onlyOwner {
-        require(bytes(campaignAddress).length > 0, "Invalid campaign address");
-        require(campaignExpiryTime > 0, "Invalid campaign expiry time");
+        require(
+            bytes(campaignAddress).length > 0,
+            ERR_INVALID_CAMPAIGN_ADDRESS
+        );
+        require(campaignExpiryTime > 0, ERR_INVALID_EXPIRY_TIME);
         require(
             !isCampaignClosed[campaignAddress][HBAR],
-            "Campaign already closed"
+            ERR_TCAMPAIGN_ALREADY_CLOSED
         );
 
         isCampaignClosed[campaignAddress][HBAR] = true;
@@ -142,11 +145,14 @@ contract Lifecycle is HashbuzzStates, Utils {
         string memory campaignAddress,
         uint256 campaignExpiryTime
     ) public onlyOwner {
-        require(bytes(campaignAddress).length > 0, "Invalid campaign address");
-        require(campaignExpiryTime > 0, "Invalid campaign expiry time");
+        require(
+            bytes(campaignAddress).length > 0,
+            ERR_INVALID_CAMPAIGN_ADDRESS
+        );
+        require(campaignExpiryTime > 0, ERR_INVALID_EXPIRY_TIME);
         require(
             !isCampaignClosed[campaignAddress][FUNGIBLE],
-            "Campaign already closed"
+            ERR_TCAMPAIGN_ALREADY_CLOSED
         );
 
         isCampaignClosed[campaignAddress][FUNGIBLE] = true;
@@ -166,11 +172,14 @@ contract Lifecycle is HashbuzzStates, Utils {
         string memory campaignAddress,
         uint256 campaignExpiryTime
     ) public onlyOwner {
-        require(bytes(campaignAddress).length > 0, "Invalid campaign address");
-        require(campaignExpiryTime > 0, "Invalid campaign expiry time");
+        require(
+            bytes(campaignAddress).length > 0,
+            ERR_INVALID_CAMPAIGN_ADDRESS
+        );
+        require(campaignExpiryTime > 0, ERR_INVALID_EXPIRY_TIME);
         require(
             !isCampaignClosed[campaignAddress][NFT],
-            "Campaign already closed"
+            ERR_TCAMPAIGN_ALREADY_CLOSED
         );
 
         isCampaignClosed[campaignAddress][NFT] = true;
@@ -196,16 +205,19 @@ contract Lifecycle is HashbuzzStates, Utils {
         address[] memory receiversAddresses,
         uint256[] memory amounts
     ) external onlyOwner returns (uint256) {
-        require(isCampaigner(campaigner), "Invalid campaigner address");
-        require(bytes(campaignAddress).length > 0, "Invalid campaign address");
-        require(totalAmount > 0, "Total amount must be greater than zero");
+        require(isCampaigner(campaigner), ERR_CAMPAIGNER_NOT_ALLOWED);
+        require(
+            bytes(campaignAddress).length > 0,
+            ERR_INVALID_CAMPAIGN_ADDRESS
+        );
+        require(totalAmount > 0, ERR_TOTAL_AMOUNT_MUST_BE_GREATER_THAN_ZERO);
         require(
             isCampaignClosed[campaignAddress][HBAR],
-            "Campaign is not closed"
+            ERR_CAMPAIGN_NOT_CLOSED
         );
         require(
             receiversAddresses.length == amounts.length,
-            "Mismatched input arrays"
+            ERR_MISMATCHED_INPUT_ARRAYS
         );
 
         uint256 totalReward = 0;
@@ -216,7 +228,7 @@ contract Lifecycle is HashbuzzStates, Utils {
         // Ensure the total reward is not greater than the campaign balance
         require(
             totalReward <= campaignBalances[campaignAddress],
-            "Total reward exceeds campaign balance"
+            ERR_TOTAL_REWARD_EXCEEDS_CAMPAIGN_BALANCE
         );
 
         // Deduct the distributed amount from the campaign's balance
@@ -255,18 +267,24 @@ contract Lifecycle is HashbuzzStates, Utils {
     ) external onlyOwner returns (uint256) {
         require(
             isTokenWhitelisted(tokenType, tokenId),
-            "Token not whitelisted"
+            ERR_TOKEN_NOT_WHITELISTED
         );
-        require(isCampaigner(campaigner), "Invalid campaigner address");
-        require(bytes(campaignAddress).length > 0, "Invalid campaign address");
-        require(tokenTotalAmount > 0, "Token amount must be greater than zero");
+        require(isCampaigner(campaigner), ERR_CAMPAIGNER_NOT_ALLOWED);
+        require(
+            bytes(campaignAddress).length > 0,
+            ERR_INVALID_CAMPAIGN_ADDRESS
+        );
+        require(
+            tokenTotalAmount > 0,
+            ERR_TOTAL_AMOUNT_MUST_BE_GREATER_THAN_ZERO
+        );
         require(
             isCampaignClosed[campaignAddress][tokenType],
-            "Campaign is not closed"
+            ERR_CAMPAIGN_NOT_CLOSED
         );
         require(
             receiversAddresses.length == amounts.length,
-            "Mismatched input arrays"
+            ERR_MISMATCHED_INPUT_ARRAYS
         );
 
         uint256 totalReward = 0;
@@ -278,7 +296,7 @@ contract Lifecycle is HashbuzzStates, Utils {
         require(
             totalReward <=
                 tokenCampaignBalances[campaignAddress][tokenId][tokenType],
-            "Total reward exceeds campaign balance"
+            ERR_TOTAL_REWARD_EXCEEDS_CAMPAIGN_BALANCE
         );
 
         // Deduct the distributed amount from the campaign's balance
@@ -315,24 +333,31 @@ contract Lifecycle is HashbuzzStates, Utils {
         string memory campaignAddress,
         address campaigner,
         uint32 tokenType
-    ) public onlyOwner {
-        require(tokenId != address(0), "Invalid token address");
-        require(bytes(campaignAddress).length > 0, "Invalid campaign address");
-        require(campaigner != address(0), "Invalid campaigner address");
+    ) public onlyOwner returns (uint64) {
+        require(tokenId != address(0), ERR_INVALID_TOKEN_ADDRESS);
+        require(
+            bytes(campaignAddress).length > 0,
+            ERR_INVALID_CAMPAIGN_ADDRESS
+        );
+        require(isCampaigner(campaigner), ERR_CAMPAIGNER_NOT_ALLOWED);
         require(
             isCampaignClosed[campaignAddress][tokenType],
-            "Campaign is not closed"
+            ERR_CAMPAIGN_NOT_CLOSED
         );
         require(
             block.timestamp > campaignEndTime[campaignAddress][tokenType],
-            "Campaign not ended"
+            ERR_CAMPAIGN_NOT_CLOSED
         );
 
         tokenBalances[campaigner][tokenId][tokenType] += tokenCampaignBalances[
             campaignAddress
         ][tokenId][tokenType];
         tokenCampaignBalances[campaignAddress][tokenId][tokenType] = 0;
+
+        uint64 updatedBalance = tokenBalances[campaigner][tokenId][tokenType];
         emit campaignExpired(campaignAddress, tokenType);
+
+        return updatedBalance;
     }
 
     /**
@@ -343,20 +368,27 @@ contract Lifecycle is HashbuzzStates, Utils {
     function expiryCampaign(
         string memory campaignAddress,
         address campaigner
-    ) public onlyOwner {
-        require(bytes(campaignAddress).length > 0, "Invalid campaign address");
-        require(campaigner != address(0), "Invalid campaigner address");
+    ) public onlyOwner returns (uint256) {
+        require(
+            bytes(campaignAddress).length > 0,
+            ERR_INVALID_CAMPAIGN_ADDRESS
+        );
+        require(isCampaigner(campaigner), ERR_CAMPAIGNER_NOT_ALLOWED);
         require(
             block.timestamp > campaignEndTime[campaignAddress][HBAR],
-            "Campaign not ended"
+            ERR_CAMPAIGN_NOT_CLOSED
         );
         require(
             isCampaignClosed[campaignAddress][HBAR],
-            "Campaign is not closed"
+            ERR_CAMPAIGN_NOT_CLOSED
         );
 
         balances[campaigner] += campaignBalances[campaignAddress];
         campaignBalances[campaignAddress] = 0;
+        uint256 updatedBalance = balances[campaigner];
+
         emit campaignExpired(campaignAddress, HBAR);
+
+        return updatedBalance;
     }
 }

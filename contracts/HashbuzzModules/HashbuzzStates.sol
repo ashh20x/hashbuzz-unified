@@ -66,6 +66,24 @@ contract HashbuzzStates {
         uint256 remainingBalance
     );
 
+    // Error codes
+    string constant ERR_INVALID_TOKEN_ADDRESS = "E001";
+    string constant ERR_INVALID_CAMPAIGN_ADDRESS = "E002";
+    string constant ERR_CAMPAIGNER_NOT_ALLOWED = "E003";
+    string constant ERR_CAMPAIGN_NOT_CLOSED = "E004";
+    string constant ERR_TOKEN_NOT_WHITELISTED = "E005";
+    string constant ERR_CAMPAIGN_ALREADY_EXISTS = "E006";
+    string constant CURRENT_BALANCE_IS_NON_ZERO = "E007";
+    string constant ERR_INSUFFICIENT_BALANCE = "E008";
+    string constant ERR_NON_ZERO_BAL = "E009";
+    string constant ERR_INVALID_EXPIRY_TIME = "E010";
+    string constant ERR_TOTAL_AMOUNT_MUST_BE_GREATER_THAN_ZERO = "E011";
+    string constant ERR_MISMATCHED_INPUT_ARRAYS = "E012";
+    string constant ERR_TOTAL_REWARD_EXCEEDS_CAMPAIGN_BALANCE = "E013";
+    string constant ERR_TCAMPAIGN_ALREADY_CLOSED = "E014";
+    string constant ERR_TOKEN_IS_NOT_FUNGIBLE = "E015";
+    string constant ERR_INVALID_TOKEN_TYPE = "E016";
+
     modifier onlyOwner() {
         require(
             msg.sender == owner,

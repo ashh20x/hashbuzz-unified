@@ -23,7 +23,7 @@ contract Utils is HashbuzzStates {
     ) public onlyOwner {
         require(
             tokenType == FUNGIBLE || tokenType == NFT,
-            "Invalid token type"
+            ERR_INVALID_TOKEN_TYPE
         );
 
         if (isWhitelisted && !whitelistedToken[tokenType][tokenAddress]) {
@@ -60,7 +60,7 @@ contract Utils is HashbuzzStates {
     ) public view returns (address[] memory) {
         require(
             tokenType == FUNGIBLE || tokenType == NFT,
-            "Invalid token type"
+            ERR_INVALID_TOKEN_TYPE
         );
         return whitelistedAddresses[tokenType];
     }
@@ -83,8 +83,8 @@ contract Utils is HashbuzzStates {
      * @param newCampaigner Address of the user having campaigner role to be used here
      */
     function addCampaigner(address newCampaigner) public onlyOwner {
-        require(newCampaigner != address(0), "Invalid campaigner address");
-        require(!isCampaigner(newCampaigner), "Campaigner already exists");
+        require(newCampaigner != address(0), ERR_INVALID_CAMPAIGN_ADDRESS);
+        require(!isCampaigner(newCampaigner), ERR_CAMPAIGN_ALREADY_EXISTS);
         campaigners[newCampaigner] = true;
         balances[newCampaigner] = 0;
         emit CampaignerAdded(newCampaigner);
@@ -102,11 +102,11 @@ contract Utils is HashbuzzStates {
         uint32 tokenType
     ) public view onlyOwnerOrCampaigner returns (uint64 res) {
         // tokentype should be fungible
-        require(tokenType == FUNGIBLE, "Token is not fungible");
+        require(tokenType == FUNGIBLE, ERR_TOKEN_IS_NOT_FUNGIBLE);
         // required token to be associated
         require(
             isTokenWhitelisted(FUNGIBLE, tokenId),
-            "Requested token is not whitelisted"
+            ERR_TOKEN_NOT_WHITELISTED
         );
         res = tokenBalances[campaigner][tokenId][FUNGIBLE];
     }
@@ -124,7 +124,7 @@ contract Utils is HashbuzzStates {
         address tokenId,
         uint32 tokenType
     ) public view onlyOwnerOrCampaigner returns (uint64 res) {
-        require(tokenType == NFT, "Token is not NFT");
+        require(tokenType == NFT, ERR_INVALID_TOKEN_TYPE);
         res = tokenBalances[campaigner][tokenId][NFT];
     }
 
