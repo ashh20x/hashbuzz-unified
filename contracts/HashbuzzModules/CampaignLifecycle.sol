@@ -10,12 +10,12 @@ import "./Utils.sol";
  */
 contract Lifecycle is HashbuzzStates, Utils {
     /**
-     * @dev Add a new campaign
+     * @dev Add a new campaign or top up an existing campaign
      * @param campaignAddress The db address of the campaign
      * @param campaigner The solidity address of the campaigner or wallet address
      * @param amount The amount to be allocated to the campaign from the campaigner's balance.
      */
-    function addCampaign(
+    function addCampaignOrTopUp(
         string memory campaignAddress,
         address campaigner,
         uint256 amount
@@ -24,18 +24,23 @@ contract Lifecycle is HashbuzzStates, Utils {
         require(balances[campaigner] >= amount, ERR_INSUFFICIENT_BALANCE);
 
         balances[campaigner] -= amount;
-        campaignBalances[campaignAddress] = amount;
+        campaignBalances[campaignAddress] += amount;
 
         uint256 updatedBalance = balances[campaigner];
-        emit NewCampaignIsAdded(campaignAddress, amount, HBAR);
+
+        if (campaignBalances[campaignAddress] == amount) {
+            emit NewCampaignIsAdded(campaignAddress, amount, HBAR);
+        } else {
+            emit CampaignToppedUp(campaignAddress, amount, HBAR);
+        }
 
         return updatedBalance;
     }
 
     /**
-     * @dev Add a new campaign for fungible tokens
+     * @dev Add a new campaign for fungible tokens or top up an existing campaign
      * @param tokenId The address of the token in solidity format
-     * @param campaignAddress The db address of the campaign [string]
+     * @param campaignAddress The db address of the campaign
      * @param campaigner The solidity address of the campaigner or wallet address
      * @param tokenAmount The amount of tokens to be allocated to the campaign
      */
@@ -61,17 +66,21 @@ contract Lifecycle is HashbuzzStates, Utils {
             tokenBalances[campaigner][tokenId][FUNGIBLE] >= amount,
             ERR_INSUFFICIENT_BALANCE
         );
-        require(
-            tokenCampaignBalances[campaignAddress][tokenId][FUNGIBLE] == 0,
-            CURRENT_BALANCE_IS_NON_ZERO
-        );
 
         tokenBalances[campaigner][tokenId][FUNGIBLE] -= amount;
-        tokenCampaignBalances[campaignAddress][tokenId][FUNGIBLE] = amount;
+        tokenCampaignBalances[campaignAddress][tokenId][FUNGIBLE] += amount;
 
         uint64 updatedBalance = tokenBalances[campaigner][tokenId][FUNGIBLE];
 
-        emit NewCampaignIsAdded(campaignAddress, amount, FUNGIBLE);
+        if (
+            tokenCampaignBalances[campaignAddress][tokenId][FUNGIBLE] == amount
+        ) {
+            emit NewCampaignIsAdded(campaignAddress, amount, FUNGIBLE);
+        } else {
+            emit CampaignToppedUp(campaignAddress, amount, FUNGIBLE);
+        }
+
+        emit FungibleTokenBalanceUpdated(campaigner, tokenId, updatedBalance);
         return int64(updatedBalance);
     }
 

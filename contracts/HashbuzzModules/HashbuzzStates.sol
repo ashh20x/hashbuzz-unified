@@ -65,6 +65,11 @@ contract HashbuzzStates {
         uint256 totalAmount,
         uint256 remainingBalance
     );
+    event CampaignToppedUp(
+        string campaignAddress,
+        uint256 amount,
+        uint32 tokenType
+    );
 
     // Error codes
     string constant ERR_INVALID_TOKEN_ADDRESS = "E001";
