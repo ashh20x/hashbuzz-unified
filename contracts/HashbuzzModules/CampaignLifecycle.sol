@@ -204,15 +204,11 @@ contract Lifecycle is HashbuzzStates, Utils {
      * @param campaigner The solidity address of the campaigner or wallet address
      * @param campaignAddress The db address of the campaign
      * @param totalAmount The total amount of tokens to be distributed
-     * @param receiversAddresses The addresses of the receivers take max 50 addresses in one call
-     * @param amounts The amounts to be distributed to each receiver
      */
-    function rewardIntractors(
+    function adjustTotalReward(
         address campaigner,
         string memory campaignAddress,
-        uint256 totalAmount,
-        address[] memory receiversAddresses,
-        uint256[] memory amounts
+        uint256 totalAmount
     ) external onlyOwner returns (uint256) {
         require(isCampaigner(campaigner), ERR_CAMPAIGNER_NOT_ALLOWED);
         require(
@@ -224,34 +220,11 @@ contract Lifecycle is HashbuzzStates, Utils {
             isCampaignClosed[campaignAddress][HBAR],
             ERR_CAMPAIGN_NOT_CLOSED
         );
-        require(
-            receiversAddresses.length == amounts.length,
-            ERR_MISMATCHED_INPUT_ARRAYS
-        );
-
-        uint256 totalReward = 0;
-        for (uint i = 0; i < amounts.length; i++) {
-            totalReward += amounts[i];
-        }
-
-        // Ensure the total reward is not greater than the campaign balance
-        require(
-            totalReward <= campaignBalances[campaignAddress],
-            ERR_TOTAL_REWARD_EXCEEDS_CAMPAIGN_BALANCE
-        );
-
         // Deduct the distributed amount from the campaign's balance
-        campaignBalances[campaignAddress] -= totalReward;
-
-        for (uint i = 0; i < receiversAddresses.length; i++) {
-            address recipient = receiversAddresses[i];
-            uint256 amount = amounts[i];
-            rewardBalances[recipient] += amount;
-        }
-
+        campaignBalances[campaignAddress] -= totalAmount;
         uint256 remainingBalance = campaignBalances[campaignAddress];
 
-        emit RewardsDistributed(campaignAddress, totalReward, remainingBalance);
+        emit RewardsDistributed(campaignAddress, totalAmount, remainingBalance);
         return remainingBalance;
     }
 
@@ -262,18 +235,14 @@ contract Lifecycle is HashbuzzStates, Utils {
      * @param campaignAddress The db address of the campaign
      * @param tokenTotalAmount The total amount of tokens to be distributed
      * @param tokenType The type of the token (FUNGIBLE or NFT)
-     * @param receiversAddresses The addresses of the receivers take max 50 addresses in one call
-     * @param amounts The amounts to be distributed to each receiver
      */
-    function rewardIntractorsWithFungible(
+    function adjustTotalFungibleReward(
         address tokenId,
         address campaigner,
         string memory campaignAddress,
-        int64 tokenTotalAmount,
-        uint32 tokenType,
-        address[] memory receiversAddresses,
-        uint256[] memory amounts
-    ) external onlyOwner returns (uint256) {
+        uint64 tokenTotalAmount,
+        uint32 tokenType
+    ) external onlyOwner returns (uint64) {
         require(
             isTokenWhitelisted(tokenType, tokenId),
             ERR_TOKEN_NOT_WHITELISTED
@@ -291,41 +260,20 @@ contract Lifecycle is HashbuzzStates, Utils {
             isCampaignClosed[campaignAddress][tokenType],
             ERR_CAMPAIGN_NOT_CLOSED
         );
-        require(
-            receiversAddresses.length == amounts.length,
-            ERR_MISMATCHED_INPUT_ARRAYS
-        );
-
-        uint256 totalReward = 0;
-        for (uint i = 0; i < amounts.length; i++) {
-            totalReward += amounts[i];
-        }
-
-        // Ensure the total reward is not greater than the campaign balance
-        require(
-            totalReward <=
-                tokenCampaignBalances[campaignAddress][tokenId][tokenType],
-            ERR_TOTAL_REWARD_EXCEEDS_CAMPAIGN_BALANCE
-        );
 
         // Deduct the distributed amount from the campaign's balance
-        tokenCampaignBalances[campaignAddress][tokenId][tokenType] -= uint64(
-            totalReward
-        );
-
-        for (uint i = 0; i < receiversAddresses.length; i++) {
-            address recipient = receiversAddresses[i];
-            uint256 amount = amounts[i];
-            rewardTokenBalances[recipient][tokenId][tokenType] += uint64(
-                amount
-            );
-        }
-
-        uint256 remainingBalance = tokenCampaignBalances[campaignAddress][
+        tokenCampaignBalances[campaignAddress][tokenId][
+            tokenType
+        ] -= tokenTotalAmount;
+        uint64 remainingBalance = tokenCampaignBalances[campaignAddress][
             tokenId
         ][tokenType];
 
-        emit RewardsDistributed(campaignAddress, totalReward, remainingBalance);
+        emit RewardsDistributed(
+            campaignAddress,
+            uint256(tokenTotalAmount),
+            remainingBalance
+        );
 
         return remainingBalance;
     }
