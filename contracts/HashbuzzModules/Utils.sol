@@ -111,6 +111,16 @@ contract Utils is HashbuzzStates {
         res = tokenBalances[campaigner][tokenId][FUNGIBLE];
     }
 
+    /**
+     * @dev Balance holded by the user to see.
+     * @param campaigner Solidity address of the campaigner.
+     */
+    function getHbarBalance(
+        address campaigner
+    ) public view onlyOwnerOrCampaigner returns (uint256 res) {
+        res = balances[campaigner];
+    }
+
     /** Balance Query functions only callable by campaigner it self and no others else */
     /**
      * @dev Balance holded by the user to see.

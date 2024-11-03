@@ -220,6 +220,11 @@ contract Lifecycle is HashbuzzStates, Utils {
             isCampaignClosed[campaignAddress][HBAR],
             ERR_CAMPAIGN_NOT_CLOSED
         );
+        require(
+            campaignBalances[campaignAddress] >= totalAmount,
+            "Insufficient campaign balance"
+        );
+
         // Deduct the distributed amount from the campaign's balance
         campaignBalances[campaignAddress] -= totalAmount;
         uint256 remainingBalance = campaignBalances[campaignAddress];
@@ -227,24 +232,21 @@ contract Lifecycle is HashbuzzStates, Utils {
         emit RewardsDistributed(campaignAddress, totalAmount, remainingBalance);
         return remainingBalance;
     }
-
     /**
      * @dev Distribute fungible tokens to the campaigner
      * @param tokenId The address of the token in solidity format
      * @param campaigner The solidity address of the campaigner or wallet address
      * @param campaignAddress The db address of the campaign
      * @param tokenTotalAmount The total amount of tokens to be distributed
-     * @param tokenType The type of the token (FUNGIBLE or NFT)
      */
     function adjustTotalFungibleReward(
         address tokenId,
         address campaigner,
         string memory campaignAddress,
-        uint64 tokenTotalAmount,
-        uint32 tokenType
-    ) external onlyOwner returns (uint64) {
+        uint64 tokenTotalAmount
+    ) external onlyOwner returns (uint256) {
         require(
-            isTokenWhitelisted(tokenType, tokenId),
+            isTokenWhitelisted(FUNGIBLE, tokenId),
             ERR_TOKEN_NOT_WHITELISTED
         );
         require(isCampaigner(campaigner), ERR_CAMPAIGNER_NOT_ALLOWED);
@@ -257,17 +259,17 @@ contract Lifecycle is HashbuzzStates, Utils {
             ERR_TOTAL_AMOUNT_MUST_BE_GREATER_THAN_ZERO
         );
         require(
-            isCampaignClosed[campaignAddress][tokenType],
+            isCampaignClosed[campaignAddress][FUNGIBLE],
             ERR_CAMPAIGN_NOT_CLOSED
         );
 
         // Deduct the distributed amount from the campaign's balance
         tokenCampaignBalances[campaignAddress][tokenId][
-            tokenType
+            FUNGIBLE
         ] -= tokenTotalAmount;
         uint64 remainingBalance = tokenCampaignBalances[campaignAddress][
             tokenId
-        ][tokenType];
+        ][FUNGIBLE];
 
         emit RewardsDistributed(
             campaignAddress,
@@ -275,7 +277,7 @@ contract Lifecycle is HashbuzzStates, Utils {
             remainingBalance
         );
 
-        return remainingBalance;
+        return uint256(remainingBalance);
     }
 
     /**
