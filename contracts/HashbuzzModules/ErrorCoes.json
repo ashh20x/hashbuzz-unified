@@ -1,0 +1,82 @@
+[
+  {
+    "id": "ERR_INVALID_TOKEN_ADDRESS",
+    "code": "E001",
+    "description": "Invalid token address"
+  },
+  {
+    "id": "ERR_INVALID_CAMPAIGN_ADDRESS",
+    "code": "E002",
+    "description": "Invalid campaign address"
+  },
+  {
+    "id": "ERR_CAMPAIGNER_NOT_ALLOWED",
+    "code": "E003",
+    "description": "Campaigner is not allowed to campaign"
+  },
+  {
+    "id": "ERR_CAMPAIGN_NOT_CLOSED",
+    "code": "E004",
+    "description": "Campaign is not closed"
+  },
+  {
+    "id": "ERR_TOKEN_NOT_WHITELISTED",
+    "code": "E005",
+    "description": "Token is not whitelisted"
+  },
+  {
+    "id": "ERR_CAMPAIGN_ALREADY_EXISTS",
+    "code": "E006",
+    "description": "Campaign already exists"
+  },
+  {
+    "id": "CURRENT_BALANCE_IS_NON_ZERO",
+    "code": "E007",
+    "description": "Current balance is non zero"
+  },
+  {
+    "id": "ERR_INSUFFICIENT_BALANCE",
+    "code": "E008",
+    "description": "Insufficient balance"
+  },
+  {
+    "id": "ERR_NON_ZERO_BAL",
+    "code": "E009",
+    "description": "Non zero balance"
+  },
+  {
+    "id": "ERR_INVALID_EXPIRY_TIME",
+    "code": "E010",
+    "description": "Invalid expiry time"
+  },
+  {
+    "id": "ERR_TOTAL_AMOUNT_MUST_BE_GREATER_THAN_ZERO",
+    "code": "E011",
+    "description": "Total amount must be greater than zero"
+  },
+  {
+    "id": "ERR_MISMATCHED_INPUT_ARRAYS",
+    "code": "E012",
+    "description": "Mismatched input arrays"
+  },
+  {
+    "id": "ERR_TOTAL_REWARD_EXCEEDS_CAMPAIGN_BALANCE",
+    "code": "E013",
+    "description": "Total reward exceeds campaign balance"
+  },
+  {
+    "id": "ERR_TCAMPAIGN_ALREADY_CLOSED",
+    "code": "E014",
+    "description": "Total reward exceeds campaign balance"
+  },
+  {
+    "id": "ERR_TOKEN_IS_NOT_FUNGIBLE",
+    "code": "E015",
+    "description": "Token is not fungible"
+  },
+  {
+    "id": "ERR_INVALID_TOKEN_TYPE",
+    "code": "E016",
+    "description": "Invalid token type"
+  }
+]

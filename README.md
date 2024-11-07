@@ -1,2 +1,177 @@
-# smv201
-Refactor and optimised smart contract code in truffle environment having end to end test ready code. Also end to end test code will be here for Hederas development network
+# Hashbuzz Contract
+
+## Hashbuzz Smart Contract Monolithic Architecture
+
+### Overview
+
+The **Hashbuzz Monolithic Architecture** is a design where all the smart contract logic, state, and utility functions are bundled into a single contract. This is in contrast to a modular or upgradeable system. The monolithic approach integrates all the functionalities in a single codebase, making it simpler but less flexible in terms of upgrades and separation of concerns.
+
+In the provided contract, _`HashbuzzV201`_, the following key modules and functionalities are combined into one contract:
+
+- **State Management (HashbuzzStates):** Holds the state variables like the owner and other application-related data (e.g., campaigns, balances).
+
+- **Utility Functions (Utils):** Contains helper functions that assist with reusable logic or calculations.
+
+- **Campaign Lifecycle (CampaignLifecycle):** Manages the lifecycle of campaigns, including creation, updates, and other events tied to campaigns.
+
+- **Transaction Handling (Transactions):** Handles payments, fund transfers, and transactions that users can perform in the context of the application.
+
+#### Files and dir.
+
+[**Contracts**](contracts/HashbuzzModules/)
+
+```bash
+  contracts
+    - HashbuzzV201.sol # Main contract only imports modules no mehtods
+    HashbuzzModules
+      - CampaignLifecycle.sol #CampaignLifecycle Modules holds logic that will be called to derive and propogate cmapign lifecylce.
+      - HashbuzzStates.sol # State variable with modifiers
+      - Transactions.sol # Logic related to trnsactions
+      - Utils.sol # Utils mehtods
+```
+
+---
+
+### Code Refactoring Structure
+
+The smart contract's logic is split into separate files for better code organization and maintainability:
+
+- [**HashbuzzV201.sol:**](contracts/HashbuzzV201.sol) The main contract that imports all the modules and serves as the entry point for users.
+  HashbuzzStates.sol: Handles state variables and ownership logic.
+
+- [**Utils.sol:**](contracts/HashbuzzModules/Utils.sol) Contains helper functions that assist the main logic.
+
+- [**CampaignLifecycle.sol:**](contracts/HashbuzzModules/CampaignLifecycle.sol) Manages how campaigns are created, modified, and tracked within the contract.
+
+- [**Transactions.sol:**](contracts/HashbuzzModules/Transactions.sol) Deals with payments and transactional logic, like receiving and sending Ether.
+
+---
+
+### Benefits of the Monolithic Architecture
+
+1. Simplicity: Everything is packaged in one contract, making deployment and interaction straightforward.
+
+2. Single Deployment: Easier to deploy, as all functionalities are in one contract.
+
+3. Efficiency: Gas costs are potentially lower for interactions as everything happens in the same contract, with no need for inter-contract communication.
+
+### Limitations
+
+1. **Lack of Upgradeability:** Once deployed, the contract cannot be upgraded, and any logic or security issues will require redeployment of a new contract, potentially losing state data.
+
+2. **Maintenance:** Over time, adding new features or fixing bugs can become difficult since everything is tightly coupled.
+
+3. **Complexity Growth:** As the contract grows, it becomes harder to manage and test all aspects, increasing the likelihood of errors and security vulnerabilities.
+
+---
+
+## Hashbuzz Smart Contract (Proxy) Upgradeable Architecture ( in progress)
+
+### Overview
+
+_`HashbuzzProxy201`_ is an upgradeable smart contract system using the Proxy Pattern by separating state storage and business logic. This allows for secure and efficient upgrades without disrupting existing state data.
+
+**The system is divided into three core contracts:**
+
+1. **State Contract (HashbuzzState201):** This holds the persistent state of the system, such as campaign data and ownership information.
+
+2. **Logic Contract (HashbuzzLogicV201):** This contains the core logic of the application, such as campaign creation and management , rearding and other key utils.
+
+3. **Proxy Contract (HashbuzzProxy201):** This delegates all calls to the logic contract while maintaining the same storage context in the state contract.
+
+By separating logic from state, we can upgrade the logic contract without modifying the state, ensuring that we can improve and patch the system as needed.
+
+#### Files and dir.
+
+[**Contracts**](contracts/HashbuzzProxyModules)
+
+```bash
+contracts
+  - HashbuzzProxy201.sol # Proxy Contract which will be called in actual
+  HashbuzzProxyModules
+    - _states.sol  #Pure state module
+    - HashbuzzStateV201.sol # Sate contract with state modifired methods
+    - HashbuzzLogicV201.sol # Logical functions
+```
+
+---
+
+### Architecture
+
+#### 1. State Contract ([HashbuzzStateV201](contracts/HashbuzzProxyModules/HashbuzzStateV201.sol))
+
+The State Contract holds all the data (storage) for the application. This contract will never be upgraded to avoid losing data. It stores variables such as campaignCount, campaigns, and owner.
+
+**Key responsibilities:**
+
+- Maintain campaign and other state-related data.
+
+- Provide owner-based access control for upgradeability.
+
+- Link to the current Logic Contract address to ensure interaction consistency.
+
+#### 2. Logic Contract ([HashbuzzLogicV201](contracts/HashbuzzProxyModules/HashbuzzLogicV201.sol))
+
+The Logic Contract contains the business logic for the system, such as creating campaigns, managing funds, and handling transactions. It interacts with the HashbuzzState contract to read and update the state.
+
+**Key responsibilities:**
+
+- Implement the business logic, like campaign management.
+- Read from and write to the HashbuzzState contract.
+- Be upgradeable via the proxy contract.
+
+#### 3. Proxy Contract ([HashbuzzProxy201](contracts/HashbuzzProxy201.sol))
+
+The Proxy Contract serves as the entry point for all interactions with the system. It delegates function calls to the Logic Contract and ensures that the State Contract is kept intact.
+
+**Key responsibilities:**
+
+- Delegate function calls to the current Logic Contract.
+
+- Store the address of the current Logic Contract to ensure upgradeability.
+
+- Ensure that state storage occurs in the HashbuzzState contract.
+
+---
+
+### Features
+
+- **Upgradeable:** The logic of the system can be upgraded without affecting the state.
+
+- **Secure:** Only the owner can upgrade the logic contract to prevent unauthorized changes.
+
+- **Modular:** The system is easy to extend and manage due to the separation of state and logic.
+
+---
+
+### Security Considerations
+
+- **Access Control:** Only the owner of the system can upgrade the logic contract. Make sure the onlyOwner modifier is correctly applied to sensitive functions.
+
+- **Delegatecall:** The proxy uses delegatecall to execute the logic contract’s code within the storage context of the proxy contract. Ensure that the storage layout of the state contract remains compatible with new logic contract versions.
+
+- **Testing:** Always thoroughly test new logic contracts in a staging environment before upgrading the production contract.
+
+### License
+
+**Internal Use License**
+
+This code is proprietary and confidential. It is intended solely for use within Hashbuzz Social. Unauthorized copying, distribution, or use of this code is strictly prohibited.
+
+Copyright 2024 Hashbuzz Social
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+### Author
+
+Hashbuzz Team, 2024
