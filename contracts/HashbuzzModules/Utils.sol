@@ -13,37 +13,28 @@ contract Utils is HashbuzzStates {
     /**
      * @dev Adds or removes a token from the whitelist.
      * @param tokenAddress The address of the token.
-     * @param tokenType The type of the token (1 for FUNGIBLE, 2 for NFT).
      * @param isWhitelisted Boolean flag to mark the token as whitelisted or not.
      */
     function associateToken(
         address tokenAddress,
-        uint32 tokenType,
         bool isWhitelisted
     ) public onlyOwner {
-        require(
-            tokenType == FUNGIBLE || tokenType == NFT,
-            ERR_INVALID_TOKEN_TYPE
-        );
-
-        if (isWhitelisted && !whitelistedToken[tokenType][tokenAddress]) {
+        if (isWhitelisted && !whitelistedToken[FUNGIBLE][tokenAddress]) {
             // Add to whitelist if not already whitelisted
-            whitelistedToken[tokenType][tokenAddress] = true;
-            whitelistedAddresses[tokenType].push(tokenAddress);
-        } else if (
-            !isWhitelisted && whitelistedToken[tokenType][tokenAddress]
-        ) {
+            whitelistedToken[FUNGIBLE][tokenAddress] = true;
+            whitelistedAddresses[FUNGIBLE].push(tokenAddress);
+        } else if (!isWhitelisted && whitelistedToken[FUNGIBLE][tokenAddress]) {
             // Remove from whitelist if currently whitelisted
-            whitelistedToken[tokenType][tokenAddress] = false;
+            whitelistedToken[FUNGIBLE][tokenAddress] = false;
 
             // Remove address from whitelistedAddresses array
-            uint256 length = whitelistedAddresses[tokenType].length;
+            uint256 length = whitelistedAddresses[FUNGIBLE].length;
             for (uint256 i = 0; i < length; i++) {
-                if (whitelistedAddresses[tokenType][i] == tokenAddress) {
-                    whitelistedAddresses[tokenType][i] = whitelistedAddresses[
-                        tokenType
+                if (whitelistedAddresses[FUNGIBLE][i] == tokenAddress) {
+                    whitelistedAddresses[FUNGIBLE][i] = whitelistedAddresses[
+                        FUNGIBLE
                     ][length - 1];
-                    whitelistedAddresses[tokenType].pop();
+                    whitelistedAddresses[FUNGIBLE].pop();
                     break;
                 }
             }
@@ -52,30 +43,21 @@ contract Utils is HashbuzzStates {
 
     /**
      * @dev Retrieves all whitelisted addresses for a given token type.
-     * @param tokenType The type of the token (1 for FUNGIBLE, 2 for NFT).
      * @return An array of addresses that are whitelisted for the given token type.
      */
-    function getAllWhitelistedTokens(
-        uint32 tokenType
-    ) public view returns (address[] memory) {
-        require(
-            tokenType == FUNGIBLE || tokenType == NFT,
-            ERR_INVALID_TOKEN_TYPE
-        );
-        return whitelistedAddresses[tokenType];
+    function getAllWhitelistedTokens() public view returns (address[] memory) {
+        return whitelistedAddresses[FUNGIBLE];
     }
 
     /**
      * @dev Checks if a specific token address is whitelisted for a given token type.
-     * @param tokenType The type of the token (1 for FUNGIBLE, 2 for NFT).
      * @param tokenAddress The address of the token to check.
      * @return Boolean flag indicating if the token is whitelisted.
      */
     function isTokenWhitelisted(
-        uint32 tokenType,
         address tokenAddress
     ) public view returns (bool) {
-        return whitelistedToken[tokenType][tokenAddress];
+        return whitelistedToken[FUNGIBLE][tokenAddress];
     }
 
     /**
@@ -94,20 +76,13 @@ contract Utils is HashbuzzStates {
      *
      * @param campaigner Address of the campaigner'solidity address
      * @param tokenId Solidity address used for the account
-     * @param tokenType The type of the token (FUNGIBLE or NFT) [uint32] (1 for FUNGIBLE & 2 for NFT)
      */
     function getFungibleTokenBalance(
         address campaigner,
-        address tokenId,
-        uint32 tokenType
+        address tokenId
     ) public view onlyOwnerOrCampaigner returns (uint64 res) {
-        // tokentype should be fungible
-        require(tokenType == FUNGIBLE, ERR_TOKEN_IS_NOT_FUNGIBLE);
         // required token to be associated
-        require(
-            isTokenWhitelisted(FUNGIBLE, tokenId),
-            ERR_TOKEN_NOT_WHITELISTED
-        );
+        require(isTokenWhitelisted(tokenId), ERR_TOKEN_NOT_WHITELISTED);
         res = tokenBalances[campaigner][tokenId][FUNGIBLE];
     }
 
@@ -119,23 +94,6 @@ contract Utils is HashbuzzStates {
         address campaigner
     ) public view onlyOwnerOrCampaigner returns (uint256 res) {
         res = balances[campaigner];
-    }
-
-    /** Balance Query functions only callable by campaigner it self and no others else */
-    /**
-     * @dev Balance holded by the user to see.
-     * @param campaigner Solidity address of the campaigner.
-     * @param tokenId Solidity address of the token.
-     * @param tokenType The type of the token (FUNGIBLE or NFT) [uint32] (1 for FUNGIBLE & 2 for NFT)
-     *                  1 for FUNGIBLE and 2 for NFT.
-     */
-    function getNFTTokenBalance(
-        address campaigner,
-        address tokenId,
-        uint32 tokenType
-    ) public view onlyOwnerOrCampaigner returns (uint64 res) {
-        require(tokenType == NFT, ERR_INVALID_TOKEN_TYPE);
-        res = tokenBalances[campaigner][tokenId][NFT];
     }
 
     /** Campaign Specific balance for the cmapigners */

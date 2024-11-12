@@ -48,12 +48,9 @@ contract Lifecycle is HashbuzzStates, Utils {
         address tokenId,
         string memory campaignAddress,
         address campaigner,
-        int64 tokenAmount
-    ) public onlyOwner returns (int64) {
-        require(
-            isTokenWhitelisted(FUNGIBLE, tokenId),
-            ERR_TOKEN_NOT_WHITELISTED
-        );
+        uint64 tokenAmount
+    ) public onlyOwner returns (uint64) {
+        require(isTokenWhitelisted(tokenId), ERR_TOKEN_NOT_WHITELISTED);
         require(
             bytes(campaignAddress).length > 0,
             ERR_INVALID_CAMPAIGN_ADDRESS
@@ -61,7 +58,7 @@ contract Lifecycle is HashbuzzStates, Utils {
         require(isCampaigner(campaigner), ERR_CAMPAIGNER_NOT_ALLOWED);
         require(tokenAmount > 0, ERR_TOTAL_AMOUNT_MUST_BE_GREATER_THAN_ZERO);
 
-        uint64 amount = uint64(tokenAmount);
+        uint64 amount = tokenAmount;
         require(
             tokenBalances[campaigner][tokenId][FUNGIBLE] >= amount,
             ERR_INSUFFICIENT_BALANCE
@@ -81,42 +78,7 @@ contract Lifecycle is HashbuzzStates, Utils {
         }
 
         emit FungibleTokenBalanceUpdated(campaigner, tokenId, updatedBalance);
-        return int64(updatedBalance);
-    }
-
-    /**
-     * @dev Add a new campaign for NFT tokens
-     * @param tokenId The address of the token in solidity format
-     * @param campaignAddress The db address of the campaign [string]
-     * @param campaigner The solidity address of the campaigner or wallet address
-     * @param tokenAmount The amount of tokens to be allocated to the campaign
-     */
-    function addNFTCampaign(
-        address tokenId,
-        string memory campaignAddress,
-        address campaigner,
-        int64 tokenAmount
-    ) public onlyOwner returns (int64) {
-        require(isTokenWhitelisted(NFT, tokenId), ERR_TOKEN_NOT_WHITELISTED);
-        require(
-            bytes(campaignAddress).length > 0,
-            ERR_INVALID_CAMPAIGN_ADDRESS
-        );
-        require(isCampaigner(campaigner), ERR_CAMPAIGNER_NOT_ALLOWED);
-        require(tokenAmount > 0, ERR_TOTAL_AMOUNT_MUST_BE_GREATER_THAN_ZERO);
-
-        require(
-            tokenBalances[campaigner][tokenId][NFT] >= uint64(tokenAmount),
-            ERR_INSUFFICIENT_BALANCE
-        );
-        tokenCampaignBalances[campaignAddress][tokenId][NFT] = uint64(
-            tokenAmount
-        );
-
-        uint64 updatedBalance = tokenBalances[campaigner][tokenId][NFT];
-
-        emit NewCampaignIsAdded(campaignAddress, uint64(tokenAmount), NFT);
-        return int64(updatedBalance);
+        return updatedBalance;
     }
 
     /**
@@ -173,33 +135,6 @@ contract Lifecycle is HashbuzzStates, Utils {
     }
 
     /**
-     * @dev Close a campaign with NFT tokens
-     * @param campaignAddress The db address of the campaign
-     * @param campaignExpiryTime The expiry time of the campaign in seconds
-     */
-    function closeNFTCampaign(
-        string memory campaignAddress,
-        uint256 campaignExpiryTime
-    ) public onlyOwner {
-        require(
-            bytes(campaignAddress).length > 0,
-            ERR_INVALID_CAMPAIGN_ADDRESS
-        );
-        require(campaignExpiryTime > 0, ERR_INVALID_EXPIRY_TIME);
-        require(
-            !isCampaignClosed[campaignAddress][NFT],
-            ERR_TCAMPAIGN_ALREADY_CLOSED
-        );
-
-        isCampaignClosed[campaignAddress][NFT] = true;
-        campaignEndTime[campaignAddress][NFT] =
-            block.timestamp +
-            campaignExpiryTime;
-
-        emit campaignClosed(campaignAddress, NFT);
-    }
-
-    /**
      * @dev Distribute HBAR tokens to the campaigner
      * @param campaigner The solidity address of the campaigner or wallet address
      * @param campaignAddress The db address of the campaign
@@ -245,10 +180,7 @@ contract Lifecycle is HashbuzzStates, Utils {
         string memory campaignAddress,
         uint64 tokenTotalAmount
     ) external onlyOwner returns (uint256) {
-        require(
-            isTokenWhitelisted(FUNGIBLE, tokenId),
-            ERR_TOKEN_NOT_WHITELISTED
-        );
+        require(isTokenWhitelisted(tokenId), ERR_TOKEN_NOT_WHITELISTED);
         require(isCampaigner(campaigner), ERR_CAMPAIGNER_NOT_ALLOWED);
         require(
             bytes(campaignAddress).length > 0,
@@ -281,17 +213,15 @@ contract Lifecycle is HashbuzzStates, Utils {
     }
 
     /**
-     * @dev Expiry a campaign with fungible and NFT tokens
+     * @dev Expiry a campaign with fungible tokens campaigners only
      * @param campaignAddress The db address of the campaign
      * @param tokenId The address of the token in solidity format
      * @param campaigner The solidity address of the campaigner or wallet address
-     * @param tokenType The type of the token (FUNGIBLE or NFT) [uint32] (1 for FUNGIBLE & 2 for NFT)
      */
     function expiryFungibleCampaign(
         address tokenId,
         string memory campaignAddress,
-        address campaigner,
-        uint32 tokenType
+        address campaigner
     ) public onlyOwner returns (uint64) {
         require(tokenId != address(0), ERR_INVALID_TOKEN_ADDRESS);
         require(
@@ -300,21 +230,21 @@ contract Lifecycle is HashbuzzStates, Utils {
         );
         require(isCampaigner(campaigner), ERR_CAMPAIGNER_NOT_ALLOWED);
         require(
-            isCampaignClosed[campaignAddress][tokenType],
+            isCampaignClosed[campaignAddress][FUNGIBLE],
             ERR_CAMPAIGN_NOT_CLOSED
         );
         require(
-            block.timestamp > campaignEndTime[campaignAddress][tokenType],
-            ERR_CAMPAIGN_NOT_CLOSED
+            block.timestamp > campaignEndTime[campaignAddress][FUNGIBLE],
+            ERR_CAMPAIGN_EXPIRY_TIME_NOT_PASSED
         );
 
-        tokenBalances[campaigner][tokenId][tokenType] += tokenCampaignBalances[
+        tokenBalances[campaigner][tokenId][FUNGIBLE] += tokenCampaignBalances[
             campaignAddress
-        ][tokenId][tokenType];
-        tokenCampaignBalances[campaignAddress][tokenId][tokenType] = 0;
+        ][tokenId][FUNGIBLE];
+        tokenCampaignBalances[campaignAddress][tokenId][FUNGIBLE] = 0;
 
-        uint64 updatedBalance = tokenBalances[campaigner][tokenId][tokenType];
-        emit campaignExpired(campaignAddress, tokenType);
+        uint64 updatedBalance = tokenBalances[campaigner][tokenId][FUNGIBLE];
+        emit campaignExpired(campaignAddress, FUNGIBLE);
 
         return updatedBalance;
     }
@@ -333,13 +263,14 @@ contract Lifecycle is HashbuzzStates, Utils {
             ERR_INVALID_CAMPAIGN_ADDRESS
         );
         require(isCampaigner(campaigner), ERR_CAMPAIGNER_NOT_ALLOWED);
-        require(
-            block.timestamp > campaignEndTime[campaignAddress][HBAR],
-            ERR_CAMPAIGN_NOT_CLOSED
-        );
+
         require(
             isCampaignClosed[campaignAddress][HBAR],
             ERR_CAMPAIGN_NOT_CLOSED
+        );
+        require(
+            block.timestamp > campaignEndTime[campaignAddress][HBAR],
+            ERR_CAMPAIGN_EXPIRY_TIME_NOT_PASSED
         );
 
         balances[campaigner] += campaignBalances[campaignAddress];

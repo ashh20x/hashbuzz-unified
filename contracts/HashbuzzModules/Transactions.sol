@@ -58,17 +58,15 @@ contract Transactions is HashbuzzStates, Utils {
     function addFungibleAmount(
         address campaigner,
         address tokenId,
-        int64 tokenAmount
-    ) public onlyOwner returns (int64) {
+        uint64 tokenAmount
+    ) public onlyOwner returns (uint64) {
         require(isCampaigner(campaigner), ERR_CAMPAIGNER_NOT_ALLOWED);
-        tokenBalances[campaigner][tokenId][FUNGIBLE] += uint64(
-            int64(tokenAmount)
-        );
-        emit FungibleTokenDeposited(campaigner, uint64(int64(tokenAmount)));
+        tokenBalances[campaigner][tokenId][FUNGIBLE] += tokenAmount;
+        emit FungibleTokenDeposited(campaigner, tokenAmount);
 
         uint64 updatedBalance = tokenBalances[campaigner][tokenId][FUNGIBLE];
         emit FungibleTokenBalanceUpdated(campaigner, tokenId, updatedBalance);
-        return int64(updatedBalance);
+        return updatedBalance;
     }
 
     /**
@@ -76,23 +74,20 @@ contract Transactions is HashbuzzStates, Utils {
      * @param tokenId  Token solidity address
      * @param campaigner Campainer Address
      * @param amount  Total amount campaigner wanted to reinverse
-     * @param tokenType The type of the token (FUNGIBLE or NFT) [uint32] (1 for FUNGIBLE & 2 for NFT)
      */
     function reimburseBalanceForFungible(
         address tokenId,
         address campaigner,
-        int64 amount,
-        uint32 tokenType
-    ) public onlyOwner returns (int64) {
-        require(tokenType == FUNGIBLE, ERR_TOKEN_IS_NOT_FUNGIBLE);
+        uint64 amount
+    ) public onlyOwner returns (uint64) {
         require(
-            tokenBalances[campaigner][tokenId][FUNGIBLE] >= uint64(amount),
+            tokenBalances[campaigner][tokenId][FUNGIBLE] >= amount,
             ERR_INSUFFICIENT_BALANCE
         );
         tokenBalances[campaigner][tokenId][FUNGIBLE] -= uint64(amount);
         uint64 updatedBalance = tokenBalances[campaigner][tokenId][FUNGIBLE];
 
         emit FungibleTokenBalanceUpdated(campaigner, tokenId, updatedBalance);
-        return int64(updatedBalance);
+        return updatedBalance;
     }
 }

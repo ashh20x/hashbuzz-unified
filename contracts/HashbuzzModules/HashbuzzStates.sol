@@ -85,6 +85,7 @@ contract HashbuzzStates {
     string constant ERR_TCAMPAIGN_ALREADY_CLOSED = "E014";
     string constant ERR_TOKEN_IS_NOT_FUNGIBLE = "E015";
     string constant ERR_INVALID_TOKEN_TYPE = "E016";
+    string constant ERR_CAMPAIGN_EXPIRY_TIME_NOT_PASSED = "E017";
 
     modifier onlyOwner() {
         require(

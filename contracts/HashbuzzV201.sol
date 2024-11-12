@@ -11,7 +11,4 @@ contract HashbuzzV201 is HashbuzzStates, Utils, Lifecycle, Transactions {
         owner = msg.sender;
         emit OwnerSet(owner);
     }
-
-    receive() external payable {}
-    fallback() external payable {}
 }
