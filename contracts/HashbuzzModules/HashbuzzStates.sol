@@ -6,17 +6,17 @@ pragma solidity ^0.8.17;
  * @dev This contract is used to store the state of the Hashbuzz contract
  */
 contract HashbuzzStates {
-    address internal owner;
+    address public owner;
 
     uint32 public constant HBAR = 0;
     uint32 public constant FUNGIBLE = 1;
     uint32 public constant NFT = 2;
 
-    mapping(address => bool) internal campaigners;
+    mapping(address => bool) public campaigners;
     mapping(address => uint256) public balances;
 
     mapping(uint32 => mapping(address => bool)) public whitelistedToken;
-    mapping(uint32 => address[]) internal whitelistedAddresses;
+    mapping(uint32 => address[]) internal whitelistedTokenAddresses;
 
     mapping(address => mapping(address => mapping(uint256 => uint64)))
         public tokenBalances;

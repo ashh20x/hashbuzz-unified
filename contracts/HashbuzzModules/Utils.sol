@@ -22,19 +22,19 @@ contract Utils is HashbuzzStates {
         if (isWhitelisted && !whitelistedToken[FUNGIBLE][tokenAddress]) {
             // Add to whitelist if not already whitelisted
             whitelistedToken[FUNGIBLE][tokenAddress] = true;
-            whitelistedAddresses[FUNGIBLE].push(tokenAddress);
+            whitelistedTokenAddresses[FUNGIBLE].push(tokenAddress);
         } else if (!isWhitelisted && whitelistedToken[FUNGIBLE][tokenAddress]) {
             // Remove from whitelist if currently whitelisted
             whitelistedToken[FUNGIBLE][tokenAddress] = false;
 
             // Remove address from whitelistedAddresses array
-            uint256 length = whitelistedAddresses[FUNGIBLE].length;
+            uint256 length = whitelistedTokenAddresses[FUNGIBLE].length;
             for (uint256 i = 0; i < length; i++) {
-                if (whitelistedAddresses[FUNGIBLE][i] == tokenAddress) {
-                    whitelistedAddresses[FUNGIBLE][i] = whitelistedAddresses[
-                        FUNGIBLE
-                    ][length - 1];
-                    whitelistedAddresses[FUNGIBLE].pop();
+                if (whitelistedTokenAddresses[FUNGIBLE][i] == tokenAddress) {
+                    whitelistedTokenAddresses[FUNGIBLE][
+                        i
+                    ] = whitelistedTokenAddresses[FUNGIBLE][length - 1];
+                    whitelistedTokenAddresses[FUNGIBLE].pop();
                     break;
                 }
             }
@@ -46,7 +46,7 @@ contract Utils is HashbuzzStates {
      * @return An array of addresses that are whitelisted for the given token type.
      */
     function getAllWhitelistedTokens() public view returns (address[] memory) {
-        return whitelistedAddresses[FUNGIBLE];
+        return whitelistedTokenAddresses[FUNGIBLE];
     }
 
     /**

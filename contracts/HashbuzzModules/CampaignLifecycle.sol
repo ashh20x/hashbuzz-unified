@@ -213,7 +213,7 @@ contract Lifecycle is HashbuzzStates, Utils {
     }
 
     /**
-     * @dev Expiry a campaign with fungible tokens campaigners only
+     * @dev Expiry a campaign with fungible tokens campaigns only
      * @param campaignAddress The db address of the campaign
      * @param tokenId The address of the token in solidity format
      * @param campaigner The solidity address of the campaigner or wallet address
