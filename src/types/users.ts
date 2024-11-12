@@ -7,6 +7,14 @@ export interface AuthCred {
 }
 export type user_roles = "SUPER_ADMIN" | "ADMIN" | "ANALYTICS" | "MARKETING" | "MANAGEMENT" | "USER" | "GUEST_USER";
 
+export type UserConfig = {
+
+  contractAddress: string;
+  collecterAddress: string;
+  campaignDuration: number;
+  campaignRewardDuration: number;
+
+}
 export interface CurrentUser {
   id: number;
   username: string;
@@ -22,10 +30,7 @@ export interface CurrentUser {
   adminActive: boolean;
   profile_image_url?: string;
   role: user_roles;
-  config: {
-    contractAddress: string;
-    collecterAddress: string
-  }
+  config: UserConfig;
 }
 
 export type LogoutResponse = {

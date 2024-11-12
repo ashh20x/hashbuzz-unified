@@ -12,7 +12,7 @@ import { useStore } from "../../../../Store/StoreProvider";
 import { CampaignStatus } from "../../../../Utilities/helpers";
 import { Loader } from "../../../../components/Loader/Loader";
 import DetailsModal from "../../../../components/PreviewModal/DetailsModal";
-import { CampaignCommands } from "../../../../types";
+import { CampaignCommands, UserConfig } from "../../../../types";
 import AssociateModal from "../AssociateModal";
 import { cardStyle } from "../CardGenUtility";
 import AdminActionButtons from "./AdminActionButtons";
@@ -28,7 +28,7 @@ const isButtonDisabled = (campaignStats: CampaignStatus, approve: boolean) => {
   return isDisabled;
 };
 
-const getButtonLabel = (campaignStats: CampaignStatus, campaignStartTime: number) => {
+const getButtonLabel = (campaignStats: CampaignStatus, campaignStartTime: number, config?: UserConfig) => {
   switch (campaignStats) {
     case CampaignStatus.RewardDistributionInProgress:
     case CampaignStatus.RewardsDistributed:
@@ -37,7 +37,8 @@ const getButtonLabel = (campaignStats: CampaignStatus, campaignStartTime: number
     case CampaignStatus.CampaignApproved:
       return "Start";
     case CampaignStatus.CampaignRunning:
-      return <Countdown date={new Date(campaignStartTime).getTime() + +(process.env.REACT_APP_CAMPAIGN_DURATION ?? 1440) * 60 * 1000} />;
+      const campaignDuration = config?.campaignDuration ?? process.env.REACT_APP_CAMPAIGN_DURATION ?? 1440;
+      return <Countdown date={Number(new Date(campaignStartTime).getTime()) + Number(campaignDuration) * 60 * 1000} />;
     default:
       return "Update";
   }
@@ -178,7 +179,6 @@ const CampaignList = () => {
     }
   };
 
-
   React.useEffect(() => {
     getAllCampaigns();
   }, []);
@@ -263,7 +263,7 @@ const CampaignList = () => {
         return (
           <>
             <Button variant="contained" color="primary" disabled={isButtonDisabled(cellValues.row.card_status, cellValues.row.approve)} onClick={() => handleClick(cellValues.row)}>
-              {getButtonLabel(cellValues.row.card_status, cellValues.row.campaign_start_time)}
+              {getButtonLabel(cellValues.row.card_status, cellValues.row.campaign_start_time, currentUser?.config)}
             </Button>
             <div className="info-icon" onClick={() => handleCard(cellValues.row.id)}>
               <InfoIcon />
@@ -283,7 +283,7 @@ const CampaignList = () => {
       field: "action",
       headerName: "Actions",
       width: 200,
-      renderCell: (cellValues) => <AdminActionButtons cellValues={cellValues} handleAdminAction={handleAdminAction} setPreviewCard={setPreviewCard} />
+      renderCell: (cellValues) => <AdminActionButtons cellValues={cellValues} handleAdminAction={handleAdminAction} setPreviewCard={setPreviewCard} />,
     },
   ];
 
