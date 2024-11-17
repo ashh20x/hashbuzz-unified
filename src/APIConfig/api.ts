@@ -3,6 +3,7 @@ import * as React from "react";
 
 import { addCampaignBody, AdminLoginResponse, AdminUpdatePassword, AllTokensQuery, AuthCred, BalanceResponse, CampaignCards, Challenge, ContractInfo, CreateTransactionByteBody, CurrentUser, GenerateAstPayload, GnerateReseponse, LogoutResponse, reimburseAmountBody, SetTransactionBody, TokenBalances, TokenDataObj, TokenInfo, TopUpResponse, updateCampaignStatusBody, UpdatePasswordResponse } from "../types";
 import { useAxios } from "./AxiosProvider";
+import { update } from "lodash";
 
 export const getCookie = (cname: string) => {
   let name = cname + "=";
@@ -103,8 +104,10 @@ export const useApiInstance = () => {
     updateStatus: (data: any) => requests.put("/api/admin/update-status", data),
     getAllUsers: (data?: { limit: number; offset: number }): Promise<{ users: CurrentUser[]; count: number }> => requests.post("/api/admin/user/all", data ?? {}),
     allowUserAsCampaigner: (id: number): Promise<{ user: CurrentUser; success: true }> => requests.patch("/api/admin/user/allowCampaigner", { id }),
-    removePerosnalHandle:(userId:number):Promise<{data:CurrentUser , message:string}> => requests.patch("/api/admin/personal-handle", {userId}),
-    removeBizHandle:(userId:number):Promise<{data:CurrentUser , message:string}> => requests.patch("/api/admin/biz-handle" , {userId})
+    removePerosnalHandle: (userId: number): Promise<{ data: CurrentUser, message: string }> => requests.patch("/api/admin/personal-handle", { userId }),
+    removeBizHandle: (userId: number): Promise<{ data: CurrentUser, message: string }> => requests.patch("/api/admin/biz-handle", { userId }),
+    getTrailSetters: (): Promise<string[]> => requests.get("/api/admin/trailsetters"),
+    updateTrailSetters: (data: { accounts: string[] }): Promise<{ data: string[], message: string }> => requests.put("/api/admin/trailsetters", { ...data }),
   };
 
   const MirrorNodeRestAPI = {
