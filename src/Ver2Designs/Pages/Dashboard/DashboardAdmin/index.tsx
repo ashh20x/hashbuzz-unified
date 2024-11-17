@@ -5,7 +5,7 @@ import { styled } from "@mui/material/styles";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import DashboardUser from "../DashboardUser";
-import AdminViews from "./AdminViews";
+import AdminViews from "./AdminView";
 
 interface StyledTabsProps {
   children?: React.ReactNode;
@@ -62,7 +62,7 @@ function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
 
   return (
-    <Box sx={{height:"calc(100% - 40px)"}} role="tabpanel" hidden={value !== index} id={`full-width-tabpanel-${index}`} aria-labelledby={`full-width-tab-${index}`} {...other}>
+    <Box sx={{ height: "calc(100% - 40px)" }} role="tabpanel" hidden={value !== index} id={`full-width-tabpanel-${index}`} aria-labelledby={`full-width-tab-${index}`} {...other}>
       {value === index && children}
     </Box>
   );
@@ -88,7 +88,7 @@ const AdminDashboard = () => {
         <StyledTab label="Admin Dashboard" {...a11yProps(1)} />
       </StyledTabs>
       <TabPanel value={value} index={1}>
-        <Box className="usersList-Table" sx={{ paddingBottom: 2 , height:"100%" , minHeight:500}} >
+        <Box className="usersList-Table" sx={{ paddingBottom: 2, height: "100%", minHeight: 500 }}>
           <Card elevation={0} sx={{ ...cardStyle, height: "100%" }}>
             <AdminViews />
           </Card>
