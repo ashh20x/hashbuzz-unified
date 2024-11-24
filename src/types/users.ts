@@ -48,3 +48,10 @@ export type TokenBalances = {
   entity_decimal: number;
   decimals?: number;
 };
+
+export type TrailSetters = {
+  createdAt: string;
+  id: number,
+  walletId: string;
+
+}

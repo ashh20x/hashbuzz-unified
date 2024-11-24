@@ -12,7 +12,7 @@ const AdminTrailSettersView = () => {
   React.useEffect(() => {
     Admin.getTrailSetters()
       .then((data) => {
-        setValue(data);
+        setValue(data.map((d) => d.walletId));
       })
       .catch((err) => {
         console.error(err);
@@ -36,7 +36,7 @@ const AdminTrailSettersView = () => {
     }
     Admin.updateTrailSetters({ accounts: [newAccount] })
       .then((data) => {
-        setValue([...data.data]);
+        setValue([...data.data.map((d) => d.walletId)]);
         setNewAccount("");
       })
       .catch((err) => {
