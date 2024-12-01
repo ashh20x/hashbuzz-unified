@@ -16,7 +16,9 @@ ENV REACT_APP_MIRROR_NODE_LINK="https://mainnet-public.mirrornode.hedera.com"
 ENV REACT_APP_ADMIN_ADDRESS="0.0.25162"
 ENV REACT_APP_CONTRACT_ADDRESS="0.0.4323686"
 
+RUN npx prisma generate
 RUN npm run build
+
 
 # Stage 2: Serve the build with serve
 FROM node:18-alpine as serve

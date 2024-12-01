@@ -1,6 +1,6 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { ProtectedRoute, RedirectIfAuthenticated } from "./APIConfig/AuthGuard";
-import { CreateCampaign, Dashboard, Landing, PageNotfound } from "./Ver2Designs";
+import { CreateCampaign, Dashboard, Landing, PageNotfound, ContentPage } from "./Ver2Designs";
 import { AdminDashboard } from "./Ver2Designs/Admin";
 import AdminAuthGuard from "./Ver2Designs/Admin/AdminAuthGuard";
 import MainLayout from "./Ver2Designs/Layout";
@@ -8,7 +8,6 @@ import StyledComponentTheme from "./theme/Theme";
 import { Template } from "./screens/Template";
 import { Invoice } from "./screens/Invoice";
 import { OnBoarding } from "./screens/OnBoarding";
-import React, { useEffect } from "react";
 
 const router = createBrowserRouter([
   {
@@ -74,6 +73,14 @@ const router = createBrowserRouter([
         <AdminDashboard />
       </AdminAuthGuard>
     ),
+  },
+  {
+    path: "/terms-of-use",
+    element: <ContentPage page="TermsOfUse" />,
+  },
+  {
+    path: "/privacy-policy",
+    element: <ContentPage page="PrivacyPolicy" />,
   },
   { path: "/*", element: <PageNotfound /> },
 ]);
