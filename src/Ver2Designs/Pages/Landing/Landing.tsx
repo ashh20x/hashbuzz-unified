@@ -2,7 +2,7 @@ import { Box, Container, Link, Stack, Typography, Grid, Alert, useTheme } from "
 import HashbuzzLogo from "../../../SVGR/HashbuzzLogo";
 import React from "react";
 import { useCookies } from "react-cookie";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link as NavigateLink } from "react-router-dom";
 import { useStore } from "../../../Store/StoreProvider";
 import { useHashconnectService } from "../../../Wallet";
 import { SpeedDialActions } from "../../Components";
@@ -14,14 +14,14 @@ const Landing = () => {
   const theme = useTheme();
   const [cookies] = useCookies(["aSToken"]);
   const { pairingData } = useHashconnectService();
-  const {handleAuthenticate, authStatusLog} = useHandleAuthenticate()
+  const { handleAuthenticate, authStatusLog } = useHandleAuthenticate();
   const navigate = useNavigate();
   const ping = store.ping;
   const auth = store.auth;
   const pairedAccount = pairingData?.accountIds[0];
 
   React.useEffect(() => {
-    if (cookies.aSToken && ping.status && pairedAccount || auth?.auth) {
+    if ((cookies.aSToken && ping.status && pairedAccount) || auth?.auth) {
       navigate("/dashboard");
     }
   }, [cookies.aSToken, navigate, pairedAccount, ping]);
@@ -121,35 +121,30 @@ const Landing = () => {
               <StyledText>
                 Ready to get started?
                 <div>
-                  * Learn how to launch your very first promo [{" "}
-                  <Typography component={Link} style={{ color: "red" }} target="_blank" href="https://www.youtube.com/watch?v=e0cv-B9aWTE&t=2s">
-                    here
+                  * Learn how to launch your very first promo, &nbsp;
+                  <Typography component={Link} style={{ color: "red" }} target="_blank" href="https://youtu.be/zqpnoHG3JAk?si=PXX8KNDo902I-it2">
+                    watch Youtube Video
                   </Typography>
-                  ].
                 </div>
                 <div>
-                  * To request the whitelisting of your token, simply submit a request [
-                  <Typography component={Link} style={{ color: "red" }} href={"https://about.hashbuzz.social/whitelist-token"}>
-                    here
-                  </Typography>
-                  ].
-                </div>
-                <div>
-                  * Stay in the loop with our latest updates and announcements by following us on{" "}
-                  <Typography component={Link} href={"https://x.com/hbuzzs"} style={{ color: "red" }}>
+                  * Stay in the loop with our latest updates and announcements by following us on &nbsp;
+                  <Typography component={Link} href={"https://x.com/hashbuzzsocial"} target="_blank" style={{ color: "red" }}>
                     X
                   </Typography>{" "}
-                  -{" "}
+                  &nbsp; - &nbsp;
                   <Typography component={Link} href={"https://discord.gg/6Yrg4u8bvB"} target="_blank" style={{ color: "red" }}>
                     Discord
                   </Typography>
                 </div>
                 <div>
-                  * Read our terms and conditions, and privacy policy [
-                  <Typography component={Link} style={{ color: "red" }} href={"/#"}>
-                    here
+                  * Read our &nbsp;
+                  <Typography component={NavigateLink} style={{ color: "red" }} to={"/terms-of-use"} target="_blank">
+                    Terms of use
                   </Typography>
-                  ].
+                  &nbsp; and &nbsp;
+                  <Typography component={NavigateLink} style={{ color: "red" }} to={"/privacy-policy"} target="_blank">
+                    Privacy Policy.
+                  </Typography>
                 </div>
               </StyledText>
             </Typography>
