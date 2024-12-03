@@ -327,7 +327,7 @@ const CampaignList = () => {
                 <InfoOutlinedIcon />
               </Box>
               <Typography sx={{ maxWidth: 700 }} variant="caption">
-                In the current beta phase, please note that only one campaign can be run at a time. Each initiated campaign will automatically end 24 hours after its start. We plan to incrementally ease these restrictions in the future. Also, be informed that your balance can be used without any limits across different campaigns.
+                In the current beta phase, please note that only one campaign can be run at a time. Each initiated campaign will automatically end 1 hour after its start. We plan to incrementally ease these restrictions in the future. Also, be informed that your balance can be used without any limits across different campaigns.
               </Typography>
             </Stack>
             {isAdmin && (

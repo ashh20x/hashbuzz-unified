@@ -11,7 +11,6 @@ interface APIProps {
 export const useDappAPICall = () => {
   const dAppAPICall = async (props: APIProps) => {
     const token = getCookie("token");
-    console.log(token, 'token')
     const { method, url, data } = props;
     const request = await axios({
       method,
