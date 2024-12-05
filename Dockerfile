@@ -10,8 +10,8 @@ RUN npm install
 COPY . .
 
 ENV REACT_APP_NETWORK="testnet"
-ENV REACT_APP_DAPP_API ="https://api.hashbuzz.social"
-ENV REACT_APP_MIRROR_NODE_LINK="https://mainnet-public.mirrornode.hedera.com"
+ENV REACT_APP_DAPP_API="https://api.hashbuzz.social"
+ENV REACT_APP_MIRROR_NODE_LINK="https://testnet.mirrornode.hedera.com"
 ENV REACT_APP_CAMPAIGN_DURATION=15
 
 RUN npm run build
