@@ -11,7 +11,6 @@ import SecondaryButton from "../../Buttons/SecondaryButton";
 import { ContainerStyled } from "../../ContainerStyled/ContainerStyled";
 import PreviewModal from "../../PreviewModal/PreviewModal";
 import { TemplateTable } from "../../Tables/TemplateTable";
-import ChatgptModal from "./ChatgptModal/ChatgptModal";
 import { ShowImage } from "./ShowImage";
 import { ButtonWrap, ButtonWrapPrimary, CustomCheckboxInput, CustomIframe, CustomInput, CustomParagraph, EmoBtnWrap, ErrorTextWrap, IconsWrap, ImgWrap, LeftSec, RightSec, SimpleDiv, TableSection, WordsWrap, Wrapper } from "./TemplatePage.styles";
 import { YoutubeIcon } from "./YoutubeIcon";
@@ -271,10 +270,6 @@ export const TemplatePage = () => {
           <CustomParagraph onChange={handleText} value={Text} type="textarea" maxLength={270} placeholder="Start typing your tweet campaign" required />
           <ErrorTextWrap>{errorTextMessage}</ErrorTextWrap>
           <WordsWrap>
-            <div className="chat-icon" onClick={() => setShowChatModal(true)}>
-              <img src="/images/chatgpt.png" />
-            </div>
-            <ChatgptModal showChatModal={showChatModal} setShowChatModal={setShowChatModal} />
             <EmoBtnWrap className="button" onClick={() => setShowEmojis(!showEmojis)}>
               😊 &nbsp;
             </EmoBtnWrap>
