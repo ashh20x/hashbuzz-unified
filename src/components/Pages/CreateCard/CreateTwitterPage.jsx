@@ -292,18 +292,6 @@ export const CreateTwitterPage = () => {
         <StatusCard title={"Brand Twitter Handle"} content={store?.user?.business_twitter_handle ? "@" + store?.user?.business_twitter_handle : ""} buttonTag={[!store?.user?.business_twitter_handle ? "Connect brand handle" : "Reconnect"]} isButton={!store?.user?.business_twitter_handle} text={""} buttonClick={(e) => handleButtonClick(e)} isDisable={store?.currentStatus} />
         <StatusCard title={"Personal Twitter Handle"} content={store?.user?.personal_twitter_handle ? "@" + store?.user?.personal_twitter_handle : ""} buttonTag={["ReConnect"]} isButton={false} text={""} />
         {tableData.length > 0 ? <StatusCard title={"Status"} content={store?.currentStatus} /> : null}
-        {/* {cardDataArr.map((item, i) => (
-          <StatusCard
-            key={item.title}
-            title={item.title}
-            content={item.content}
-            buttonTag={item.buttonTag}
-            isButton={item.isButton}
-            isDisable={i === 0 ? buttonDisabled : false}
-            text={item.text}
-            buttonClick={(e) => handleButtonClick(e, i)}
-          />
-        ))} */}
       </CardSection>
 
       <TableSection>

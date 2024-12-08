@@ -18,7 +18,6 @@ import { YoutubeIcon } from "./YoutubeIcon";
 export const TemplatePage = () => {
   let navigate = useNavigate();
   const [srcLink, setSrcLink] = useState("https://www.youtube.com/embed/1lzba8D4FCU");
-  const [showChatModal, setShowChatModal] = useState(false);
 
   const [buttonTags, setButtonTags] = useState([]);
   const [Text, setText] = useState("");
@@ -43,7 +42,6 @@ export const TemplatePage = () => {
   const [budgetMessage, setBudgetMessage] = useState("");
   const [budget, setBudget] = useState(0);
   const [buttonDisabled, setButtonDisabled] = useState(false);
-  // const [userData, setUserData] = useState({});
   const [allTokens, setAllTokens] = useState([]);
   const [selectedToken, setSelectedToken] = useState(allTokens?.[0]?.value);
   const [errorNameMessage, setErrorNameMessage] = useState("");
@@ -53,12 +51,11 @@ export const TemplatePage = () => {
     const response = await User.getTokenBalances();
     const updatedTokens = [];
     response?.forEach((item) => {
-      if (item?.available_balance > 0) {
-        updatedTokens.push({
-          value: item?.token_id,
-          token_symbol: item?.token_symbol,
-        });
-      }
+      updatedTokens.push({
+        value: item?.token_id,
+        token_symbol: item?.token_symbol,
+        tokenBalance: item?.available_balance ?? 0,
+      });
     });
     setAllTokens(updatedTokens);
   };
@@ -263,7 +260,11 @@ export const TemplatePage = () => {
           {type === "FUNGIBLE" && (
             <Select style={{ margin: "20px 0" }} labelId="token_id" id="token_id" placeholder="Select Token Id" value={selectedToken} label="Token Id" onChange={selectTokenIdHandler}>
               {allTokens?.map((item) => {
-                return <MenuItem value={item?.value}>{`${item?.token_symbol}-${item?.value}`}</MenuItem>;
+                return (
+                  <MenuItem value={item?.value} disabled={item.tokenBalance <= 0}>
+                    {`${item.tokenBalance} - ${item?.token_symbol} - ${item?.value}`}
+                  </MenuItem>
+                );
               })}
             </Select>
           )}
