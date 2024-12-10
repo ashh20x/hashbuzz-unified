@@ -27,3 +27,4 @@ yarn-error.log*
 .env
 Dockerfile
 .vscode
+.DS_Store
