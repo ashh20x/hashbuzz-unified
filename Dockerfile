@@ -29,4 +29,4 @@ COPY --from=build /app/build /app/build
 
 EXPOSE 3000
 
-CMD ["npx", "serve", "-s", "build", "-l", "3000"]
+CMD ["npm", "serve", "-s", "build", "-l", "3000"]
