@@ -26,10 +26,6 @@ export const CampaignStatusTexts = {
 
 export const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
-// const _delete_cookie = (name: string) => {
-//   document.cookie = name + "=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
-// };
-
 export const getErrorMessage = (err: any) => {
   if (err?.response?.data) return err?.response?.data?.error?.description ?? err?.response?.data.message;
   if (err?.message) return err?.message;

@@ -8,6 +8,7 @@ import { useHashconnectService } from "../../../Wallet";
 import { SpeedDialActions } from "../../Components";
 import styled from "styled-components";
 import { useHandleAuthenticate } from "../../../Wallet/useHandleAuthenticate";
+import * as SC from "./styles";
 
 const Landing = () => {
   const store = useStore();
@@ -47,19 +48,7 @@ const Landing = () => {
 
   return (
     <Box
-      sx={{
-        background: "linear-gradient(to right bottom, #071159, #07114d, #091140, #0b0f34, #0d0c28, #0c0a23, #0a081f, #08061a, #07051b, #05051c, #03041e, #01041f)",
-        backgroundImage: `url("./images/landing-bg-2.jpg")`,
-        minHeight: "100vh",
-        backgroundRepeat: "no-repeat",
-        // paddingBottom: "20px",
-        backgroundSize: "cover",
-        backgroundPosition: "right bottom",
-        [theme.breakpoints.between("md", "xl")]: {
-          backgroundPosition: "top right",
-        },
-        backdropFilter: "blur(20px)",
-      }}
+      sx={SC.LandingPageContainerStyles(theme)}
     >
       <Container>
         <Stack
