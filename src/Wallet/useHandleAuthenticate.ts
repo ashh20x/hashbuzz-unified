@@ -14,7 +14,7 @@ interface AuthenticationLog {
 
 export const useHandleAuthenticate = () => {
   console.log("useHandleAuthenticate is called")
-  const { topic, pairingData, hashconnect, setState } = useContext(HashconectServiceContext);
+  const { topic, pairingData, hashconnect } = useContext(HashconectServiceContext);
   const { Auth } = useApiInstance();
   const [_, setCookies, removeCookie] = useCookies(["aSToken", "refreshToken"]);
   const { authCheckPing } = useAuth();
