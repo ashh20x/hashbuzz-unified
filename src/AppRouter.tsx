@@ -8,6 +8,7 @@ import StyledComponentTheme from "./theme/Theme";
 import { Template } from "./screens/Template";
 import { Invoice } from "./screens/Invoice";
 import { OnBoarding } from "./screens/OnBoarding";
+import { LandingV2 } from "./Ver2Designs/Pages/Landing/LandingV2";
 
 const router = createBrowserRouter([
   {
@@ -15,7 +16,7 @@ const router = createBrowserRouter([
     index: true,
     element: (
       <RedirectIfAuthenticated>
-        <Landing />
+        <LandingV2 />
       </RedirectIfAuthenticated>
     ),
   },
