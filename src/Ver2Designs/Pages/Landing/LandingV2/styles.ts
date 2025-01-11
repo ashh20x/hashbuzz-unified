@@ -2,7 +2,7 @@ import styled, { css } from "styled-components";
 import { IconButton } from '@mui/material'
 
 const backdropLayerCss = css`
-  background: rgba(18, 91, 255, 0.35);
+  background: rgba( 170 ,196 , 255 , 0.35 );//rgb(170 196 255 / 35%)
   backdrop-filter: blur(5px);
 `
 
@@ -43,14 +43,17 @@ export const RightSideColWrapper = styled.div``;
 
 export const HeaderActionContainer = styled.div``;
 
-export const RightSideContentContainer = styled.div``;
+export const RightSideContentContainer = styled.div`
+  background-color: rgba(18, 91, 255, 0.35);
+  backdrop-filter: blur(5px);
+  border-radius: 24px;
+`;
 
 export const ConnectingPlatforms = styled.div`
   ${backdropLayerCss}
   width: 230px;
   height: 120px;
   margin: 0 auto;
-  display: flex;
   justify-content: space-around;
   align-items: center;
 `;
