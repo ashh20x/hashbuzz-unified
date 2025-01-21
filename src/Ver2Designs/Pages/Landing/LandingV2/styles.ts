@@ -1,5 +1,29 @@
 import styled, { css } from "styled-components";
-import { IconButton } from '@mui/material'
+import { IconButton, SxProps, Theme } from '@mui/material'
+
+export const ConnectorMenuListStyles = (): SxProps<Theme> => ({
+  overflow: 'visible',
+  filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+  mt: 1.5,
+  '& .MuiAvatar-root': {
+    width: 32,
+    height: 32,
+    ml: -0.5,
+    mr: 1,
+  },
+  '&::before': {
+    content: '""',
+    display: 'block',
+    position: 'absolute',
+    top: 0,
+    right: 14,
+    width: 10,
+    height: 10,
+    bgcolor: 'background.paper',
+    transform: 'translateY(-50%) rotate(45deg)',
+    zIndex: 0,
+  },
+})
 
 const backdropLayerCss = css`
   background: rgba( 170 ,196 , 255 , 0.35 );//rgb(170 196 255 / 35%)
@@ -7,9 +31,9 @@ const backdropLayerCss = css`
 `
 
 export const LandingV2Container = styled.div`
-  display: flex;
+  /* display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: center; */
   padding:16px;
   background: rgb(6,38,121);
   // background: linear-gradient(47deg, rgba(6,38,121,1) 0%, rgba(48,77,147,1) 35%, rgba(225,239,255,1) 100%); 
@@ -36,7 +60,7 @@ export const ContentWrapperDiv = styled.div`
 `;
 
 export const LandingPageHeader = styled.h1`
-  margin-bottom: 34px;
+  /* margin-bottom: 34px; */
 `;
 
 export const RightSideColWrapper = styled.div``;
