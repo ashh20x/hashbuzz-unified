@@ -7,14 +7,14 @@ import { toast } from "react-toastify";
 import { useStore } from "../Store/StoreProvider";
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-interface AuthenticationLog {
+export interface AuthenticationLog {
   type: "error" | "info" | "success";
   message: string;
 }
 
 export const useHandleAuthenticate = () => {
   console.log("useHandleAuthenticate is called")
-  const { topic, pairingData, hashconnect, setState } = useContext(HashconectServiceContext);
+  const { topic, pairingData, hashconnect } = useContext(HashconectServiceContext);
   const { Auth } = useApiInstance();
   const [_, setCookies, removeCookie] = useCookies(["aSToken", "refreshToken"]);
   const { authCheckPing } = useAuth();

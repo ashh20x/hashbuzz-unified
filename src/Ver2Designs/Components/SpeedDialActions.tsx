@@ -160,7 +160,7 @@ interface QRCodeDialogProps {
   onclose: () => void;
 }
 
-const QRCodeDialog = ({ open, onclose }: QRCodeDialogProps) => {
+export const QRCodeDialog = ({ open, onclose }: QRCodeDialogProps) => {
   const [qrCodeOpen, setQrCodeOpen] = React.useState(false);
   const { pairingString, pairingData } = useHashconnectService();
 
