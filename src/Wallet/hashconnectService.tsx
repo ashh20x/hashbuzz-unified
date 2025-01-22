@@ -17,10 +17,6 @@ export interface ProviderProps {
   debug?: boolean;
 }
 
-const delay = (ms: number) => {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-};
-
 export interface HashconnectContextAPI {
   availableExtension: HashConnectTypes.WalletMetadata;
   state: HashConnectConnectionState;
