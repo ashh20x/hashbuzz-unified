@@ -35,7 +35,6 @@ export const TemplatePage = () => {
   const [media, setMedia] = useState(["https://www.youtube.com/watch?time_continue=1&v=1lzba8D4FCU&embeds_referring_euri=http%3A%2F%2Flocalhost%3A3000%2F&source_ve_path=Mjg2NjY&feature=emb_logo"]);
   const [displayMedia, setDisplayMedia] = useState([]);
   const [gifSelected, setGifSelect] = useState(false);
-  // const [cookies, setCookie] = useCookies(["token"]);
   const [videoTitle, setVideoTitle] = useState(false);
   const { User } = useApiInstance();
   const [addMedia, setAddMedia] = useState(false);

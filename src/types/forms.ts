@@ -1,7 +1,5 @@
-import { CampaignStatus } from "../Utilities/helpers";
 import { CampaignCommands } from "./campaign";
-import { TokenBalances } from "./users";
-import { CurrentUser } from "./users";
+import { CurrentUser, TokenBalances } from "./users";
 
 export interface FormFelid<T> {
   value: T;
