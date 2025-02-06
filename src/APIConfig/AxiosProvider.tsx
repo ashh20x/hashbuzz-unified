@@ -28,7 +28,7 @@ const useRefreshToken = false; // Flag to enable/disable token refresh
 export const AxiosContext = createContext<AxiosInstance | null>(null);
 
 const AxiosProvider: React.FC = ({ children }) => {
-  const [cookies, setCookie, removeCookie] = useCookies(["aSToken", "refreshToken"]);
+  const [cookies, setCookie, removeCookie] = useCookies(["aSToken", "refreshToken", "XSRF-TOKEN"]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [deviceId, setDeviceId] = useState<string | null>(getOrCreateUniqueID());
   const [astToken, setAstToken] = useState<string | null>(cookies.aSToken ?? getCookieByName("aSToken"));
@@ -40,7 +40,9 @@ const AxiosProvider: React.FC = ({ children }) => {
       timeout: 15000,
       headers: {
         "Content-type": "application/json",
+        "csrf-token": getCookieByName("XSRF-TOKEN") || "",
       },
+      withCredentials: true, // Ensure cookies are sent
     })
   );
 
@@ -65,8 +67,15 @@ const AxiosProvider: React.FC = ({ children }) => {
 
   const inValidateAuthentication = useCallback(() => {
     console.log("Unauthorized::Invalidating authentication and clearing cookies");
+
+    // Remove authentication cookies
     removeCookie("aSToken");
     removeCookie("refreshToken");
+
+    // Remove CSRF token
+    removeCookie("XSRF-TOKEN");
+
+    // Reset application state
     dispatch({ type: "RESET_STATE" });
   }, [dispatch, removeCookie]);
 
@@ -84,6 +93,27 @@ const AxiosProvider: React.FC = ({ children }) => {
   }, [deviceId]);
 
   useEffect(() => {
+    const fetchCsrfToken = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_DAPP_API}/auth/csrf-token`, {
+          withCredentials: true, // Ensure cookies are sent
+        });
+
+        if (response.data.csrfToken) {
+          setCookie("XSRF-TOKEN", response.data.csrfToken, { path: "/" });
+          console.log("Fetched new CSRF Token:", response.data.csrfToken);
+        }
+      } catch (error) {
+        console.error("Failed to fetch CSRF token:", error);
+      }
+    };
+
+    if (!cookies["XSRF-TOKEN"]) {
+      fetchCsrfToken();
+    }
+  }, []);
+
+  useEffect(() => {
     setAstToken(cookies.aSToken ?? (auth?.ast ? getCookieByName("aSToken") : undefined));
   }, [cookies.aSToken, auth]);
 
@@ -98,7 +128,21 @@ const AxiosProvider: React.FC = ({ children }) => {
         if (astToken && config.headers) {
           config.headers["Authorization"] = `Bearer ${astToken}`;
         }
-        console.log(`Request config::${config.url}`, { astToken, config });
+
+        // Ensure CSRF token is included in all requests
+        const csrfToken = cookies["XSRF-TOKEN"] ?? getCookieByName("XSRF-TOKEN");
+        if (csrfToken && config.headers) {
+          config.headers["X-XSRF-TOKEN"] = csrfToken;
+          console.log("Adding CSRF Token:", csrfToken);
+        } else {
+          console.warn("CSRF Token missing from cookies!");
+        }
+
+        // Add CSRF token to request body if it exists and the request has a body
+        if (csrfToken && config.data && typeof config.data === "object") {
+          config.data._csrf = csrfToken;
+        }
+
         return config;
       },
       (error) => Promise.reject(error)
@@ -129,6 +173,22 @@ const AxiosProvider: React.FC = ({ children }) => {
                 </div>
               );
               break;
+            case 403: // CSRF Token Mismatch
+              console.error("CSRF token mismatch. Resetting session.");
+
+              // Clear cookies
+              removeCookie("aSToken", { path: "/" });
+              removeCookie("refreshToken", { path: "/" });
+              removeCookie("XSRF-TOKEN", { path: "/" });
+
+              toast.error("Session expired due to security reasons. Refreshing...");
+
+              // Restart the application after a short delay
+              setTimeout(() => {
+                window.location.reload(); // Hard refresh to reinitialize CSRF flow
+              }, 1000);
+
+              break;
             default:
               toast.error(getErrorMessage(error));
           }
@@ -141,7 +201,7 @@ const AxiosProvider: React.FC = ({ children }) => {
       instance.interceptors.request.eject(requestInterceptor);
       instance.interceptors.response.eject(responseInterceptor);
     };
-  }, [astToken, deviceId, inValidateAuthentication]);
+  }, [astToken, deviceId, inValidateAuthentication, cookies]);
 
   return <AxiosContext.Provider value={axiosInstance.current}>{children}</AxiosContext.Provider>;
 };
