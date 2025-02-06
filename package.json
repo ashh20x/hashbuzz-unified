@@ -1,6 +1,6 @@
 {
   "name": "hashbuzz",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "private": true,
   "dependencies": {
     "@craco/craco": "^7.1.0",
