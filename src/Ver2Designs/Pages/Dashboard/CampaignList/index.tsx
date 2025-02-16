@@ -155,7 +155,7 @@ const CampaignList = () => {
         return;
       }
 
-      const isCampaignRunningOrPending = (status: CampaignStatus) => new Set([CampaignStatus.CampaignRunning, CampaignStatus.ApprovalPending, CampaignStatus.CampaignDeclined]).has(status);
+      const isCampaignRunningOrPending = (status: CampaignStatus) => new Set([CampaignStatus.CampaignRunning, CampaignStatus.ApprovalPending]).has(status);
 
       const campaignData = allCampaigns.map((item) => ({
         id: item.id,
