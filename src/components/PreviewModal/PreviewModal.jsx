@@ -10,7 +10,8 @@ import { Loader } from "../Loader/Loader";
 import ModalTable from "../Tables/ModalTable";
 import notify from "../Toaster/toaster";
 import { BoxCont, ButtonWrapPrimary, CustomIframe, CustomParagraph, IconsWrap, LeftSec, RightSec, TableSection, TextWrap, Wrapper } from "./PreviewModal.styles";
-const PreviewModal = ({ type, open, setOpen, Text, reply, selectedToken, tokenId, retweet, like, follow, srcLink, name, displayMedia, media, videoTitle, addMedia, budget, quote }) => {
+
+const PreviewModal = ({ type, open, setOpen, Text, reply, selectedToken, tokenId, retweet, like, follow, srcLink, name, displayMedia, media, videoTitle, addMedia, budget, quote, mediaFile }) => {
   let navigate = useNavigate();
 
   const [showLoading, setShowLoading] = useState(false);
@@ -43,37 +44,10 @@ const PreviewModal = ({ type, open, setOpen, Text, reply, selectedToken, tokenId
     postData.append("type", type);
     postData.append("quote_reward", quote);
     postData.append("campaign_budget", budget === "" ? 0 : budget);
-
-    if (addMedia && displayMedia.length > 0) {
-      console.log("displayMedia", displayMedia);
-
-      const files = [];
-
-      for (let index = 0; index < displayMedia.length; index++) {
-        const mediaItem = displayMedia[index];
-        console.log("mediaItem", mediaItem);
-        try {
-          const response = await fetch(mediaItem);
-          if (!response.ok) {
-            throw new Error(`Failed to fetch media item: ${response.statusText}`);
-          }
-          const blob = await response.blob();
-          const fileType = blob.type.split("/")[1]; // Get file extension
-          const file = new File([blob], `media-${index}.${fileType}`, { type: blob.type });
-          console.log("file", file);
-
-          // Append each file separately
-          // postData.append(`media`, file);
-          files.push(file);
-        } catch (error) {
-          console.error(`Error fetching media item at index ${index}:`, error);
-          setShowLoading(false);
-          notify("Something went wrong while fetching media! Please try again later");
-          return;
-        }
-      }
-
-      postData.append("media", files);
+    if (addMedia && mediaFile && mediaFile.length > 0 && displayMedia.length > 0) {
+      mediaFile.forEach((item) => {
+      postData.append("media", item.file);
+      });
     }
 
     try {
