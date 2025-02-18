@@ -35,6 +35,7 @@ export const TemplatePage = () => {
   const [isYoutube, setYoutube] = useState(false);
   const [media, setMedia] = useState(["https://www.youtube.com/watch?time_continue=1&v=1lzba8D4FCU&embeds_referring_euri=http%3A%2F%2Flocalhost%3A3000%2F&source_ve_path=Mjg2NjY&feature=emb_logo"]);
   const [displayMedia, setDisplayMedia] = useState([]);
+  const [medeiaFile , setMediaFile] = useState([]);
   const [gifSelected, setGifSelect] = useState(false);
   const [videoTitle, setVideoTitle] = useState(false);
   const { User } = useApiInstance();
@@ -107,6 +108,7 @@ export const TemplatePage = () => {
     const data = new FormData();
     data.append("media_file", file);
     data.append("media_type", "image");
+    setMediaFile(prevdata => ([...prevdata, {file: file, type: fileType}]));
 
     try {
       // Add your API call here
@@ -374,7 +376,7 @@ export const TemplatePage = () => {
           </ButtonWrapPrimary>
         </RightSec>
       </Wrapper>
-      <PreviewModal open={open} setOpen={setOpen} Text={Text + " #hashbuzz"} buttonTags={buttonTags} reply={reply} tokenId={tokenId} retweet={retweet} type={type} like={like} selectedToken={selectedToken} follow={follow} srcLink={srcLink} name={name} media={media} displayMedia={displayMedia} isYoutube={isYoutube} videoTitle={videoTitle} addMedia={addMedia} budget={budget} quote={quote} />
+      <PreviewModal open={open} setOpen={setOpen} Text={Text + " #hashbuzz"} buttonTags={buttonTags} reply={reply} tokenId={tokenId} retweet={retweet} type={type} like={like} selectedToken={selectedToken} follow={follow} srcLink={srcLink} name={name} media={media} displayMedia={displayMedia} isYoutube={isYoutube} videoTitle={videoTitle} addMedia={addMedia} budget={budget} quote={quote} mediaFile={medeiaFile} />
     </ContainerStyled>
   );
 };
