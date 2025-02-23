@@ -9,38 +9,9 @@ import PrimaryButton from "../Buttons/PrimaryButton";
 import { Loader } from "../Loader/Loader";
 import ModalTable from "../Tables/ModalTable";
 import notify from "../Toaster/toaster";
-import {
-  BoxCont,
-  ButtonWrapPrimary,
-  CustomIframe,
-  CustomParagraph,
-  IconsWrap,
-  LeftSec,
-  RightSec,
-  TableSection,
-  TextWrap,
-  Wrapper,
-} from "./PreviewModal.styles";
-const PreviewModal = ({
-  type,
-  open,
-  setOpen,
-  Text,
-  reply,
-  selectedToken,
-  tokenId,
-  retweet,
-  like,
-  follow,
-  srcLink,
-  name,
-  displayMedia,
-  media,
-  videoTitle,
-  addMedia,
-  budget,
-  quote,
-}) => {
+import { BoxCont, ButtonWrapPrimary, CustomIframe, CustomParagraph, IconsWrap, LeftSec, RightSec, TableSection, TextWrap, Wrapper } from "./PreviewModal.styles";
+
+const PreviewModal = ({ type, open, setOpen, Text, reply, selectedToken, tokenId, retweet, like, follow, srcLink, name, displayMedia, media, videoTitle, addMedia, budget, quote, mediaFile }) => {
   let navigate = useNavigate();
 
   const [showLoading, setShowLoading] = useState(false);
@@ -63,27 +34,29 @@ const PreviewModal = ({
 
   const handleSubmit = async () => {
     setShowLoading(true);
-    const postData = {
-      name: name,
-      tweet_text: Text,
-      fungible_token_id: type === "HBAR" ? "" : selectedToken,
-      comment_reward: reply,
-      retweet_reward: retweet,
-      like_reward: like,
-      type: type,
-      quote_reward: quote,
-      // "follow_reward": follow,
-      campaign_budget: budget === "" ? 0 : budget,
-      ...(addMedia && { media: media }),
-    };
+    let postData = new FormData();
+    postData.append("name", name);
+    postData.append("tweet_text", Text);
+    postData.append("fungible_token_id", type === "HBAR" ? "" : selectedToken);
+    postData.append("comment_reward", reply);
+    postData.append("retweet_reward", retweet);
+    postData.append("like_reward", like);
+    postData.append("type", type);
+    postData.append("quote_reward", quote);
+    postData.append("campaign_budget", budget === "" ? 0 : budget);
+    if (addMedia && mediaFile && mediaFile.length > 0 && displayMedia.length > 0) {
+      mediaFile.forEach((item) => {
+      postData.append("media", item.file);
+      });
+    }
+
     try {
-      // const response = await APICall("/campaign/twitter-card/", "POST", {}, postData, false, cookies.token);
+      console.log("postData-updated", postData);
       const response = await Campaign.addCampaign(postData);
       if (response) {
         toast.success(response.message);
         setShowLoading(false);
         navigate("/dashboard");
-        // navigate("/onboarding");
       }
     } catch (err) {
       console.error("campaign/add-new/:", err);
@@ -91,6 +64,7 @@ const PreviewModal = ({
       notify("Something went wrong! Please try again later");
     }
   };
+
   let currentToken = store?.balances?.filter((item) => item?.entityId === selectedToken);
   return (
     <Dialog
@@ -162,13 +136,10 @@ const PreviewModal = ({
           </LeftSec>
           <RightSec>
             <TableSection>
-              <ModalTable currentToken={currentToken} reply={reply} retweet={retweet} like={like} quote={quote} type={type}/>
+              <ModalTable currentToken={currentToken} reply={reply} retweet={retweet} like={like} quote={quote} type={type} />
             </TableSection>
             <CustomParagraph>Campaign Budget: {budget}</CustomParagraph>
-            <CustomParagraph>
-              Warning: you will not be able to edit this tweet if you click submit as this feature is not available in Twitter yet, we recommend you
-              read your tweet information and reward table carefully before submitting your campaign.
-            </CustomParagraph>
+            <CustomParagraph>Warning: you will not be able to edit this tweet if you click submit as this feature is not available in Twitter yet, we recommend you read your tweet information and reward table carefully before submitting your campaign.</CustomParagraph>
             <ButtonWrapPrimary>
               <PrimaryButton text="Cancel & Edit" inverse={true} onclick={handleClose} colors="#EF5A22" border="1px solid #EF5A22" />
               <PrimaryButton text="Submit" onclick={handleSubmit} />

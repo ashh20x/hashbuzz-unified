@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosResponse, AxiosRequestConfig } from "axios";
 import * as React from "react";
 
 import { addCampaignBody, AdminLoginResponse, AdminUpdatePassword, AllTokensQuery, AuthCred, BalanceResponse, CampaignCards, Challenge, ContractInfo, CreateTransactionByteBody, CurrentUser, GenerateAstPayload, GnerateReseponse, LogoutResponse, reimburseAmountBody, SetTransactionBody, TokenBalances, TokenDataObj, TokenInfo, TopUpResponse, TrailSetters, updateCampaignStatusBody, UpdatePasswordResponse } from "../types";
@@ -36,10 +36,10 @@ export const useApiInstance = () => {
         setIsLoading(false);
       }
     },
-    post: async (url: string, body: {}) => {
+    post: async (url: string, body: {} , headers?: AxiosRequestConfig) => {
       setIsLoading(true);
       try {
-        const response = await axiosInstance.post(url, body);
+        const response = await axiosInstance.post(url, body , headers);
         return responseBody(response);
       } finally {
         setIsLoading(false);
@@ -127,7 +127,7 @@ export const useApiInstance = () => {
   };
 
   const Campaign = {
-    addCampaign: (data: addCampaignBody): Promise<any> => requests.post("/api/campaign/add-new", { ...data }),
+    addCampaign: (data: addCampaignBody): Promise<any> => requests.post("/api/campaign/add-new", data , { headers: { "Content-Type": "multipart/form-data" } }),
     getCampaigns: (): Promise<CampaignCards[]> => requests.get("/api/campaign/all"),
     updateCampaignStatus: (data: updateCampaignStatusBody): Promise<any> => requests.post("/api/campaign/update-status", { ...data }),
     chatResponse: (data: any): Promise<any> => requests.post("/api/campaign/chatgpt", data),
