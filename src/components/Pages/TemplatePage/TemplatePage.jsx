@@ -1,4 +1,5 @@
-import { MenuItem, Select } from "@mui/material";
+import { Icon, MenuItem, Select } from "@mui/material";
+import { Image as ImageIcon } from "@mui/icons-material";
 import Picker from "emoji-picker-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -34,6 +35,7 @@ export const TemplatePage = () => {
   const [isYoutube, setYoutube] = useState(false);
   const [media, setMedia] = useState(["https://www.youtube.com/watch?time_continue=1&v=1lzba8D4FCU&embeds_referring_euri=http%3A%2F%2Flocalhost%3A3000%2F&source_ve_path=Mjg2NjY&feature=emb_logo"]);
   const [displayMedia, setDisplayMedia] = useState([]);
+  const [medeiaFile , setMediaFile] = useState([]);
   const [gifSelected, setGifSelect] = useState(false);
   const [videoTitle, setVideoTitle] = useState(false);
   const { User } = useApiInstance();
@@ -45,6 +47,8 @@ export const TemplatePage = () => {
   const [selectedToken, setSelectedToken] = useState(allTokens?.[0]?.value);
   const [errorNameMessage, setErrorNameMessage] = useState("");
   const [errorTextMessage, setErrorTextMessage] = useState("");
+  const [uploadedfile ] = useState(false);
+
 
   const getTokens = async () => {
     const response = await User.getTokenBalances();
@@ -87,34 +91,29 @@ export const TemplatePage = () => {
 
   const handleImageChange = async (event) => {
     const file = event.target.files[0];
-    let url = URL.createObjectURL(file);
+    const url = URL.createObjectURL(file);
     const fileType = file.type;
     setYoutube(false);
+
     if (media.length === 0 && fileType.includes("gif")) {
       setDisplayMedia([...displayMedia, url]);
       setGifSelect(true);
-      let data = new FormData();
-      data.append("media_file", file);
-      data.append("media_type", "image");
-      try {
-      } catch (err) {
-        console.error("/campaign/media/:", err);
-      }
     } else if (media.length < 4 && !fileType.includes("gif") && !gifSelected) {
-      try {
-        setDisplayMedia([...displayMedia, url]);
-        let data = new FormData();
-        data.append("media_file", file);
-        data.append("media_type", "image");
-        try {
-        } catch (err) {
-          console.error("/campaign/media/:", err);
-        }
-      } catch (err) {
-        console.log(err);
-      }
+      setDisplayMedia([...displayMedia, url]);
     } else {
-      console.log("Max 4 file or gif");
+      console.log("Max 4 files or gif");
+      return;
+    }
+
+    const data = new FormData();
+    data.append("media_file", file);
+    data.append("media_type", "image");
+    setMediaFile(prevdata => ([...prevdata, {file: file, type: fileType}]));
+
+    try {
+      // Add your API call here
+    } catch (err) {
+      console.error("/campaign/media/:", err);
     }
   };
 
@@ -234,6 +233,8 @@ export const TemplatePage = () => {
     setDisplayMedia(imagesArr);
   };
 
+
+
   useEffect(() => {
     setSelectedToken(allTokens?.[0]?.value);
   }, [allTokens]);
@@ -258,13 +259,11 @@ export const TemplatePage = () => {
           </Select>
           {type === "FUNGIBLE" && (
             <Select style={{ margin: "20px 0" }} labelId="token_id" id="token_id" placeholder="Select Token Id" value={selectedToken} label="Token Id" onChange={selectTokenIdHandler}>
-              {allTokens?.map((item) => {
-                return (
-                  <MenuItem value={item?.value} disabled={item.tokenBalance <= 0}>
-                    {`${item.tokenBalance} - ${item?.token_symbol} - ${item?.value}`}
-                  </MenuItem>
-                );
-              })}
+              {allTokens?.map((item) => (
+                <MenuItem key={item?.value} value={item?.value} disabled={item.tokenBalance <= 0}>
+                  {`${item.tokenBalance} - ${item?.token_symbol} - ${item?.value}`}
+                </MenuItem>
+              ))}
             </Select>
           )}
           <CustomParagraph onChange={handleText} value={Text} type="textarea" maxLength={270} placeholder="Start typing your tweet campaign" required />
@@ -273,7 +272,6 @@ export const TemplatePage = () => {
             <EmoBtnWrap className="button" onClick={() => setShowEmojis(!showEmojis)}>
               😊 &nbsp;
             </EmoBtnWrap>
-
             {270 - Text?.length === 0 ? 0 : <div>{270 - Text?.length || 270}</div>}
           </WordsWrap>
           {showEmojis && (
@@ -283,7 +281,7 @@ export const TemplatePage = () => {
           )}
           <ButtonWrap>
             {buttonTags.map((item) => (
-              <SecondaryButton text={item.replace(item[0], "")} />
+              <SecondaryButton key={item} text={item.replace(item[0], "")} />
             ))}
           </ButtonWrap>
           <TableSection>
@@ -297,91 +295,88 @@ export const TemplatePage = () => {
             <CustomCheckboxInput type="checkbox" onChange={handleAddMedia} />
             Do you want to add media?
           </IconsWrap>
-          {addMedia ? (
-            <IconsWrap>
-              <label for="file">
-                <span> </span>
-              </label>
-              <CustomInput type="file" alt="" id="file" style={{ display: "none" }} accept="image/png, image/gif, image/jpeg,image/jpg, video/*" onChange={handleImageChange} />
-              <label onClick={handleYouTubeClick}>
-                <span>
-                  <YoutubeIcon />
-                </span>
-              </label>
-            </IconsWrap>
-          ) : null}
-          {isYoutube && addMedia ? (
+          {addMedia && (
             <>
+              <IconsWrap>
+                <label htmlFor="file">
+                  <span>
+                    <ImageIcon />
+                  </span>
+                </label>
+                <CustomInput type="file" alt="" id="file" style={{ display: "none", visibility: "hidden", opacity: 0 }} accept="image/png, image/gif, image/jpeg,image/jpg" onChange={handleImageChange} />
+                <label onClick={handleYouTubeClick}>
+                  <span>
+                    <YoutubeIcon />
+                  </span>
+                </label>
+              </IconsWrap>
               <CustomInput placeholder="http/123/reward/taskbar" value={media} onChange={handleLink} />
               {displayMedia.length > 0 ? (
                 displayMedia.length === 3 ? (
                   <IconsWrap>
                     <div>
-                      {displayMedia[0] ? (
+                      {displayMedia[0] && (
                         <SimpleDiv>
                           <ShowImage ind={0} setremoveImage={() => setremoveImage} src={displayMedia[0]} alt="" />
                           <br />
                         </SimpleDiv>
-                      ) : null}
-                      {displayMedia[1] ? (
+                      )}
+                      {displayMedia[1] && (
                         <SimpleDiv>
-                          <ShowImage ind={1} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[1]} alt="" />{" "}
+                          <ShowImage ind={1} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[1]} alt="" />
                         </SimpleDiv>
-                      ) : null}
+                      )}
                     </div>
-
                     <IconsWrap>
-                      {displayMedia[2] ? (
+                      {displayMedia[2] && (
                         <SimpleDiv>
                           <ShowImage ind={2} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[2]} alt="" />
                         </SimpleDiv>
-                      ) : null}
+                      )}
                     </IconsWrap>
                   </IconsWrap>
                 ) : (
                   <>
                     <IconsWrap>
-                      {displayMedia[0] ? (
+                      {displayMedia[0] && (
                         <SimpleDiv>
                           <ShowImage ind={0} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[0]} alt="" />
                           <br />
                         </SimpleDiv>
-                      ) : null}
-                      {displayMedia[1] ? (
+                      )}
+                      {displayMedia[1] && (
                         <SimpleDiv>
                           <ShowImage ind={1} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[1]} alt="" />
                           <br />
                         </SimpleDiv>
-                      ) : null}
+                      )}
                     </IconsWrap>
-
                     <IconsWrap>
-                      {displayMedia[2] ? (
+                      {displayMedia[2] && (
                         <SimpleDiv>
                           <ShowImage ind={2} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[2]} alt="" />
                           <br />
                         </SimpleDiv>
-                      ) : null}
-                      {displayMedia[3] ? (
+                      )}
+                      {displayMedia[3] && (
                         <SimpleDiv>
                           <ShowImage ind={3} setremoveImage={(i) => setremoveImage(i)} src={displayMedia[3]} alt="" />
                         </SimpleDiv>
-                      ) : null}
+                      )}
                     </IconsWrap>
                   </>
                 )
-              ) : addMedia ? (
-                <CustomIframe src={srcLink} id="tutorial" frameborder="0" allow="autoplay; encrypted-media" title="video"></CustomIframe>
-              ) : null}
+              ) : (
+                addMedia && <CustomIframe src={srcLink} id="tutorial" frameBorder="0" allow="autoplay; encrypted-media" title="video"></CustomIframe>
+              )}
             </>
-          ) : null}
-
+          )}
           <ButtonWrapPrimary>
             <PrimaryButton text="Preview" inverse={true} onclick={handlePreview} colors="#2546EB" border="1px solid #2546EB" disabled={buttonDisabled || !budget || !name || !Text} />
           </ButtonWrapPrimary>
         </RightSec>
       </Wrapper>
-      <PreviewModal open={open} setOpen={setOpen} Text={Text + " #hashbuzz"} buttonTags={buttonTags} reply={reply} tokenId={tokenId} retweet={retweet} type={type} like={like} selectedToken={selectedToken} follow={follow} srcLink={srcLink} name={name} media={media} displayMedia={displayMedia} isYoutube={isYoutube} videoTitle={videoTitle} addMedia={addMedia} budget={budget} quote={quote} />
+      <PreviewModal open={open} setOpen={setOpen} Text={Text + " #hashbuzz"} buttonTags={buttonTags} reply={reply} tokenId={tokenId} retweet={retweet} type={type} like={like} selectedToken={selectedToken} follow={follow} srcLink={srcLink} name={name} media={media} displayMedia={displayMedia} isYoutube={isYoutube} videoTitle={videoTitle} addMedia={addMedia} budget={budget} quote={quote} mediaFile={medeiaFile} />
     </ContainerStyled>
   );
 };

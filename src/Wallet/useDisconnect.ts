@@ -9,7 +9,7 @@ import { getErrorMessage } from "../Utilities/helpers";
 export const useDisconnect = () => {
   const { topic, pairingData, hashconnect, setState } = useContext(HashconectServiceContext);
   const { Auth } = useApiInstance();
-  const [_, , removeCookies] = useCookies(["aSToken"]);
+  const [_, , removeCookies] = useCookies(["aSToken", "refreshToken", "XSRF-TOKEN"]);
   const store = useStore();
 
   const disconnect = useCallback(async () => {
@@ -18,6 +18,8 @@ export const useDisconnect = () => {
       setState!((exState) => ({ ...exState, pairingData: null }))!;
       const logoutResponse = await Auth.doLogout();
       removeCookies("aSToken");
+      removeCookies("refreshToken");
+      removeCookies("XSRF-TOKEN");
       store.dispatch({ type: "RESET_STATE" });
       return logoutResponse;
     } catch (err) {
