@@ -9,6 +9,8 @@ import { Template } from "./screens/Template";
 import { Invoice } from "./screens/Invoice";
 import { OnBoarding } from "./screens/OnBoarding";
 import { LandingV3 } from "./Ver2Designs/Pages/Landing";
+import { AuthAndOnBoardLayout, ConnectWallet } from "./Ver2Designs/Pages/AuthAndOnboard";
+import path from "path";
 
 const router = createBrowserRouter([
   {
@@ -19,6 +21,14 @@ const router = createBrowserRouter([
         <LandingV3 />
       </RedirectIfAuthenticated>
     ),
+  },
+  {
+    path: "/auth",
+    element: <AuthAndOnBoardLayout />,
+    children: [
+      { path: "", element: <ConnectWallet /> },
+      { path: "connect-wallet", element: <ConnectWallet /> },
+    ],
   },
   {
     path: "/",
