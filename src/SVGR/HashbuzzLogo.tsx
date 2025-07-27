@@ -4,8 +4,8 @@ interface Props {
   width?: number;
   height?: number;
   colors?:{
-    color1:string,
-    color2:string
+    color1?:string,
+    color2?:string
   }
 }
 
