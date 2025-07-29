@@ -1,6 +1,6 @@
 import { EntityBalances, user_roles } from "../types";
-export const NETWORK = process.env.REACT_APP_NETWORK ?? "testnet";
-export const dAppApiURL = process.env.REACT_APP_DAPP_API;
+export const NETWORK = import.meta.env.VITE_NETWORK ?? "testnet";
+export const dAppApiURL = import.meta.env.VITE_DAPP_API;
 
 export enum CampaignStatus {
   ApprovalPending = "ApprovalPending",

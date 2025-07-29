@@ -10,7 +10,6 @@ import { Invoice } from "./screens/Invoice";
 import { OnBoarding } from "./screens/OnBoarding";
 import { LandingV3 } from "./Ver2Designs/Pages/Landing";
 import { AuthAndOnBoardLayout, ConnectWallet } from "./Ver2Designs/Pages/AuthAndOnboard";
-import path from "path";
 
 const router = createBrowserRouter([
   {

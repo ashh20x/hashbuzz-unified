@@ -111,8 +111,8 @@ export const useApiInstance = () => {
   };
 
   const MirrorNodeRestAPI = {
-    getTokenInfo: (tokenId: string) => axios.get<TokenInfo>(`${process.env.REACT_APP_MIRROR_NODE_LINK}/api/v1/tokens/${tokenId}`),
-    getBalancesForAccountId: (accountId: string) => axios.get<BalanceResponse>(`${process.env.REACT_APP_MIRROR_NODE_LINK}/api/v1/balances?account.id=${accountId}`),
+    getTokenInfo: (tokenId: string) => axios.get<TokenInfo>(`${import.meta.env.VITE_MIRROR_NODE_LINK}/api/v1/tokens/${tokenId}`),
+    getBalancesForAccountId: (accountId: string) => axios.get<BalanceResponse>(`${import.meta.env.VITE_MIRROR_NODE_LINK}/api/v1/balances?account.id=${accountId}`),
   };
 
   const Transaction = {

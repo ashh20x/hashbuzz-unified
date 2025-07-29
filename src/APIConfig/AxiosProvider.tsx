@@ -27,7 +27,7 @@ const useRefreshToken = false; // Flag to enable/disable token refresh
 
 export const AxiosContext = createContext<AxiosInstance | null>(null);
 
-const AxiosProvider: React.FC = ({ children }) => {
+const AxiosProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
   const [cookies, setCookie, removeCookie] = useCookies(["aSToken", "refreshToken", "XSRF-TOKEN"]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [deviceId, setDeviceId] = useState<string | null>(getOrCreateUniqueID());
@@ -36,7 +36,7 @@ const AxiosProvider: React.FC = ({ children }) => {
 
   const axiosInstance = useRef<AxiosInstance>(
     axios.create({
-      baseURL: process.env.REACT_APP_DAPP_API,
+      baseURL: import.meta.env.VITE_DAPP_API,
       timeout: 15000,
       headers: {
         "Content-type": "application/json",
@@ -95,7 +95,7 @@ const AxiosProvider: React.FC = ({ children }) => {
   useEffect(() => {
     const fetchCsrfToken = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_DAPP_API}/auth/csrf-token`, {
+        const response = await axios.get(`${import.meta.env.VITE_DAPP_API}/auth/csrf-token`, {
           withCredentials: true, // Ensure cookies are sent
         });
 

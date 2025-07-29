@@ -1,18 +1,19 @@
+import React from "react";
 import { useCookies } from "react-cookie";
 import { Navigate } from "react-router-dom";
 import { useStore } from "../Store/StoreProvider";
 import { useEffect } from "react";
 
-export const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
+export const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [cookies] = useCookies(["aSToken"]);
   const store = useStore();
 
-  if (cookies.aSToken && store?.ping.status) return children;
+  if (cookies.aSToken && store?.ping.status) return <>{children}</>;
 
   return <Navigate to={"/"} />;
 };
 
-export const RedirectIfAuthenticated: React.FC = ({ children }) => {
+export const RedirectIfAuthenticated: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { ping, auth } = useStore();
   const [cookies] = useCookies(["aSToken", "refreshToken"]);
 

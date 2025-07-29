@@ -6,7 +6,7 @@ import { setHowItWorksModalOpen } from '../landingPageStoreSlice';
 import * as styles from './styles';
 
 
-const videoURL = process.env.YOUTUBE_VIDEO_URL || 'https://youtu.be/zqpnoHG3JAk';
+const videoURL = import.meta.env.YOUTUBE_VIDEO_URL || 'https://youtu.be/zqpnoHG3JAk';
 
 const HowItWorksVideoModal = () => {
     const dispatch = useDispatch();
