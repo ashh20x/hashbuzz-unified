@@ -1,5 +1,4 @@
 import { Close as CloseIcon } from "@mui/icons-material";
-import { LoadingButton } from "@mui/lab";
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, MenuItem, Select } from "@mui/material";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
@@ -167,9 +166,9 @@ const AssociateModal = ({ open, onClose }: TopupModalProps) => {
         <Button autoFocus onClick={onClose} color="error" variant="outlined">
           Close
         </Button>
-        <LoadingButton onClick={onSubmitHandler} autoFocus variant="contained">
+        <Button onClick={onSubmitHandler} autoFocus variant="contained">
           Associate
-        </LoadingButton>
+        </Button>
       </DialogActions>
     </Dialog>
   );
