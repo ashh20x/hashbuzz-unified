@@ -6,10 +6,13 @@ export const howToStartSection: SxProps<Theme> = {
   padding: "3rem 0",
 };
 
-export const hoTOStartSectionContainer: SxProps<Theme> = {
+export const howToStartSectionContainer: SxProps<Theme> = {
   ...containerStyles,
   "& h3": {
-    fontSize: "2.75rem",
+    fontSize: {
+      xs: "1.875rem",
+      sm: "2.75rem",
+    },
     fontWeight: 600,
     lineHeight: 1.2,
     marginBottom: "2rem",
@@ -24,7 +27,7 @@ export const hoTOStartSectionContainer: SxProps<Theme> = {
   } 
 };
 
-export const howToStartSteps: SxProps<Theme> = {
+export const howToStartSteps =(theme:Theme):SxProps<Theme> => ({
   display: "flex",
   flexDirection: "column",
   justifyContent: "space-between",
@@ -33,17 +36,25 @@ export const howToStartSteps: SxProps<Theme> = {
   borderRadius: "8px",
   border: "1px solid #DDE0F4",
   backgroundColor: "#F9FAFF",
+  [theme.breakpoints.down('sm')]:{
+    height:"auto",
+    textAlign:'center'
+  },
   "& p": {
     color: "#5265FF",
     fontSize: "1rem",
     fontWeight: 600,
     lineHeight: 1.5,
   },
-};
+});
 
-export const howToStartStepsContent: SxProps<Theme> = {
+export const howToStartStepsContent =(theme:Theme):SxProps<Theme> => ({
   display: "flex",
   flexDirection: "column",
+  [theme.breakpoints.down('sm')]:{
+    alignItems:"center",
+    marginTop:"2rem"
+  },
   "& span": {
     display: "inline-flex",
     alignItems: "center",
@@ -55,7 +66,12 @@ export const howToStartStepsContent: SxProps<Theme> = {
     boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.05)",
     marginBottom: "1.4rem",
   },
-};
+  '& h4':{
+    fontSize:'1.5rem',
+    lineHeight:1.2,
+    fontWeight:500
+  }
+});
 
 export const startsNowBtn: SxProps<Theme> = {
   backgroundColor: "#5265FF",

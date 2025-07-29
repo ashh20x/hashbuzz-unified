@@ -1,32 +1,57 @@
 import { SxProps, Theme } from "@mui/material";
 
-export const campaignerSection: SxProps<Theme> = {
+export const sectionStyles: SxProps<Theme> = {
   border: "1px solid #DBDDFF",
   borderRadius: "8px",
   marginTop: "2rem",
 };
 
 export const content: SxProps<Theme> = {
-  padding: "36px",
+  padding: {
+    md: "36px",
+    xs: "24px",
+  },
   "&  p": {
-    fontSize: "1.375rem",
+    fontSize: {
+      xs: "1.125rem",
+      md: "1.25rem",
+    },
     lineHeight: 1.64,
     fontWeight: 400,
     paragraphSpacing: "1.25rem",
     marginBottom: "2rem",
   },
+  "& button": {
+    width: "100%",
+    display: {
+      xs: "block",
+      md: "none",
+    },
+  },
 };
 
-export const headingConetnt: SxProps<Theme> = {
-  padding: "36px",
+export const headingContent: SxProps<Theme> = {
+  padding: {
+    md: "36px",
+    xs: "24px",
+  },
   "& h4": {
-    fontSize: "2.25rem",
+    fontSize: {
+      xs: "1.875rem",
+      md: "2.25rem",
+    },
     fontWeight: 600,
     lineHeight: 1.2,
-    marginBottom: "1rem",
+    marginBottom: {
+      xs: "0",
+      md: "1rem",
+    },
   },
   "& button": {
     width: "auto",
+    display: {
+      xs: "none",
+    },
   },
 };
 
@@ -48,22 +73,48 @@ export const infoIconsSection: SxProps<Theme> = {
 };
 
 export const infoIconsContainer: SxProps<Theme> = {
-  height: "255px",
+  height: {
+    xs: "216px",
+    sm: "255px",
+  },
   padding: "24px",
   color: "#181D27",
+  borderBottom: {
+    xs: "1px solid #DBDDFF",
+  },
+  display: "flex",
+  flexDirection: "column",
+  alignItems: {
+    xs: "center",
+    md: "flex-start",
+  },
+  borderRight: { xs: "none", md: "1px solid #DBDDFF" },
   "p , h4": {
     fontSize: "1.75rem",
     marginBottom: "1rem",
+    textAlign: {
+      xs: "center",
+      md: "left",
+    },
   },
   "& h4": {
     fontWeight: 600,
     lineHeight: 1.2,
-    fontSize: "1.75rem",
-    marginTop: "1rem",
+    fontSize: {
+      xs: "1.5rem",
+      md: "1.6875rem",
+    },
+    marginTop: {
+      md: "1.5rem",
+      xs: "2rem",
+    },
   },
   "& p": {
     fontWeight: 400,
     lineHeight: 1.64,
-    fontSize: "1.125rem",
+    fontSize: {
+      md: "1rem",
+      xs: "1.125rem",
+    },
   },
 };

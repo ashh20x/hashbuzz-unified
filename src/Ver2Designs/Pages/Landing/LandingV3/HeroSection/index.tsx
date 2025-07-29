@@ -11,7 +11,7 @@ const HeroSection = () => {
         <Box id="hero-section-content-area" sx={styles.heroSectionContent}>
           <h1>Grow your Brand Community with Incentivized 𝕏 Engagement</h1>
           <p>Connect your wallet, link your 𝕏 account, and start rewarding real interactions using crypto tokens — all in a few clicks.</p>
-          <Box id="hero-section-btns">
+          <Box id="hero-section-btns" className="heroSectionBtns">
             <Button sx={styles.howItWorksButton} disableElevation  size="medium" variant="contained" startIcon={<PlayCircle fontSize="inherit" />}>
               How it works
             </Button>

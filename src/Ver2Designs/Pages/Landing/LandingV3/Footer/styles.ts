@@ -9,9 +9,9 @@ export const footerSectionStyles: SxProps<Theme> = {
 };
 
 export const footerTopStyles: SxProps<Theme> = {
+  ...containerStyles,
   display: "flex",
   paddingBottom: "2rem",
-  ...containerStyles,
   "& p": {
     fontSize: "1rem",
     lineHeight: "1.5",
@@ -20,11 +20,15 @@ export const footerTopStyles: SxProps<Theme> = {
     margin: "2rem 0",
   },
   "& ul": {
-    display: "inline-flex",
+    display: "flex",
+    flexDirection:{
+      xs: "column",
+      sm: "row",
+    },
     listStyle: "none",
     padding: 0,
     paddingLeft: 0,
-    marginBottom:"1rem",
+    marginBottom: "1rem",
     "& li": {
       marginRight: "1.5rem",
       "& a": {

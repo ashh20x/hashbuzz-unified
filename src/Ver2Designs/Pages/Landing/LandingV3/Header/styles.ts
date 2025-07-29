@@ -10,12 +10,12 @@ export const headerContainer: SxProps<Theme> = {
   height: "80px",
 };
 
-export const headerContenntContainer: SxProps<Theme> = {
+export const headerContentContainer: SxProps<Theme> = {
   ...containerStyles,
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
-  height:"100%"
+  height: "100%",
 };
 
 export const headerActionContainer: SxProps<Theme> = {
