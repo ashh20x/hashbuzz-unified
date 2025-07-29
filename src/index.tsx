@@ -9,15 +9,16 @@ import { NETWORK } from "./Utilities/helpers";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AxiosProvider from "./APIConfig/AxiosProvider";
-import { StoreProvider } from "./Store/StoreProvider";
+import { Provider } from "react-redux";
+import { store } from "./Store/store";
 
 const theme = createTheme();
 
 const App = () => {
   return (
     <React.StrictMode>
-      <CookiesProvider>
-        <StoreProvider>
+        <CookiesProvider>
+        <Provider store={store}>
           <AxiosProvider>
             <HashconnectAPIProvider
               metaData={{
@@ -35,7 +36,7 @@ const App = () => {
               </ThemeProvider>
             </HashconnectAPIProvider>
           </AxiosProvider>
-        </StoreProvider>
+            </Provider>
         <ToastContainer />
       </CookiesProvider>
     </React.StrictMode>

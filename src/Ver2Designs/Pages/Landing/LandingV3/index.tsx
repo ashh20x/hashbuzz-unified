@@ -6,6 +6,7 @@ import NextworkAndSecurityProvider from "./NertowkAndSecurityProvicer";
 import EarningAndPromo from "./EarningAndPromo";
 import HowToStartSection from "./HowToStart";
 import Footer from "./Footer";
+import HowItWorksVideoModal from "./HowItWorksVideoModal/index.tsx";
 
 const LandingV3 = () => {
   const theme = useTheme();
@@ -17,6 +18,7 @@ const LandingV3 = () => {
       <EarningAndPromo />
       <HowToStartSection />
       <Footer />
+      <HowItWorksVideoModal />
     </Box>
   );
 };

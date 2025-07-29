@@ -5,28 +5,30 @@ export const heroSectionContainer: SxProps<Theme> = {
   height: "auto",
 };
 
-export const heroSectionContentArea = (theme: Theme): SxProps<Theme> => ({
+export const heroSectionContentArea: SxProps<Theme> = {
   paddingTop: "80px",
-  height: "80dvh",
+  height: {
+    xs: "65dvh",
+    sm: "70dvh",
+    md: "70dvh",
+    lg: "80dvh",
+    xl: "74dvh",
+  },
   background: "linear-gradient(90deg, rgb(1, 16, 73) 0%, 20.283%, rgb(13, 25, 111) 40.566%, 43.5535%, rgb(1, 32, 122) 46.5409%, 59.5912%, rgb(6, 53, 143) 72.6415%, 86.3208%, rgb(6, 38, 121) 100%)",
   backgroundImage: `url("./images/landing-v3-background.png"), linear-gradient(90deg, rgb(1, 16, 73) 0%, 20.283%, rgb(13, 25, 111) 40.566%, 43.5535%, rgb(1, 32, 122) 46.5409%, 59.5912%, rgb(6, 53, 143) 72.6415%, 86.3208%, rgb(6, 38, 121) 100%)`,
-  backgroundPosition: "center",
+  backgroundPosition: {
+    xs: "center bottom",
+    sm: "center center",
+    md: "center center",
+    lg: "center center",
+    xl: "center center",
+  },
   backgroundRepeat: "no-repeat",
   backgroundSize: "cover",
   display: "flex",
   alignItems: "center",
-  [theme.breakpoints.up("xl")]: {
-    height: "74dvh",
-  },
-  [theme.breakpoints.up("lg")]: {
-    height: "80dvh",
-  },
-  [theme.breakpoints.down("sm")]: {
-    width: "100%",
-    height: "65dvh",
-    backgroundPosition: "center bottom",
-  },
-});
+  width: "100%",
+};
 
 export const heroSectionContent: SxProps<Theme> = {
   ...containerStyles,
