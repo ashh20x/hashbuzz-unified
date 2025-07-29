@@ -1,7 +1,6 @@
 import { Close as CloseIcon } from "@mui/icons-material";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
-import { LoadingButton } from "@mui/lab";
-import { Box, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Grid, IconButton, InputAdornment, List, ListItem, Stack, Typography } from "@mui/material";
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Grid, IconButton, InputAdornment, List, ListItem, Stack, Typography } from "@mui/material";
 import FormControl from "@mui/material/FormControl";
 import FormHelperText from "@mui/material/FormHelperText";
 import InputLabel from "@mui/material/InputLabel";
@@ -238,13 +237,13 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
       <DialogActions>
        
         {operation === "reimburse" ? (
-          <LoadingButton onClick={reimburse} autoFocus variant="contained" loading={loading} loadingPosition="start" disabled={loading}>
+          <Button onClick={reimburse} autoFocus variant="contained" loading={loading} loadingPosition="start" disabled={loading}>
             Reimburse
-          </LoadingButton>
+          </Button>
         ) : (
-          <LoadingButton autoFocus onClick={handleTopup} variant="contained" loading={loading} loadingPosition="start" startIcon={<AccountBalanceWalletIcon />} disabled={loading}>
+          <Button autoFocus onClick={handleTopup} variant="contained" loading={loading} loadingPosition="start" startIcon={<AccountBalanceWalletIcon />} disabled={loading}>
             Topup<i>{` ( ${calculateTotal(formData.amount.value).toFixed(4)}  ${data?.entityIcon} )`}</i>
-          </LoadingButton>
+          </Button>
         )}
       </DialogActions>
     </Dialog>

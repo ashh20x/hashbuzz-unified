@@ -1,5 +1,4 @@
 import SaveIcon from "@mui/icons-material/Save";
-import { LoadingButton } from "@mui/lab";
 import { Avatar, Card, Divider, Stack, Typography } from "@mui/material";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
@@ -15,7 +14,7 @@ import { useApiInstance } from "../../../APIConfig/api";
 import { TokenDataObj, TokenInfo } from "../../../types";
 interface AddNewTokenModalProps {
   open: boolean;
-  onClose: (data?:TokenDataObj) => void;
+  onClose: (data?: TokenDataObj) => void;
 }
 
 export default function AddNewTokenModal({ open, onClose }: AddNewTokenModalProps) {
@@ -41,7 +40,7 @@ export default function AddNewTokenModal({ open, onClose }: AddNewTokenModalProp
     }
   };
 
-  const handleClose = (data?:TokenDataObj) => {
+  const handleClose = (data?: TokenDataObj) => {
     unstable_batchedUpdates(() => {
       setTokenId("");
       setTokenInfo(null);
@@ -81,7 +80,7 @@ export default function AddNewTokenModal({ open, onClose }: AddNewTokenModalProp
           onChange={(event) => setTokenId(event.target.value)}
           value={tokenId}
           disabled={Boolean(tokenInfo)}
-          // sx={{marginBottom:2}}
+        // sx={{marginBottom:2}}
         />
 
         {tokenInfo ? (
@@ -103,7 +102,7 @@ export default function AddNewTokenModal({ open, onClose }: AddNewTokenModalProp
       </DialogContent>
       <DialogActions>
         <Button onClick={() => handleClose()}>Close</Button>
-        <LoadingButton
+        <Button
           loading={loading}
           loadingPosition="start"
           startIcon={<SaveIcon />}
@@ -112,7 +111,7 @@ export default function AddNewTokenModal({ open, onClose }: AddNewTokenModalProp
           disabled={!Boolean(tokenInfo)}
         >
           Submit
-        </LoadingButton>
+        </Button>
       </DialogActions>
     </Dialog>
   );
