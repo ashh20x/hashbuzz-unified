@@ -89,10 +89,10 @@ const Landing = () => {
         >
           {pairedAccount ? (
             <Grid container>
-              <Grid item sm={6} xs={12} sx={{ color: "#fff" }}>
+              <Grid size={{ xs: 12, sm: 6 }} sx={{ color: "#fff" }}>
                 <Typography variant="h4">{pairedAccount}</Typography>
               </Grid>
-              <Grid item sm={6} xs={12}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 {authStatusLog.length > 0 ? <Alert severity={authStatusLog[authStatusLog.length - 1]?.type ?? "info"}>{authStatusLog[authStatusLog.length - 1]?.message ?? "Message"}</Alert> : null}
               </Grid>
             </Grid>

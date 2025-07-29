@@ -9,7 +9,7 @@ const Footer = () => {
     <Box component="footer" sx={styles.footerSectionStyles}>
       <Box id="footer-top" sx={styles.footerTopStyles}>
         <Grid container spacing={2} alignItems="center">
-          <Grid item xs={12} md={10}>
+          <Grid size={{ xs: 12, md: 10 }}>
             <HashbuzzLogoMainTransparent height={46} />
             <Box component="p" sx={{ mt: 1, mb: 2 }}>
               Design amazing digital experiences that create more happy in the world.
@@ -26,7 +26,7 @@ const Footer = () => {
               </li>
             </Box>
           </Grid>
-          <Grid item xs={12} md={2}>
+          <Grid size={{ xs: 12, md: 2 }}>
             <Stack
               height="100%"
               direction="column"

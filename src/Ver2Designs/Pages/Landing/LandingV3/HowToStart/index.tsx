@@ -12,7 +12,7 @@ export const HowToStartSection = () => {
       <Box sx={styles.howToStartSectionContainer}>
         <h3>How to Get Started</h3>
         <Grid container spacing={2.5}>
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <Box sx={styles.howToStartSteps(theme)}>
               <p>Step 1</p>
               <Box sx={styles.howToStartStepsContent(theme)}>
@@ -23,7 +23,7 @@ export const HowToStartSection = () => {
               </Box>
             </Box>
           </Grid>
-          <Grid item xs={12} md={4}>
+           <Grid size={{ xs: 12, md: 4 }}>
             <Box sx={styles.howToStartSteps(theme)}>
               <p>Step 2</p>
               <Box sx={styles.howToStartStepsContent(theme)}>
@@ -34,7 +34,7 @@ export const HowToStartSection = () => {
               </Box>
             </Box>
           </Grid>
-          <Grid item xs={12} md={4}>
+           <Grid size={{ xs: 12, md: 4 }}>
             <Box sx={styles.howToStartSteps(theme)}>
               <p>Step 3</p>
               <Box sx={styles.howToStartStepsContent(theme)}>
