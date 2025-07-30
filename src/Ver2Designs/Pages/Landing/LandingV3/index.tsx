@@ -1,12 +1,12 @@
 import { Box, useTheme } from "@mui/material";
-import * as styles from "./styles";
-import HeroSection from "./HeroSection";
-import Header from "./Header";
-import NextworkAndSecurityProvider from "./NertowkAndSecurityProvicer";
 import EarningAndPromo from "./EarningAndPromo";
-import HowToStartSection from "./HowToStart";
 import Footer from "./Footer";
-import HowItWorksVideoModal from "./HowItWorksVideoModal/index.tsx";
+import Header from "./Header";
+import HeroSection from "./HeroSection";
+import HowItWorksVideoModal from "./HowItWorksVideoModal";
+import HowToStartSection from "./HowToStart";
+import NextworkAndSecurityProvider from "./NertowkAndSecurityProvicer";
+import * as styles from "./styles";
 
 const LandingV3 = () => {
   const theme = useTheme();

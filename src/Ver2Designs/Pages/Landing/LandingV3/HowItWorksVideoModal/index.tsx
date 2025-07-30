@@ -1,3 +1,4 @@
+import HashbuzzIcon from '@/SVGR/HashbuzzIcon';
 import CloseIcon from '@mui/icons-material/Close';
 import { Box, IconButton, Modal, Typography } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
@@ -6,7 +7,7 @@ import { setHowItWorksModalOpen } from '../landingPageStoreSlice';
 import * as styles from './styles';
 
 
-const videoURL = import.meta.env.YOUTUBE_VIDEO_URL || 'https://youtu.be/zqpnoHG3JAk';
+const videoURL = import.meta.env.VITE_YOUTUBE_VIDEO_URL || 'https://www.youtube.com/embed/zqpnoHG3JAk?si=PevOSpAtHML7wOQb&controls=0';
 
 const HowItWorksVideoModal = () => {
     const dispatch = useDispatch();
@@ -22,8 +23,15 @@ const HowItWorksVideoModal = () => {
                 id="how-it-works-video-modal"
                 sx={styles.howItWorksVideoModalContainer}
             >
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                    <Typography variant="h6">How It Works</Typography>
+                <Box sx={styles.modalContainer}>
+                    <Box sx={styles.modalHeader}>
+                        <h6>
+                             <HashbuzzIcon size={40} /> How Hashbuzz Works
+                        </h6>
+                        <Typography variant="body2" sx={{ mt: 0.5 }}>
+                            Watch the video below to learn about Hashbuzz’s features and benefits.
+                        </Typography>
+                    </Box>
                     <IconButton onClick={handleClose}>
                         <CloseIcon />
                     </IconButton>
@@ -31,10 +39,13 @@ const HowItWorksVideoModal = () => {
                 <Box sx={{ position: 'relative', pb: '56.25%', height: 0 }}>
                     <Box
                         component="iframe"
-                        src={videoURL}
-                        title="How It Works"
+                        width="560"
+                        height="315"
+                        src="https://www.youtube.com/embed/zqpnoHG3JAk?si=PevOSpAtHML7wOQb&controls=0"
+                        title="YouTube video player"
                         frameBorder="0"
-                        allow="autoplay; encrypted-media"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerPolicy="strict-origin-when-cross-origin"
                         allowFullScreen
                         sx={styles.videoIframeStyles}
                     />

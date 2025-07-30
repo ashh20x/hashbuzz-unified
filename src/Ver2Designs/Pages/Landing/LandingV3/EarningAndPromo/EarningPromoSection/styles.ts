@@ -51,6 +51,7 @@ export const headingContent: SxProps<Theme> = {
     width: "auto",
     display: {
       xs: "none",
+      md: "block",
     },
   },
 };
