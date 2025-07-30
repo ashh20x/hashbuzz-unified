@@ -1,14 +1,21 @@
 import { PlayCircle } from "@mui/icons-material";
 import { Box, Button } from "@mui/material";
 import { useDispatch } from 'react-redux';
+import { useNavigate } from "react-router-dom";
 import { setHowItWorksModalOpen } from "../landingPageStoreSlice";
 import * as styles from "./styles";
 
 const HeroSection = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleOpenVideoPlayer = () => {
     dispatch(setHowItWorksModalOpen(true));
+  };
+
+  const handleGetStarted = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    navigate("/auth/connect-wallet");
   };
 
   return (
@@ -21,7 +28,7 @@ const HeroSection = () => {
             <Button onClick={handleOpenVideoPlayer} sx={styles.howItWorksButton} disableElevation  size="medium" variant="contained" startIcon={<PlayCircle fontSize="inherit" />}>
               How it works
             </Button>
-            <Button sx={styles.getStartedButton} disableElevation size="medium" variant="contained" color="primary">
+            <Button onClick={handleGetStarted} sx={styles.getStartedButton} disableElevation size="medium" variant="contained" color="primary">
               Get Started
             </Button>
           </Box>

@@ -16,13 +16,13 @@ const Footer = () => {
             </Box>
             <Box component="ul" sx={{ display: "flex", gap: 2, listStyle: "none", p: 0, m: 0 }}>
               <li>
-                <Link href="#" underline="hover">Terms & Conditions</Link>
+                <Link href="/terms-of-use" underline="hover">Terms & Conditions</Link>
               </li>
               <li>
-                <Link href="#" underline="hover">Privacy Policy</Link>
+                <Link href="/privacy-policy" underline="hover">Privacy Policy</Link>
               </li>
               <li>
-                <Link href="#" underline="hover">Cookies</Link>
+                <Link href="/cookies" underline="hover">Cookies</Link>
               </li>
             </Box>
           </Grid>

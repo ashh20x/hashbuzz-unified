@@ -27,33 +27,36 @@ export const howToStartSectionContainer: SxProps<Theme> = {
   } 
 };
 
-export const howToStartSteps =(theme:Theme):SxProps<Theme> => ({
+export const howToStartSteps: SxProps<Theme> = {
   display: "flex",
   flexDirection: "column",
   justifyContent: "space-between",
   padding: "24px",
-  height: "330px",
+  height: {
+    xs:'auto',
+    md: '330px'
+  },
   borderRadius: "8px",
   border: "1px solid #DDE0F4",
   backgroundColor: "#F9FAFF",
-  [theme.breakpoints.down('sm')]:{
-    height:"auto",
-    textAlign:'center'
-  },
+   textAlign:{
+    xs: "center",
+    md: "left",
+   },
   "& p": {
     color: "#5265FF",
     fontSize: "1rem",
     fontWeight: 600,
     lineHeight: 1.5,
   },
-});
+};
 
-export const howToStartStepsContent =(theme:Theme):SxProps<Theme> => ({
+export const howToStartStepsContent: SxProps<Theme> = {
   display: "flex",
   flexDirection: "column",
-  [theme.breakpoints.down('sm')]:{
-    alignItems:"center",
-    marginTop:"2rem"
+  marginTop: {
+    xs: '2rem',
+    md: 0,
   },
   "& span": {
     display: "inline-flex",
@@ -71,7 +74,7 @@ export const howToStartStepsContent =(theme:Theme):SxProps<Theme> => ({
     lineHeight:1.2,
     fontWeight:500
   }
-});
+};
 
 export const startsNowBtn: SxProps<Theme> = {
   backgroundColor: "#5265FF",

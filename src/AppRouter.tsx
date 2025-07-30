@@ -92,6 +92,10 @@ const router = createBrowserRouter([
     path: "/privacy-policy",
     element: <ContentPage page="PrivacyPolicy" />,
   },
+  {
+    path: "/cookies",
+    element: <ContentPage page="PrivacyPolicy" />,
+  },
   { path: "/*", element: <PageNotfound /> },
 ]);
 

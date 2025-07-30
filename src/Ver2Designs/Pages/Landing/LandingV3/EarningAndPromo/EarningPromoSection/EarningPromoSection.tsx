@@ -3,11 +3,19 @@ import Grid from "@mui/material/Grid";
 import React from "react";
 import { SectionData } from "../types";
 import * as styles from "./styles";
+import { useNavigate } from "react-router-dom";
 
 
 const EarningPromoSection: React.FC<SectionData> = ({ sectionId, heading, paragraphs, items }) => {
+    const navigate = useNavigate();
+
+    const handleGetStarted = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        navigate("/auth/connect-wallet");
+    };
+
     const getStartedBtn = (
-        <Button sx={styles.startNowBtn} disableElevation size="medium" variant="contained" color="primary">
+        <Button onClick={handleGetStarted} sx={styles.startNowBtn} disableElevation size="medium" variant="contained" color="primary">
             Get Started
         </Button>
     );
@@ -28,7 +36,7 @@ const EarningPromoSection: React.FC<SectionData> = ({ sectionId, heading, paragr
             </Grid>
             <Grid container id="info-icons-section" sx={styles.infoIconsSection}>
                 {items.map((item, idx) => (
-                    <Grid size={{ xs: 12, sm: 12, md: 4 }} key={item.title}>
+                    <Grid size={{ xs: 12, sm: 12, md: 4 }} key={item.title + idx}>
                         <Box sx={styles.infoIconsContainer} id={item.id || item.title.replace(/\s+/g, "-").toLowerCase()}>
                             {item.icon}
                             <h4>{item.title}</h4>
