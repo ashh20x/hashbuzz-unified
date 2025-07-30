@@ -15,11 +15,11 @@ const EarningPromoSection: React.FC<SectionData> = ({ sectionId, heading, paragr
     return (
         <Box id={sectionId} component="section" sx={styles.sectionStyles}>
             <Grid container>
-                <Grid  size={5} sx={styles.headingContent}>
+                <Grid  size={{xs: 12, sm: 12, md: 5}} sx={styles.headingContent}>
                     <h4>{heading}</h4>
                     {getStartedBtn}
                 </Grid>
-                <Grid  size={7} sx={styles.content}>
+                <Grid  size={{xs: 12, sm: 12, md: 7}} sx={styles.content}>
                     {paragraphs.map((text, idx) => (
                         <p key={idx}>{text}</p>
                     ))}
