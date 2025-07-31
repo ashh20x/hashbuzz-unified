@@ -9,7 +9,7 @@ export const contentContainer: SxProps<Theme> = {
   }
 };
 
-export const NexAndSecurityProviderSection = (theme: Theme): SxProps<Theme> => ({
+export const NexAndSecurityProviderSection : SxProps<Theme> = {
   backgroundColor: "#000120",
   padding: 0,
   position: "relative",
@@ -18,8 +18,9 @@ export const NexAndSecurityProviderSection = (theme: Theme): SxProps<Theme> => (
     backgroundColor: "#fff",
     opacity: 0.3,
     width: "1px",
-    [theme.breakpoints.down("sm")]: {
-      display: "none",
+    display: {
+      xs: "none",
+      sm: "block",
     },
   },
   "& hr.vertical ": {
@@ -34,41 +35,45 @@ export const NexAndSecurityProviderSection = (theme: Theme): SxProps<Theme> => (
     height: "1px",
     width: "calc(13% + calc(74% / ( 12/4)) - 8px)",
   },
-});
+};
 
-export const content = (theme: Theme): SxProps<Theme> => ({
-  height: "420px",
+export const content: SxProps<Theme> = {
+  height: {
+    sm: "auto",
+    xs: "420px",
+  },
   "& h2": {
     color: "#939DEC",
     fontSize: "1rem",
     fontWeight: 600,
     marginBottom: "2.2rem",
-    marginTop: "60px",
-    [theme.breakpoints.down("sm")]: {
-      marginTop: "45px",
+    marginTop: {
+      xs: '45px',
+      md: '60px',
     },
   },
   "& p": {
     color: "#fff",
     fontSize: "2rem",
-    lineHeight: 1.2,
-    fontWeight: 500,
-    width: "90%",
-    [theme.breakpoints.down("sm")]: {
-      width: "100%",
-      fontSize: "1.875rem",
-      marginBottom: "2rem",
-      letterSpacing: "2%",
-      lineHeight: 1.5,
+    lineHeight: {
+      xs: 1.5,
+      sm: 1.2,
     },
+    fontWeight: 500,
+    width:{
+      xs: "100%",
+      sm: "90%",
+    },
+    marginBottom:{
+      xs:'auto',
+      sm:'2rem',
+    },
+    letterSpacing: '2%',
   },
   "& .certik-emblem": {
     width: "auto !impoertant",
   },
-  [theme.breakpoints.down("sm")]: {
-    height: "auto",
-  },
-});
+};
 
 export const networkIcons = (theme: Theme): SxProps<Theme> => ({
   height: "100%",

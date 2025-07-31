@@ -1,3 +1,3 @@
 
 export {default as AuthAndOnBoardLayout} from "./AuthAndOnBoardLayout";
-export {default as ConnectWallet} from "./ConnectWallet/ConnectWallet";
+export {default as UserOnBoard} from "./ConnectWallet/UserOnBoard";

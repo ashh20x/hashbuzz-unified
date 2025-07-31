@@ -9,13 +9,14 @@ const HeroSection = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleOpenVideoPlayer = () => {
+  const handleOpenVideoPlayer = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
     dispatch(setHowItWorksModalOpen(true));
   };
 
   const handleGetStarted = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    navigate("/auth/connect-wallet");
+    navigate("/auth/onboard");
   };
 
   return (

@@ -1,15 +1,15 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { ProtectedRoute, RedirectIfAuthenticated } from "./APIConfig/AuthGuard";
-import { CreateCampaign, Dashboard, Landing, PageNotfound, ContentPage } from "./Ver2Designs";
+import { Invoice } from "./screens/Invoice";
+import { OnBoarding } from "./screens/OnBoarding";
+import { Template } from "./screens/Template";
+import StyledComponentTheme from "./theme/Theme";
+import { ContentPage, CreateCampaign, Dashboard, PageNotfound } from "./Ver2Designs";
 import { AdminDashboard } from "./Ver2Designs/Admin";
 import AdminAuthGuard from "./Ver2Designs/Admin/AdminAuthGuard";
 import MainLayout from "./Ver2Designs/Layout";
-import StyledComponentTheme from "./theme/Theme";
-import { Template } from "./screens/Template";
-import { Invoice } from "./screens/Invoice";
-import { OnBoarding } from "./screens/OnBoarding";
+import { AuthAndOnBoardLayout, UserOnBoard } from "./Ver2Designs/Pages/AuthAndOnboard";
 import { LandingV3 } from "./Ver2Designs/Pages/Landing";
-import { AuthAndOnBoardLayout, ConnectWallet } from "./Ver2Designs/Pages/AuthAndOnboard";
 
 const router = createBrowserRouter([
   {
@@ -25,8 +25,8 @@ const router = createBrowserRouter([
     path: "/auth",
     element: <AuthAndOnBoardLayout />,
     children: [
-      { path: "", element: <ConnectWallet /> },
-      { path: "connect-wallet", element: <ConnectWallet /> },
+      { path: "", element: <UserOnBoard /> },
+      { path: "onboard", element: <UserOnBoard /> },
     ],
   },
   {

@@ -1,18 +1,16 @@
 import { SxProps } from "@mui/material";
 import { Theme } from "@mui/system";
 
-export const conenctWalletSection = (theme: Theme): SxProps<Theme> => ({
+export const conenctWalletSection : SxProps<Theme> = {
   background: "#FFFFFF",
-  padding: "30px",
+  padding: {
+    xs: "30px",
+    md: "40px",
+    xl: "45px 200px",
+  },
   height: "100%",
   overflowY:"auto",
-  [theme.breakpoints.up("xl")]: {
-    padding: "45px 200px",
-  },
-  [theme.breakpoints.up("md")]:{
-    padding:"40px"
-  }
-});
+};
 
 export const header: SxProps<Theme> = {
   display: "flex",

@@ -1,16 +1,16 @@
+import BuiltOnHedera from "@/SVGR/BuiltOnHedera";
+import { CertikEmblem } from "@/Ver2Designs/Components";
 import { Box, Grid, Stack, useMediaQuery, useTheme } from "@mui/material";
 import * as styles from "./styles";
-import BuiltOnHedera from "../../../../../SVGR/BuiltOnHedera";
-import { CertikEmblem } from "../../../../Components";
 
 const NextworkAndSecurityProvider = () => {
   const theme = useTheme();
   const isSmallDevice = useMediaQuery(theme.breakpoints.down("sm"));
   return (
-    <Box component="section" id="network-and-security-provider" sx={styles.NexAndSecurityProviderSection(theme)}>
+    <Box component="section" id="network-and-security-provider" sx={styles.NexAndSecurityProviderSection}>
       <Box id="network-and-security-provider-content" sx={styles.contentContainer}>
         <Grid container>
-          <Grid sx={styles.content(theme)} size={{ xs: 12, md: 8 }}>
+          <Grid sx={styles.content} size={{ xs: 12, md: 8 }}>
             <h2>Speed, Security & Transparency</h2>
             <p>Discover the power of hashbuzz, a dynamic platform that elevates brand communities through incentivized 𝕏 posts.</p>
           </Grid>

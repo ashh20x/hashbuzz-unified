@@ -10,14 +10,12 @@ export const HowToStartSection = () => {
 
   const handleGetStarted = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    // Navigate to the connect wallet page
-    navigate("/auth/connect-wallet");
+    navigate("/auth/onboard");
   };
 
 
   return (
     <Box component="section" id="how-to-get-start" sx={styles.howToStartSection}>
-      {/* Content goes here */}
       <Box sx={styles.howToStartSectionContainer}>
         <h3>How to Get Started</h3>
         <Grid container spacing={2.5}>

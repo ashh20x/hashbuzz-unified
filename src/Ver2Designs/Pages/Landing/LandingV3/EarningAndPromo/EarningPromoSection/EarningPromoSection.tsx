@@ -11,7 +11,7 @@ const EarningPromoSection: React.FC<SectionData> = ({ sectionId, heading, paragr
 
     const handleGetStarted = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
-        navigate("/auth/connect-wallet");
+        navigate("/auth/onboard");
     };
 
     const getStartedBtn = (
