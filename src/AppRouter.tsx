@@ -1,5 +1,6 @@
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
 import { ProtectedRoute, RedirectIfAuthenticated } from "./APIConfig/AuthGuard";
+import StepGuard from "./components/StepGuard";
 import { Invoice } from "./screens/Invoice";
 import { OnBoarding } from "./screens/OnBoarding";
 import { Template } from "./screens/Template";
@@ -8,8 +9,9 @@ import { ContentPage, CreateCampaign, Dashboard, PageNotfound } from "./Ver2Desi
 import { AdminDashboard } from "./Ver2Designs/Admin";
 import AdminAuthGuard from "./Ver2Designs/Admin/AdminAuthGuard";
 import MainLayout from "./Ver2Designs/Layout";
-import { AuthAndOnBoardLayout, UserOnBoard } from "./Ver2Designs/Pages/AuthAndOnboard";
+import { AssociateTokens, AuthAndOnBoardLayout, ConnectXAccount, PairWalletAndAuthenticate } from "./Ver2Designs/Pages/AuthAndOnboard";
 import { LandingV3 } from "./Ver2Designs/Pages/Landing";
+import { OnboardingSteps } from "./Ver2Designs/Pages/AuthAndOnboard/authStoreSlice";
 
 const router = createBrowserRouter([
   {
@@ -25,8 +27,31 @@ const router = createBrowserRouter([
     path: "/auth",
     element: <AuthAndOnBoardLayout />,
     children: [
-      { path: "", element: <UserOnBoard /> },
-      { path: "onboard", element: <UserOnBoard /> },
+      { index: true, element: <Navigate to="pair-wallet" replace /> },
+      {
+        path: "pair-wallet",
+        element: (
+          <StepGuard step={OnboardingSteps.PairWallet}>
+            <PairWalletAndAuthenticate />
+          </StepGuard>
+        ),
+      },
+      {
+        path: "connect-x-account",
+        element: (
+          <StepGuard step={OnboardingSteps.ConnectXAccount}>
+            <ConnectXAccount />
+          </StepGuard>
+        ),
+      },
+      {
+        path: "associate-tokens",
+        element: (
+          <StepGuard step={OnboardingSteps.AssociateTokens}>
+            <AssociateTokens />
+          </StepGuard>
+        ),
+      },
     ],
   },
   {

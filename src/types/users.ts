@@ -55,3 +55,8 @@ export type TrailSetters = {
   walletId: string;
 
 }
+
+export type UserPing = {
+  status: boolean;
+  walletId: string;
+}

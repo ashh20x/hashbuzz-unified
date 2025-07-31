@@ -10,7 +10,7 @@ export const HowToStartSection = () => {
 
   const handleGetStarted = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    navigate("/auth/onboard");
+    navigate("/auth/pair-wallet");
   };
 
 

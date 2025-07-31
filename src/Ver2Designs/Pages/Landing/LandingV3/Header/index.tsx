@@ -10,7 +10,7 @@ const Header = () => {
 
 
   const handleGetStarted = (e: React.MouseEvent<HTMLButtonElement>) => {
-    navigate("/auth/onboard");
+    navigate("/auth/pair-wallet");
   };
 
 

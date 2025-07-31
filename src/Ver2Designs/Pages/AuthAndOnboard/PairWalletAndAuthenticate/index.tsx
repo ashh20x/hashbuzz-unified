@@ -2,14 +2,15 @@ import { Box } from "@mui/material";
 import * as HabuzzTabs from "./Tabs";
 import { SyntheticEvent, useState } from "react";
 import BrowserExtension from "./BrowserExtension";
+import QRCode from "./QRCode";
 import * as styles from "./styles";
 
 const tabLabels = [
   { label: "Browser extension", component: <BrowserExtension /> },
-  { label: "QR Code", component: null }, // Placeholder for future QR Code component
+  { label: "QR Code", component: <QRCode /> },
 ];
 
-const UserOnBoard = () => {
+const PairWalletAndAuthenticate = () => {
   const [value, setValue] = useState(0);
 
   const handleChange = (_: SyntheticEvent, newValue: number) => setValue(newValue);
@@ -41,4 +42,4 @@ const UserOnBoard = () => {
   );
 };
 
-export default UserOnBoard;
+export default PairWalletAndAuthenticate;

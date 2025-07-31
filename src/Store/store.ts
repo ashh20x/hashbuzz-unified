@@ -1,13 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit';
-
-// Configure Redux store using the slice reducer
 import miscellaneousStoreSlice from './miscellaneousStoreSlice';
-import landingPageStoreSlice from '../Ver2Designs/Pages/Landing/LandingV3/landingPageStoreSlice';
+import landingPageStoreSlice from '@/Ver2Designs/Pages/Landing/LandingV3/landingPageStoreSlice';
+import authReducer from '@/Ver2Designs/Pages/AuthAndOnboard/authStoreSlice';
 
 export const store = configureStore({
   reducer: {
-    miscellaneous: miscellaneousStoreSlice,
+    app: miscellaneousStoreSlice,
     landingPage: landingPageStoreSlice,
+    auth: authReducer,
   },
 });
 
