@@ -44,7 +44,7 @@ export const HowToStartSection = () => {
            <Grid size={{ xs: 12, md: 4 }}>
             <Box sx={styles.howToStartSteps }>
               <p>Step 3</p>
-              <Box sx={styles.howToStartStepsContent }>
+              <Box  sx={styles.howToStartStepsContent }>
                 <span>
                   <EarnReward size={30} />
                 </span>

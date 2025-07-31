@@ -54,6 +54,10 @@ export const howToStartSteps: SxProps<Theme> = {
 export const howToStartStepsContent: SxProps<Theme> = {
   display: "flex",
   flexDirection: "column",
+  alignItems:{
+    xs: "center",
+    md: "flex-start",
+  },
   marginTop: {
     xs: '2rem',
     md: 0,

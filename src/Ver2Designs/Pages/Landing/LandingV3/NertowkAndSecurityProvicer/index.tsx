@@ -7,7 +7,7 @@ const NextworkAndSecurityProvider = () => {
   const theme = useTheme();
   const isSmallDevice = useMediaQuery(theme.breakpoints.down("sm"));
   return (
-    <Box component="section" id="network-and-security-provider" sx={styles.NexAndSecurityProviderSection}>
+    <Box component="section" id="network-and-security-provider" sx={styles.nexAndSecurityProviderSection}>
       <Box id="network-and-security-provider-content" sx={styles.contentContainer}>
         <Grid container>
           <Grid sx={styles.content} size={{ xs: 12, md: 8 }}>

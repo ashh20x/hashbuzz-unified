@@ -9,7 +9,7 @@ export const contentContainer: SxProps<Theme> = {
   }
 };
 
-export const NexAndSecurityProviderSection : SxProps<Theme> = {
+export const nexAndSecurityProviderSection : SxProps<Theme> = {
   backgroundColor: "#000120",
   padding: 0,
   position: "relative",
@@ -39,8 +39,8 @@ export const NexAndSecurityProviderSection : SxProps<Theme> = {
 
 export const content: SxProps<Theme> = {
   height: {
-    sm: "auto",
-    xs: "420px",
+    sm: "420px",
+    xs: "auto",
   },
   "& h2": {
     color: "#939DEC",
@@ -54,7 +54,10 @@ export const content: SxProps<Theme> = {
   },
   "& p": {
     color: "#fff",
-    fontSize: "2rem",
+    fontSize:{
+      xs: '2rem',
+      sm: '1.875rem'
+    },
     lineHeight: {
       xs: 1.5,
       sm: 1.2,
@@ -65,8 +68,8 @@ export const content: SxProps<Theme> = {
       sm: "90%",
     },
     marginBottom:{
-      xs:'auto',
-      sm:'2rem',
+      xs:'2rem',
+      sm:'auto',
     },
     letterSpacing: '2%',
   },
