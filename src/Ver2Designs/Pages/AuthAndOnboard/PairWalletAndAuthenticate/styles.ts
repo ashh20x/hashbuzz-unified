@@ -4,7 +4,7 @@ import { Theme } from "@mui/system";
 export const conenctWalletSection : SxProps<Theme> = {
   background: "#FFFFFF",
   padding: {
-    xs: "30px",
+    xs: "24px 16px",
     md: "40px",
     xl: "45px 200px",
   },
@@ -33,3 +33,7 @@ export const header: SxProps<Theme> = {
 export const tabsContainer: SxProps<Theme> = {
   marginTop:"2rem"
 };
+
+export const smallDeviceContainer: SxProps<Theme> = {
+  padding: "1rem 0",
+}

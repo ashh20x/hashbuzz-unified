@@ -1,10 +1,15 @@
-import { Box } from "@mui/material";
+import { Box, Stack } from "@mui/material";
+import * as styles from "./styles";
+
 
 const QRCode = () => {
   return (
-    <Box>
-      <h2>Scan the QR Code</h2>
-      {/* QR Code implementation */}
+    <Box component="section" sx={styles.qrCodeSection}>
+      <p>Copy pairing string and paste it in your wallet extension or scan QR code with your mobile wallet.</p>
+      <Stack>
+        <Box sx={styles.qrCodeImageContainer}></Box>
+        <Box sx={styles.connectionStringcontainer}></Box>
+      </Stack>
     </Box>
   );
 };

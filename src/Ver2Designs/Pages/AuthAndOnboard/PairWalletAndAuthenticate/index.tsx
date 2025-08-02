@@ -1,28 +1,50 @@
-import { Box } from "@mui/material";
-import * as HabuzzTabs from "./Tabs";
-import { SyntheticEvent, useEffect, useState } from "react";
+import { Box, Stack, useMediaQuery } from "@mui/material";
+import { SyntheticEvent, useState } from "react";
 import BrowserExtension from "./BrowserExtension";
+import GuideList from "./GuideList";
 import QRCode from "./QRCode";
+import * as HabuzzTabs from "./Tabs";
+import { GuideMobile } from "./data";
 import * as styles from "./styles";
-import { useDispatch } from "react-redux";
 
-const tabLabels = [
+const TAB_LABELS = [
   { label: "Browser extension", component: <BrowserExtension /> },
   { label: "QR Code", component: <QRCode /> },
 ];
 
 const PairWalletAndAuthenticate = () => {
-  const [value, setValue] = useState(0);
-  const handleChange = (_: SyntheticEvent, newValue: number) => setValue(newValue);
+  const [tabIndex, setTabIndex] = useState(0);
+  const isSmallDevice = useMediaQuery((theme) => theme.breakpoints.down("sm"));
+
+  const handleTabChange = (_: SyntheticEvent, newValue: number) => setTabIndex(newValue);
+
+  const header = (<Box sx={styles.header}>
+    <h1>Connect Hashpack Wallet</h1>
+    <p>Choose any of the options to connect wallet</p>
+  </Box>);
+
+  if (isSmallDevice) {
+    return (
+      <Box component="section" sx={styles.conenctWalletSection}>
+        {header}
+        <Stack flexDirection="column" gap={2} sx={styles.smallDeviceContainer}>
+          <GuideList guidesList={GuideMobile} />
+          <QRCode />
+        </Stack>
+      </Box>
+    );
+  }
+
   return (
     <Box component="section" sx={styles.conenctWalletSection}>
-      <Box sx={styles.header}>
-        <h1>Connect Hashpack Wallet</h1>
-        <p>Choose any of the options to connect wallet</p>
-      </Box>
+      {header}
       <Box sx={styles.tabsContainer}>
-        <HabuzzTabs.StyledTabs value={value} onChange={handleChange} aria-label="wallet connect connection tab options">
-          {tabLabels.map((tab, idx) => (
+        <HabuzzTabs.StyledTabs
+          value={tabIndex}
+          onChange={handleTabChange}
+          aria-label="wallet connect connection tab options"
+        >
+          {TAB_LABELS.map((tab, idx) => (
             <HabuzzTabs.StyledTab
               key={tab.label}
               label={tab.label}
@@ -31,8 +53,8 @@ const PairWalletAndAuthenticate = () => {
             />
           ))}
         </HabuzzTabs.StyledTabs>
-        {tabLabels.map((tab, idx) => (
-          <HabuzzTabs.TabPanel key={tab.label} value={value} index={idx}>
+        {TAB_LABELS.map((tab, idx) => (
+          <HabuzzTabs.TabPanel key={tab.label} value={tabIndex} index={idx}>
             {tab.component}
           </HabuzzTabs.TabPanel>
         ))}
