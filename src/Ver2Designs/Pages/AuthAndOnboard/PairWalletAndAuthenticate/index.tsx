@@ -1,9 +1,10 @@
 import { Box } from "@mui/material";
 import * as HabuzzTabs from "./Tabs";
-import { SyntheticEvent, useState } from "react";
+import { SyntheticEvent, useEffect, useState } from "react";
 import BrowserExtension from "./BrowserExtension";
 import QRCode from "./QRCode";
 import * as styles from "./styles";
+import { useDispatch } from "react-redux";
 
 const tabLabels = [
   { label: "Browser extension", component: <BrowserExtension /> },
@@ -12,9 +13,7 @@ const tabLabels = [
 
 const PairWalletAndAuthenticate = () => {
   const [value, setValue] = useState(0);
-
   const handleChange = (_: SyntheticEvent, newValue: number) => setValue(newValue);
-
   return (
     <Box component="section" sx={styles.conenctWalletSection}>
       <Box sx={styles.header}>

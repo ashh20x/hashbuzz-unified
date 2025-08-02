@@ -1,25 +1,69 @@
 import { SxProps, Theme } from "@mui/system";
 
 export const sideBar: SxProps<Theme> = {
-  width: "392px",
-  paddingLeft: "45px",
-  paddingRight:"1rem",
-  background: "#F5F6FF",
+  width: {
+    xs: "100%",
+    sm: "100%",
+    md: "392px"
+  },
+  paddingLeft: {
+    xs: '2rem',
+    sm: '2rem',
+    md: '45px'
+  },
+  paddingRight: {
+    xs: '2rem',
+    sm: '2rem',
+    md: "1rem",
+  },
+  background:{
+    xs: "#FFFFFF",
+    sm: "#FFFFFF",
+    md: "#F5F6FF"
+  }
+ 
 };
 
 export const sideBarLogoContainer: SxProps<Theme> = {
   display: "flex",
-  alignItems: "center",
+  alignItems: {
+    xs: "flex-start",
+    sm: "flex-start",
+    md: "center"
+  },
   justifyContent: "flex-start",
-  paddingTop: "45px",
+  flexDirection: {
+    xs: "column",
+    sm: "column",
+    md: "row"
+  },
+  paddingTop: {
+    xs: "1rem",
+    sm: "1rem",
+    md: "45px",
+  },
+  marginBottom: {
+    xs: "2rem",
+    sm: "2rem",
+    md: "auto",
+  },
+   "& p":{
+    margin:'2rem 0',
+    fontSize: "1rem",
+    fontWeight: 500,
+    color:'#181D27'
+  }
 };
-
 
 export const stepsList: SxProps<Theme> = {
   display: "flex",
   alignItems: "flex-start",
-  justifyContent: "center",
-  flexDirection:"column",
+  justifyContent: {
+    xs: "flex-start",
+    sm: "flex-start",
+    md: "center"
+  },
+  flexDirection: "column",
   "& ul": {
     display: "flex",
     flexDirection: "column",
@@ -34,8 +78,8 @@ export const stepsList: SxProps<Theme> = {
       gap: "1rem",
       lineHeight: 1.5,
       fontSize: "1rem",
-      fontWeight:600,
-      position:"relative",
+      fontWeight: 600,
+      position: "relative",
       color: "#767676",
       "& .list-bullet": {
         width: "32px",
@@ -55,18 +99,18 @@ export const stepsList: SxProps<Theme> = {
           borderColor: "#5265FF",
         },
       },
-      "&::after":{
+      "&::after": {
         content: `""`,
-        position:"absolute",
-        height:"30px",
-        width:"2px",
-        border:"1px dashed  #767676",
-        left:"15px",
-        top:"52px"
+        position: "absolute",
+        height: "30px",
+        width: "2px",
+        borderLeft: "1px dashed  #767676",
+        left: "15px",
+        top: "52px",
       },
-      "&:last-child::after":{
-        display:"none"
-      }
+      "&:last-child::after": {
+        display: "none",
+      },
     },
   },
 };

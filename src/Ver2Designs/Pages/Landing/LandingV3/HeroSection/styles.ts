@@ -92,6 +92,7 @@ export const howItWorksButton: SxProps<Theme> = {
   textTransform: "capitalize",
   border: "none",
   borderRadius: "8px",
+  padding: "1rem 1.5rem",
   "&:hover": {
     backgroundColor: "#fff",
   },
@@ -104,6 +105,7 @@ export const getStartedButton: SxProps<Theme> = {
   backgroundColor: "#5265FF",
   textTransform: "capitalize",
   borderRadius: "8px",
+  padding: "1rem 1.5rem",
   color: "#fff",
   "&:hover": {
     backgroundColor: "#5265FF",

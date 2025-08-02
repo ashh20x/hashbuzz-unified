@@ -34,7 +34,19 @@ const BrowserExtension = () => {
   return (
     <Box sx={styles.browserExtensionContainer}>
       {Guide.map((guide, index) => (
-        <Stack flexDirection="row" alignItems="center" sx={styles.stepContainer}>
+        <Stack flexDirection={{
+          xs: "column",
+          sm: "row",
+          md: "row",
+        }} alignItems={{
+          xs: "flex-start",
+          sm: "flex-start",
+          md: "center",
+        }} gap={{
+          xs: 2,
+          sm: 2,
+          md: 0,
+        }} sx={styles.stepContainer}>
           <div className="counter">
             <span>{index + 1}</span>
           </div>
