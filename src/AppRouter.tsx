@@ -39,9 +39,7 @@ const router = createBrowserRouter([
       {
         path: "connect-x-account",
         element: (
-          <StepGuard step={OnboardingSteps.ConnectXAccount}>
             <ConnectXAccount />
-          </StepGuard>
         ),
       },
       {

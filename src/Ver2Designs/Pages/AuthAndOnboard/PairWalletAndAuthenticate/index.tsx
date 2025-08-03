@@ -1,5 +1,6 @@
 import { Box, Stack, useMediaQuery } from "@mui/material";
 import { SyntheticEvent, useState } from "react";
+import SectionHeader from "../Components/SectionHeader";
 import BrowserExtension from "./BrowserExtension";
 import GuideList from "./GuideList";
 import QRCode from "./QRCode";
@@ -18,15 +19,14 @@ const PairWalletAndAuthenticate = () => {
 
   const handleTabChange = (_: SyntheticEvent, newValue: number) => setTabIndex(newValue);
 
-  const header = (<Box sx={styles.header}>
-    <h1>Connect Hashpack Wallet</h1>
-    <p>Choose any of the options to connect wallet</p>
-  </Box>);
 
   if (isSmallDevice) {
     return (
       <Box component="section" sx={styles.conenctWalletSection}>
-        {header}
+        <SectionHeader
+          title="Connect your wallet"
+          subtitle="Choose any of the options to connect wallet"
+        />
         <Stack flexDirection="column" gap={2} sx={styles.smallDeviceContainer}>
           <GuideList guidesList={GuideMobile} />
           <QRCode />
@@ -37,7 +37,10 @@ const PairWalletAndAuthenticate = () => {
 
   return (
     <Box component="section" sx={styles.conenctWalletSection}>
-      {header}
+      <SectionHeader
+        title="Connect your wallet"
+        subtitle="Choose any of the options to connect wallet"
+      />
       <Box sx={styles.tabsContainer}>
         <HabuzzTabs.StyledTabs
           value={tabIndex}
