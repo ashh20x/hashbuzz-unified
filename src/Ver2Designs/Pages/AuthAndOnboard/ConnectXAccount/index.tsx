@@ -60,7 +60,7 @@ const ConnectXAccount = () => (
         <Alert sx={styles.alertInfoContainer} variant="outlined" severity="info">We will never access private DMs or share your data without consent.</Alert>
       </Box>
     </Box>
-    <Stack sx={{p:2}} direction="row" justifyContent='flex-end'>
+    <Stack className="button-container-connect-x-account" sx={{p:2}} direction="row" justifyContent='flex-end'>
       <PrimaryButtonV2>
         Connect 𝕏 Account
       </PrimaryButtonV2>
