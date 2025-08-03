@@ -4,7 +4,7 @@ export const primaryButtonV2Styles: SxProps<Theme> = {
     backgroundColor: "#5265FF",
     textTransform: "capitalize",
     borderRadius: "8px",
-    padding:'1rem 1.5rem',
+    padding:'0.5rem 1.5rem',
     color: "#fff",
     "&:hover": {
         backgroundColor: "#5265FF",

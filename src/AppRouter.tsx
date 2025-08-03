@@ -45,9 +45,9 @@ const router = createBrowserRouter([
       {
         path: "associate-tokens",
         element: (
-          <StepGuard step={OnboardingSteps.AssociateTokens}>
+          // <StepGuard step={OnboardingSteps.AssociateTokens}>
             <AssociateTokens />
-          </StepGuard>
+          // </StepGuard>
         ),
       },
     ],
