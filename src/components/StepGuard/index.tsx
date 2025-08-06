@@ -26,30 +26,30 @@ interface StepGuardProps {
  */
 
 const StepGuard: React.FC<StepGuardProps> = ({ step, children }) => {
-    const { currentStep, canGoToXAccount, canGoToAssociateTokens } = useStepGuardHelper();
+    const { currentStep, canGoToAuthentication, canGoToXAccount, canGoToAssociateTokens } = useStepGuardHelper();
+
+    if( currentStep !== step ) {
+        return <Navigate to={`/auth/${currentStep}`} replace />;
+    }
 
     // Step 1: Pair wallet and authenticate
     if (step === OnboardingSteps.PairWallet) {
         return <>{children}</>;
     }
-    // Step 2: Connect X account
-    if (step === OnboardingSteps.ConnectXAccount) {
-        if (!canGoToXAccount) {
-            return <Navigate to={`/auth/${OnboardingSteps.PairWallet}`} replace />;
-        }
-        if (currentStep !== step) {
-            return <Navigate to={`/auth/${currentStep}`} replace />;
-        }
+
+    console.log("StepGuard: Invalid step access attempt" ,  {canGoToAuthentication , currentStep, step });
+
+    // Step 2: Authenticate
+    if (step === OnboardingSteps.SignAuthentication && canGoToAuthentication) {
         return <>{children}</>;
     }
-    // Step 3: Associate tokens
-    if (step === OnboardingSteps.AssociateTokens) {
-        if (!canGoToAssociateTokens) {
-            return <Navigate to={`/auth/${OnboardingSteps.ConnectXAccount}`} replace />;
-        }
-        if (currentStep !== step) {
-            return <Navigate to={`/auth/${currentStep}`} replace />;
-        }
+
+    // Step 3: Connect X account
+    if (step === OnboardingSteps.ConnectXAccount && canGoToXAccount) {
+        return <>{children}</>;
+    }
+    // Step 4: Associate tokens
+    if (step === OnboardingSteps.AssociateTokens && canGoToAssociateTokens) {
         return <>{children}</>;
     }
     // Fallback: redirect to first step

@@ -10,7 +10,6 @@ import { CardGenUtility } from "./CardGenUtility";
 import { toast } from "react-toastify";
 import { useApiInstance } from "../../../APIConfig/api";
 import { getErrorMessage, isAllowedToCmapigner } from "../../../Utilities/helpers";
-import SpeedDialActions from "../../Components/SpeedDialActions";
 import * as SC from "./styled";
 import XAccountConnectionWarning from "./XAccountConnectionWarning";
 import XPlatformIcon from "../../../SVGR/XPlatformIcon";
@@ -90,7 +89,7 @@ const Dashboard = () => {
       <CampaignList />
 
       {/* speed dial  action button */}
-      <SpeedDialActions />
+      {/* <SpeedDialActions /> */}
       <XAccountConnectionWarning open={openXAlert} handleClose={() => setOpenXAlert(false)} handleAgree={personalHandleIntegration} />
     </React.Fragment>
   );

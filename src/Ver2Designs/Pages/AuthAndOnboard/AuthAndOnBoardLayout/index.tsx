@@ -5,8 +5,8 @@ import { Outlet, useLocation } from "react-router-dom";
 import { toggleSmDeviceModal } from "../authStoreSlice";
 import OnBoardingSteps from "../Components/OnBoardingSteps";
 import ModalStepsDialog from "./ModalStepsDialog";
-import * as styles from "./styles";
 import StepsMobileHeader from "./StepsMobleHeader";
+import * as styles from "./styles";
 
 
 const AuthAndOnBoardLayout = () => {

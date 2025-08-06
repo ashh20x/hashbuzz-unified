@@ -10,8 +10,8 @@ import { unstable_batchedUpdates } from "react-dom";
 import { toast } from "react-toastify";
 import { useApiInstance } from "../../../APIConfig/api";
 import { useStore } from "../../../Store/StoreProvider";
-import { useHashconnectService } from "../../../Wallet";
-import { useSmartContractServices } from "../../../Wallet/smartcontractService";
+// import { useHashconnectService } from "../../../Wallet";
+// import { useSmartContractServices } from "../../../Wallet/smartcontractService";
 import { BalOperation, EntityBalances, FormFelid } from "../../../types";
 interface TopupModalProps {
   data: EntityBalances | null;
@@ -54,8 +54,8 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
   const [loading, setLoading] = React.useState(false);
 
 
-  const { topUpAccount } = useSmartContractServices();
-  const { pairingData } = useHashconnectService();
+  // const { topUpAccount } = useSmartContractServices();
+  // const { pairingData } = useHashconnectService();
   const { Transaction  ,User} = useApiInstance();
   const store = useStore();
   const inputChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,41 +69,41 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
   };
 
   const handleTopup = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    setLoading(true);
-    try {
-      if (formData.amount.value > 0 && data?.entityType && pairingData?.accountIds) {
-        const value = parseFloat(formData.amount.value.toFixed(4));
-        const fee = parseFloat(calculateCharge(value).toFixed(4));
-        const total = parseFloat(calculateTotal(value).toFixed(4));
-        const req = await topUpAccount({
-          entityType: data?.entityType,
-          entityId: data?.entityId,
-          amount: { value, fee, total },
-          senderId: pairingData?.accountIds[0],
-          decimals: data?.decimals,
-        });
-        if (req?.success) {
-          toast.success("Transaction successfully completed.");
-        }
+    // event.preventDefault();
+    // setLoading(true);
+    // try {
+    //   if (formData.amount.value > 0 && data?.entityType && pairingData?.accountIds) {
+    //     const value = parseFloat(formData.amount.value.toFixed(4));
+    //     const fee = parseFloat(calculateCharge(value).toFixed(4));
+    //     const total = parseFloat(calculateTotal(value).toFixed(4));
+    //     const req = await topUpAccount({
+    //       entityType: data?.entityType,
+    //       entityId: data?.entityId,
+    //       amount: { value, fee, total },
+    //       senderId: pairingData?.accountIds[0],
+    //       decimals: data?.decimals,
+    //     });
+    //     if (req?.success) {
+    //       toast.success("Transaction successfully completed.");
+    //     }
 
-        if (req?.error) {
-          toast.error(req.error === "USER_REJECT" ? "Payment request rejected by user" : req.error);
-        }
-        unstable_batchedUpdates(() => {
-          setLoading(false);
-          setFromData(JSON.parse(JSON.stringify(FORM_INITIAL_STATE)));
-        });
+    //     if (req?.error) {
+    //       toast.error(req.error === "USER_REJECT" ? "Payment request rejected by user" : req.error);
+    //     }
+    //     unstable_batchedUpdates(() => {
+    //       setLoading(false);
+    //       setFromData(JSON.parse(JSON.stringify(FORM_INITIAL_STATE)));
+    //     });
 
-        if (onClose) onClose();
-      } else {
-        toast.warning("Please Enter the valid amount to topup");
-        setLoading(false);
-      }
-    } catch (err) {
-      setLoading(false);
-      setFromData(JSON.parse(JSON.stringify(FORM_INITIAL_STATE)));
-    }
+    //     if (onClose) onClose();
+    //   } else {
+    //     toast.warning("Please Enter the valid amount to topup");
+    //     setLoading(false);
+    //   }
+    // } catch (err) {
+    //   setLoading(false);
+    //   setFromData(JSON.parse(JSON.stringify(FORM_INITIAL_STATE)));
+    // }
   };
 
   const modalClose = (event: React.MouseEvent<HTMLButtonElement>) => {

@@ -20,7 +20,7 @@ const OnBoardingSteps = () => {
       </Box>
       <Box flex={1} sx={styles.stepsList}>
         <ul>
-          <li className={getActiveClassName(OnboardingSteps.PairWallet)}>
+          <li className={getActiveClassName(OnboardingSteps.PairWallet || OnboardingSteps.SignAuthentication)}>
             <span className="list-bullet">1</span>
             <span className="list-name">Connect Wallet</span>
           </li>

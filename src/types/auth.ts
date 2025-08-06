@@ -19,13 +19,13 @@ export type GenerateAstPayload = {
     data: any;
   };
 
-  clientPayload:{
+  clientPayload: {
     serverSignature: string | Uint8Array;
     originalPayload: {
-        url: string;
-        data: any;
+      url: string;
+      data: any;
     };
-}
+  };
   signatures: {
     server: string;
     wallet: {
@@ -37,8 +37,8 @@ export type GenerateAstPayload = {
 
 export type GnerateReseponse = {
   ast: string;
-  deviceId:string,
-  refreshToken:string,
-  message:string,
-  auth:true
+  deviceId: string;
+  refreshToken: string;
+  message: string;
+  auth: true;
 };

@@ -12,17 +12,16 @@ import MenuItem from "@mui/material/MenuItem";
 import Tooltip from "@mui/material/Tooltip";
 import * as React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
 import HederaIcon from "../../SVGR/HederaIcon";
 import { useStore } from "../../Store/StoreProvider";
-import { useDisconnect } from "../../Wallet/useDisconnect";
+// import { useDisconnect } from "../../Wallet/useDisconnect";
 
 const HeaderMenu = () => {
   const store = useStore();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const disconnect = useDisconnect();
+  // const disconnect = useDisconnect();
 
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -33,13 +32,13 @@ const HeaderMenu = () => {
   };
 
   const handleLogout = async () => {
-    try {
-      await disconnect();
-      navigate("/");
-      toast.info("Logout Successfully");
-    } catch (err) {
-      console.log(err);
-    }
+    // try {
+    //   await disconnect();
+    //   navigate("/");
+    //   toast.info("Logout Successfully");
+    // } catch (err) {
+    //   console.log(err);
+    // }
   };
 
   return (

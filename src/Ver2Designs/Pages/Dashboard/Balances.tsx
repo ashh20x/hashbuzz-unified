@@ -13,8 +13,8 @@ import { useStore } from "../../../Store/StoreProvider";
 import HederaIcon from "../../../SVGR/HederaIcon";
 import { BalOperation, EntityBalances } from "../../../types";
 import { isAllowedToCmapigner, isAnyBalancesIsAvailable } from "../../../Utilities/helpers";
-import { useHashconnectService } from "../../../Wallet";
-import { useConnectToExtension } from "../../../Wallet/useConnectToExtension";
+// import { useHashconnectService } from "../../../Wallet";
+// import { useConnectToExtension } from "../../../Wallet/useConnectToExtension";
 import { cardStyle } from "./CardGenUtility";
 import TopupModal from "./TopupModal";
 
@@ -35,8 +35,8 @@ const Balances = () => {
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const [topupModalData, setTopupModalData] = useState<EntityBalances | null>(null);
 
-  const { pairingData } = useHashconnectService();
-  const connectToExtension = useConnectToExtension();
+  // const { pairingData } = useHashconnectService();
+  // const connectToExtension = useConnectToExtension();
 
   const { MirrorNodeRestAPI, User } = useApiInstance();
   const [balanceList, setBalanceList] = React.useState<{ operation: BalOperation }>({ operation: "topup" });
@@ -69,7 +69,7 @@ const Balances = () => {
     const entity = balances![index];
     if (balanceList.operation === "topup") {
       //Start Operation for the top up
-      const accountId = pairingData?.accountIds[0];
+      const accountId = "demo here"
       if (accountId) {
         // Request for the balances for the account id
         const accountBalReq = await MirrorNodeRestAPI.getBalancesForAccountId(accountId);
@@ -98,19 +98,19 @@ const Balances = () => {
   };
 
   const handleTopupOrReimClick = (operation: BalOperation, event?: React.MouseEvent) => {
-    event?.preventDefault();
-    if (!pairingData) {
-      toast.warning("Connect wallet first then retry topup.");
-      connectToExtension();
-    } else {
-      unstable_batchedUpdates(() => {
-        setBalanceList({
-          operation,
-        });
-        //@ts-ignore
-        setEntityEl(event ? event?.target : topUpButtonsListRef.current);
-      });
-    }
+    // event?.preventDefault();
+    // if (!pairingData) {
+    //   toast.warning("Connect wallet first then retry topup.");
+    //   connectToExtension();
+    // } else {
+    //   unstable_batchedUpdates(() => {
+    //     setBalanceList({
+    //       operation,
+    //     });
+    //     //@ts-ignore
+    //     setEntityEl(event ? event?.target : topUpButtonsListRef.current);
+    //   });
+    // }
   };
 
   // const syncBalance = async (evennt: React.MouseEvent) => {
