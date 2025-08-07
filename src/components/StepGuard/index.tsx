@@ -37,8 +37,6 @@ const StepGuard: React.FC<StepGuardProps> = ({ step, children }) => {
         return <>{children}</>;
     }
 
-    console.log("StepGuard: Invalid step access attempt" ,  {canGoToAuthentication , currentStep, step });
-
     // Step 2: Authenticate
     if (step === OnboardingSteps.SignAuthentication && canGoToAuthentication) {
         return <>{children}</>;

@@ -2,45 +2,67 @@ import PrimaryButtonV2 from "@/components/Buttons/PrimaryButtonV2";
 import WalletDispalyIcon from "@/IconsPng/walletDisplayIcon.png";
 import { useAppDispatch } from "@/Store/store";
 import SuccessStepIcon from "@/SVGR/SuccessStepIcon";
-import { useAccountId, useAuthSignature, useWallet, UserRefusedToSignAuthError } from "@buidlerlabs/hashgraph-react-wallets";
+import { useAccountId, useAuthSignature, UserRefusedToSignAuthError, useWallet } from "@buidlerlabs/hashgraph-react-wallets";
 import { HWCConnector } from "@buidlerlabs/hashgraph-react-wallets/connectors";
 import AuthIcon from '@mui/icons-material/Login';
 import { Box, Stack, useMediaQuery } from "@mui/material";
+import { Buffer } from "buffer";
 import { useEffect } from "react";
+import { toast } from "react-toastify";
+import { useGenerateAuthMutation, useGetChallengeQuery } from "../api/auth";
 import { OnboardingSteps, setAuthSignature, setStep } from "../authStoreSlice";
 import SectionHeader from "../Components/SectionHeader";
 import * as styles from "./styles";
-import { useGetChallengeQuery } from "../api/auth";
-import { toast } from "react-toastify";
 
 const Authenticate = () => {
     const { data: accountId } = useAccountId();
     const isSmDevice = useMediaQuery((theme) => theme.breakpoints.down("sm"));
-    const { isConnected, disconnect } = useWallet(HWCConnector);
+    const { isConnected, disconnect, signer } = useWallet(HWCConnector);
     const dispatch = useAppDispatch();
     const { data: Challenge } = useGetChallengeQuery();
+    const [getGeneratedAuth] = useGenerateAuthMutation();
     const { signAuth } = useAuthSignature();
 
-
-    console.log("Challenge", Challenge);
-
     const handleAuthenticate = async () => {
+        if (!Challenge?.payload || !Challenge.server) return;
+
         try {
-            const signerSignature = await signAuth(JSON.stringify(Challenge));
-            console.log(signerSignature.signature.toString());
+            const message = JSON.stringify(Challenge.payload);
+            const bytes = new TextEncoder().encode(message); // UTF-8 encoding
+            const signatureObjs = await signer?.sign([bytes]);
+            const sigObj = signatureObjs[0];
+
+            const signatureBase64 = Buffer.from(sigObj.signature).toString("base64");
+            const accountIdStr = sigObj.accountId.toString();
+            const publicKeyStr = sigObj.publicKey.toString();
+
             dispatch(setAuthSignature({
-                publicKey: signerSignature.publicKey.toString(),
-                signature: signerSignature.signature.toString(),
-                accountId: signerSignature.accountId.toString(),
-            }))
+                publicKey: publicKeyStr,
+                signature: signatureBase64,
+                accountId: accountIdStr,
+            }));
+
+            await getGeneratedAuth({
+                payload: Challenge.payload,
+                signatures: {
+                    server: Challenge.server.signature || "",
+                    wallet: {
+                        accountId: accountIdStr,
+                        signature: signatureBase64,
+                    },
+                },
+            }).unwrap();
+
+            toast.success("Authentication successful!");
         } catch (e) {
+            console.error("Error during authentication:", e);
             if (e instanceof UserRefusedToSignAuthError) {
                 toast.error("User refused to sign authentication. Please try again.");
                 disconnect();
                 dispatch(setStep({ step: OnboardingSteps.PairWallet, isSmDeviceModalOpen: isSmDevice }));
             }
         }
-    }
+    };
 
     // if not connected, redirect to pair wallet step
     useEffect(() => {
@@ -48,7 +70,6 @@ const Authenticate = () => {
             dispatch(setStep({ step: OnboardingSteps.PairWallet, isSmDeviceModalOpen: isSmDevice }));
         }
     }, [isConnected, accountId]);
-
 
 
     return (

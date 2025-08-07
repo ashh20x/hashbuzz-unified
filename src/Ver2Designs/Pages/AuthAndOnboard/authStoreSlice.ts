@@ -58,6 +58,7 @@ const authSlice = createSlice({
       state.isSmDeviceModalOpen = action.payload;
     },
     setAuthSignature(state, action: PayloadAction<SignerSignatureString>) {
+      console.log("Setting Auth Signature", action.payload);
       state.authSignature = action.payload;
     },
   },

@@ -14,23 +14,12 @@ export type Challenge = {
 };
 
 export type GenerateAstPayload = {
-  payload: {
-    url: string;
-    data: any;
-  };
-
-  clientPayload: {
-    serverSignature: string | Uint8Array;
-    originalPayload: {
-      url: string;
-      data: any;
-    };
-  };
+  payload: Payload;
   signatures: {
     server: string;
     wallet: {
       accountId: string;
-      value: string;
+      signature: string;
     };
   };
 };

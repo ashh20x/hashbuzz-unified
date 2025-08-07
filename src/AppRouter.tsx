@@ -1,6 +1,6 @@
 import { RouterProvider } from 'react-router-dom';
 import StyledComponentTheme from './theme/Theme';
-import router from './router';
+import router from './router.tsx';
 
 const AppRouter = () => (
   <StyledComponentTheme>
