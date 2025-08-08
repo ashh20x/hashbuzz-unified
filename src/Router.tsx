@@ -28,7 +28,7 @@ const router = createBrowserRouter([
         children: [
             { index: true, element: <Navigate to="pair-wallet" replace /> },
             {
-                path: OnboardingSteps.PairWallet,
+                path: "pair-wallet",
                 element: (
                     <StepGuard step={OnboardingSteps.PairWallet}>
                         <PairWalletAndAuthenticate />

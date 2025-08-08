@@ -1,7 +1,9 @@
-import { useWallet } from "@buidlerlabs/hashgraph-react-wallets";
+import { useAppDispatch } from "@/Store/store";
+import { useAccountId, useWallet } from "@buidlerlabs/hashgraph-react-wallets";
 import { HWCConnector } from '@buidlerlabs/hashgraph-react-wallets/connectors';
 import { Link } from "@mui/icons-material";
 import { Alert, Box, Button } from "@mui/material";
+import { walletPaired } from "../../authStoreSlice";
 import { Guide } from "../data";
 import GuideList from "../GuideList";
 import * as styles from "./styles";
@@ -10,14 +12,19 @@ import * as styles from "./styles";
 const BrowserExtension = () => {
   const { isExtensionRequired, extensionReady, connect } =
     useWallet(HWCConnector);
+  const { data: accountId } = useAccountId();
+  const dispatch = useAppDispatch();
 
   const handleConnect = async () => {
     try {
-      await connect()
+      const session = await connect();
+      if (session.isConnected) {
+        dispatch(walletPaired(accountId));
+      }
     } catch (error) {
-      console.error(error.message)
+      console.error(error.message);
     }
-  }
+  };
 
   return (
     <Box sx={styles.browserExtensionContainer}>

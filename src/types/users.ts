@@ -5,6 +5,7 @@ export interface AuthCred {
   message: string;
   refreshToken?: string;
 }
+
 export type user_roles = "SUPER_ADMIN" | "ADMIN" | "ANALYTICS" | "MARKETING" | "MANAGEMENT" | "USER" | "GUEST_USER";
 
 export type UserConfig = {

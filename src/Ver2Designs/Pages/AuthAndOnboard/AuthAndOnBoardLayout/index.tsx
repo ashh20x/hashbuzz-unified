@@ -14,11 +14,12 @@ const AuthAndOnBoardLayout = () => {
   const dispatch = useDispatch();
   const location = useLocation();
 
+  // Handle small device modal for /auth routes
   useEffect(() => {
     if (isSmDevice && location.pathname.startsWith("/auth")) {
       dispatch(toggleSmDeviceModal(true));
     }
-  }, [isSmDevice, location.pathname, dispatch]);
+  }, [dispatch, isSmDevice, location.pathname]);
 
   return (
     <Stack component="main" flexDirection={{

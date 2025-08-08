@@ -1,3 +1,5 @@
+import { CurrentUser } from "./users";
+
 export type Payload = {
   url: string;
   data: {
@@ -11,6 +13,8 @@ export type Challenge = {
     signature: string;
     account: string;
   };
+  isExistingUser: boolean;
+  connectedXAccount: string;
 };
 
 export type GenerateAstPayload = {
@@ -29,5 +33,19 @@ export type GnerateReseponse = {
   deviceId: string;
   refreshToken: string;
   message: string;
-  auth: true;
+  auth: boolean;
+};
+
+export type GnerateReseponseV2 = {
+  deviceId: string;
+  message: string;
+  auth: boolean;
+  user: CurrentUser;
+};
+
+export type PingResponse = {
+  wallet_id?: string;
+  status: string;
+  device_id?: string;
+  user?: CurrentUser;
 };
