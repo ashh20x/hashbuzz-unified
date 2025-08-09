@@ -10,7 +10,7 @@ import { Buffer } from "buffer";
 import { toast } from "react-toastify";
 import { useGenerateAuthMutation, useGetChallengeMutation } from "../api/auth";
 import { authenticated, connectXAccount, OnboardingSteps, setAppCreds, setAuthSignature, setStep } from "../authStoreSlice";
-import SectionHeader from "../Components/SectionHeader";
+import SectionHeader from "../Components/SectionHeader/SectionHeader";
 import * as styles from "./styles";
 import { useEffect } from "react";
 

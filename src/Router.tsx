@@ -6,11 +6,11 @@ import {
     AssociateTokens,
     AuthAndOnBoardLayout,
     ConnectXAccount,
+    OnboardingSteps,
     PairWalletAndAuthenticate,
     SignAuthentication,
+    TwitterCallback,
 } from "./Ver2Designs/Pages/AuthAndOnboard";
-import TwitterCallback from "./Ver2Designs/Pages/AuthAndOnboard/TwitterCallback";
-import { OnboardingSteps } from "./Ver2Designs/Pages/AuthAndOnboard/authStoreSlice";
 import { LandingV3 } from "./Ver2Designs/Pages/Landing";
 
 const router = createBrowserRouter([

@@ -8,7 +8,7 @@ import { forwardRef, ReactElement } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { OnboardingSteps, toggleSmDeviceModal } from "../../authStoreSlice";
-import OnBoardingSteps from "../../Components/OnBoardingSteps";
+import OnBoardingSteps from "../../Components/OnBoardingSteps/OnBoardingSteps";
 import * as styles from "./styles";
 
 const Transition = forwardRef<unknown, TransitionProps & { children: ReactElement<unknown> }>(

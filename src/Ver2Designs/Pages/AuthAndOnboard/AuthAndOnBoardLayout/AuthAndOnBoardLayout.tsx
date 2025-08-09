@@ -3,9 +3,9 @@ import { useEffect } from 'react';
 import { useDispatch } from "react-redux";
 import { Outlet, useLocation } from "react-router-dom";
 import { toggleSmDeviceModal } from "../authStoreSlice";
-import OnBoardingSteps from "../Components/OnBoardingSteps";
+import OnBoardingSteps from "../Components/OnBoardingSteps/OnBoardingSteps";
 import ModalStepsDialog from "./ModalStepsDialog";
-import StepsMobileHeader from "./StepsMobleHeader";
+import StepsMobileHeader from "./StepsMobileHeader";
 import * as styles from "./styles";
 
 

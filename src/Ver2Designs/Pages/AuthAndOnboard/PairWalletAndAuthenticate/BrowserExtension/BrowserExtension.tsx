@@ -5,7 +5,7 @@ import { Link } from "@mui/icons-material";
 import { Alert, Box, Button } from "@mui/material";
 import { walletPaired } from "../../authStoreSlice";
 import { Guide } from "../data";
-import GuideList from "../GuideList";
+import {GuideList} from "../GuideList";
 import * as styles from "./styles";
 
 

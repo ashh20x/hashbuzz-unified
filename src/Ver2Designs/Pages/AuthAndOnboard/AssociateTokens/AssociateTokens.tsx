@@ -1,10 +1,9 @@
-import React from "react";
-import { Box, Button, IconButton } from "@mui/material";
-import { CheckCircleOutlineOutlined } from '@mui/icons-material';
-import * as styles from "./styles";
-import SectionHeader from "../Components/SectionHeader";
-import TookensData from "./data.json";
 import PrimaryButtonV2 from "@/components/Buttons/PrimaryButtonV2";
+import { CheckCircleOutlineOutlined } from '@mui/icons-material';
+import { Box, Button } from "@mui/material";
+import SectionHeader from "../Components/SectionHeader/SectionHeader";
+import TookensData from "./data.json";
+import * as styles from "./styles";
 
 
 const AssociateTokens = () => {

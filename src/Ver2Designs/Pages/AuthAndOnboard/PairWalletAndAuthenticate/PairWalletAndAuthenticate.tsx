@@ -1,6 +1,6 @@
 import { Box, Stack } from "@mui/material";
-import SectionHeader from "../Components/SectionHeader";
-import BrowserExtension from "./BrowserExtension";
+import SectionHeader from "../Components/SectionHeader/SectionHeader";
+import BrowserExtension from "./BrowserExtension/BrowserExtension";
 import * as styles from "./styles";
 
 

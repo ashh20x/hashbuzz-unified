@@ -8,7 +8,7 @@ import XPlatformIcon from "@/SVGR/XPlatformIcon";
 import { LinkSharp } from "@mui/icons-material";
 import { Alert, Box, Stack } from "@mui/material";
 import { useLocation } from "react-router-dom";
-import SectionHeader from "../Components/SectionHeader";
+import SectionHeader from "../Components/SectionHeader/SectionHeader";
 import * as styles from "./styles";
 
 const permissions = [
