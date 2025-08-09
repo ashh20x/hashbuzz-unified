@@ -53,9 +53,10 @@ export const useTokenRefresh = () => {
    * Refreshes token every 14 minutes (1 minute before expiry)
    */
   const startTokenRefreshTimer = useCallback(() => {
-    // Clear existing timer
+    // Don't start if timer is already running
     if (refreshIntervalRef.current) {
-      clearInterval(refreshIntervalRef.current)
+      console.log('Token refresh timer already running')
+      return
     }
 
     // Check if user has access token cookie (indicating they're authenticated)
@@ -88,9 +89,11 @@ export const useTokenRefresh = () => {
   const checkAuthAndManageTimer = useCallback(() => {
     const hasAccessToken = getCookieByName('access_token')
     
-    if (hasAccessToken) {
+    if (hasAccessToken && !refreshIntervalRef.current) {
+      // Only start if not already running
       startTokenRefreshTimer()
-    } else {
+    } else if (!hasAccessToken && refreshIntervalRef.current) {
+      // Only stop if currently running
       stopTokenRefreshTimer()
     }
   }, [startTokenRefreshTimer, stopTokenRefreshTimer])
@@ -101,7 +104,8 @@ export const useTokenRefresh = () => {
     checkAuthAndManageTimer()
 
     // Listen for cookie changes (when user logs in/out)
-    const interval = setInterval(checkAuthAndManageTimer, 5000) // Check every 5 seconds
+    // Increased interval to reduce frequency of checks
+    const interval = setInterval(checkAuthAndManageTimer, 30000) // Check every 30 seconds
 
     // Cleanup on unmount
     return () => {
@@ -117,9 +121,17 @@ export const useTokenRefresh = () => {
     }
   }, [stopTokenRefreshTimer])
 
+  /**
+   * Check if timer is currently running
+   */
+  const isTimerRunning = useCallback(() => {
+    return refreshIntervalRef.current !== null
+  }, [])
+
   return {
     refreshToken,
     startTokenRefreshTimer,
     stopTokenRefreshTimer,
+    isTimerRunning,
   }
 }

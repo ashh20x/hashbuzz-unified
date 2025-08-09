@@ -3,13 +3,14 @@ import { useTokenRefresh } from '../hooks/useTokenRefresh'
 import { useAuthPingMutation } from '../Ver2Designs/Pages/AuthAndOnboard/api/auth'
 import { useAppDispatch } from '../Store/store'
 import { authenticated, connectXAccount } from '../Ver2Designs/Pages/AuthAndOnboard/authStoreSlice'
+import useWalletPairingSync from '../hooks/use-wallet-pairing-sync'
 
 interface TokenRefreshProviderProps {
   children: React.ReactNode
 }
 
 /**
- * TokenRefreshProvider: Manages automatic token refresh and initial session check across the entire app
+ * TokenRefreshProvider: Manages automatic token refresh, initial session check, and wallet pairing sync across the entire app
  * Should be placed high in the component tree (e.g., in App.tsx)
  */
 export const TokenRefreshProvider: React.FC<TokenRefreshProviderProps> = ({ children }) => {
@@ -17,6 +18,9 @@ export const TokenRefreshProvider: React.FC<TokenRefreshProviderProps> = ({ chil
   const [sessionCheckPing] = useAuthPingMutation()
   const dispatch = useAppDispatch()
   const [hasInitialized, setHasInitialized] = React.useState(false)
+  
+  // Monitor wallet connection status and sync with Redux
+  useWalletPairingSync()
 
   const handleSessionValidation = useCallback(async () => {
     // Prevent multiple simultaneous session validations
@@ -75,19 +79,19 @@ export const TokenRefreshProvider: React.FC<TokenRefreshProviderProps> = ({ chil
         console.log('App hidden, stopping token refresh timer')
         stopTokenRefreshTimer()
       } else {
-        // Tab becomes visible - resume token refreshing
-        console.log('App visible, starting token refresh timer')
-        startTokenRefreshTimer()
+        // Tab becomes visible - resume token refreshing only if authenticated
+        console.log('App visible, resuming token refresh if authenticated')
+        // The useTokenRefresh hook will handle checking auth status and starting timer if needed
       }
     }
 
     // Listen for tab visibility changes
     document.addEventListener('visibilitychange', handleVisibilityChange)
 
-    // Listen for window focus/blur events
+    // Listen for window focus events (but be less aggressive)
     const handleFocus = () => {
-      console.log('Window focused, ensuring token refresh is active')
-      startTokenRefreshTimer()
+      console.log('Window focused')
+      // Don't immediately restart timer - let the hook's internal check handle it
     }
 
     const handleBlur = () => {
@@ -105,7 +109,7 @@ export const TokenRefreshProvider: React.FC<TokenRefreshProviderProps> = ({ chil
       window.removeEventListener('blur', handleBlur)
       stopTokenRefreshTimer()
     }
-  }, []) // Empty dependency array - these event listeners should only be set up once
+  }, [stopTokenRefreshTimer]) // Only depend on stopTokenRefreshTimer
 
   return <>{children}</>
 }

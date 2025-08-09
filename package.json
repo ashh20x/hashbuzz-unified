@@ -19,6 +19,7 @@
     "@walletconnect/utils": "^2.19.2",
     "axios": "^0.27.2",
     "bignumber.js": "^9.1.2",
+    "buffer": "^6.0.3",
     "dotenv": "^16.0.1",
     "emoji-picker-react": "^4.4.9",
     "ethers": "^6.13.5",

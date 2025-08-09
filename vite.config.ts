@@ -17,7 +17,11 @@ export default defineConfig({
     resolve: {
         alias: {
             "@": "/src",
+            buffer: "buffer",
         },
+    },
+    optimizeDeps: {
+        include: ["buffer"],
     },
 
     // esbuild configuration removed; Vite handles JSX automatically with the React plugin.

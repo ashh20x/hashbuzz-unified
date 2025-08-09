@@ -51,7 +51,7 @@ export type PingResponse = {
   connectedXAccount: string;
 };
 
-enum AuthError {
+export enum AuthError {
   AUTH_TOKEN_NOT_PRESENT = 'AUTH_TOKEN_NOT_PRESENT',
   AUTH_TOKEN_INVALID = 'AUTH_TOKEN_INVALID',
   SIGNATURE_NOT_VERIFIED = 'SIGNATURE_NOT_VERIFIED',

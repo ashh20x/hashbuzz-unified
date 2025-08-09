@@ -5,30 +5,36 @@ import SuccessStepIcon from "@/SVGR/SuccessStepIcon";
 import { useAccountId, UserRefusedToSignAuthError, useWallet } from "@buidlerlabs/hashgraph-react-wallets";
 import { HWCConnector } from "@buidlerlabs/hashgraph-react-wallets/connectors";
 import AuthIcon from '@mui/icons-material/Login';
-import { Box, Stack, useMediaQuery } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import { Buffer } from "buffer";
-import { toast } from "react-toastify";
-import { useGenerateAuthMutation, useGetChallengeMutation } from "../api/auth";
-import { authenticated, connectXAccount, OnboardingSteps, setAppCreds, setAuthSignature, setStep } from "../authStoreSlice";
-import SectionHeader from "../Components/SectionHeader/SectionHeader";
-import * as styles from "./styles";
 import { useEffect } from "react";
+import { toast } from "react-toastify";
+import { useGenerateAuthMutation, useLazyGetChallengeQuery } from "../api/auth";
+import { authenticated, connectXAccount, setAppCreds, setAuthSignature } from "../authStoreSlice";
+import SectionHeader from "../Components/SectionHeader";
+import * as styles from "./styles";
 
 const Authenticate = () => {
     const { data: accountId } = useAccountId();
-    const isSmDevice = useMediaQuery((theme) => theme.breakpoints.down("sm"));
-    const { isConnected, disconnect, signer } = useWallet(HWCConnector);
+    const { isConnected, signer } = useWallet(HWCConnector);
     const dispatch = useAppDispatch();
-    const [getChallenge, { data: challenge }] = useGetChallengeMutation();
+
+    // Use query to get challenge with 30-second caching
+    const [getChallenge, {
+        isLoading: isChallengeLoading,
+    }] = useLazyGetChallengeQuery();
+
     const [generateAuth, { isLoading: isAuthLoading }] = useGenerateAuthMutation();
 
     const handleAuthenticate = async () => {
-        if (!challenge?.payload || !challenge.server) return;
-
         try {
+            const challenge = await getChallenge({ walletId: accountId! }).unwrap();
+
             const message = JSON.stringify(challenge.payload);
             const bytes = new TextEncoder().encode(message); // UTF-8 encoding
-            const signatureObjs = await signer?.sign([bytes]);
+
+            // Sign the message bytes
+            const signatureObjs = await (signer as any).sign([bytes]);
             const sigObj = signatureObjs[0];
 
             const signatureBase64 = Buffer.from(sigObj.signature).toString("base64");
@@ -52,7 +58,6 @@ const Authenticate = () => {
                 },
             }).unwrap();
 
-
             if (authResponse) {
                 dispatch(setAppCreds({
                     deviceId: authResponse.deviceId,
@@ -67,13 +72,16 @@ const Authenticate = () => {
 
         } catch (e: any) {
             console.error("Error during authentication:", e);
+
+            // Handle specific error cases
             if (e instanceof UserRefusedToSignAuthError) {
                 toast.error("User refused to sign authentication. Please try again.");
-                disconnect();
-                dispatch(setStep({ step: OnboardingSteps.PairWallet, isSmDeviceModalOpen: isSmDevice }));
+            } else if (e?.data?.error?.description === 'SIGNING_MESSAGE_EXPIRED') {
+                // Challenge expired during signing process
+                toast.warning('Authentication challenge expired. Please refresh the page and try again.');
+                window.location.reload(); // Reload to get a new challenge
             } else {
-                toast.error("An error occurred during authentication. Please try again.");
-                getChallenge(accountId);
+                toast.error("An error occurred during authentication. Please refresh the page and try again.");
             }
         }
     };
@@ -82,7 +90,7 @@ const Authenticate = () => {
         if (accountId) {
             getChallenge({ walletId: accountId });
         }
-    }, [accountId]);
+    }, [accountId, getChallenge]);
 
     return (
         <Box sx={styles.authicateContainer}>
@@ -104,9 +112,12 @@ const Authenticate = () => {
                     <PrimaryButtonV2
                         onClick={handleAuthenticate}
                         endIcon={<AuthIcon />}
-                        disabled={!isConnected || isAuthLoading}
+                        loading={isAuthLoading || isChallengeLoading}
+                        disabled={!isConnected || isAuthLoading || isChallengeLoading}
                     >
-                        {isAuthLoading ? 'Authenticating...' : 'Authenticate'}
+                        {isAuthLoading ? 'Authenticating...' :
+                            isChallengeLoading ? 'Loading Challenge...' :
+                                'Authenticate'}
                     </PrimaryButtonV2>
                 </Box>
             </Stack>
