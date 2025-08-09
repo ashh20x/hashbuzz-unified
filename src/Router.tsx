@@ -2,6 +2,7 @@ import { createBrowserRouter, Navigate } from "react-router-dom";
 import { ProtectedRoute, RedirectIfAuthenticated } from "./APIConfig/AuthGuard";
 import StepGuard from "./components/StepGuard";
 import { ContentPage, Dashboard, PageNotfound } from "./Ver2Designs";
+import MainLayout from "./Ver2Designs/Layout";
 import {
     AssociateTokens,
     AuthAndOnBoardLayout,
@@ -12,7 +13,6 @@ import {
     TwitterCallback,
 } from "./Ver2Designs/Pages/AuthAndOnboard";
 import { LandingV3 } from "./Ver2Designs/Pages/Landing";
-import MainLayout from "./Ver2Designs/Layout";
 
 const router = createBrowserRouter([
     {
@@ -26,7 +26,9 @@ const router = createBrowserRouter([
     },
     {
         path: "/auth",
-        element: <AuthAndOnBoardLayout />,
+        element: (
+            <AuthAndOnBoardLayout />
+        ),
         children: [
             { index: true, element: <Navigate to="pair-wallet" replace /> },
             {
@@ -68,34 +70,34 @@ const router = createBrowserRouter([
         ],
     },
     {
-        path: "/",
+        path: "/app",
         element: (
-            <ProtectedRoute><MainLayout /></ProtectedRoute>
+            <ProtectedRoute>
+                <MainLayout />
+            </ProtectedRoute>
         ),
         children: [
-            { path: "/", element: <Dashboard /> },
-            { path: "dashboard", element: <Dashboard /> }
-        ]
+            { index: true, element: <Navigate to="/dashboard" replace /> },
+            { path: "dashboard", element: <Dashboard /> },
+            // Uncomment and add these routes as needed:
+            // { path: "campaign", element: <Template /> },
+            // { path: "create-campaign", element: <CreateCampaign /> },
+            // { path: "invoice", element: <Invoice /> },
+            // { path: "settings", element: <Settings /> },
+            // { path: "transactions", element: <Transactions /> },
+            // { path: "archived", element: <Archived /> },
+        ],
     },
+    // // Redirect dashboard to protected app routes
     // {
-    //     path: "/",
+    //     path: "/dashboard",
     //     element: (
     //         <ProtectedRoute>
-    //             <MainLayout />
+    //             <Dashboard />
     //         </ProtectedRoute>
     //     ),
-    //     children: [
-    //         { path: "/", element: <Dashboard /> },
-    //         { path: "dashboard", element: <Dashboard /> },
-    //         { path: "campaign", element: <Template /> },
-    //         { path: "create-campaign", element: <CreateCampaign /> },
-    //         { path: "invoice", element: <Invoice /> },
-    //         { path: "onboarding", element: <OnBoarding /> },
-    //         { path: "settings", element: "" },
-    //         { path: "transactions", element: "" },
-    //         { path: "archived", element: "" },
-    //     ],
     // },
+    // Admin routes (uncomment when needed)
     // {
     //     path: "/admin",
     //     element: (

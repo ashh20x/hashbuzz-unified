@@ -26,7 +26,7 @@ const STEP_PATHS: Record<OnboardingSteps, string> = {
   [OnboardingSteps.AssociateTokens]: "/auth/associate-tokens",
 };
 
-const DASHBOARD_PATH = "/dashboard";
+const DASHBOARD_PATH = "/app/dashboard";
 
 interface StepGuardProps {
   step: OnboardingSteps;
