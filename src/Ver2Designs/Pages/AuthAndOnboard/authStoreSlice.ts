@@ -1,4 +1,5 @@
 import { CurrentUser, GnerateReseponseV2, UserPing } from "@/types";
+import { MirrorNodeToken } from "@/types/mirrorTypes";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export enum OnboardingSteps {
@@ -14,11 +15,21 @@ export interface SignerSignatureString {
   accountId: string;
 }
 
+export type ConnectedToken = {
+  token: MirrorNodeToken;
+  isAssociated: boolean;
+};
+
+export type TokenAssociation = {
+  tokens: ConnectedToken[];
+  allAssociated: boolean;
+};
+
 interface UserAuthAndOnBoardSteps {
   wallet: { isPaired: boolean; address?: string };
   auth: { isAuthenticated: boolean };
   xAccount: { isConnected: boolean; handle?: string };
-  token: { isAllAssociated: boolean; userTokens?: any[] };
+  token: TokenAssociation;
   currentStep: OnboardingSteps;
 }
 
@@ -36,7 +47,7 @@ const initialAuthState: UserAuthAndOnBoardSteps = {
   wallet: { isPaired: false },
   auth: { isAuthenticated: false },
   xAccount: { isConnected: false },
-  token: { isAllAssociated: false },
+  token: { tokens: [], allAssociated: false },
   currentStep: OnboardingSteps.PairWallet,
 };
 
@@ -88,7 +99,7 @@ const authSlice = createSlice({
           wallet: { isPaired: false },
           auth: { isAuthenticated: false },
           xAccount: { isConnected: false },
-          token: { isAllAssociated: false },
+          token: { tokens: [], allAssociated: false },
           currentStep: OnboardingSteps.PairWallet,
         };
       }
@@ -97,24 +108,57 @@ const authSlice = createSlice({
       state.userAuthAndOnBoardSteps.currentStep = OnboardingSteps.SignAuthentication;
     },
     authenticated: (state) => {
-      if (!state.userAuthAndOnBoardSteps) return;
       state.userAuthAndOnBoardSteps.auth.isAuthenticated = true;
       state.userAuthAndOnBoardSteps.currentStep = OnboardingSteps.ConnectXAccount;
     },
     connectXAccount: (state, action: PayloadAction<string>) => {
-      if (!state.userAuthAndOnBoardSteps) return;
       state.userAuthAndOnBoardSteps.xAccount.isConnected = true;
       state.userAuthAndOnBoardSteps.xAccount.handle = action.payload;
       state.userAuthAndOnBoardSteps.currentStep = OnboardingSteps.AssociateTokens;
     },
-    associateTokens: (state, action: PayloadAction<any[]>) => {
-      if (!state.userAuthAndOnBoardSteps) return;
-      state.userAuthAndOnBoardSteps.token.isAllAssociated = true;
-      state.userAuthAndOnBoardSteps.token.userTokens = action.payload;
+    setTokens: (state, action: PayloadAction<MirrorNodeToken[]>) => {
+      // Initialize tokens as not associated
+      state.userAuthAndOnBoardSteps.token.tokens = action.payload.map(token => ({
+        token,
+        isAssociated: false
+      }));
+      state.userAuthAndOnBoardSteps.token.allAssociated = false;
+    },
+    setTokenAssociation: (state, action: PayloadAction<{ tokenId: string; isAssociated: boolean }>) => {
+      const { tokenId, isAssociated } = action.payload;
+      const tokenIndex = state.userAuthAndOnBoardSteps.token.tokens.findIndex(
+        t => t.token.token_id === tokenId
+      );
+      
+      if (tokenIndex !== -1) {
+        state.userAuthAndOnBoardSteps.token.tokens[tokenIndex].isAssociated = isAssociated;
+        // Check if all tokens are now associated
+        state.userAuthAndOnBoardSteps.token.allAssociated = 
+          state.userAuthAndOnBoardSteps.token.tokens.every(t => t.isAssociated);
+      }
+    },
+    markAllTokensAssociated: (state) => {
+      state.userAuthAndOnBoardSteps.token.tokens.forEach(token => {
+        token.isAssociated = true;
+      });
+      state.userAuthAndOnBoardSteps.token.allAssociated = true;
     },
     resetAuth: () => initialState,
   },
 });
 
-export const { advanceStep, setStep, toggleSmDeviceModal, setAuthSignature, setAppCreds , walletPaired, authenticated, connectXAccount, associateTokens, resetAuth  } = authSlice.actions;
+export const { 
+  advanceStep, 
+  setStep, 
+  toggleSmDeviceModal, 
+  setAuthSignature, 
+  setAppCreds, 
+  walletPaired, 
+  authenticated, 
+  connectXAccount, 
+  setTokens,
+  setTokenAssociation,
+  markAllTokensAssociated,
+  resetAuth 
+} = authSlice.actions;
 export default authSlice.reducer;

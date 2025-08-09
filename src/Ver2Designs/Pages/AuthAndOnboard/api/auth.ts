@@ -39,7 +39,7 @@ export const authApi = apiBase.injectEndpoints({
     }),
     refreshToken: builder.mutation<{ message: string; ast: string }, void>({
       query: () => ({
-        url: "/api/auth/refresh-token",
+        url: "/auth/refresh-token",
         method: "POST",
         body: {}, // Empty body since refresh token is in httpOnly cookie
       }),

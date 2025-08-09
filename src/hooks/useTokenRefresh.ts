@@ -66,7 +66,7 @@ export const useTokenRefresh = () => {
       // Set interval to refresh every 14 minutes (before 15-minute expiry)
       refreshIntervalRef.current = setInterval(() => {
         refreshToken()
-      }, 14 * 60 * 1000) // 14 minutes
+      }, 1 * 60 * 1000) // 1 minute
 
       console.log('Token refresh timer started (14-minute interval)')
     }

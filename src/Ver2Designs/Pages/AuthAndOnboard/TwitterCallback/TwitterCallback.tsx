@@ -14,7 +14,7 @@ const TwitterCallback: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  
+
   const [handleCallback, { error }] = useHandleTwitterCallbackMutation();
 
   useEffect(() => {
@@ -27,7 +27,7 @@ const TwitterCallback: React.FC = () => {
       // Check if we have the required parameters
       if (!oauth_token || !oauth_verifier) {
         console.error('Missing OAuth parameters');
-        navigate('/auth/connect-x-account', { 
+        navigate('/auth/connect-x-account', {
           replace: true,
           state: { error: 'OAuth callback failed - missing parameters' }
         });
@@ -52,12 +52,12 @@ const TwitterCallback: React.FC = () => {
         }
       } catch (err: any) {
         console.error('Twitter callback error:', err);
-        
+
         // Navigate back to connect page with error
         navigate('/auth/connect-x-account', {
           replace: true,
-          state: { 
-            error: err?.data?.message || err?.message || 'Failed to connect X account. Please try again.' 
+          state: {
+            error: err?.data?.message || err?.message || 'Failed to connect X account. Please try again.'
           }
         });
       }
@@ -76,11 +76,11 @@ const TwitterCallback: React.FC = () => {
       p={4}
     >
       <CircularProgress size={60} sx={{ mb: 3 }} />
-      
+
       <Typography variant="h5" component="h1" gutterBottom>
         Connecting your 𝕏 account...
       </Typography>
-      
+
       <Typography variant="body1" color="text.secondary" textAlign="center" sx={{ mb: 3 }}>
         Please wait while we complete the connection process.
       </Typography>

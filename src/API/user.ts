@@ -52,6 +52,7 @@ export const userApi = apiBase.injectEndpoints({
 // Export hooks for User API operations
 export const {
   useGetCurrentUserQuery,
+  useLazyGetCurrentUserQuery,
   useUpdateConsentMutation,
   useUpdateWalletIdMutation,
   useGetTokenBalancesQuery,
