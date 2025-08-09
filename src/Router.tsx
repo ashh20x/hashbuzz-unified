@@ -1,7 +1,7 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
-import { RedirectIfAuthenticated } from "./APIConfig/AuthGuard";
+import { ProtectedRoute, RedirectIfAuthenticated } from "./APIConfig/AuthGuard";
 import StepGuard from "./components/StepGuard";
-import { ContentPage, PageNotfound } from "./Ver2Designs";
+import { ContentPage, Dashboard, PageNotfound } from "./Ver2Designs";
 import {
     AssociateTokens,
     AuthAndOnBoardLayout,
@@ -12,6 +12,7 @@ import {
     TwitterCallback,
 } from "./Ver2Designs/Pages/AuthAndOnboard";
 import { LandingV3 } from "./Ver2Designs/Pages/Landing";
+import MainLayout from "./Ver2Designs/Layout";
 
 const router = createBrowserRouter([
     {
@@ -65,6 +66,16 @@ const router = createBrowserRouter([
                 element: <TwitterCallback />,
             },
         ],
+    },
+    {
+        path: "/",
+        element: (
+            <ProtectedRoute><MainLayout /></ProtectedRoute>
+        ),
+        children: [
+            { path: "/", element: <Dashboard /> },
+            { path: "dashboard", element: <Dashboard /> }
+        ]
     },
     // {
     //     path: "/",

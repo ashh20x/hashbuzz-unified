@@ -1,16 +1,13 @@
 import { RouterProvider } from 'react-router-dom';
-import RefreshTokenProvider from './components/TokenRefreshProvider.tsx';
+import useAppSessionManager from './hooks/use-appSession-manager.ts';
 import router from './Router.tsx';
 import StyledComponentTheme from './theme/Theme';
-import useTokenAssociationSync from './hooks/use-token-association-sync.ts';
 
 const AppRouter = () => {
-  useTokenAssociationSync();
+  useAppSessionManager()
   return (
     <StyledComponentTheme>
-      <RefreshTokenProvider>
         <RouterProvider router={router} />
-      </RefreshTokenProvider>
     </StyledComponentTheme>
   );
 };

@@ -45,7 +45,7 @@ const StepGuard: React.FC<StepGuardProps> = ({ step, children }) => {
     (s: RootState) => s.auth.userAuthAndOnBoardSteps.xAccount.isConnected
   );
   const tokensAreAllAssociated = useAppSelector(
-    (s: RootState) => s.auth.userAuthAndOnBoardSteps.token.isAllAssociated
+    (s: RootState) => s.auth.userAuthAndOnBoardSteps.token.allAssociated
   );
 
   const navigate = useNavigate();
