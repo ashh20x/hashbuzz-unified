@@ -1,5 +1,5 @@
 import { apiBase } from "@/API/apiBase";
-import { AuthCred, Challenge, GenerateAstPayload, GnerateReseponseV2, LogoutResponse, PingResponse } from "@/types";
+import { Challenge, GenerateAstPayload, GnerateReseponseV2, LogoutResponse, PingResponse } from "@/types";
 
 /**
  * Auth API slice: handles authentication requests via RTK Query.
@@ -17,17 +17,20 @@ export const authApi = apiBase.injectEndpoints({
     generateAuth: builder.mutation<GnerateReseponseV2, GenerateAstPayload>({
       query: (payload) => ({ url: "/auth/generate-v2", method: "POST", body: payload }),
     }),
-    refreshToken: builder.mutation<AuthCred, string>({
-      query: (token) => ({ url: "/auth/refreshToken", method: "POST", body: { refreshToken: token } }),
+    refreshToken: builder.mutation<{ message: string; ast: string }, void>({
+      query: () => ({ 
+        url: "/api/auth/refresh-token", 
+        method: "POST", 
+        body: {} // Empty body since refresh token is in httpOnly cookie
+      }),
     }),
     logout: builder.mutation<LogoutResponse, void>({
       query: () => ({ url: "/auth/logout", method: "POST" }),
     }),
-    authPing: builder.mutation<PingResponse, { walletId?: string } | void>({
-      query: (arg) => ({
+    authPing: builder.mutation<PingResponse, void>({
+      query: () => ({
         url: "/auth/ping",
         method: "GET",
-        params: arg && arg.walletId ? { walletId: arg.walletId } : undefined,
       }),
     }),
   }),
@@ -35,4 +38,4 @@ export const authApi = apiBase.injectEndpoints({
 });
 
 // Export hooks for usage in functional components
-export const { useGetChallengeMutation, useGenerateAuthMutation, useRefreshTokenMutation, useLogoutMutation } = authApi;
+export const { useGetChallengeMutation, useGenerateAuthMutation, useRefreshTokenMutation, useLogoutMutation , useAuthPingMutation } = authApi;

@@ -71,6 +71,9 @@ const Authenticate = () => {
                 toast.error("User refused to sign authentication. Please try again.");
                 disconnect();
                 dispatch(setStep({ step: OnboardingSteps.PairWallet, isSmDeviceModalOpen: isSmDevice }));
+            } else {
+                toast.error("An error occurred during authentication. Please try again.");
+                getChallenge(accountId);
             }
         }
     };

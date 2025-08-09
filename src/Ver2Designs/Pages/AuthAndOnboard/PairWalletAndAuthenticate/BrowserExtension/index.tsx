@@ -26,6 +26,8 @@ const BrowserExtension = () => {
     }
   };
 
+  console.log("BrowserExtension Rendered", { isExtensionRequired, extensionReady, accountId });
+
   return (
     <Box sx={styles.browserExtensionContainer}>
       <GuideList guidesList={Guide} />

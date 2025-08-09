@@ -1,13 +1,17 @@
 import { RouterProvider } from 'react-router-dom';
-import StyledComponentTheme from './theme/Theme';
-import router from './Router.tsx';
 import useWalletPairingStatus from './hooks/use-wallet-pairing-status.ts';
+import router from './Router.tsx';
+import StyledComponentTheme from './theme/Theme';
+import RefreshTokenProvider from './components/TokenRefreshProvider.tsx';
 
 const AppRouter = () => {
-  useWalletPairingStatus()
+  useWalletPairingStatus();
+
   return (
     <StyledComponentTheme>
-      <RouterProvider router={router} />
+      <RefreshTokenProvider>
+        <RouterProvider router={router} />
+      </RefreshTokenProvider>
     </StyledComponentTheme>
   );
 };

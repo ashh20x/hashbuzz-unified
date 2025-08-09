@@ -112,14 +112,9 @@ const authSlice = createSlice({
       state.userAuthAndOnBoardSteps.token.isAllAssociated = true;
       state.userAuthAndOnBoardSteps.token.userTokens = action.payload;
     },
-    walletDisconnected: (state) => {
-      if (!state.userAuthAndOnBoardSteps) return;
-      state.userAuthAndOnBoardSteps.wallet.isPaired = false;
-      state.userAuthAndOnBoardSteps.currentStep = OnboardingSteps.PairWallet;
-    },
     resetAuth: () => initialState,
   },
 });
 
-export const { advanceStep, setStep, toggleSmDeviceModal, setAuthSignature, setAppCreds , walletPaired, authenticated, connectXAccount, associateTokens, resetAuth , walletDisconnected } = authSlice.actions;
+export const { advanceStep, setStep, toggleSmDeviceModal, setAuthSignature, setAppCreds , walletPaired, authenticated, connectXAccount, associateTokens, resetAuth  } = authSlice.actions;
 export default authSlice.reducer;

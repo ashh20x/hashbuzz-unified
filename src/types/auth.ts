@@ -47,5 +47,17 @@ export type PingResponse = {
   wallet_id?: string;
   status: string;
   device_id?: string;
-  user?: CurrentUser;
+  isAuthenticated: boolean;
+  connectedXAccount: string;
 };
+
+enum AuthError {
+  AUTH_TOKEN_NOT_PRESENT = 'AUTH_TOKEN_NOT_PRESENT',
+  AUTH_TOKEN_INVALID = 'AUTH_TOKEN_INVALID',
+  SIGNATURE_NOT_VERIFIED = 'SIGNATURE_NOT_VERIFIED',
+  DEVICE_ID_REQUIRED = 'DEVICE_ID_REQUIRED',
+  ACCESS_DENIED = 'ACCESS_DENIED',
+  INVALID_SIGNATURE_TOKEN = 'INVALID_SIGNATURE_TOKEN',
+  SIGNING_MESSAGE_EXPIRED = 'SIGNING_MESSAGE_EXPIRED',
+  ERROR_WHILE_FINDING_DEVICE_ID = 'ERROR_WHILE_FINDING_DEVICE_ID',
+}

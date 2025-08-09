@@ -7,6 +7,7 @@ import UserIcon from "@/SVGR/UserIcon";
 import XPlatformIcon from "@/SVGR/XPlatformIcon";
 import { LinkSharp } from "@mui/icons-material";
 import { Alert, Box, Stack } from "@mui/material";
+import { useLocation } from "react-router-dom";
 import SectionHeader from "../Components/SectionHeader";
 import * as styles from "./styles";
 
@@ -26,12 +27,21 @@ const permissions = [
 ];
 
 const ConnectXAccount = () => {
+  const location = useLocation();
   const [getTwitterPersonalHandle, {isLoading:isLoadingTwitterHandle}] = useLazyGetTwitterPersonalHandleQuery();
 
   const handleConnectXAccount = async () => {
-    const { url } = await getTwitterPersonalHandle().unwrap();
-    window.open(url, "_blank");
+    try {
+      const { url } = await getTwitterPersonalHandle().unwrap();
+      // Navigate to X OAuth in the same window for stateful callback
+      window.location.href = url;
+    } catch (error) {
+      console.error('Error getting Twitter auth URL:', error);
+    }
   };
+
+  // Check for error from navigation state (e.g., from failed callback)
+  const errorFromState = location.state?.error;
 
   return (
     <Box sx={styles.connectXAccountStyles}>
@@ -40,6 +50,13 @@ const ConnectXAccount = () => {
           title="Connect your 𝕏 account"
           subtitle="Securely link your 𝕏 account to start earning with Hashbuzz."
         />
+        
+        {errorFromState && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {errorFromState}
+          </Alert>
+        )}
+
         <Box sx={styles.sectionTopContent}>
           <Stack
             sx={styles.linkIconStackContainer}
