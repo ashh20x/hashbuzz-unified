@@ -21,7 +21,9 @@
  * @version 3.0.0 - Modular Architecture Upgrade
  */
 
-import { useEffect } from 'react';
+
+
+import { useEffect, useCallback, useRef } from 'react';
 import { useAppSelector } from '@/Store/store';
 import { SESSION_DEFAULTS } from './session-manager/constants';
 import { useTokenManager } from './session-manager/useTokenManager';
@@ -29,12 +31,8 @@ import { useWalletSync } from './session-manager/useWalletSync';
 import { useSessionValidator } from './session-manager/useSessionValidator';
 import { useTokenAssociationSync } from './session-manager/useTokenAssociationSync';
 import { useCrossTabSync } from './session-manager/useCrossTabSync';
-import { useTabVisibilityManager } from './session-manager/useTabVisibilityManager';
+import { getCookieByName } from '@/Utilities/helpers';
 import type { UseAppSessionManagerProps, SessionManagerAPI } from './session-manager/types';
-
-// ============================================================================
-// MAIN HOOK - ORCHESTRATES ALL SESSION MANAGEMENT MODULES
-// ============================================================================
 
 export const useAppSessionManager = ({
   refreshEndpoint = SESSION_DEFAULTS.REFRESH_ENDPOINT,
@@ -42,34 +40,32 @@ export const useAppSessionManager = ({
   sessionExpireMinutes = SESSION_DEFAULTS.SESSION_EXPIRE_MINUTES,
 }: UseAppSessionManagerProps = {}): SessionManagerAPI => {
 
-  // ============================================================================
-  // REDUX STATE
-  // ============================================================================
+  const adjustedBufferSeconds = sessionExpireMinutes <= 2 
+    ? Math.min(bufferSeconds, sessionExpireMinutes * 30)
+    : bufferSeconds;
+
+  // Refs to prevent infinite loops
+  const hasInitializedRef = useRef(false);
+  const lastAuthStateRef = useRef<boolean>(false);
 
   const {
     wallet: { isPaired },
     auth: { isAuthenticated },
+    xAccount: { isConnected: isXAccountConnected }
   } = useAppSelector((s) => s.auth.userAuthAndOnBoardSteps);
-  const isUserAuthenticated = isPaired && isAuthenticated;
 
-  // ============================================================================
-  // MODULE INITIALIZATION
-  // ============================================================================
+  const isUserAuthenticated = isPaired && isAuthenticated && isXAccountConnected;
 
-  // Token management module
-  const tokenManager = useTokenManager(sessionExpireMinutes, bufferSeconds, refreshEndpoint);
+  const tokenManager = useTokenManager(sessionExpireMinutes, adjustedBufferSeconds, refreshEndpoint);
 
-  // Session validation module
   const sessionValidator = useSessionValidator(
     tokenManager.setTokenExpiry,
     tokenManager.clearTokenExpiry,
     tokenManager.startTokenRefreshTimer
   );
 
-  // Token association sync module
   const tokenAssociationSync = useTokenAssociationSync();
 
-  // Wallet synchronization module (handles wallet state automatically)
   useWalletSync(
     tokenManager.clearTokenExpiry,
     sessionValidator.hasInitialized,
@@ -77,95 +73,148 @@ export const useAppSessionManager = ({
     isPaired
   );
 
-  // ============================================================================
-  // CROSS-CUTTING CONCERNS
-  // ============================================================================
-
-  // Cross-tab synchronization
   useCrossTabSync(
     tokenManager.getTokenExpiry,
-    () => {}, // clearRefreshTimer is handled internally in tokenManager
+    () => {},
     tokenManager.scheduleRefresh,
     tokenManager.refreshToken,
-    bufferSeconds
+    adjustedBufferSeconds
   );
 
-  // Tab visibility management
-  useTabVisibilityManager(
-    tokenManager.stopTokenRefreshTimer,
-    tokenManager.startTokenRefreshTimer,
-    tokenManager.getTokenExpiry,
-    tokenManager.refreshToken,
-    tokenManager.clearTokenExpiry,
-    isUserAuthenticated,
-    sessionValidator.hasInitialized,
-    bufferSeconds
-  );
+  // ✅ Function to check expiry and refresh if needed - stable callback
+  const checkAndRefreshToken = useCallback(() => {
+    if (!isUserAuthenticated) return;
+    const expiry = tokenManager.getTokenExpiry();
+    if (!expiry) return;
 
-  // ============================================================================
-  // LIFECYCLE EFFECTS
-  // ============================================================================
+    const now = Date.now();
+    const timeLeft = expiry - now;
 
-  /**
-   * Session initialization effect
-   */
-  useEffect(() => {
-    if (!sessionValidator.hasInitialized && !sessionValidator.isInitializing) {
-      const timer = setTimeout(() => {
-        sessionValidator.validateSession();
-      }, SESSION_DEFAULTS.INITIALIZATION_DELAY_MS);
+    console.log(`🔍 [SESSION MANAGER] Token check:`, {
+      timeLeft: Math.round(timeLeft / 1000) + 's',
+      bufferSeconds: adjustedBufferSeconds,
+      shouldRefresh: timeLeft <= adjustedBufferSeconds * 1000
+    });
 
-      return () => clearTimeout(timer);
+    if (timeLeft <= adjustedBufferSeconds * 1000) {
+      console.log(`🚀 [SESSION MANAGER] Token needs refresh, executing...`);
+      tokenManager.refreshToken();
+    } else {
+      console.log(`⏰ [SESSION MANAGER] Token valid, starting timer...`);
+      tokenManager.startTokenRefreshTimer();
     }
-  }, [sessionValidator.hasInitialized, sessionValidator.isInitializing, sessionValidator.validateSession]);
+  }, [isUserAuthenticated, adjustedBufferSeconds, tokenManager.getTokenExpiry, tokenManager.refreshToken, tokenManager.startTokenRefreshTimer]);
 
-  /**
-   * Token association synchronization effect
-   */
+  // ✅ ALWAYS fire session validation on mount - regardless of wallet state
+  useEffect(() => {
+    console.log(`🌟 [SESSION MANAGER] Component mounted - always validate session`);
+    sessionValidator.validateSession();
+  }, []); // Empty dependency array - only runs once on mount
+
+  // ✅ Handle auth state changes - for token management only
+  useEffect(() => {
+    const authChanged = isUserAuthenticated !== lastAuthStateRef.current;
+    lastAuthStateRef.current = isUserAuthenticated;
+
+    console.log(`🔄 [SESSION MANAGER] Auth state change:`, {
+      isUserAuthenticated,
+      authChanged,
+      hasInitialized: sessionValidator.hasInitialized
+    });
+    
+    if (isUserAuthenticated && authChanged) {
+      console.log(`🔍 [SESSION MANAGER] User authenticated, checking token...`);
+      checkAndRefreshToken();
+    } else if (!isUserAuthenticated) {
+      console.log(`🔒 [SESSION MANAGER] User not authenticated, clearing token...`);
+      tokenManager.clearTokenExpiry();
+    }
+  }, [isUserAuthenticated, checkAndRefreshToken, tokenManager.clearTokenExpiry]);
+
+  // ✅ Sync token associations when authenticated - with loop prevention
   useEffect(() => {
     if (isUserAuthenticated && sessionValidator.hasInitialized) {
-      console.log("Syncing token associations...");
+      console.log(`🔄 [SESSION MANAGER] Syncing token associations...`);
       tokenAssociationSync.syncTokenAssociations();
     }
   }, [isUserAuthenticated, sessionValidator.hasInitialized, tokenAssociationSync.syncTokenAssociations]);
 
-  /**
-   * Cleanup effect on unmount
-   */
+  // ✅ Handle tab visibility change - like backup implementation
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      console.log(`👁️ [SESSION MANAGER] Visibility changed:`, document.visibilityState);
+      
+      if (document.hidden) {
+        console.log(`👁️ [SESSION MANAGER] Tab hidden, stopping refresh timer`);
+        tokenManager.stopTokenRefreshTimer();
+      } else if (isUserAuthenticated && sessionValidator.hasInitialized) {
+        console.log(`👁️ [SESSION MANAGER] Tab visible and user authenticated, checking token status`);
+        
+        // Check if token needs immediate refresh when tab becomes visible
+        const expiry = tokenManager.getTokenExpiry();
+        const hasAccessToken = getCookieByName("access_token");
+        
+        if (expiry && hasAccessToken) {
+          const timeUntilExpiry = expiry - Date.now();
+          const bufferTime = adjustedBufferSeconds * 1000;
+          
+          if (timeUntilExpiry <= bufferTime) {
+            console.log(`🚀 [SESSION MANAGER] Token expires soon after visibility change, refreshing immediately`);
+            tokenManager.refreshToken();
+          } else if (timeUntilExpiry > 0) {
+            console.log(`⏰ [SESSION MANAGER] Token still valid, restarting refresh timer`);
+            tokenManager.startTokenRefreshTimer();
+          }
+        } else if (!hasAccessToken) {
+          console.log(`📭 [SESSION MANAGER] No access token after visibility change, clearing state`);
+          tokenManager.clearTokenExpiry();
+        }
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [
+    tokenManager.stopTokenRefreshTimer, 
+    tokenManager.startTokenRefreshTimer, 
+    tokenManager.refreshToken,
+    tokenManager.getTokenExpiry,
+    tokenManager.clearTokenExpiry,
+    isUserAuthenticated, 
+    sessionValidator.hasInitialized,
+    adjustedBufferSeconds
+  ]);
+
+  // ✅ Cleanup timers on unmount - stable dependencies
   useEffect(() => {
     return () => {
-      console.log("Session manager cleanup");
+      console.log(`🧹 [SESSION MANAGER] Cleanup on unmount`);
       tokenManager.cleanup();
       sessionValidator.cleanup();
+      hasInitializedRef.current = false;
+      lastAuthStateRef.current = false;
     };
   }, [tokenManager.cleanup, sessionValidator.cleanup]);
 
-  // ============================================================================
-  // PUBLIC API
-  // ============================================================================
-
-  // Computed loading states for UI management
   const isLoading = sessionValidator.isInitializing || tokenManager.isRefreshing;
   const isAppReady = sessionValidator.hasInitialized && !sessionValidator.isInitializing;
   const shouldShowSplash = !sessionValidator.hasInitialized || sessionValidator.isInitializing;
 
   return {
-    // Token management
     refreshToken: tokenManager.refreshToken,
     setTokenExpiry: tokenManager.setTokenExpiry,
     clearTokenExpiry: tokenManager.clearTokenExpiry,
     getTokenExpiry: tokenManager.getTokenExpiry,
-    
-    // State information
     isRefreshing: tokenManager.isRefreshing,
     hasInitialized: sessionValidator.hasInitialized,
     isInitializing: sessionValidator.isInitializing,
     isUserAuthenticated,
-    
-    // Computed states for UI
     isLoading,
     isAppReady,
     shouldShowSplash,
+    forceRefresh: tokenManager.forceRefresh,
   } as const;
 };
 

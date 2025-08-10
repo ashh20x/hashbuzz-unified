@@ -47,4 +47,7 @@ export interface SessionManagerAPI {
   readonly isLoading: boolean;          // Combined loading state for splash screen
   readonly isAppReady: boolean;         // App is fully ready to use
   readonly shouldShowSplash: boolean;   // Whether to show splash screen
+  
+  // Debug/Test functions (development only)
+  forceRefresh: () => void;
 }

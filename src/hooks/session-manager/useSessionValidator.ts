@@ -55,15 +55,18 @@ export const useSessionValidator = (
 
       if (isAuthenticated) {
         const expiry = setTokenExpiry();
-        console.log("Token expiry set to:", new Date(expiry));
+        console.log(`✅ [SESSION VALIDATOR] User authenticated, token expiry set to:`, new Date(expiry));
+        console.log(`🕐 [SESSION VALIDATOR] Expiry timestamp:`, expiry, `(in ${Math.round((expiry - Date.now()) / 1000)}s)`);
         
         dispatch(authenticated());
         
         // Start refresh timer after brief delay
         setTimeout(() => {
+          console.log(`🚀 [SESSION VALIDATOR] Starting token refresh timer...`);
           startTokenRefreshTimer();
         }, 100);
       } else {
+        console.log(`❌ [SESSION VALIDATOR] User not authenticated, clearing token expiry`);
         clearTokenExpiry();
       }
 
@@ -95,8 +98,6 @@ export const useSessionValidator = (
       }, 200);
     }
   }, [
-    hasInitialized, 
-    isInitializing,
     sessionCheckPing, 
     dispatch, 
     setTokenExpiry, 
