@@ -13,7 +13,6 @@ import { useGenerateAuthMutation, useLazyGetChallengeQuery } from "../api/auth";
 import { authenticated, connectXAccount, setAppCreds, setAuthSignature } from "../authStoreSlice";
 import SectionHeader from "../Components/SectionHeader";
 import * as styles from "./styles";
-import { AUTH_STORAGE_KEYS } from "@/hooks/session-manager";
 
 const Authenticate = () => {
     const { data: accountId } = useAccountId();
@@ -60,7 +59,11 @@ const Authenticate = () => {
             }).unwrap();
 
             if (authResponse) {
-                localStorage.setItem(AUTH_STORAGE_KEYS.ACCESS_TOKEN_EXPIRY, String(new Date().getTime() + 15 * 60 * 1000));
+                // Set token expiry in localStorage - session manager will pick it up automatically
+                const expiryTime = new Date().getTime() + 3 * 60 * 1000; // 3 minutes from now
+                console.log("🎯 [AUTHENTICATE] Setting token expiry manually:", new Date(expiryTime));
+                localStorage.setItem("access_token_expiry", String(expiryTime));
+                
                 dispatch(setAppCreds({
                     deviceId: authResponse.deviceId,
                     message: authResponse.message,
