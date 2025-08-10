@@ -10,7 +10,7 @@ import { setTokens, markAllTokensAssociated } from '@/Ver2Designs/Pages/AuthAndO
 import { useLazyGetAccountTokensQuery } from '@/API/mirrorNodeAPI';
 import { useLazyGetCurrentUserQuery } from '@/API/user';
 import { AUTH_STORAGE_KEYS } from './constants';
-import { logError } from './utils';
+import { logError, logDebug } from './utils';
 
 export const useTokenAssociationSync = () => {
   const dispatch = useAppDispatch();
@@ -57,16 +57,16 @@ export const useTokenAssociationSync = () => {
           )
         );
 
-      console.log("Token association sync:", { 
+      logDebug("Token association sync completed", { 
         isAllAssociated, 
         contractTokens: contractTokens.length, 
         userTokens: userTokens.length 
-      });
+      }, "[TOKEN ASSOCIATION]");
 
       dispatch(setTokens(contractTokens));
       if (isAllAssociated) dispatch(markAllTokensAssociated());
     } catch (error) {
-      logError(error, "Token association sync failed");
+      logError(error, "Token association sync failed", "[TOKEN ASSOCIATION]");
     }
   }, [getCurrentUser, getAccountTokens, dispatch]);
 

@@ -9,7 +9,7 @@ import { useAppDispatch } from '@/Store/store';
 import { resetAuth } from '@/Ver2Designs/Pages/AuthAndOnboard';
 import { getCookieByName } from '@/Utilities/helpers';
 import { AUTH_STORAGE_KEYS, SESSION_DEFAULTS } from './constants';
-import { logError, isValidFutureTimestamp } from './utils';
+import { logError, logInfo, logDebug, isValidFutureTimestamp } from './utils';
 
 export const useTokenManager = (
   sessionExpireMinutes: number,
@@ -104,10 +104,12 @@ export const useTokenManager = (
     }
     
     const msUntilRefresh = expiryTs - Date.now() - bufferSeconds * 1000;
-    console.log(`🕐 [TOKEN REFRESH] Scheduling token refresh in ${Math.max(0, Math.round(msUntilRefresh / 1000))} seconds`);
+    logDebug("Scheduling token refresh", { 
+      secondsUntilRefresh: Math.max(0, Math.round(msUntilRefresh / 1000)),
+      expiry: new Date(expiryTs)
+    }, "[TOKEN REFRESH]");
 
     if (msUntilRefresh <= 0) {
-      console.log(`🚀 [TOKEN REFRESH] Refreshing immediately - time has passed!`);
       // Use setTimeout to avoid circular dependency
       setTimeout(() => refreshTokenHandler(), 0);
       return;
@@ -121,7 +123,6 @@ export const useTokenManager = (
 
     // Simple timer - no complex visibility handling here
     refreshTimerRef.current = window.setTimeout(() => {
-      console.log(`🔄 [TOKEN REFRESH] Timer fired at: ${new Date()}`);
       if (document.visibilityState === "visible") {
         refreshTokenHandler();
       } else {
@@ -135,8 +136,6 @@ export const useTokenManager = (
         document.addEventListener("visibilitychange", onVisible);
       }
     }, msUntilRefresh);
-    
-    console.log(`✅ [TOKEN REFRESH] Timer registered with ID:`, refreshTimerRef.current);
   }, [bufferSeconds, clearRefreshTimer, logError]);
 
   // ============================================================================
@@ -144,27 +143,21 @@ export const useTokenManager = (
   // ============================================================================
 
   const refreshTokenHandler = useCallback(async (): Promise<boolean> => {
-    console.log(`🔄 [TOKEN REFRESH] Attempting token refresh...`);
+    logDebug("Attempting token refresh", undefined, "[TOKEN REFRESH]");
     
     if (isRefreshingRef.current || !acquireRefreshLock()) {
-      console.log(`🔒 [TOKEN REFRESH] Already in progress or locked:`, {
-        isRefreshing: isRefreshingRef.current,
-        lockAcquired: false
-      });
+      logDebug("Refresh already in progress or locked", undefined, "[TOKEN REFRESH]");
       return false;
     }
 
     try {
       isRefreshingRef.current = true;
-      console.log(`🚀 [TOKEN REFRESH] Starting refresh process...`);
-
+      
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), SESSION_DEFAULTS.FETCH_TIMEOUT_MS);
 
       const deviceId = localStorage.getItem(AUTH_STORAGE_KEYS.DEVICE_ID);
       if (!deviceId) throw new Error("Device ID not found");
-
-      console.log(`📡 [TOKEN REFRESH] Making API call to: ${(import.meta as any).env.VITE_API_BASE_URL}${refreshEndpoint}`);
 
       const response = await fetch(`${(import.meta as any).env.VITE_API_BASE_URL}${refreshEndpoint}`, {
         method: "POST",
@@ -188,16 +181,14 @@ export const useTokenManager = (
         setTokenExpiry(newExpiry);
         localStorage.setItem(AUTH_STORAGE_KEYS.LAST_TOKEN_REFRESH, String(Date.now()));
         
-        console.log(`✅ [TOKEN REFRESH] Success! Next expiry:`, new Date(newExpiry));
+        logInfo("Token refreshed successfully", { nextExpiry: new Date(newExpiry) }, "[TOKEN REFRESH]");
         
         // 🚀 CRITICAL: Schedule the next refresh after successful token refresh
         scheduleRefresh(newExpiry);
-        console.log(`⏰ [TOKEN REFRESH] Next refresh scheduled for:`, new Date(newExpiry - bufferSeconds * 1000));
         
         return true;
       } else {
-        console.error(`❌ [TOKEN REFRESH] Failed:`, { status: response.status, statusText: response.statusText });
-        logError({ status: response.status, statusText: response.statusText }, "Token refresh failed");
+        logError({ status: response.status, statusText: response.statusText }, "Token refresh failed", "[TOKEN REFRESH]");
         
         if (response.status === 401 || response.status === 403) {
           clearTokenExpiry();
@@ -207,15 +198,12 @@ export const useTokenManager = (
       }
     } catch (err) {
       if (err instanceof Error && err.name === 'AbortError') {
-        console.error(`⏰ [TOKEN REFRESH] Timeout after ${SESSION_DEFAULTS.FETCH_TIMEOUT_MS}ms`);
-        logError(err, "Token refresh timeout");
+        logError(err, "Token refresh timeout", "[TOKEN REFRESH]");
       } else {
-        console.error(`💥 [TOKEN REFRESH] Error:`, err);
-        logError(err, "Token refresh error");
+        logError(err, "Token refresh error", "[TOKEN REFRESH]");
       }
       return false;
     } finally {
-      console.log(`🏁 [TOKEN REFRESH] Cleanup - isRefreshing: false, releasing lock`);
       isRefreshingRef.current = false;
       releaseRefreshLock();
     }
@@ -225,50 +213,27 @@ export const useTokenManager = (
     const expiry = getTokenExpiry();
     const hasAccessToken = getCookieByName("access_token");
     
-    console.log(`🚀 [TOKEN REFRESH] Starting timer check:`, { 
-      expiry: expiry ? new Date(expiry) : null, 
-      hasAccessToken: !!hasAccessToken,
-      now: new Date(),
-      existingTimer: !!refreshTimerRef.current
-    });
-    
-    // Clear any existing timer first to prevent duplicates
-    if (refreshTimerRef.current) {
-      console.log(`🧹 [TOKEN REFRESH] Clearing existing timer before starting new one`);
-      clearTimeout(refreshTimerRef.current);
-      refreshTimerRef.current = null;
-    }
+    // Clear any existing timer first
+    clearRefreshTimer();
     
     if (expiry && hasAccessToken) {
       const timeUntilExpiry = expiry - Date.now();
       const bufferTime = bufferSeconds * 1000;
-      const timeUntilRefresh = timeUntilExpiry - bufferTime;
       
-      console.log(`⏰ [TOKEN REFRESH] Time calculations:`, {
-        timeUntilExpiry: Math.round(timeUntilExpiry / 1000) + 's',
-        bufferTime: Math.round(bufferTime / 1000) + 's',
-        timeUntilRefresh: Math.round(timeUntilRefresh / 1000) + 's',
-        shouldRefreshNow: timeUntilRefresh <= 0
-      });
-      
-      if (timeUntilRefresh <= 0) {
-        console.log(`🚨 [TOKEN REFRESH] Token expires soon or already expired, refreshing immediately`);
+      if (timeUntilExpiry <= bufferTime) {
+        logInfo("Token expires soon, refreshing immediately", undefined, "[TOKEN REFRESH]");
         refreshTokenHandler();
       } else {
         scheduleRefresh(expiry);
-        console.log(`✅ [TOKEN REFRESH] Timer scheduled for expiry:`, new Date(expiry));
       }
     } else if (!hasAccessToken) {
-      console.log(`❌ [TOKEN REFRESH] No access token found, clearing expiry`);
+      logDebug("No access token, clearing expiry", undefined, "[TOKEN REFRESH]");
       clearTokenExpiry();
-    } else {
-      console.log(`⚠️ [TOKEN REFRESH] Missing requirements:`, { expiry, hasAccessToken });
     }
-  }, [getTokenExpiry, scheduleRefresh, bufferSeconds, refreshTokenHandler, clearTokenExpiry]);
+  }, [getTokenExpiry, scheduleRefresh, bufferSeconds, refreshTokenHandler, clearTokenExpiry, clearRefreshTimer]);
 
   const stopTokenRefreshTimer = useCallback(() => {
     clearRefreshTimer();
-    console.log("Token refresh timer stopped");
   }, [clearRefreshTimer]);
 
   // ============================================================================
@@ -290,7 +255,7 @@ export const useTokenManager = (
     
     // Debug/Test functions
     forceRefresh: useCallback(() => {
-      console.log(`🧪 [TOKEN REFRESH] Manual/Force refresh triggered`);
+      logInfo("Manual/Force refresh triggered", undefined, "[TOKEN REFRESH]");
       refreshTokenHandler();
     }, [refreshTokenHandler]),
     

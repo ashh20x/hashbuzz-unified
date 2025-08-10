@@ -61,26 +61,18 @@ export const useWalletSync = (
 
       // Wallet connected and ready
       if (extensionReady && isConnected && accountID) {
-        logInfo("Dispatching walletPaired", { 
-          accountID, 
-          isInitialMount,
-          reason: isInitialMount ? 'initial_mount' : 'status_change'
-        });
+        logInfo("Wallet connected, pairing", { accountID }, "[WALLET SYNC]");
         dispatch(walletPaired(accountID));
       } 
       // Wallet disconnected
       else if (lastWalletStatus.current?.isConnected && !isConnected) {
-        logInfo("Wallet disconnected, resetting auth");
+        logInfo("Wallet disconnected, resetting auth", undefined, "[WALLET SYNC]");
         dispatch(resetAuth());
         clearTokenExpiry();
       }
       // Initial mount but wallet not ready
       else if (isInitialMount) {
-        logInfo("Initial mount - wallet not ready", {
-          extensionReady,
-          isConnected,
-          accountID: accountID || 'undefined'
-        });
+        logDebug("Initial mount - wallet not ready", { extensionReady, isConnected, accountID }, "[WALLET SYNC]");
       }
 
       lastWalletStatus.current = currentStatus;
@@ -100,13 +92,7 @@ export const useWalletSync = (
     if (hasInitialized && !isInitializing) {
       const timer = setTimeout(() => {
         if (extensionReady && isConnected && accountID && !isPaired) {
-          logInfo("Post-initialization wallet sync", {
-            extensionReady,
-            isConnected,
-            accountID,
-            isPaired,
-            reason: 'post_init_sync'
-          });
+          logDebug("Post-initialization wallet sync", { accountID }, "[WALLET SYNC]");
           dispatch(walletPaired(accountID));
         }
       }, 500);

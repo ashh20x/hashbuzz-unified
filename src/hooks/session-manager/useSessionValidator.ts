@@ -9,7 +9,7 @@ import { useAppDispatch } from '@/Store/store';
 import { authenticated, connectXAccount } from '@/Ver2Designs/Pages/AuthAndOnboard';
 import { useAuthPingMutation } from '@/Ver2Designs/Pages/AuthAndOnboard/api/auth';
 import { SESSION_DEFAULTS } from './constants';
-import { logError, delay } from './utils';
+import { logError, logInfo, logDebug, delay } from './utils';
 import type { SessionValidationResult } from './types';
 
 export const useSessionValidator = (
@@ -33,15 +33,13 @@ export const useSessionValidator = (
 
     setIsInitializing(true);
 
-    // Clear any existing initialization timeout
     if (initializationTimeoutRef.current) {
       clearTimeout(initializationTimeoutRef.current);
     }
 
     try {
-      console.log("Starting session validation...");
+      logInfo("Starting session validation", undefined, "[SESSION VALIDATOR]");
       
-      // Small delay to ensure wallet state is settled
       await delay(500);
 
       const result = await sessionCheckPing().unwrap();
@@ -51,22 +49,18 @@ export const useSessionValidator = (
       }
 
       const { isAuthenticated, connectedXAccount }: SessionValidationResult = result;
-      console.log("Session validation result:", { isAuthenticated, connectedXAccount });
-
+      
       if (isAuthenticated) {
         const expiry = setTokenExpiry();
-        console.log(`✅ [SESSION VALIDATOR] User authenticated, token expiry set to:`, new Date(expiry));
-        console.log(`🕐 [SESSION VALIDATOR] Expiry timestamp:`, expiry, `(in ${Math.round((expiry - Date.now()) / 1000)}s)`);
+        logInfo("User authenticated", { tokenExpiry: new Date(expiry) }, "[SESSION VALIDATOR]");
         
         dispatch(authenticated());
         
-        // Start refresh timer after brief delay
         setTimeout(() => {
-          console.log(`🚀 [SESSION VALIDATOR] Starting token refresh timer...`);
           startTokenRefreshTimer();
         }, 100);
       } else {
-        console.log(`❌ [SESSION VALIDATOR] User not authenticated, clearing token expiry`);
+        logDebug("User not authenticated, clearing token expiry", undefined, "[SESSION VALIDATOR]");
         clearTokenExpiry();
       }
 
@@ -75,20 +69,18 @@ export const useSessionValidator = (
       }
 
     } catch (error: any) {
-      console.log("Session validation error:", error);
-      
       if (error?.originalStatus === 429) {
-        console.log("Rate limited - will retry after delay");
+        logDebug("Rate limited - will retry after delay", undefined, "[SESSION VALIDATOR]");
         initializationTimeoutRef.current = window.setTimeout(() => {
           setIsInitializing(false);
           setHasInitialized(false);
         }, SESSION_DEFAULTS.RETRY_DELAY_MS);
         return;
       } else if (error?.data?.error?.description === "AUTH_TOKEN_NOT_PRESENT") {
-        console.log("No token - new user flow");
+        logDebug("No token - new user flow", undefined, "[SESSION VALIDATOR]");
         clearTokenExpiry();
       } else {
-        logError(error, "Session validation failed");
+        logError(error, "Session validation failed", "[SESSION VALIDATOR]");
         clearTokenExpiry();
       }
     } finally {

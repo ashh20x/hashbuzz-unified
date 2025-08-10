@@ -32,6 +32,7 @@ import { useSessionValidator } from './session-manager/useSessionValidator';
 import { useTokenAssociationSync } from './session-manager/useTokenAssociationSync';
 import { useCrossTabSync } from './session-manager/useCrossTabSync';
 import { getCookieByName } from '@/Utilities/helpers';
+import { logInfo, logDebug } from './session-manager/utils';
 import type { UseAppSessionManagerProps, SessionManagerAPI } from './session-manager/types';
 
 export const useAppSessionManager = ({
@@ -87,27 +88,19 @@ export const useAppSessionManager = ({
     const expiry = tokenManager.getTokenExpiry();
     if (!expiry) return;
 
-    const now = Date.now();
-    const timeLeft = expiry - now;
-
-    console.log(`🔍 [SESSION MANAGER] Token check:`, {
-      timeLeft: Math.round(timeLeft / 1000) + 's',
-      bufferSeconds: adjustedBufferSeconds,
-      shouldRefresh: timeLeft <= adjustedBufferSeconds * 1000
-    });
-
+    const timeLeft = expiry - Date.now();
     if (timeLeft <= adjustedBufferSeconds * 1000) {
-      console.log(`🚀 [SESSION MANAGER] Token needs refresh, executing...`);
+      logInfo("Token needs refresh, executing...", { timeLeft: Math.round(timeLeft / 1000) + 's' }, "[SESSION MANAGER]");
       tokenManager.refreshToken();
     } else {
-      console.log(`⏰ [SESSION MANAGER] Token valid, starting timer...`);
+      logDebug("Token valid, starting timer...", { timeLeft: Math.round(timeLeft / 1000) + 's' }, "[SESSION MANAGER]");
       tokenManager.startTokenRefreshTimer();
     }
   }, [isUserAuthenticated, adjustedBufferSeconds, tokenManager.getTokenExpiry, tokenManager.refreshToken, tokenManager.startTokenRefreshTimer]);
 
   // ✅ ALWAYS fire session validation on mount - regardless of wallet state
   useEffect(() => {
-    console.log(`🌟 [SESSION MANAGER] Component mounted - always validate session`);
+    logInfo("Component mounted - validating session", undefined, "[SESSION MANAGER]");
     sessionValidator.validateSession();
   }, []); // Empty dependency array - only runs once on mount
 
@@ -116,17 +109,13 @@ export const useAppSessionManager = ({
     const authChanged = isUserAuthenticated !== lastAuthStateRef.current;
     lastAuthStateRef.current = isUserAuthenticated;
 
-    console.log(`🔄 [SESSION MANAGER] Auth state change:`, {
-      isUserAuthenticated,
-      authChanged,
-      hasInitialized: sessionValidator.hasInitialized
-    });
+    if (authChanged) {
+      logDebug("Auth state changed", { isUserAuthenticated, authChanged }, "[SESSION MANAGER]");
+    }
     
     if (isUserAuthenticated && authChanged) {
-      console.log(`🔍 [SESSION MANAGER] User authenticated, checking token...`);
       checkAndRefreshToken();
     } else if (!isUserAuthenticated) {
-      console.log(`🔒 [SESSION MANAGER] User not authenticated, clearing token...`);
       tokenManager.clearTokenExpiry();
     }
   }, [isUserAuthenticated, checkAndRefreshToken, tokenManager.clearTokenExpiry]);
@@ -134,7 +123,7 @@ export const useAppSessionManager = ({
   // ✅ Sync token associations when authenticated - with loop prevention
   useEffect(() => {
     if (isUserAuthenticated && sessionValidator.hasInitialized) {
-      console.log(`🔄 [SESSION MANAGER] Syncing token associations...`);
+      logDebug("Syncing token associations", undefined, "[SESSION MANAGER]");
       tokenAssociationSync.syncTokenAssociations();
     }
   }, [isUserAuthenticated, sessionValidator.hasInitialized, tokenAssociationSync.syncTokenAssociations]);
@@ -142,15 +131,12 @@ export const useAppSessionManager = ({
   // ✅ Handle tab visibility change - like backup implementation
   useEffect(() => {
     const handleVisibilityChange = () => {
-      console.log(`👁️ [SESSION MANAGER] Visibility changed:`, document.visibilityState);
-      
       if (document.hidden) {
-        console.log(`👁️ [SESSION MANAGER] Tab hidden, stopping refresh timer`);
+        logDebug("Tab hidden, stopping refresh timer", undefined, "[SESSION MANAGER]");
         tokenManager.stopTokenRefreshTimer();
       } else if (isUserAuthenticated && sessionValidator.hasInitialized) {
-        console.log(`👁️ [SESSION MANAGER] Tab visible and user authenticated, checking token status`);
+        logDebug("Tab visible, checking token status", undefined, "[SESSION MANAGER]");
         
-        // Check if token needs immediate refresh when tab becomes visible
         const expiry = tokenManager.getTokenExpiry();
         const hasAccessToken = getCookieByName("access_token");
         
@@ -159,14 +145,14 @@ export const useAppSessionManager = ({
           const bufferTime = adjustedBufferSeconds * 1000;
           
           if (timeUntilExpiry <= bufferTime) {
-            console.log(`🚀 [SESSION MANAGER] Token expires soon after visibility change, refreshing immediately`);
+            logInfo("Token expires soon after visibility change, refreshing", undefined, "[SESSION MANAGER]");
             tokenManager.refreshToken();
           } else if (timeUntilExpiry > 0) {
-            console.log(`⏰ [SESSION MANAGER] Token still valid, restarting refresh timer`);
+            logDebug("Token valid, restarting refresh timer", undefined, "[SESSION MANAGER]");
             tokenManager.startTokenRefreshTimer();
           }
         } else if (!hasAccessToken) {
-          console.log(`📭 [SESSION MANAGER] No access token after visibility change, clearing state`);
+          logDebug("No access token after visibility change, clearing state", undefined, "[SESSION MANAGER]");
           tokenManager.clearTokenExpiry();
         }
       }
@@ -190,7 +176,7 @@ export const useAppSessionManager = ({
   // ✅ Cleanup timers on unmount - stable dependencies
   useEffect(() => {
     return () => {
-      console.log(`🧹 [SESSION MANAGER] Cleanup on unmount`);
+      logDebug("Cleanup on unmount", undefined, "[SESSION MANAGER]");
       tokenManager.cleanup();
       sessionValidator.cleanup();
       hasInitializedRef.current = false;
