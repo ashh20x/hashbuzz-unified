@@ -60,7 +60,7 @@ const Authenticate = () => {
 
             if (authResponse) {
                 // Set token expiry in localStorage - session manager will pick it up automatically
-                const expiryTime = new Date().getTime() + 3 * 60 * 1000; // 3 minutes from now
+                const expiryTime = new Date().getTime() + 15 * 60 * 1000; // 15 minutes from now
                 console.log("🎯 [AUTHENTICATE] Setting token expiry manually:", new Date(expiryTime));
                 localStorage.setItem("access_token_expiry", String(expiryTime));
                 
