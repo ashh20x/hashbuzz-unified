@@ -1,5 +1,5 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
-import { ProtectedRoute, RedirectIfAuthenticated } from "./APIConfig/AuthGuard";
+import { ProtectedRoute } from "./APIConfig/AuthGuard";
 import StepGuard from "./components/StepGuard";
 import { ContentPage, Dashboard, PageNotfound } from "./Ver2Designs";
 import MainLayout from "./Ver2Designs/Layout";
@@ -18,11 +18,10 @@ const router = createBrowserRouter([
     {
         path: "/",
         index: true,
-        element: (
-            <RedirectIfAuthenticated>
-                <LandingV3 />
-            </RedirectIfAuthenticated>
-        ),
+        element: (<LandingV3 />)
+        //     <RedirectIfAuthenticated>
+        //     </RedirectIfAuthenticated>
+        // ),
     },
     {
         path: "/auth",

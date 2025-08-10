@@ -1,13 +1,13 @@
 import { PlayCircle } from "@mui/icons-material";
 import { Box, Button } from "@mui/material";
 import { useDispatch } from 'react-redux';
-import { useNavigate } from "react-router-dom";
+import useAuthHandler from "../hook/use-auth-handler";
 import { setHowItWorksModalOpen } from "../landingPageStoreSlice";
 import * as styles from "./styles";
 
 const HeroSection = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const { isFullyOnboarded , authBtnClickHandler } = useAuthHandler();
 
   const handleOpenVideoPlayer = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -16,7 +16,7 @@ const HeroSection = () => {
 
   const handleGetStarted = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    navigate("/auth/pair-wallet");
+    authBtnClickHandler();
   };
 
   return (
@@ -30,7 +30,7 @@ const HeroSection = () => {
               How it works
             </Button>
             <Button onClick={handleGetStarted} sx={styles.getStartedButton} disableElevation size="medium" variant="contained" color="primary">
-              Get Started
+            {isFullyOnboarded ? "Go to Dashboard" : "Get Started"}
             </Button>
           </Box>
         </Box>
