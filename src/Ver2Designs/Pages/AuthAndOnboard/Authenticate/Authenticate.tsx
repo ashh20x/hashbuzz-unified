@@ -13,7 +13,7 @@ import { useGenerateAuthMutation, useLazyGetChallengeQuery } from "../api/auth";
 import { authenticated, connectXAccount, setAppCreds, setAuthSignature } from "../authStoreSlice";
 import SectionHeader from "../Components/SectionHeader";
 import * as styles from "./styles";
-import { AUTH_STORAGE_KEYS } from "@/hooks";
+import { AUTH_STORAGE_KEYS } from "@/hooks/session-manager";
 
 const Authenticate = () => {
     const { data: accountId } = useAccountId();
