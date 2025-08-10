@@ -374,18 +374,18 @@ stateDiagram-v2
 
 ```mermaid
 graph TD
-    A[Component Mount] --> B[useAppSessionManager()]
+    A[Component Mount] --> B[useAppSessionManager hook]
     B --> C{shouldShowSplash?}
     
     C -->|true| D[Show Splash Screen]
     C -->|false| E[Show Main App]
     
     D --> F{isInitializing?}
-    F -->|true| G[Show: "Validating session..."]
+    F -->|true| G[Show: Validating session...]
     F -->|false| H{isRefreshing?}
     
-    H -->|true| I[Show: "Refreshing tokens..."]
-    H -->|false| J[Show: "Starting application..."]
+    H -->|true| I[Show: Refreshing tokens...]
+    H -->|false| J[Show: Starting application...]
     
     G --> K[Display Loading Spinner]
     I --> K
