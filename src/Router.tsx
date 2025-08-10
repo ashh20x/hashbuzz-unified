@@ -13,6 +13,7 @@ import {
     TwitterCallback,
 } from "./Ver2Designs/Pages/AuthAndOnboard";
 import { LandingV3 } from "./Ver2Designs/Pages/Landing";
+import { ConnectXSuccess } from "./Ver2Designs/Pages/AuthAndOnboard/ConnectXAccount/ConnectXSuccess";
 
 const router = createBrowserRouter([
     {
@@ -54,6 +55,7 @@ const router = createBrowserRouter([
                     </StepGuard>
                 ),
             },
+
             {
                 path: OnboardingSteps.AssociateTokens,
                 element: (
@@ -67,6 +69,14 @@ const router = createBrowserRouter([
                 element: <TwitterCallback />,
             },
         ],
+    },
+    {
+        path: OnboardingSteps.ConnectXSuccess,
+        element: (
+            // <StepGuard step={OnboardingSteps.ConnectXSuccess}>
+                <ConnectXSuccess />
+            // </StepGuard>
+        ),
     },
     {
         path: "/app",

@@ -4,10 +4,12 @@ import router from './Router.tsx';
 import StyledComponentTheme from './theme/Theme';
 
 const AppRouter = () => {
-  useAppSessionManager()
+  useAppSessionManager({
+    sessionExpireMinutes: 2
+  })
   return (
     <StyledComponentTheme>
-        <RouterProvider router={router} />
+      <RouterProvider router={router} />
     </StyledComponentTheme>
   );
 };

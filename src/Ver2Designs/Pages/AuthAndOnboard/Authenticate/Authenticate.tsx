@@ -13,6 +13,7 @@ import { useGenerateAuthMutation, useLazyGetChallengeQuery } from "../api/auth";
 import { authenticated, connectXAccount, setAppCreds, setAuthSignature } from "../authStoreSlice";
 import SectionHeader from "../Components/SectionHeader";
 import * as styles from "./styles";
+import { AUTH_STORAGE_KEYS } from "@/hooks";
 
 const Authenticate = () => {
     const { data: accountId } = useAccountId();
@@ -59,6 +60,7 @@ const Authenticate = () => {
             }).unwrap();
 
             if (authResponse) {
+                localStorage.setItem(AUTH_STORAGE_KEYS.ACCESS_TOKEN_EXPIRY, String(new Date().getTime() + 15 * 60 * 1000));
                 dispatch(setAppCreds({
                     deviceId: authResponse.deviceId,
                     message: authResponse.message,

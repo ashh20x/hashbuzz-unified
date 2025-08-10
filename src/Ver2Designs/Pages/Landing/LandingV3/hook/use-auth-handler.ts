@@ -23,7 +23,7 @@ const useAuthHandler = () => {
     // Memoized callback for auth button click handler
     const authBtnClickHandler = useCallback(() => {
         if (isFullyOnboarded) {
-            navigate("/dashboard");
+            navigate("/app/dashboard");
         } else {
             navigate("/auth");
         }

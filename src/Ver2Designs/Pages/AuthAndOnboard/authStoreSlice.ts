@@ -6,6 +6,7 @@ export enum OnboardingSteps {
   PairWallet = "pair-wallet",
   SignAuthentication = "sign-authentication",
   ConnectXAccount = "connect-x-account",
+  ConnectXSuccess = "connect-x-success",
   AssociateTokens = "associate-tokens",
 }
 
