@@ -11,7 +11,7 @@ interface CardGenUtilityProps {
 }
 
 export const cardStyle = {
-  height: 100,
+  height: 130,
   backgroundColor: "#E1D9FF",
   p: 2,
   border: 3,
@@ -24,7 +24,7 @@ export const CardGenUtility = ({ title, content, startIcon }: CardGenUtilityProp
   return (
     <Grid size={{ xs: 6, sm: 6, xl: 3, lg: 3 }}>
       <Card elevation={0} sx={cardStyle}>
-        <Stack direction={aboveXs ? "row" : "column"} alignItems={aboveXs ? "flex-start" : "normal"} sx={{ height: "100%", width: "100%", overflowY: "scroll" }}>
+        <Stack direction={aboveXs ? "row" : "column"} alignItems={aboveXs ? "flex-start" : "normal"} sx={{ height: "100%", width: "100%"}}>
           <Stack
             direction={"row"}
             alignItems="center"

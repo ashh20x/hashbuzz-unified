@@ -48,8 +48,8 @@ const Dashboard = () => {
             currentUser?.business_twitter_handle ? (
               <Typography variant="h5">{"@" + currentUser?.business_twitter_handle}</Typography>
             ) : (
-              <Button variant="outlined" onClick={bizHandleIntegration} loading={isLoadingBizHandle}>
-                Connect Brand 𝕏 Account
+              <Button endIcon={<XPlatformIcon size={20} />} variant="outlined" onClick={bizHandleIntegration} loading={isLoadingBizHandle}>
+                Connect Brand
               </Button>
             )
           }
