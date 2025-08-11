@@ -1,6 +1,8 @@
 import { resetState } from "@/Store/miscellaneousStoreSlice";
 import { useAppDispatch, useAppSelector } from "@/Store/store";
-import XPlatformIcon from "@/SVGR/XPlatformIcon";
+import { resetAuth } from "@/Ver2Designs/Pages/AuthAndOnboard";
+import { useWallet } from "@buidlerlabs/hashgraph-react-wallets";
+import { HWCConnector } from "@buidlerlabs/hashgraph-react-wallets/connectors";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import Logout from "@mui/icons-material/Logout";
 import Settings from "@mui/icons-material/Settings";
@@ -18,9 +20,6 @@ import { toast } from "react-toastify";
 import HederaIcon from "../../../SVGR/HederaIcon";
 import { useLogoutMutation } from "../../Pages/AuthAndOnboard/api/auth";
 import { styles } from "./styles";
-import { resetAuth } from "@/Ver2Designs/Pages/AuthAndOnboard";
-import { useWallet } from "@buidlerlabs/hashgraph-react-wallets";
-import { HWCConnector } from "@buidlerlabs/hashgraph-react-wallets/connectors";
 
 // Separated style objects
 
@@ -30,7 +29,7 @@ const HeaderMenu = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const {disconnect} = useWallet(HWCConnector);
+  const { disconnect } = useWallet(HWCConnector);
 
   const [logout, { isLoading: isLoggingOut }] = useLogoutMutation();
 
@@ -137,9 +136,7 @@ const HeaderMenu = () => {
         </MenuItem>
 
         <MenuItem>
-          <Avatar sx={styles.menuItemAvatar}>
-            <XPlatformIcon size={15} />
-          </Avatar>
+          {userAvatar}
           @{currentUser?.personal_twitter_handle}
         </MenuItem>
 
