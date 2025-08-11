@@ -9,6 +9,19 @@ export default defineConfig({
         global: "globalThis", // 👈 fixes "global is not defined"
     },
     publicDir: "public",
+    build: {
+        outDir: "build", // 👈 output build files to 'build' folder instead of 'dist'
+        emptyOutDir: true, // 👈 empty the output directory before building
+        sourcemap: false, // 👈 disable source maps for production builds (optional)
+        rollupOptions: {
+            output: {
+                // Optional: customize chunk file names
+                chunkFileNames: "assets/js/[name]-[hash].js",
+                entryFileNames: "assets/js/[name]-[hash].js",
+                assetFileNames: "assets/[ext]/[name]-[hash].[ext]",
+            },
+        },
+    },
     server: {
         // open the browser at project root
         open: true,

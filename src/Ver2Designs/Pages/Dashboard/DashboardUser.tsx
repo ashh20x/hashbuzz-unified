@@ -6,11 +6,12 @@ import { Button, Typography } from "@mui/material";
 import React from "react";
 import { toast } from "react-toastify";
 import XPlatformIcon from "../../../SVGR/XPlatformIcon";
-import { getErrorMessage } from "../../../Utilities/helpers";
+import { getErrorMessage, isAllowedToCmapigner } from "../../../Utilities/helpers";
 import Balances from "./Balances";
 import CampaignList from "./CampaignList";
 import { CardGenUtility } from "./CardGenUtility";
 import * as SC from "./styled";
+import { LinkOff } from "@mui/icons-material";
 
 const Dashboard = () => {
   const { currentUser } = useAppSelector(s => s.app)
@@ -48,8 +49,8 @@ const Dashboard = () => {
             currentUser?.business_twitter_handle ? (
               <Typography variant="h5">{"@" + currentUser?.business_twitter_handle}</Typography>
             ) : (
-              <Button endIcon={<XPlatformIcon size={20} />} variant="outlined" onClick={bizHandleIntegration} loading={isLoadingBizHandle}>
-                Connect Brand
+              <Button endIcon={<LinkOff fontSize="inherit" />} variant="outlined" onClick={bizHandleIntegration} loading={isLoadingBizHandle} disabled={!isAllowedToCmapigner(currentUser?.role)}>
+                Connect
               </Button>
             )
           }
