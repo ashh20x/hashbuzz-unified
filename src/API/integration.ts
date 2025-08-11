@@ -32,12 +32,12 @@ const integrationApi = apiBase.injectEndpoints({
     }),
     handleTwitterCallback: build.mutation<
       { success: boolean; username?: string; message?: string },
-      { oauth_token: string; oauth_verifier: string }
+      { oauth_token: string; oauth_verifier: string  , variant:"personal" | "business"}
     >({
-      query: ({ oauth_token, oauth_verifier }) => ({
+      query: ({ oauth_token, oauth_verifier, variant }) => ({
         url: '/api/integrations/twitter/callback',
         method: 'POST',
-        body: { oauth_token, oauth_verifier },
+        body: { oauth_token, oauth_verifier, variant },
       }),
     }),
     checkXAccountStatus: build.query<

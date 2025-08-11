@@ -1,24 +1,42 @@
-import { Close as CloseIcon } from "@mui/icons-material";
-import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Grid, IconButton, InputAdornment, List, ListItem, Stack, Typography } from "@mui/material";
-import FormControl from "@mui/material/FormControl";
-import FormHelperText from "@mui/material/FormHelperText";
-import InputLabel from "@mui/material/InputLabel";
-import OutlinedInput from "@mui/material/OutlinedInput";
-import React, { useEffect } from "react";
+import { Close as CloseIcon, AccountBalanceWallet as AccountBalanceWalletIcon } from "@mui/icons-material";
+import { 
+  Box, 
+  Button, 
+  Dialog, 
+  DialogActions, 
+  DialogContent, 
+  DialogTitle, 
+  Divider, 
+  Grid, 
+  IconButton, 
+  InputAdornment, 
+  List, 
+  ListItem, 
+  Stack, 
+  Typography,
+  FormControl,
+  FormHelperText,
+  InputLabel,
+  OutlinedInput
+} from "@mui/material";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { unstable_batchedUpdates } from "react-dom";
 import { toast } from "react-toastify";
-import { useApiInstance } from "../../../APIConfig/api";
-import { useStore } from "../../../Store/StoreProvider";
-// import { useHashconnectService } from "../../../Wallet";
-// import { useSmartContractServices } from "../../../Wallet/smartcontractService";
+import { useAppDispatch, useAppSelector } from "@/Store/store";
+import { useReimburseAmountMutation } from "@/API/transaction";
+import { useLazyGetCurrentUserQuery, useLazyGetTokenBalancesQuery } from "@/API/user";
+import { updateCurrentUser, setBalances } from "@/Store/miscellaneousStoreSlice";
+import { useAccountId } from "@buidlerlabs/hashgraph-react-wallets";
+import { useSmartContractServices } from "@/Wallet";
 import { BalOperation, EntityBalances, FormFelid } from "../../../types";
+
 interface TopupModalProps {
   data: EntityBalances | null;
   open: boolean;
   onClose?: () => void;
   operation: BalOperation;
 }
+
 type CurrentFormState = {
   amount: FormFelid<number>;
 };
@@ -29,7 +47,7 @@ const INITIAL_HBAR_BALANCE_ENTITY = {
   entitySymbol: "ℏ",
   entityId: "",
   entityType: "HBAR",
-};
+} as const;
 
 const FORM_INITIAL_STATE: CurrentFormState = {
   amount: {
@@ -37,122 +55,204 @@ const FORM_INITIAL_STATE: CurrentFormState = {
     error: false,
     helperText: "",
   },
+} as const;
+
+// Memoized calculations
+const calculateCharge = (amt: number): number => amt * 0.1;
+const calculateTotal = (amt: number): number => amt + calculateCharge(amt);
+
+const getTheBalOfEntity = (balances: EntityBalances[], tokenId: string): number => {
+  const bal = balances.find(en => en.entityId === tokenId)?.entityBalance;
+  return bal ? +bal : 0;
 };
 
-const calculateCharge = (amt: number) => amt * 0.1;
-const calculateTotal = (amt: number) => amt + calculateCharge(amt);
-
-
-const getTheBalOfEntity = (balances:EntityBalances[] , tokenId:string):number => {
-  const bal  = balances.find(en => en.entityId === tokenId)?.entityBalance;
-  return bal? +bal : 0;
-} 
-
 const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
-  const [formData, setFromData] = React.useState<CurrentFormState>(JSON.parse(JSON.stringify(FORM_INITIAL_STATE)));
-  const inputRef = React.createRef<HTMLInputElement>();
-  const [loading, setLoading] = React.useState(false);
+  const [formData, setFormData] = useState<CurrentFormState>(FORM_INITIAL_STATE);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [loading, setLoading] = useState(false);
 
+  const { topUpAccount } = useSmartContractServices();
+  const { data: accountId } = useAccountId();
+  const { balances } = useAppSelector(s => s.app);
+  const dispatch = useAppDispatch();
 
-  // const { topUpAccount } = useSmartContractServices();
-  // const { pairingData } = useHashconnectService();
-  const { Transaction  ,User} = useApiInstance();
-  const store = useStore();
-  const inputChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const [reimburseAmount] = useReimburseAmountMutation();
+  const [getTokenBalances] = useLazyGetTokenBalancesQuery();
+  const [getCurrentUser] = useLazyGetCurrentUserQuery();
+
+  // Memoized calculations for form values
+  const calculatedFee = useMemo(() => 
+    calculateCharge(formData.amount.value), 
+    [formData.amount.value]
+  );
+  
+  const calculatedTotal = useMemo(() => 
+    calculateTotal(formData.amount.value), 
+    [formData.amount.value]
+  );
+
+  const inputChangeHandler = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
-    setFromData((_d) => ({
+    const value = parseFloat(event.target.value) || 0;
+    setFormData(prev => ({
       amount: {
-        ..._d.amount,
-        value: parseFloat(event.target.value),
+        ...prev.amount,
+        value,
+        error: value < 0,
+        helperText: value < 0 ? "Amount cannot be negative" : "",
       },
     }));
-  };
+  }, []);
 
-  const handleTopup = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    // event.preventDefault();
-    // setLoading(true);
-    // try {
-    //   if (formData.amount.value > 0 && data?.entityType && pairingData?.accountIds) {
-    //     const value = parseFloat(formData.amount.value.toFixed(4));
-    //     const fee = parseFloat(calculateCharge(value).toFixed(4));
-    //     const total = parseFloat(calculateTotal(value).toFixed(4));
-    //     const req = await topUpAccount({
-    //       entityType: data?.entityType,
-    //       entityId: data?.entityId,
-    //       amount: { value, fee, total },
-    //       senderId: pairingData?.accountIds[0],
-    //       decimals: data?.decimals,
-    //     });
-    //     if (req?.success) {
-    //       toast.success("Transaction successfully completed.");
-    //     }
-
-    //     if (req?.error) {
-    //       toast.error(req.error === "USER_REJECT" ? "Payment request rejected by user" : req.error);
-    //     }
-    //     unstable_batchedUpdates(() => {
-    //       setLoading(false);
-    //       setFromData(JSON.parse(JSON.stringify(FORM_INITIAL_STATE)));
-    //     });
-
-    //     if (onClose) onClose();
-    //   } else {
-    //     toast.warning("Please Enter the valid amount to topup");
-    //     setLoading(false);
-    //   }
-    // } catch (err) {
-    //   setLoading(false);
-    //   setFromData(JSON.parse(JSON.stringify(FORM_INITIAL_STATE)));
-    // }
-  };
-
-  const modalClose = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleTopup = useCallback(async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    setFromData(JSON.parse(JSON.stringify(FORM_INITIAL_STATE)));
-    if (onClose) onClose();
-  };
+    
+    if (formData.amount.value <= 0) {
+      toast.warning("Please Enter a valid amount to topup");
+      return;
+    }
 
-  //auto focus to input
-  useEffect(() => {
-    if (inputRef.current) inputRef.current.focus();
-  }, [inputRef]);
+    if (!data?.entityType || !accountId) {
+      toast.error("Missing required data for transaction");
+      return;
+    }
 
-  const reimburse = async () => {
-    if (store?.balances && data?.entityId && formData.amount.value >  getTheBalOfEntity(store?.balances ,data.entityId )) return toast.error("Wrong amount entered.");
     setLoading(true);
+    
     try {
-      const response = await Transaction.reimburseAmount({ type: data?.entityType?.toUpperCase(), token_id: data?.entityId, amount: formData?.amount?.value });
-      const currentUser = await User.getCurrentUser();
-      const balancesData = await User.getTokenBalances();
-      const balances:EntityBalances[] = [
+      const value = parseFloat(formData.amount.value.toFixed(4));
+      const fee = parseFloat(calculatedFee.toFixed(4));
+      const total = parseFloat(calculatedTotal.toFixed(4));
+      
+      const req = await topUpAccount({
+        entityType: data.entityType,
+        entityId: data.entityId,
+        amount: { value, fee, total },
+        senderId: accountId,
+        decimals: data.decimals,
+      });
+
+      if (req?.success) {
+        toast.success("Transaction successfully completed.");
+        onClose?.();
+      } else {
+        toast.error("Transaction failed. Please try again.");
+      }
+    } catch (err: any) {
+      console.error("Topup error:", err);
+      toast.error(err?.message || "Transaction failed. Please try again.");
+    } finally {
+      unstable_batchedUpdates(() => {
+        setLoading(false);
+        setFormData(FORM_INITIAL_STATE);
+      });
+    }
+  }, [formData.amount.value, data, accountId, calculatedFee, calculatedTotal, topUpAccount, onClose]);
+
+  const modalClose = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    setFormData(FORM_INITIAL_STATE);
+    onClose?.();
+  }, [onClose]);
+
+  const reimburse = useCallback(async () => {
+    if (!data?.entityId || !balances) {
+      toast.error("Missing required data for reimburse");
+      return;
+    }
+
+    if (formData.amount.value > getTheBalOfEntity(balances, data.entityId)) {
+      toast.error("Wrong amount entered.");
+      return;
+    }
+
+    setLoading(true);
+    
+    try {
+      const response = await reimburseAmount({ 
+        type: data.entityType?.toUpperCase(), 
+        token_id: data.entityId, 
+        amount: formData.amount.value 
+      }).unwrap();
+      
+      const [currentUser, balancesData] = await Promise.all([
+        getCurrentUser().unwrap(),
+        getTokenBalances().unwrap()
+      ]);
+
+      const newBalances: EntityBalances[] = [
         {
           ...INITIAL_HBAR_BALANCE_ENTITY,
           entityBalance: (currentUser?.available_budget ?? 0 / 1e8).toFixed(4),
           entityId: currentUser?.hedera_wallet_id ?? "",
         },
-        ...(balancesData.map((d) => ({ entityBalance: d.available_balance.toFixed(4),
+        ...balancesData.map((d) => ({
+          entityBalance: d.available_balance.toFixed(4),
           entityIcon: d.token_symbol,
           entitySymbol: "",
           entityId: d.token_id,
-          entityType: d.token_type,})))
-      ]
-      store.dispatch({type:"UPDATE_CURRENT_USER", payload:currentUser})
-      store.dispatch({type:"SET_BALANCES", payload:balances})
-    
-      toast.info(response?.message);
-      setLoading(false);
-      if (onClose) onClose();
+          entityType: d.token_type,
+        }))
+      ];
+
+      dispatch(updateCurrentUser(currentUser));
+      dispatch(setBalances(newBalances));
+      toast.info(response.data.message);
+      onClose?.();
     } catch (err: any) {
-      toast.error(err);
+      console.error("Reimburse error:", err);
+      toast.error(err?.message || "Reimburse failed. Please try again.");
+    } finally {
       setLoading(false);
     }
-  };
-  // console.log(data, 'data')
+  }, [data, balances, formData.amount.value, reimburseAmount, getCurrentUser, getTokenBalances, dispatch, onClose]);
+
+  // Auto focus to input
+  useEffect(() => {
+    if (open && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [open]);
+
+  // Memoized remarks content
+  const remarksContent = useMemo(() => {
+    if (operation === "topup") {
+      return (
+        <>
+          <ListItem>
+            <Typography variant="caption">The stated amount does not include Hedera network fees.</Typography>
+          </ListItem>
+          <ListItem>
+            <Typography variant="caption">The stated amount can be allocated across various campaigns.</Typography>
+          </ListItem>
+          <ListItem>
+            <Typography variant="caption">Hashbuzz imposes a 10% service fee on the designated amount.</Typography>
+          </ListItem>
+        </>
+      );
+    }
+    
+    return (
+      <>
+        <ListItem>
+          <Typography variant="caption">The stated amount does not include Hedera network fees.</Typography>
+        </ListItem>
+        <ListItem>
+          <Typography variant="caption">Refunds are provided at no cost.</Typography>
+        </ListItem>
+      </>
+    );
+  }, [operation]);
 
   return (
-    <Dialog open={open}>
+    <Dialog open={open} maxWidth="sm" fullWidth>
       <DialogTitle>
-        {loading ? "Payment in progress..." : `${operation === "topup" ? " Add funds from your wallet" : "Refund to your wallet"} ${data?.entityType === "HBAR" ? "hbar(ℏ)" : `(token ${data?.entityIcon})`}`}
+        {loading 
+          ? "Payment in progress..." 
+          : `${operation === "topup" ? "Add funds from your wallet" : "Refund to your wallet"} ${
+              data?.entityType === "HBAR" ? "hbar(ℏ)" : `(token ${data?.entityIcon})`
+            }`
+        }
         <IconButton
           onClick={modalClose}
           color="error"
@@ -165,84 +265,121 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
           <CloseIcon fontSize="inherit" />
         </IconButton>
       </DialogTitle>
+      
       <DialogContent dividers>
         <Box sx={{ marginTop: 0.5, marginBottom: 2.5 }}>
           <Typography variant="caption">Remarks: </Typography>
           <List dense>
-            {operation === "topup" ? (
-              <React.Fragment>
-                <ListItem>
-                  <Typography variant="caption">The stated amount does not include Hedera network fees.</Typography>
-                </ListItem>
-                <ListItem>
-                  <Typography variant="caption">The stated amount can be allocated across various campaigns.</Typography>
-                </ListItem>
-                <ListItem>
-                  <Typography variant="caption">Hashbuzz imposes a 10% service fee on the designated amount.</Typography>
-                </ListItem>
-              </React.Fragment>
-            ) : (
-              <React.Fragment>
-                <ListItem>
-                  <Typography variant="caption"> The stated amount does not include Hedera network fees.</Typography>
-                </ListItem>
-                <ListItem>
-                  <Typography variant="caption"> Refunds are provided at no cost.</Typography>
-                </ListItem>
-              </React.Fragment>
-            )}
+            {remarksContent}
           </List>
         </Box>
+
         {operation === "topup" ? (
           <Grid container spacing={1}>
-            <Grid item md={5}>
+            <Grid size={{ xs: 12, md: 5 }}>
               <FormControl fullWidth sx={{ marginBottom: 1.25 }} required>
                 <InputLabel htmlFor="topup-amount-input">Amount</InputLabel>
-                <OutlinedInput label="Enter amount" type={"number"} ref={inputRef} name="Topup Amount" id="topup-amount-input" placeholder="Enter the Topup amount" fullWidth disabled={loading} error={formData.amount.error} value={formData.amount.value} endAdornment={<InputAdornment position="end">{data?.entityIcon}</InputAdornment>} onChange={inputChangeHandler} />
-                <FormHelperText error={formData.amount.error}>{formData.amount.helperText}</FormHelperText>
+                <OutlinedInput 
+                  label="Enter amount" 
+                  type="number" 
+                  ref={inputRef} 
+                  name="Topup Amount" 
+                  id="topup-amount-input" 
+                  placeholder="Enter the Topup amount" 
+                  fullWidth 
+                  disabled={loading} 
+                  error={formData.amount.error} 
+                  value={formData.amount.value || ""} 
+                  endAdornment={<InputAdornment position="end">{data?.entityIcon}</InputAdornment>} 
+                  onChange={inputChangeHandler} 
+                />
+                <FormHelperText error={formData.amount.error}>
+                  {formData.amount.helperText}
+                </FormHelperText>
               </FormControl>
             </Grid>
-            <Grid item md={3}>
-              <Stack height={"100%"} alignItems={"center"} sx={{ paddingTop: 2.75 }}>
-                {"+ (10%)"}
+            
+            <Grid size={{ xs: 12, md: 3 }}>
+              <Stack height="100%" alignItems="center" sx={{ paddingTop: 2.75 }}>
+                + (10%)
               </Stack>
             </Grid>
-            <Grid item md={4}>
+            
+            <Grid size={{ xs: 12, md: 4 }}>
               <FormControl fullWidth sx={{ marginBottom: 1.25 }}>
                 <InputLabel htmlFor="hashbuzz-charge-input">Fees</InputLabel>
-                <OutlinedInput label="Hashbuzz chnarge" type={"number"} name="Charge" id="hashbuzz-charge-input" placeholder="00.00" fullWidth value={calculateCharge(formData.amount.value).toFixed(4)} endAdornment={<InputAdornment position="end">{data?.entityIcon}</InputAdornment>} readOnly />
+                <OutlinedInput 
+                  label="Hashbuzz charge" 
+                  type="number" 
+                  name="Charge" 
+                  id="hashbuzz-charge-input" 
+                  placeholder="00.00" 
+                  fullWidth 
+                  value={calculatedFee.toFixed(4)} 
+                  endAdornment={<InputAdornment position="end">{data?.entityIcon}</InputAdornment>} 
+                  readOnly 
+                />
               </FormControl>
             </Grid>
-            <Grid item md={12}>
+            
+            <Grid size={{ xs: 12 }}>
               <Divider />
             </Grid>
 
-            <Grid item md={9} sx={{ textAlign: "right", paddingRight: 3 }}>
+            <Grid size={{ xs: 9 }} sx={{ textAlign: "right", paddingRight: 3 }}>
               <Typography color="grey">Total:</Typography>
             </Grid>
-            <Grid item md={3} sx={{ textAlign: "right", paddingRight: 2.25 }}>
-              <Typography variant="subtitle1"> {calculateTotal(formData.amount.value).toFixed(4)}</Typography>
+            
+            <Grid size={{ xs: 3 }} sx={{ textAlign: "right", paddingRight: 2.25 }}>
+              <Typography variant="subtitle1">
+                {calculatedTotal.toFixed(4)}
+              </Typography>
             </Grid>
           </Grid>
         ) : (
           <Box>
             <FormControl fullWidth sx={{ marginBottom: 1.25 }} required>
               <InputLabel htmlFor="reimburse-amount-input">Reimburse Amount</InputLabel>
-              <OutlinedInput label="Enter amount" type={"number"} ref={inputRef} name="Reimburse Amount" id="reimburse-amount-input" placeholder="Enter the Topup amount" fullWidth error={formData.amount.error} value={formData.amount.value} endAdornment={<InputAdornment position="end">{data?.entityIcon}</InputAdornment>} onChange={inputChangeHandler} />
-              <FormHelperText error={formData.amount.error}>{formData.amount.helperText}</FormHelperText>
+              <OutlinedInput 
+                label="Enter amount" 
+                type="number" 
+                ref={inputRef} 
+                name="Reimburse Amount" 
+                id="reimburse-amount-input" 
+                placeholder="Enter the reimburse amount" 
+                fullWidth 
+                error={formData.amount.error} 
+                value={formData.amount.value || ""} 
+                endAdornment={<InputAdornment position="end">{data?.entityIcon}</InputAdornment>} 
+                onChange={inputChangeHandler} 
+              />
+              <FormHelperText error={formData.amount.error}>
+                {formData.amount.helperText}
+              </FormHelperText>
             </FormControl>
           </Box>
         )}
       </DialogContent>
+      
       <DialogActions>
-       
         {operation === "reimburse" ? (
-          <Button onClick={reimburse} autoFocus variant="contained" loading={loading} loadingPosition="start" disabled={loading}>
-            Reimburse
+          <Button 
+            onClick={reimburse} 
+            autoFocus 
+            variant="contained" 
+            disabled={loading || formData.amount.value <= 0}
+          >
+            {loading ? "Processing..." : "Reimburse"}
           </Button>
         ) : (
-          <Button autoFocus onClick={handleTopup} variant="contained" loading={loading} loadingPosition="start" startIcon={<AccountBalanceWalletIcon />} disabled={loading}>
-            Topup<i>{` ( ${calculateTotal(formData.amount.value).toFixed(4)}  ${data?.entityIcon} )`}</i>
+          <Button 
+            autoFocus 
+            onClick={handleTopup} 
+            variant="contained" 
+            startIcon={<AccountBalanceWalletIcon />} 
+            disabled={loading || formData.amount.value <= 0}
+          >
+            {loading ? "Processing..." : `Topup (${calculatedTotal.toFixed(4)} ${data?.entityIcon})`}
           </Button>
         )}
       </DialogActions>

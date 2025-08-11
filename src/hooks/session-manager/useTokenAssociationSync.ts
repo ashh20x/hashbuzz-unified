@@ -11,6 +11,7 @@ import { useLazyGetAccountTokensQuery } from '@/API/mirrorNodeAPI';
 import { useLazyGetCurrentUserQuery } from '@/API/user';
 import { AUTH_STORAGE_KEYS } from './constants';
 import { logError, logDebug } from './utils';
+import { updateCurrentUser } from '@/Store/miscellaneousStoreSlice';
 
 export const useTokenAssociationSync = () => {
   const dispatch = useAppDispatch();
@@ -31,6 +32,8 @@ export const useTokenAssociationSync = () => {
       
       const { contractAddress } = user.config;
       const userWalletId = user.hedera_wallet_id;
+
+     
 
       if (!contractAddress || !userWalletId) {
         throw new Error("Missing contract or wallet address");
@@ -65,6 +68,7 @@ export const useTokenAssociationSync = () => {
 
       dispatch(setTokens(contractTokens));
       if (isAllAssociated) dispatch(markAllTokensAssociated());
+       dispatch(updateCurrentUser(user));
     } catch (error) {
       logError(error, "Token association sync failed", "[TOKEN ASSOCIATION]");
     }

@@ -56,6 +56,7 @@ export const {
   useUpdateConsentMutation,
   useUpdateWalletIdMutation,
   useGetTokenBalancesQuery,
+  useLazyGetTokenBalancesQuery,
   useGetCardEngagementQuery,
   useGetClaimRewardsQuery,
   useClaimRewardsMutation,

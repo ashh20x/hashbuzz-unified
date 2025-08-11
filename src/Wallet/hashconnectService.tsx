@@ -6,7 +6,7 @@ import { PropsWithChildren } from 'react'
 const metadata = {
   name: 'Hashbuzz Social',
   description: 'Hashbuzz boosts brand communities with incentivized X posts, using project tokens to increase visibility, engagement, and token adoption, creating viral content and long-term loyalty.',
-  icons: ["https://hashbuzz.social/favicons/mstile-144x144.png"],
+  icons: ["https://www.hashbuzz.social/favicons/mstile-144x144.png"],
   url: window.location.href,
 }
 

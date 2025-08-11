@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useDappAPICall } from "../../APIConfig/dAppApiServices";
 import { useHashconnectService } from "../../Wallet";
-import { useSmartContractServices } from "../../Wallet/smartcontractService";
+import { useSmartContractServices } from "../../Wallet/useSmartContractServices";
 import { useStore } from "../../Store/StoreProvider";
 import Typography from "../../Typography/Typography";
 import { delay } from "../../Utilities/helpers";

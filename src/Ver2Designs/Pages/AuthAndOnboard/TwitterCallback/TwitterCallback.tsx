@@ -1,16 +1,16 @@
-import React, { useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { Box, CircularProgress, Typography, Alert } from '@mui/material';
 import { useHandleTwitterCallbackMutation } from '@/API/integration';
 import { useAppDispatch } from '@/Store/store';
 import { connectXAccount } from '@/Ver2Designs/Pages/AuthAndOnboard/authStoreSlice';
+import { Alert, Box, CircularProgress, Typography } from '@mui/material';
+import React, { useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
-/**
- * TwitterCallback component handles the OAuth callback from X (Twitter).
- * Extracts OAuth parameters from URL and processes them via API.
- * Updates Redux state and navigates to next step on success.
- */
-const TwitterCallback: React.FC = () => {
+interface Props {
+  variant: 'personal' | 'business';
+}
+
+const TwitterCallback: React.FC<Props> = ({ variant = 'personal' }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -19,7 +19,6 @@ const TwitterCallback: React.FC = () => {
 
   useEffect(() => {
     const handleOAuthCallback = async () => {
-      // Extract OAuth parameters from URL
       const searchParams = new URLSearchParams(location.search);
       const oauth_token = searchParams.get('oauth_token');
       const oauth_verifier = searchParams.get('oauth_verifier');
@@ -38,33 +37,46 @@ const TwitterCallback: React.FC = () => {
         // Process the callback via API
         const result = await handleCallback({
           oauth_token,
-          oauth_verifier
+          oauth_verifier,
+          variant
         }).unwrap();
 
         if (result.success) {
           // Update Redux state with successful connection
-          dispatch(connectXAccount(result.username || ''));
-
-          // Navigate to next step (Associate Tokens) or dashboard
-          navigate('/auth/associate-tokens', { replace: true });
+          // Navigate to next step based on variant
+          if (variant === 'personal') {
+            dispatch(connectXAccount(result.username || ''));
+            navigate('/auth/associate-tokens', { replace: true });
+          } else if (variant === 'business') {
+            navigate('/app/dashboard', { replace: true });
+          }
         } else {
           throw new Error(result.message || 'Failed to connect X account');
         }
       } catch (err: any) {
         console.error('Twitter callback error:', err);
-
-        // Navigate back to connect page with error
-        navigate('/auth/connect-x-account', {
-          replace: true,
-          state: {
-            error: err?.data?.message || err?.message || 'Failed to connect X account. Please try again.'
-          }
-        });
+        if (variant === 'personal') {
+          navigate('/auth/connect-x-account', {
+            replace: true,
+            state: {
+              error: err?.data?.message || err?.message || 'Failed to connect X account. Please try again.'
+            }
+          });
+          toast.error(err?.data?.message || err?.message || 'Failed to connect X account. Please try again.');
+        } else {
+          navigate('/app/dashboard', {
+            replace: true,
+            state: {
+              error: err?.data?.message || err?.message || 'Failed to connect X account. Please try again.'
+            }
+          });
+          toast.error(err?.data?.message || err?.message || 'Failed to connect X account. Please try again.');
+        }
       }
     };
 
     handleOAuthCallback();
-  }, [location.search, handleCallback, dispatch, navigate]);
+  }, [location.search, handleCallback, dispatch, navigate, variant]);
 
   return (
     <Box

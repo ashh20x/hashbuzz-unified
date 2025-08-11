@@ -66,7 +66,7 @@ const router = createBrowserRouter([
             },
             {
                 path: "twitter-callback",
-                element: <TwitterCallback />,
+                element: <TwitterCallback  variant="personal"/>,
             },
         ],
     },
@@ -88,6 +88,10 @@ const router = createBrowserRouter([
         children: [
             { index: true, element: <Navigate to="/dashboard" replace /> },
             { path: "dashboard", element: <Dashboard /> },
+            {
+                path: "business-handle-callback",
+                element: (<TwitterCallback variant="business" />)
+            }
             // Uncomment and add these routes as needed:
             // { path: "campaign", element: <Template /> },
             // { path: "create-campaign", element: <CreateCampaign /> },
