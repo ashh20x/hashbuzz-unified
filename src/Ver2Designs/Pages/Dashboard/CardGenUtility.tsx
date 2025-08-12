@@ -1,6 +1,6 @@
 import { Box, Card, Divider, Stack, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid";
-import { useTheme } from "@mui/material/styles";
+import { SxProps, Theme, useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import React from "react";
 
@@ -10,8 +10,12 @@ interface CardGenUtilityProps {
   startIcon: React.ReactNode;
 }
 
-export const cardStyle = {
-  height: 130,
+export const cardStyle: SxProps<Theme> = {
+  height: {
+    xs: "max-content",
+    sm: "max-content",
+    md: 130
+  },
   backgroundColor: "#E1D9FF",
   p: 2,
   border: 3,
@@ -24,7 +28,7 @@ export const CardGenUtility = ({ title, content, startIcon }: CardGenUtilityProp
   return (
     <Grid size={{ xs: 6, sm: 6, xl: 3, lg: 3 }}>
       <Card elevation={0} sx={cardStyle}>
-        <Stack direction={aboveXs ? "row" : "column"} alignItems={aboveXs ? "flex-start" : "normal"} sx={{ height: "100%", width: "100%"}}>
+        <Stack direction={aboveXs ? "row" : "column"} alignItems={aboveXs ? "flex-start" : "normal"} sx={{ height: "100%", width: "100%" }}>
           <Stack
             direction={"row"}
             alignItems="center"

@@ -1,7 +1,8 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { ProtectedRoute } from "./APIConfig/AuthGuard";
 import StepGuard from "./components/StepGuard";
-import { ContentPage, Dashboard, PageNotfound } from "./Ver2Designs";
+import { Template } from "./screens/Template";
+import { ContentPage, CreateCampaign, Dashboard, PageNotfound } from "./Ver2Designs";
 import MainLayout from "./Ver2Designs/Layout";
 import {
     AssociateTokens,
@@ -12,17 +13,18 @@ import {
     SignAuthentication,
     TwitterCallback,
 } from "./Ver2Designs/Pages/AuthAndOnboard";
-import { LandingV3 } from "./Ver2Designs/Pages/Landing";
 import { ConnectXSuccess } from "./Ver2Designs/Pages/AuthAndOnboard/ConnectXAccount/ConnectXSuccess";
+import { LandingV3 } from "./Ver2Designs/Pages/Landing";
 
 const router = createBrowserRouter([
     {
         path: "/",
         index: true,
         element: (<LandingV3 />)
-        //     <RedirectIfAuthenticated>
-        //     </RedirectIfAuthenticated>
-        // ),
+    },
+    {
+        path: "business-handle-callback",
+        element: (<TwitterCallback variant="business" />)
     },
     {
         path: "/auth",
@@ -66,17 +68,13 @@ const router = createBrowserRouter([
             },
             {
                 path: "twitter-callback",
-                element: <TwitterCallback  variant="personal"/>,
+                element: <TwitterCallback variant="personal" />,
             },
         ],
     },
     {
         path: OnboardingSteps.ConnectXSuccess,
-        element: (
-            // <StepGuard step={OnboardingSteps.ConnectXSuccess}>
-                <ConnectXSuccess />
-            // </StepGuard>
-        ),
+        element: (<ConnectXSuccess />),
     },
     {
         path: "/app",
@@ -88,37 +86,16 @@ const router = createBrowserRouter([
         children: [
             { index: true, element: <Navigate to="/dashboard" replace /> },
             { path: "dashboard", element: <Dashboard /> },
-            {
-                path: "business-handle-callback",
-                element: (<TwitterCallback variant="business" />)
-            }
+            { path: "campaign", element: <Template /> },
+            { path: "create-campaign", element: <CreateCampaign /> },
+
             // Uncomment and add these routes as needed:
-            // { path: "campaign", element: <Template /> },
-            // { path: "create-campaign", element: <CreateCampaign /> },
             // { path: "invoice", element: <Invoice /> },
             // { path: "settings", element: <Settings /> },
             // { path: "transactions", element: <Transactions /> },
             // { path: "archived", element: <Archived /> },
         ],
     },
-    // // Redirect dashboard to protected app routes
-    // {
-    //     path: "/dashboard",
-    //     element: (
-    //         <ProtectedRoute>
-    //             <Dashboard />
-    //         </ProtectedRoute>
-    //     ),
-    // },
-    // Admin routes (uncomment when needed)
-    // {
-    //     path: "/admin",
-    //     element: (
-    //         <AdminAuthGuard>
-    //             <AdminDashboard />
-    //         </AdminAuthGuard>
-    //     ),
-    // },
     { path: "/terms-of-use", element: <ContentPage page="TermsOfUse" /> },
     { path: "/privacy-policy", element: <ContentPage page="PrivacyPolicy" /> },
     { path: "/cookies", element: <ContentPage page="PrivacyPolicy" /> },

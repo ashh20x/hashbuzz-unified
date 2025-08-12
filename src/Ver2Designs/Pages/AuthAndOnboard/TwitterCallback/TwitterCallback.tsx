@@ -24,9 +24,17 @@ const TwitterCallback: React.FC<Props> = ({ variant = 'personal' }) => {
       const oauth_verifier = searchParams.get('oauth_verifier');
 
       // Check if we have the required parameters
-      if (!oauth_token || !oauth_verifier) {
+      if (variant === "personal" && (!oauth_token || !oauth_verifier)) {
         console.error('Missing OAuth parameters');
         navigate('/auth/connect-x-account', {
+          replace: true,
+          state: { error: 'OAuth callback failed - missing parameters' }
+        });
+        return;
+      }
+      if (variant === "business" && (!oauth_token || !oauth_verifier)) {
+        console.error('Missing OAuth parameters');
+        navigate('/app/dashboard', {
           replace: true,
           state: { error: 'OAuth callback failed - missing parameters' }
         });
@@ -36,8 +44,8 @@ const TwitterCallback: React.FC<Props> = ({ variant = 'personal' }) => {
       try {
         // Process the callback via API
         const result = await handleCallback({
-          oauth_token,
-          oauth_verifier,
+          oauth_token: oauth_token!,
+          oauth_verifier: oauth_verifier!,
           variant
         }).unwrap();
 
@@ -49,6 +57,7 @@ const TwitterCallback: React.FC<Props> = ({ variant = 'personal' }) => {
             navigate('/auth/associate-tokens', { replace: true });
           } else if (variant === 'business') {
             navigate('/app/dashboard', { replace: true });
+            toast.success(`Successfully connected your business 𝕏 account${result.username ? `: @${result.username}` : ''}!`);
           }
         } else {
           throw new Error(result.message || 'Failed to connect X account');

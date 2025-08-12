@@ -9,22 +9,27 @@ import { useAppSelector } from "../Store/store";
  */
 export const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
-  
-  // Get onboarding state
+
   const { wallet, auth, xAccount, token } = useAppSelector(
     (state: RootState) => state.auth.userAuthAndOnBoardSteps
   );
+  const { isAppReady } = useAppSelector(s => s.auth.appStatus);
+
+  // Wait for app to be ready before making any routing decisions
+  if (!isAppReady) {
+    // Optionally, render a loading spinner or null while waiting
+    return null;
+  }
 
   // Check if user has completed all onboarding steps
-  const isFullyOnboarded = 
-    wallet.isPaired && 
-    auth.isAuthenticated && 
-    xAccount.isConnected && 
+  const isFullyOnboarded =
+    wallet.isPaired &&
+    auth.isAuthenticated &&
+    xAccount.isConnected &&
     token.allAssociated;
 
   // If not fully onboarded, redirect to the appropriate onboarding step
   if (!isFullyOnboarded) {
-    // Determine which step to redirect to
     if (!wallet.isPaired) {
       return <Navigate to="/auth/pair-wallet" state={{ from: location }} replace />;
     }

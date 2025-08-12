@@ -1,9 +1,11 @@
 import { useLazyGetTwitterBizHandleQuery } from "@/API/integration";
 import { useAppSelector } from "@/Store/store";
+import { LinkOff } from "@mui/icons-material";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import BusinessIcon from "@mui/icons-material/Business";
-import { Button, Typography } from "@mui/material";
+import { Alert, Button, Typography } from "@mui/material";
 import React from "react";
+import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import XPlatformIcon from "../../../SVGR/XPlatformIcon";
 import { getErrorMessage, isAllowedToCmapigner } from "../../../Utilities/helpers";
@@ -11,11 +13,11 @@ import Balances from "./Balances";
 import CampaignList from "./CampaignList";
 import { CardGenUtility } from "./CardGenUtility";
 import * as SC from "./styled";
-import { LinkOff } from "@mui/icons-material";
 
 const Dashboard = () => {
   const { currentUser } = useAppSelector(s => s.app)
   const [getTwitterBizHandle, { isLoading: isLoadingBizHandle }] = useLazyGetTwitterBizHandleQuery();
+  const location = useLocation();
 
   const bizHandleIntegration = React.useCallback(async (event: React.MouseEvent<HTMLButtonElement>) => {
     try {
@@ -28,8 +30,15 @@ const Dashboard = () => {
     }
   }, [getTwitterBizHandle]);
 
+  const errorFromState = location.state?.error;
+
   return (
     <React.Fragment>
+      {errorFromState && (
+        <Alert severity="error" sx={{ mb: 2, mt: 2 }}>
+          {errorFromState}
+        </Alert>
+      )}
       <SC.StyledCardGenUtility>
         <CardGenUtility startIcon={<AccountBalanceWalletIcon color="inherit" fontSize={"inherit"} />} title={"Hedera Account ID"} content={<Typography variant="h5">{currentUser?.hedera_wallet_id}</Typography>} />
 

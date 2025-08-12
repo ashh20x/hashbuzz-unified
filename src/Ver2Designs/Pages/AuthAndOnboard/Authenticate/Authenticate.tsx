@@ -10,7 +10,7 @@ import { Buffer } from "buffer";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 import { useGenerateAuthMutation, useLazyGetChallengeQuery } from "../api/auth";
-import { authenticated, connectXAccount, setAppCreds, setAuthSignature } from "../authStoreSlice";
+import { authenticated, connectXAccount } from "../authStoreSlice";
 import SectionHeader from "../Components/SectionHeader";
 import * as styles from "./styles";
 
@@ -39,13 +39,7 @@ const Authenticate = () => {
 
             const signatureBase64 = Buffer.from(sigObj.signature).toString("base64");
             const accountIdStr = sigObj.accountId.toString();
-            const publicKeyStr = sigObj.publicKey.toString();
 
-            dispatch(setAuthSignature({
-                publicKey: publicKeyStr,
-                signature: signatureBase64,
-                accountId: accountIdStr,
-            }));
 
             const authResponse = await generateAuth({
                 payload: challenge.payload,
@@ -64,11 +58,6 @@ const Authenticate = () => {
                 console.log("🎯 [AUTHENTICATE] Setting token expiry manually:", new Date(expiryTime));
                 localStorage.setItem("access_token_expiry", String(expiryTime));
                 
-                dispatch(setAppCreds({
-                    deviceId: authResponse.deviceId,
-                    message: authResponse.message,
-                    user: authResponse.user,
-                }));
                 dispatch(authenticated());
                 if (challenge.isExistingUser && challenge.connectedXAccount) {
                     dispatch(connectXAccount(challenge.connectedXAccount))

@@ -1,4 +1,3 @@
-import { CurrentUser, GnerateReseponseV2, UserPing } from "@/types";
 import { MirrorNodeToken } from "@/types/mirrorTypes";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
@@ -34,14 +33,17 @@ interface UserAuthAndOnBoardSteps {
   currentStep: OnboardingSteps;
 }
 
+interface AppStatus {
+  isLoading: boolean;
+  isAppReady: boolean;
+  shouldShowSplash: boolean;
+}
+
 export interface AuthState {
   currentStep: OnboardingSteps;
   isSmDeviceModalOpen?: boolean;
-  authSignature?: SignerSignatureString;
-  currentUser?: CurrentUser;
-  ping?: UserPing;
-  cred?: Partial<GnerateReseponseV2>;
   userAuthAndOnBoardSteps: UserAuthAndOnBoardSteps;
+  appStatus: AppStatus;
 }
 
 const initialAuthState: UserAuthAndOnBoardSteps = {
@@ -56,43 +58,19 @@ const initialState: AuthState = {
   currentStep: OnboardingSteps.PairWallet,
   isSmDeviceModalOpen: true,
   userAuthAndOnBoardSteps: initialAuthState,
+  appStatus: {
+    isAppReady: false,
+    isLoading: false,
+    shouldShowSplash: true,
+  },
 };
 
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    advanceStep(state, action: PayloadAction<{ isSmDeviceModalOpen?: boolean }>) {
-      switch (state.currentStep) {
-        case OnboardingSteps.PairWallet:
-          state.currentStep = OnboardingSteps.SignAuthentication;
-          state.isSmDeviceModalOpen = action?.payload?.isSmDeviceModalOpen ?? true;
-          break;
-        case OnboardingSteps.SignAuthentication:
-          state.currentStep = OnboardingSteps.ConnectXAccount;
-          state.isSmDeviceModalOpen = action?.payload?.isSmDeviceModalOpen ?? true;
-          break;
-        case OnboardingSteps.ConnectXAccount:
-          state.currentStep = OnboardingSteps.AssociateTokens;
-          state.isSmDeviceModalOpen = action?.payload?.isSmDeviceModalOpen ?? true;
-          break;
-        default:
-          break;
-      }
-    },
-    setStep(state, action: PayloadAction<{ step: AuthState["currentStep"]; isSmDeviceModalOpen?: boolean }>) {
-      state.currentStep = action.payload.step;
-      state.isSmDeviceModalOpen = action.payload.isSmDeviceModalOpen ?? true;
-    },
     toggleSmDeviceModal(state, action: PayloadAction<boolean>) {
       state.isSmDeviceModalOpen = action.payload;
-    },
-    setAuthSignature(state, action: PayloadAction<SignerSignatureString>) {
-      console.log("Setting Auth Signature", action.payload);
-      state.authSignature = action.payload;
-    },
-    setAppCreds(state, action: PayloadAction<Partial<GnerateReseponseV2>>) {
-      state.cred = { ...state.cred, ...action.payload };
     },
     walletPaired: (state, action: PayloadAction<string>) => {
       if (!state.userAuthAndOnBoardSteps) {
@@ -119,47 +97,36 @@ const authSlice = createSlice({
     },
     setTokens: (state, action: PayloadAction<MirrorNodeToken[]>) => {
       // Initialize tokens as not associated
-      state.userAuthAndOnBoardSteps.token.tokens = action.payload.map(token => ({
+      state.userAuthAndOnBoardSteps.token.tokens = action.payload.map((token) => ({
         token,
-        isAssociated: false
+        isAssociated: false,
       }));
       state.userAuthAndOnBoardSteps.token.allAssociated = false;
     },
     setTokenAssociation: (state, action: PayloadAction<{ tokenId: string; isAssociated: boolean }>) => {
       const { tokenId, isAssociated } = action.payload;
-      const tokenIndex = state.userAuthAndOnBoardSteps.token.tokens.findIndex(
-        t => t.token.token_id === tokenId
-      );
-      
+      const tokenIndex = state.userAuthAndOnBoardSteps.token.tokens.findIndex((t) => t.token.token_id === tokenId);
+
       if (tokenIndex !== -1) {
         state.userAuthAndOnBoardSteps.token.tokens[tokenIndex].isAssociated = isAssociated;
         // Check if all tokens are now associated
-        state.userAuthAndOnBoardSteps.token.allAssociated = 
-          state.userAuthAndOnBoardSteps.token.tokens.every(t => t.isAssociated);
+        state.userAuthAndOnBoardSteps.token.allAssociated = state.userAuthAndOnBoardSteps.token.tokens.every((t) => t.isAssociated);
       }
     },
     markAllTokensAssociated: (state) => {
-      state.userAuthAndOnBoardSteps.token.tokens.forEach(token => {
+      state.userAuthAndOnBoardSteps.token.tokens.forEach((token) => {
         token.isAssociated = true;
       });
       state.userAuthAndOnBoardSteps.token.allAssociated = true;
     },
+
+    updateAppStatus: (state, action: PayloadAction<Partial<AppStatus>>) => {
+      state.appStatus = { ...state.appStatus, ...action.payload };
+    },
+
     resetAuth: () => initialState,
   },
 });
 
-export const { 
-  advanceStep, 
-  setStep, 
-  toggleSmDeviceModal, 
-  setAuthSignature, 
-  setAppCreds, 
-  walletPaired, 
-  authenticated, 
-  connectXAccount, 
-  setTokens,
-  setTokenAssociation,
-  markAllTokensAssociated,
-  resetAuth 
-} = authSlice.actions;
+export const { toggleSmDeviceModal, walletPaired, authenticated, connectXAccount, setTokens, setTokenAssociation, markAllTokensAssociated, resetAuth, updateAppStatus } = authSlice.actions;
 export default authSlice.reducer;
