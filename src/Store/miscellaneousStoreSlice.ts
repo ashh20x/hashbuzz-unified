@@ -9,6 +9,7 @@ const initialState: AppState = {
   checkRefresh: false,
   balances: [],
   toasts: [],
+  balanceRefreshTimer:null
 };
 
 const miscellaneousStoreSlice = createSlice({
@@ -40,6 +41,9 @@ const miscellaneousStoreSlice = createSlice({
         updateCurrentUser: (state: AppState, action: PayloadAction<CurrentUser>) => {
             state.currentUser = action.payload;
         },
+        setBalanceQueryTimer: (state: AppState, action: PayloadAction<number | null>) => {
+            state.balanceRefreshTimer = action.payload;
+        },
         resetState: () => initialState,
     },
 });
@@ -54,6 +58,7 @@ export const {
   setContractInfo,
   updateCurrentUser,
   resetState,
+  setBalanceQueryTimer  
 } = miscellaneousStoreSlice.actions;
 
 export default miscellaneousStoreSlice.reducer;

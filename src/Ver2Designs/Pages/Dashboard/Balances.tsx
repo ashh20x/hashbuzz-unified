@@ -56,7 +56,7 @@ const BalanceCard = ({ entityBal, entityIcon }: { entityBal: string | number; en
         borderColor: theme.palette.primary.main,
       }}
     >
-      <Avatar variant="rounded" sx={{ width: "auto", height: "auto", p: "5px" }}>
+      <Avatar variant="rounded" sx={{ width: "auto", height: "auto", p: "5px" , fontSize:"0.875rem"}}>
         {entityIcon ?? "HBAR"}
       </Avatar>
       <Stack spacing={0.25} sx={{ ml: 0.5, mr: 0.5 }}>

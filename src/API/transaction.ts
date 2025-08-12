@@ -6,7 +6,7 @@ import type { CreateTransactionByteBody, SetTransactionBody, reimburseAmountBody
  */
 export const transactionApi = apiBase.injectEndpoints({
   endpoints: builder => ({
-    createTransactionBytes: builder.mutation<Uint8Array, CreateTransactionByteBody>({
+    createTransactionBytes: builder.mutation<{data: Uint8Array , type: string}, CreateTransactionByteBody>({
       query: body => ({
         url: "/api/transaction/create-topup-transaction",
         method: "POST",
