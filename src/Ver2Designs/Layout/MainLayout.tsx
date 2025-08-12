@@ -1,31 +1,28 @@
-import { Box, Container, useTheme } from "@mui/material";
-import React from "react";
+import { useGetCurrentUserQuery } from "@/API/user";
+import { updateCurrentUser } from "@/Store/miscellaneousStoreSlice";
+import { useAppDispatch } from "@/Store/store";
+import { Container, useTheme } from "@mui/material";
+import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
-import { toast } from "react-toastify";
-import { useApiInstance } from "../../APIConfig/api";
-import { useStore } from "../../Store/StoreProvider";
-import { getErrorMessage } from "../../Utilities/helpers";
 import { DashboardHeader } from "../Components";
-// import { DashboardHeader } from "../../Components";
+import useBalancesSync from "@/hooks/use-balances-sync";
+
+
 const MainLayout = () => {
+  useBalancesSync();
   const theme = useTheme();
-  const store = useStore();
-  const { User } = useApiInstance();
-  // const navigate = useNavigate();
+  const { data: currentUser, isLoading } = useGetCurrentUserQuery()
+  const dispatch = useAppDispatch();
 
-  const getUserData = React.useCallback(async () => {
-    try {
-      const currentUser = await User.getCurrentUser();
-      store.dispatch({type:"UPDATE_CURRENT_USER" , payload:currentUser})
-    } catch (error) {
-      toast.error(getErrorMessage(error) ?? "Error while getting current user details.");
+  useEffect(() => {
+    if (currentUser) {
+      dispatch(updateCurrentUser(currentUser));
     }
-  }, [User, store]);
+  }, [currentUser, dispatch]);
 
-  React.useEffect(() => {
-    getUserData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <Container
@@ -37,7 +34,7 @@ const MainLayout = () => {
           display: "grid",
           gridTemplateRows: "auto 1fr",
           height: "100vh",
-          gridGap:"12px"
+          gridGap: "12px"
         },
       }}
     >

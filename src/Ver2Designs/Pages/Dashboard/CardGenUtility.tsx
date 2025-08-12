@@ -1,5 +1,6 @@
-import { Box, Card, Divider, Grid, Stack, Typography } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
+import { Box, Card, Divider, Stack, Typography } from "@mui/material";
+import Grid from "@mui/material/Grid";
+import { SxProps, Theme, useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import React from "react";
 
@@ -9,8 +10,12 @@ interface CardGenUtilityProps {
   startIcon: React.ReactNode;
 }
 
-export const cardStyle = {
-  height: 100,
+export const cardStyle: SxProps<Theme> = {
+  height: {
+    xs: "max-content",
+    sm: "max-content",
+    md: 130
+  },
   backgroundColor: "#E1D9FF",
   p: 2,
   border: 3,
@@ -21,9 +26,9 @@ export const CardGenUtility = ({ title, content, startIcon }: CardGenUtilityProp
   const theme = useTheme();
   const aboveXs = useMediaQuery(theme.breakpoints.up("sm"));
   return (
-    <Grid item lg={3} xl={3} md={4} sm={6} xs={6}>
+    <Grid size={{ xs: 6, sm: 6, xl: 3, lg: 3 }}>
       <Card elevation={0} sx={cardStyle}>
-        <Stack direction={aboveXs ? "row" : "column"} alignItems={aboveXs ? "flex-start" : "normal"} sx={{ height: "100%", width: "100%", overflowY: "scroll" }}>
+        <Stack direction={aboveXs ? "row" : "column"} alignItems={aboveXs ? "flex-start" : "normal"} sx={{ height: "100%", width: "100%" }}>
           <Stack
             direction={"row"}
             alignItems="center"

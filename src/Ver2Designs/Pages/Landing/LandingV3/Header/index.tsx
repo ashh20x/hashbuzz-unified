@@ -1,16 +1,18 @@
+import HashbuzzIcon from "@/SVGR/HashbuzzIcon";
 import HashbuzzLogoMainTransparent from "@/SVGR/HashbuzzLogo";
 import { Box, Button, useMediaQuery, useTheme } from "@mui/material";
+import useAuthHandler from "../hook/use-auth-handler";
 import * as styles from "./styles";
-import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const theme = useTheme();
   const isSmallDevice = useMediaQuery(theme.breakpoints.down("sm"));
-  const navigate = useNavigate();
+  const { authSteps, authBtnClickHandler } = useAuthHandler();
 
 
   const handleGetStarted = (e: React.MouseEvent<HTMLButtonElement>) => {
-    navigate("/auth/pair-wallet");
+    e.preventDefault();
+    authBtnClickHandler();
   };
 
 
@@ -25,8 +27,8 @@ const Header = () => {
         />
         {!isSmallDevice && (
           <Box id="landing-header-btns" sx={styles.headerActionContainer}>
-            <Button onClick={handleGetStarted} sx={styles.headerSectionGetStartedBtn} disableElevation size="medium" variant="contained" color="primary">
-              Get Started
+            <Button startIcon={authSteps.wallet.isPaired && <HashbuzzIcon color="#fff" size={20} />} onClick={handleGetStarted} sx={styles.headerSectionGetStartedBtn} disableElevation size="medium" variant="contained" color="primary">
+              {authSteps.wallet.address ??  "Get Started"}
             </Button>
           </Box>
         )}

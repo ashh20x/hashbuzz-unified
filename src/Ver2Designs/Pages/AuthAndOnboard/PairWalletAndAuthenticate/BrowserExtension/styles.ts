@@ -16,3 +16,34 @@ export const connectWalletBtnContainer: SxProps<Theme> = {
     },
   },
 };
+
+export const extensionAlert: SxProps<Theme> = {
+  marginTop: "1rem",
+  backgroundColor: "#FFF3CD",
+  color: "#856404",
+  borderRadius: "8px",
+  padding: "1rem",
+  fontSize: "0.875rem",
+  fontWeight: "500",
+};
+
+export const pairedSuccessfullyAlert: SxProps<Theme> = {
+  marginTop: "1rem",
+  backgroundColor: "#D4EDDA",
+  color: "#155724",
+  borderRadius: "8px",
+  padding: "1rem",
+  fontSize: "0.875rem",
+  fontWeight: "500",
+};
+
+export const pairedWalletInfoContainer: SxProps<Theme> = {
+  padding: "1rem",
+  backgroundColor: "#F8F9FA",
+  borderRadius: "8px",
+  "& p": {
+    marginBottom: "0.5rem",
+    fontSize: "0.875rem",
+    color: "#212529",
+  },
+};

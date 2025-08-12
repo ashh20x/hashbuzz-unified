@@ -1,0 +1,1 @@
+export {default as BrowserExtension} from './BrowserExtension'
