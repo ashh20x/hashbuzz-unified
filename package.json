@@ -1,6 +1,6 @@
 {
   "name": "hashbuzz",
-  "version": "0.1.12",
+  "version": "2.0.0",
   "private": true,
   "dependencies": {
     "@buidlerlabs/hashgraph-react-wallets": "^2.5.0",
