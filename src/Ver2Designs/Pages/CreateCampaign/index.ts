@@ -1,1 +1,1 @@
-export {default} from "./CreateCampaign"
+export {default as CreateCampaignContainer} from "./CreateCampaign"

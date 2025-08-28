@@ -1,12 +1,11 @@
 import { Box, Button , IconButton } from "@mui/material";
-import React from "react";
 import RefreshICon from "@mui/icons-material/Cached";
 
 export type TabsLabel = "all" | "pending" | "claimRewards";
 
 interface TabNavigationProps {
   activeTab: TabsLabel;
-  setActiveTab: React.Dispatch<React.SetStateAction<TabsLabel>>;
+  setActiveTab: (tab: TabsLabel) => void;
   isAdmin: boolean;
   handleCardsRefresh:() => void;
 }

@@ -1,30 +1,366 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# =============================================================================
+# HASHBUZZ FRONTEND - GITIGNORE
+# =============================================================================
+# Comprehensive .gitignore for React + TypeScript + Vite project
+# Last updated: 2025-08-15
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
+# =============================================================================
+# DEPENDENCIES & PACKAGES
+# =============================================================================
 
-# testing
-/coverage
+# Node.js dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
-# production
-/build
-/certificates
+# Package lock files (choose one strategy per project)
+package-lock.json        # Uncomment if using yarn exclusively
+# yarn.lock              # Uncomment if using npm exclusively
+pnpm-lock.yaml
 
-# misc
-.DS_Store
+# Yarn v2+
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# =============================================================================
+# BUILD OUTPUTS & ARTIFACTS
+# =============================================================================
+
+# Vite build outputs
+dist/
+dist-ssr/
+# build/
+
+# Vite cache
+.vite/
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# Legacy build outputs
+out/
+.next/
+.nuxt/
+
+# Production bundles
+*.tgz
+*.tar.gz
+
+# =============================================================================
+# DEVELOPMENT & RUNTIME
+# =============================================================================
+
+# Development server
+.cache/
+.temp/
+.tmp/
+
+# Hot Module Replacement
+*.hot-update.js
+*.hot-update.json
+
+# Development databases
+*.db
+*.sqlite
+*.sqlite3
+
+# =============================================================================
+# ENVIRONMENT & CONFIGURATION
+# =============================================================================
+
+# Environment variables (CRITICAL - NEVER COMMIT)
+.env
+.env.*
+!.env.example           # Keep example file
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
-.env*
 
+# Configuration files with secrets
+config.local.js
+config.local.ts
+config.local.json
+settings.local.json
+
+# =============================================================================
+# SECURITY & CREDENTIALS
+# =============================================================================
+
+# SSL Certificates and keys
+*.pem
+*.key
+*.crt
+*.cert
+*.p12
+*.pfx
+/certificates/
+/ssl/
+/certs/
+
+# Private keys and secrets
+*.private
+*_rsa
+*_rsa.pub
+*.secret
+*.secrets
+
+# Authentication tokens
+token.txt
+.token
+auth.json
+credentials.json
+
+# =============================================================================
+# TYPESCRIPT & JAVASCRIPT
+# =============================================================================
+
+# TypeScript build cache
+*.tsbuildinfo
+.tsbuildinfo
+
+# TypeScript declaration files (if auto-generated)
+# *.d.ts             # Uncomment if you want to ignore all .d.ts files
+
+# JavaScript source maps (production)
+*.map
+*.js.map
+*.css.map
+
+# ESLint cache
+.eslintcache
+
+# Prettier cache
+.prettiercache
+
+# =============================================================================
+# TESTING & COVERAGE
+# =============================================================================
+
+# Test coverage
+coverage/
+*.lcov
+.nyc_output/
+test-results/
+playwright-report/
+
+# Test artifacts
+test-output/
+screenshots/
+videos/
+
+# Jest cache
+.jest/
+
+# Cypress
+cypress/videos/
+cypress/screenshots/
+cypress/downloads/
+
+# =============================================================================
+# IDE & EDITOR FILES
+# =============================================================================
+
+# Visual Studio Code
+.vscode/
+!.vscode/extensions.json    # Keep recommended extensions
+!.vscode/settings.json      # Keep if you want shared settings
+*.code-workspace
+
+# IntelliJ IDEA / WebStorm
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+
+# =============================================================================
+# OPERATING SYSTEM FILES
+# =============================================================================
+
+# macOS
+.DS_Store
+.DS_Store?
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+.fseventsd
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+.nfs*
+
+# =============================================================================
+# LOGS & DEBUGGING
+# =============================================================================
+
+# Application logs
+logs/
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
-.env
-Dockerfile
-.vscode
-.DS_Store
+# Runtime logs
+.pids
+*.pid
+*.seed
+*.pid.lock
+
+# Diagnostic reports
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# =============================================================================
+# DEPLOYMENT & DOCKER
+# =============================================================================
+
+# Docker
+.dockerignore
+# Dockerfile            # Uncomment if Dockerfile shouldn't be tracked
+docker-compose.override.yml
+.docker/
+
+# Deployment scripts (if they contain secrets)
+deploy.sh
+*.deploy
+
+# =============================================================================
+# ASSETS & MEDIA (OPTIONAL)
+# =============================================================================
+
+# Large media files (uncomment if you want to ignore them)
+# *.mp4
+# *.avi
+# *.mov
+# *.mp3
+# *.wav
+# *.flac
+
+# Generated images/assets
+# public/generated/
+# src/assets/generated/
+
+# =============================================================================
+# ANALYTICS & MONITORING
+# =============================================================================
+
+# Bundle analyzer reports
+bundle-report.html
+stats.json
+bundlesize.json
+
+# Lighthouse reports
+lighthouse-report.html
+*.lighthouse-ci.js
+
+# =============================================================================
+# MISCELLANEOUS
+# =============================================================================
+
+# Temporary files
+*.tmp
+*.temp
+.cache
+.parcel-cache
+
+# Editor backup files
+*~
+*.bak
+*.backup
+
+# Archive files
+*.zip
+*.tar
+*.rar
+*.7z
+
+# Lock files for tools
+.tool-versions
+.nvmrc.lock
+
+# =============================================================================
+# PROJECT-SPECIFIC IGNORES
+# =============================================================================
+
+# Hashbuzz specific
+/uploads/
+/public/uploads/
+user-uploads/
+
+# Storybook
+storybook-static/
+.storybook/public
+
+# Chromatic
+chromatic-build/
+
+# =============================================================================
+# KEEP THESE FILES (NEGATION PATTERNS)
+# =============================================================================
+
+# Always keep these important files
+!.gitkeep
+!.gitignore
+!.env.example
+!.nvmrc
+!README.md
+!CHANGELOG.md
+!LICENSE
+!CONTRIBUTING.md
+
+# Keep essential config files
+!package.json
+!tsconfig.json
+!vite.config.ts
+!tailwind.config.js
+!eslint.config.js
+!prettier.config.js
+
+# =============================================================================
+# NOTES FOR DEVELOPERS
+# =============================================================================
+# 1. Add project-specific patterns as needed
+# 2. Never commit sensitive information (.env files, keys, passwords)
+# 3. Use !pattern to force-include files that would otherwise be ignored
+# 4. Test .gitignore changes with: git check-ignore -v <file>
+# 5. Clean up already-tracked sensitive files with: git rm --cached <file>
+# 6. Review this file periodically and update as the project grows

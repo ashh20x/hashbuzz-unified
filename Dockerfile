@@ -1,32 +1,123 @@
-# Stage 1: Build React app with Node.js
-FROM node:18-alpine as build
+# =============================================================================
+# HASHBUZZ FRONTEND - MULTI-STAGE DOCKER BUILD
+# =============================================================================
+# Production-ready React application with optimized build and security
+
+# =============================================================================
+# Stage 1: Dependencies Installation
+# =============================================================================
+FROM node:18-alpine AS deps
+
+# Install security updates and dumb-init for proper signal handling
+RUN apk update && apk upgrade && apk add --no-cache dumb-init
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package.json yarn.lock* package-lock.json* ./
+
+# Install dependencies based on lock file
+RUN \
+  if [ -f yarn.lock ]; then yarn install --frozen-lockfile --production=false; \
+  elif [ -f package-lock.json ]; then npm ci; \
+  else echo "No lock file found" && exit 1; \
+  fi
+
+# =============================================================================
+# Stage 2: Build Application
+# =============================================================================
+FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-COPY package*.json ./
+# Copy dependencies from deps stage
+COPY --from=deps /app/node_modules ./node_modules
 
-RUN npm install
-
+# Copy source code
 COPY . .
 
-ENV REACT_APP_NETWORK="mainnet"
-ENV REACT_APP_DAPP_API="https://api.hashbuzz.social"
-ENV REACT_APP_MIRROR_NODE_LINK="https://mainnet-public.mirrornode.hedera.com"
-ENV REACT_APP_CAMPAIGN_DURATION=60
+# Build arguments for environment configuration
+ARG VITE_NETWORK=mainnet
+ARG VITE_BASE_URL=https://api.hashbuzz.social
+ARG VITE_HEDERA_NETWORK_TYPE=mainnet
+ARG VITE_ENABLE_ANALYTICS=false
+ARG VITE_ENABLE_DEV_TOOLS=false
 
+# Set build environment variables
+ENV VITE_NETWORK=$VITE_NETWORK
+ENV VITE_BASE_URL=$VITE_BASE_URL
+ENV VITE_HEDERA_NETWORK_TYPE=$VITE_HEDERA_NETWORK_TYPE
+ENV VITE_ENABLE_ANALYTICS=$VITE_ENABLE_ANALYTICS
+ENV VITE_ENABLE_DEV_TOOLS=$VITE_ENABLE_DEV_TOOLS
+ENV NODE_ENV=production
 
-RUN npm run build
+# Type check and build
+RUN yarn type-check
+RUN yarn build
 
+# =============================================================================
+# Stage 3: Production Server
+# =============================================================================
+FROM nginx:alpine AS production
 
-# Stage 2: Serve the build with serve
-FROM node:18-alpine as serve
+# Install security updates
+RUN apk update && apk upgrade
+
+# Create non-root user for security
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S hashbuzz -u 1001 -G nodejs
+
+# Copy built application
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Copy custom nginx configuration
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Create necessary directories and set permissions
+RUN mkdir -p /var/cache/nginx /var/log/nginx && \
+    chown -R hashbuzz:nodejs /var/cache/nginx /var/log/nginx /usr/share/nginx/html
+
+# Switch to non-root user
+USER hashbuzz
+
+# Expose port
+EXPOSE 80
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:80/ || exit 1
+
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]
+
+# =============================================================================
+# Stage 4: Development Server (Optional)
+# =============================================================================
+FROM node:18-alpine AS development
+
+# Install dumb-init for proper signal handling
+RUN apk add --no-cache dumb-init
 
 WORKDIR /app
 
-RUN npm install -g serve
+# Copy dependencies
+COPY --from=deps /app/node_modules ./node_modules
 
-COPY --from=build /app/build /app/build
+# Copy source code
+COPY . .
 
-EXPOSE 3000
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S hashbuzz -u 1001 -G nodejs && \
+    chown -R hashbuzz:nodejs /app
+
+USER hashbuzz
+
+# Expose development port
+EXPOSE 5173
+
+# Development command
+CMD ["dumb-init", "yarn", "dev", "--host", "0.0.0.0"]
 
 CMD ["npx", "serve", "-s", "build", "-l", "3000"]

@@ -1,80 +1,92 @@
-import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
-import BusinessIcon from "@mui/icons-material/Business";
-import TwitterIcon from "@mui/icons-material/Twitter";
-import { Button, Typography } from "@mui/material";
-import React from "react";
-import { useStore } from "../../../Store/StoreProvider";
-import Balances from "./Balances";
-import CampaignList from "./CampaignList";
-import { CardGenUtility } from "./CardGenUtility";
-import { toast } from "react-toastify";
-import { useApiInstance } from "../../../APIConfig/api";
-import { getErrorMessage, isAllowedToCmapigner } from "../../../Utilities/helpers";
-import SpeedDialActions from "../../Components/SpeedDialActions";
-import * as SC from "./styled";
-import XAccountConnectionWarning from "./XAccountConnectionWarning";
-import XPlatformIcon from "../../../SVGR/XPlatformIcon";
+import { useLazyGetTwitterBizHandleQuery } from '@/API/integration';
+import { useAppSelector } from '@/Store/store';
+import { LinkOff } from '@mui/icons-material';
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import BusinessIcon from '@mui/icons-material/Business';
+import { Alert, Button, Typography } from '@mui/material';
+import React from 'react';
+import { useLocation } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import XPlatformIcon from '../../../SVGR/XPlatformIcon';
+import { getErrorMessage, isAllowedToCmapigner } from '../../../comman/helpers';
+import Balances from './Balances';
+import CampaignList from './CampaignList';
+import { CardGenUtility } from './CardGenUtility';
+import * as SC from './styled';
 
 const Dashboard = () => {
-  const store = useStore();
-  const { Integrations } = useApiInstance();
-  const { currentUser, dispatch } = store;
-  const [openXAlert, setOpenXAlert] = React.useState(false);
+  const { currentUser } = useAppSelector(s => s.app);
+  const [getTwitterBizHandle, { isLoading: isLoadingBizHandle }] =
+    useLazyGetTwitterBizHandleQuery();
+  const location = useLocation();
 
-  const personalHandleIntegration = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    try {
-      event.preventDefault();
-      const { url } = await Integrations.twitterPersonalHandle();
-      window.location.href = url;
-    } catch (err) {
-      toast.error(getErrorMessage(err) ?? "Error while requesting personal handle integration.");
-    }
-  };
-  const bizHandleIntegration = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    try {
-      event.preventDefault();
-      const { url } = await Integrations.twitterBizHandle();
-      window.location.href = url;
-    } catch (err) {
-      toast.error(getErrorMessage(err) ?? "Error while requesting personal handle integration.");
-    }
-  };
+  const bizHandleIntegration = React.useCallback(
+    async (event: React.MouseEvent<HTMLButtonElement>) => {
+      try {
+        event.preventDefault();
+        const { url } = await getTwitterBizHandle().unwrap();
+        window.location.href = url;
+      } catch (err) {
+        console.error('Error during brand handle integration:', err);
+        toast.error(
+          getErrorMessage(err) ??
+            'Error while requesting personal handle integration.'
+        );
+      }
+    },
+    [getTwitterBizHandle]
+  );
 
-  React.useEffect(() => {
-    const toastsMessage = store.toasts;
-    toastsMessage.map((t) => toast(t.message, { type: t.type }));
-    dispatch({ type: "RESET_TOAST" });
-  }, [dispatch]);
+  const errorFromState = location.state?.error;
 
   return (
     <React.Fragment>
+      {errorFromState && (
+        <Alert severity='error' sx={{ mb: 2, mt: 2 }}>
+          {errorFromState}
+        </Alert>
+      )}
       <SC.StyledCardGenUtility>
-        <CardGenUtility startIcon={<AccountBalanceWalletIcon color="inherit" fontSize={"inherit"} />} title={"Hedera Account ID"} content={<Typography variant="h5">{currentUser?.hedera_wallet_id}</Typography>} />
+        <CardGenUtility
+          startIcon={
+            <AccountBalanceWalletIcon color='inherit' fontSize={'inherit'} />
+          }
+          title={'Hedera Account ID'}
+          content={
+            <Typography variant='h5'>
+              {currentUser?.hedera_wallet_id}
+            </Typography>
+          }
+        />
 
         {/* card for personal twitter handle */}
         <CardGenUtility
-          startIcon={<XPlatformIcon color="inherit" size={40} />}
-          title={"Personal 𝕏 Account"}
+          startIcon={<XPlatformIcon color='inherit' size={40} />}
+          title={'Personal 𝕏 Account'}
           content={
-            currentUser?.personal_twitter_handle ? (
-              <Typography variant="h5">{"@" + currentUser?.personal_twitter_handle}</Typography>
-            ) : (
-              <Button type="button" variant="contained" disableElevation startIcon={<XPlatformIcon size={18} />} onClick={() => setOpenXAlert(true)}>
-                Connect
-              </Button>
-            )
+            <Typography variant='h5'>
+              {'@' + currentUser?.personal_twitter_handle}
+            </Typography>
           }
         />
 
         {/* card for Brand twitter handle */}
         <CardGenUtility
-          startIcon={<BusinessIcon color="inherit" fontSize={"inherit"} />}
-          title={"Brand 𝕏 Account"}
+          startIcon={<BusinessIcon color='inherit' fontSize={'inherit'} />}
+          title={'Brand 𝕏 Account'}
           content={
             currentUser?.business_twitter_handle ? (
-              <Typography variant="h5">{"@" + currentUser?.business_twitter_handle}</Typography>
+              <Typography variant='h5'>
+                {'@' + currentUser?.business_twitter_handle}
+              </Typography>
             ) : (
-              <Button type="button" disabled={!isAllowedToCmapigner(currentUser?.role)} variant="contained" disableElevation startIcon={<XPlatformIcon size={18} />} onClick={bizHandleIntegration}>
+              <Button
+                endIcon={<LinkOff fontSize='inherit' />}
+                variant='outlined'
+                onClick={bizHandleIntegration}
+                loading={isLoadingBizHandle}
+                disabled={!isAllowedToCmapigner(currentUser?.role)}
+              >
                 Connect
               </Button>
             )
@@ -88,10 +100,6 @@ const Dashboard = () => {
 
       {/* Campaign List section */}
       <CampaignList />
-
-      {/* speed dial  action button */}
-      <SpeedDialActions />
-      <XAccountConnectionWarning open={openXAlert} handleClose={() => setOpenXAlert(false)} handleAgree={personalHandleIntegration} />
     </React.Fragment>
   );
 };

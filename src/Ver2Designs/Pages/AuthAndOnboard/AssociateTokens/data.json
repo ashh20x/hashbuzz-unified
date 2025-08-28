@@ -1,0 +1,202 @@
+[
+    {
+        "admin_key": {
+            "_type": "ECDSA_SECP256K1",
+            "key": "03dca6368d3711df4a3329849d8f0f6e8ac58550959e4414d1dd7d442d82fc8830"
+        },
+        "auto_renew_account": "0.0.5975440",
+        "auto_renew_period": 7776000,
+        "created_timestamp": "1754205728.953745914",
+        "custom_fees": {
+            "created_timestamp": "1754205728.953745914",
+            "fixed_fees": [],
+            "fractional_fees": []
+        },
+        "decimals": "0",
+        "deleted": false,
+        "expiry_timestamp": 1.761981728e18,
+        "fee_schedule_key": null,
+        "freeze_default": false,
+        "freeze_key": {
+            "_type": "ECDSA_SECP256K1",
+            "key": "03dca6368d3711df4a3329849d8f0f6e8ac58550959e4414d1dd7d442d82fc8830"
+        },
+        "initial_supply": "0",
+        "kyc_key": {
+            "_type": "ECDSA_SECP256K1",
+            "key": "03dca6368d3711df4a3329849d8f0f6e8ac58550959e4414d1dd7d442d82fc8830"
+        },
+        "max_supply": "2500",
+        "memo": "",
+        "metadata": "UW1jakdyV01VQW0zYUxwR1ppUUhSR21WZXY2anVuZzNOTXgxUTl3R2dodVpSTA==",
+        "metadata_key": {
+            "_type": "ECDSA_SECP256K1",
+            "key": "03dca6368d3711df4a3329849d8f0f6e8ac58550959e4414d1dd7d442d82fc8830"
+        },
+        "modified_timestamp": "1754205728.953745914",
+        "name": "ILYES MAKRIA",
+        "pause_key": null,
+        "pause_status": "NOT_APPLICABLE",
+        "supply_key": {
+            "_type": "ECDSA_SECP256K1",
+            "key": "03dca6368d3711df4a3329849d8f0f6e8ac58550959e4414d1dd7d442d82fc8830"
+        },
+        "supply_type": "FINITE",
+        "symbol": "ILY",
+        "token_id": "0.0.6494842",
+        "total_supply": "2500",
+        "treasury_account_id": "0.0.5975440",
+        "type": "FUNGIBLE_COMMON",
+        "wipe_key": null
+    },
+    {
+        "admin_key": {
+            "_type": "ECDSA_SECP256K1",
+            "key": "02aabbccddeeff00112233445566778899aabbccddeeff00112233445566778899"
+        },
+        "auto_renew_account": "0.0.5975441",
+        "auto_renew_period": 7776000,
+        "created_timestamp": "1754205730.123456789",
+        "custom_fees": {
+            "created_timestamp": "1754205730.123456789",
+            "fixed_fees": [],
+            "fractional_fees": []
+        },
+        "decimals": "2",
+        "deleted": false,
+        "expiry_timestamp": 1.761981729e18,
+        "fee_schedule_key": null,
+        "freeze_default": false,
+        "freeze_key": {
+            "_type": "ECDSA_SECP256K1",
+            "key": "02aabbccddeeff00112233445566778899aabbccddeeff00112233445566778899"
+        },
+        "initial_supply": "1000",
+        "kyc_key": {
+            "_type": "ECDSA_SECP256K1",
+            "key": "02aabbccddeeff00112233445566778899aabbccddeeff00112233445566778899"
+        },
+        "max_supply": "10000",
+        "memo": "Test token 2",
+        "metadata": "dGVzdG1ldGFkYXRhMg==",
+        "metadata_key": {
+            "_type": "ECDSA_SECP256K1",
+            "key": "02aabbccddeeff00112233445566778899aabbccddeeff00112233445566778899"
+        },
+        "modified_timestamp": "1754205730.123456789",
+        "name": "ALICE DOE",
+        "pause_key": null,
+        "pause_status": "NOT_APPLICABLE",
+        "supply_key": {
+            "_type": "ECDSA_SECP256K1",
+            "key": "02aabbccddeeff00112233445566778899aabbccddeeff00112233445566778899"
+        },
+        "supply_type": "FINITE",
+        "symbol": "ALC",
+        "token_id": "0.0.6494843",
+        "total_supply": "1000",
+        "treasury_account_id": "0.0.5975441",
+        "type": "FUNGIBLE_COMMON",
+        "wipe_key": null
+    },
+    {
+        "admin_key": {
+            "_type": "ECDSA_SECP256K1",
+            "key": "03ffeeddccbbaa99887766554433221100ffeeddccbbaa99887766554433221100"
+        },
+        "auto_renew_account": "0.0.5975442",
+        "auto_renew_period": 7776000,
+        "created_timestamp": "1754205732.987654321",
+        "custom_fees": {
+            "created_timestamp": "1754205732.987654321",
+            "fixed_fees": [],
+            "fractional_fees": []
+        },
+        "decimals": "0",
+        "deleted": false,
+        "expiry_timestamp": 1.761981730e18,
+        "fee_schedule_key": null,
+        "freeze_default": false,
+        "freeze_key": {
+            "_type": "ECDSA_SECP256K1",
+            "key": "03ffeeddccbbaa99887766554433221100ffeeddccbbaa99887766554433221100"
+        },
+        "initial_supply": "500",
+        "kyc_key": {
+            "_type": "ECDSA_SECP256K1",
+            "key": "03ffeeddccbbaa99887766554433221100ffeeddccbbaa99887766554433221100"
+        },
+        "max_supply": "500",
+        "memo": "Test token 3",
+        "metadata": "dGVzdG1ldGFkYXRhMw==",
+        "metadata_key": {
+            "_type": "ECDSA_SECP256K1",
+            "key": "03ffeeddccbbaa99887766554433221100ffeeddccbbaa99887766554433221100"
+        },
+        "modified_timestamp": "1754205732.987654321",
+        "name": "BOB SMITH",
+        "pause_key": null,
+        "pause_status": "NOT_APPLICABLE",
+        "supply_key": {
+            "_type": "ECDSA_SECP256K1",
+            "key": "03ffeeddccbbaa99887766554433221100ffeeddccbbaa99887766554433221100"
+        },
+        "supply_type": "FINITE",
+        "symbol": "BOB",
+        "token_id": "0.0.6494844",
+        "total_supply": "500",
+        "treasury_account_id": "0.0.5975442",
+        "type": "FUNGIBLE_COMMON",
+        "wipe_key": null
+    },
+    {
+        "admin_key": {
+            "_type": "ECDSA_SECP256K1",
+            "key": "04abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcd"
+        },
+        "auto_renew_account": "0.0.5975443",
+        "auto_renew_period": 7776000,
+        "created_timestamp": "1754205735.111213141",
+        "custom_fees": {
+            "created_timestamp": "1754205735.111213141",
+            "fixed_fees": [],
+            "fractional_fees": []
+        },
+        "decimals": "1",
+        "deleted": false,
+        "expiry_timestamp": 1.761981731e18,
+        "fee_schedule_key": null,
+        "freeze_default": false,
+        "freeze_key": {
+            "_type": "ECDSA_SECP256K1",
+            "key": "04abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcd"
+        },
+        "initial_supply": "200",
+        "kyc_key": {
+            "_type": "ECDSA_SECP256K1",
+            "key": "04abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcd"
+        },
+        "max_supply": "2000",
+        "memo": "Test token 4",
+        "metadata": "dGVzdG1ldGFkYXRhNA==",
+        "metadata_key": {
+            "_type": "ECDSA_SECP256K1",
+            "key": "04abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcd"
+        },
+        "modified_timestamp": "1754205735.111213141",
+        "name": "CAROL JONES",
+        "pause_key": null,
+        "pause_status": "NOT_APPLICABLE",
+        "supply_key": {
+            "_type": "ECDSA_SECP256K1",
+            "key": "04abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcd"
+        },
+        "supply_type": "FINITE",
+        "symbol": "CRL",
+        "token_id": "0.0.6494845",
+        "total_supply": "200",
+        "treasury_account_id": "0.0.5975443",
+        "type": "FUNGIBLE_COMMON",
+        "wipe_key": null
+    }
+]

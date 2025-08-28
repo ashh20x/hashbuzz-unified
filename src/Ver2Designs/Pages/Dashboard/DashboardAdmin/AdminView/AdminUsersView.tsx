@@ -1,3 +1,4 @@
+import { useAllowUserAsCampaignerMutation, useGetAllUsersQuery, useRemoveBizHandleMutation, useRemovePersonalHandleMutation } from "@/Ver2Designs/Admin/api/admin";
 import { Delete } from "@mui/icons-material";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import { Box, Button, IconButton, Table, TableBody, TableCell, TableHead, TableRow, Typography } from "@mui/material";
@@ -5,10 +6,9 @@ import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { sortBy, unionBy } from "lodash";
+import { sortBy } from "lodash";
 import * as React from "react";
 import { toast } from "react-toastify";
-import { useApiInstance } from "../../../../../APIConfig/api";
 import { CurrentUser } from "../../../../../types";
 
 const ROLE_MAPPER = {
@@ -42,37 +42,35 @@ const UsersLIstCol: GridColDef[] = [
     field: "role",
     headerName: "User Role",
     minWidth: 200,
-    //@ts-ignore
-    valueGetter: (params) => ROLE_MAPPER[params.row.role],
-  },
+    valueFormatter: (params:keyof typeof ROLE_MAPPER ) => ROLE_MAPPER[params]
+  }
 ];
 
 export const AdminUsersViews = () => {
-  const [allUsers, setAllUsers] = React.useState<CurrentUser[]>([]);
-  const [count, setCount] = React.useState(0);
+  const [pagination, setPagination] = React.useState({
+    limit: 10,
+    offset: 0,
+    page: 1
+  })
+  const { data: allUsers, isLoading, refetch } = useGetAllUsersQuery(pagination, {
+    refetchOnFocus: true
+  });
+  const [allowUserAsCampaigner] = useAllowUserAsCampaignerMutation();
+  const [removePersonalHandle, { isLoading: isLoadingPersonal }] = useRemovePersonalHandleMutation();
+  const [removeBusinessHandle, { isLoading: isLoadingBusiness }] = useRemoveBizHandleMutation();
   const [userInview, setUserInView] = React.useState<CurrentUser | null>(null);
 
-  const api = useApiInstance();
-
-  const getAllUsers = async () => {
-    const data = await api.Admin.getAllUsers();
-    setAllUsers(data.users);
-    setCount(data.count);
-  };
-
   const handleActionClick = async (id: number) => {
-    console.log(id);
-    const data = await api.Admin.allowUserAsCampaigner(id);
-    setAllUsers((prevData) => unionBy([data.user], prevData, "id"));
+    await allowUserAsCampaigner(id).unwrap();
+    refetch();
   };
 
-  const handlePageChnage = async (page: number) => {
-    const data = await api.Admin.getAllUsers({
-      limit: 10,
-      offset: 10 * page,
-    });
-    setAllUsers(data.users);
-    setCount(data.count);
+  const handlePageChange = async (page: number) => {
+    setPagination((prev) => ({
+      ...prev,
+      page,
+      offset: (page - 1) * prev.limit,
+    }));
   };
 
   const handleViewClick = (userData: any) => {
@@ -86,12 +84,9 @@ export const AdminUsersViews = () => {
 
   const handlePersonalHandleRemove = async (id: number) => {
     try {
-      const updatedUser = await api.Admin.removePerosnalHandle(id);
-      setUserInView(updatedUser.data);
-      toast.success(updatedUser.message);
-      setAllUsers((oldData) => {
-        return oldData.map((d) => (d.id === updatedUser.data.id ? updatedUser.data : d));
-      });
+      await removePersonalHandle(id);
+      toast.success("Personal handle removed successfully");
+      refetch();
     } catch (err) {
       toast.error("Something error handle while removing");
     }
@@ -99,20 +94,14 @@ export const AdminUsersViews = () => {
 
   const handlebizHandleRemove = async (id: number) => {
     try {
-      const updatedUser = await api.Admin.removeBizHandle(id);
-      setUserInView(updatedUser.data);
-      toast.success(updatedUser.message);
-      setAllUsers((oldData) => {
-        return oldData.map((d) => (d.id === updatedUser.data.id ? updatedUser.data : d));
-      });
+      await removeBusinessHandle(id);
+      toast.success("Business handle removed successfully");
+      refetch();
     } catch (err) {
       toast.error("Something error handle while removing");
     }
   };
 
-  React.useEffect(() => {
-    getAllUsers();
-  }, []);
 
   const cols: GridColDef[] = [
     ...UsersLIstCol,
@@ -123,8 +112,8 @@ export const AdminUsersViews = () => {
       width: 200,
       renderCell: (cellValues) => {
         return (
-          <Button variant="contained" color="primary" disabled={cellValues.row.role !== "GUEST_USER"} onClick={() => handleActionClick(cellValues.row.id)}>
-            Allow as Cmapigner
+          <Button size="small" sx={{textTransform:'capitalize'}} variant="contained" color="primary" disabled={cellValues.row.role !== "GUEST_USER"} onClick={() => handleActionClick(cellValues.row.id)}>
+            Allow as Campaigner
           </Button>
         );
       },
@@ -151,7 +140,17 @@ export const AdminUsersViews = () => {
           User list
         </Typography>
         <Box sx={{ height: "500px", minHeight: 500 }}>
-          <DataGrid rows={sortBy(allUsers, "id")} columns={cols} rowCount={count} loading={api.isLoading} pageSize={10} pagination paginationMode="server" onPageChange={(page, Details) => handlePageChnage(page)} />
+          <DataGrid
+            rows={Array.isArray(allUsers?.users) ? sortBy(allUsers.users, "id") : []}
+            columns={cols}
+            rowCount={typeof allUsers === "object" && allUsers !== null && "count" in allUsers ? allUsers.count : 0}
+            loading={isLoading}
+            pageSize={pagination.limit}
+            page={pagination.page - 1}
+            paginationMode="server"
+            onPageChange={(newPage) => handlePageChange(newPage + 1)}
+            disableRowSelectionOnClick
+          />
         </Box>
       </Box>
       <Dialog maxWidth={"md"} open={Boolean(userInview)} onClose={handleModalClose} fullWidth>
@@ -167,7 +166,7 @@ export const AdminUsersViews = () => {
                 <TableCell>Personal Handle</TableCell>
                 <TableCell>
                   {userInview?.personal_twitter_handle ?? "NA"}
-                  <IconButton title="Remove this handle" size="small" color="error" disabled={api.isLoading || !Boolean(userInview?.personal_twitter_handle)} sx={{ marginLeft: 2 }} onClick={() => handlePersonalHandleRemove(Number(userInview?.id))}>
+                  <IconButton title="Remove this handle" size="small" color="error" disabled={isLoadingPersonal || !Boolean(userInview?.personal_twitter_handle)} sx={{ marginLeft: 2 }} onClick={() => handlePersonalHandleRemove(Number(userInview?.id))}>
                     <Delete fontSize="inherit" />
                   </IconButton>
                 </TableCell>
@@ -176,7 +175,7 @@ export const AdminUsersViews = () => {
                 <TableCell>Biuieness Handle</TableCell>
                 <TableCell>
                   {userInview?.business_twitter_handle ?? "NA"}
-                  <IconButton title="Remove this buesness handle" size="small" color="error" disabled={api.isLoading || !Boolean(userInview?.business_twitter_handle)} sx={{ marginLeft: 2 }} onClick={() => handlebizHandleRemove(Number(userInview?.id))}>
+                  <IconButton title="Remove this buesness handle" size="small" color="error" disabled={isLoadingBusiness || !Boolean(userInview?.business_twitter_handle)} sx={{ marginLeft: 2 }} onClick={() => handlebizHandleRemove(Number(userInview?.id))}>
                     <Delete fontSize="inherit" />
                   </IconButton>
                 </TableCell>

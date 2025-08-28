@@ -1,2 +1,2 @@
 export * from './hashconnectService';
-export * from './useHashconnectServicce';
+export * from './useSmartContractServices';

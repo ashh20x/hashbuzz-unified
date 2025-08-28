@@ -1,12 +1,201 @@
+# =============================================================================
+# HASHBUZZ FRONTEND - DEVELOPMENT DOCKER COMPOSE
+# =============================================================================
+# Development environment with hot reload and debugging capabilities
+
+version: '3.8'
+
 services:
-  app:
-    entrypoint:
-    - sleep
-    - infinity
+  # Frontend Development Server
+  frontend-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+      args:
+        - VITE_NETWORK=testnet
+        - VITE_BASE_URL=http://localhost:5000
+        - VITE_ENABLE_DEV_TOOLS=true
+        - VITE_ENABLE_DEBUG_LOGS=true
+    container_name: hashbuzz-frontend-dev
+    ports:
+      - '5173:5173'
+      - '5174:5174' # Alternative port
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - frontend_cache:/app/.vite
+    environment:
+      - NODE_ENV=development
+      - VITE_NETWORK=testnet
+      - VITE_BASE_URL=http://localhost:5000
+      - VITE_ENABLE_DEV_TOOLS=true
+      - VITE_ENABLE_DEBUG_LOGS=true
+      - VITE_ENABLE_HOT_RELOAD=true
+    networks:
+      - hashbuzz-network
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'wget',
+          '--no-verbose',
+          '--tries=1',
+          '--spider',
+          'http://localhost:5173/',
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend Production Build (for testing)
+  frontend-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+      args:
+        - VITE_NETWORK=testnet
+        - VITE_BASE_URL=http://localhost:5000
+        - VITE_ENABLE_ANALYTICS=false
+        - VITE_ENABLE_DEV_TOOLS=false
+    container_name: hashbuzz-frontend-prod
+    ports:
+      - '3000:80'
+    networks:
+      - hashbuzz-network
+    restart: unless-stopped
+    profiles:
+      - production
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'wget',
+          '--no-verbose',
+          '--tries=1',
+          '--spider',
+          'http://localhost:80/health',
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # NGINX Reverse Proxy (optional)
+  nginx-proxy:
+    image: nginx:alpine
+    container_name: hashbuzz-nginx-proxy
+    ports:
+      - '8080:80'
+      - '8443:443'
+    volumes:
+      - ./nginx-proxy.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    networks:
+      - hashbuzz-network
+    depends_on:
+      - frontend-dev
+    restart: unless-stopped
+    profiles:
+      - proxy
+
+  # Database for local testing (PostgreSQL)
+  postgres-dev:
+    image: postgres:15-alpine
+    container_name: hashbuzz-postgres-dev
+    environment:
+      POSTGRES_DB: hashbuzz_dev
+      POSTGRES_USER: hashbuzz
+      POSTGRES_PASSWORD: dev_password_change_in_production
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - hashbuzz-network
+    restart: unless-stopped
+    profiles:
+      - database
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U hashbuzz -d hashbuzz_dev']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis for caching and sessions
+  redis-dev:
+    image: redis:7-alpine
+    container_name: hashbuzz-redis-dev
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+    networks:
+      - hashbuzz-network
+    restart: unless-stopped
+    profiles:
+      - database
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # Development utilities container
+  dev-tools:
     image: docker/dev-environments-javascript:stable-1
+    container_name: hashbuzz-dev-tools
+    entrypoint:
+      - sleep
+      - infinity
     init: true
     volumes:
-    - type: bind
-      source: /var/run/docker.sock
-      target: /var/run/docker.sock
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+      - .:/workspace
+    networks:
+      - hashbuzz-network
+    profiles:
+      - tools
 
+# Networks
+networks:
+  hashbuzz-network:
+    driver: bridge
+    name: hashbuzz-dev-network
+
+# Volumes
+volumes:
+  frontend_cache:
+    name: hashbuzz-frontend-cache
+  postgres_data:
+    name: hashbuzz-postgres-data
+  redis_data:
+    name: hashbuzz-redis-data
+# =============================================================================
+# USAGE EXAMPLES:
+# =============================================================================
+# Start development environment:
+#   docker-compose -f compose-dev.yaml up frontend-dev
+#
+# Start with database:
+#   docker-compose -f compose-dev.yaml --profile database up
+#
+# Start production build for testing:
+#   docker-compose -f compose-dev.yaml --profile production up frontend-prod
+#
+# Start with reverse proxy:
+#   docker-compose -f compose-dev.yaml --profile proxy up
+#
+# Full development stack:
+#   docker-compose -f compose-dev.yaml --profile database --profile proxy up
+#
+# Rebuild and start:
+#   docker-compose -f compose-dev.yaml up --build frontend-dev
+# =============================================================================

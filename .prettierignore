@@ -1,0 +1,57 @@
+# Prettier Ignore File
+# Files and directories that should not be formatted by Prettier
+
+# Build outputs
+dist/
+build/
+.vite/
+
+# Dependencies
+node_modules/
+
+# Generated files
+*.min.js
+*.min.css
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Environment files
+.env*
+
+# Logs
+*.log
+
+# Coverage reports
+coverage/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+
+# Documentation (markdown might have specific formatting)
+# *.md
+
+# Config files that might have specific formatting requirements
+# tsconfig.json
+# package.json
+
+# Generated or compiled assets
+public/build/
+src/assets/generated/
+
+# Test artifacts
+test-results/
+screenshots/
+videos/
+
+# Certificates and keys
+*.pem
+*.key
+*.crt

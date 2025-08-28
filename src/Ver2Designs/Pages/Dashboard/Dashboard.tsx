@@ -1,11 +1,11 @@
-import { useStore } from "../../../Store/StoreProvider";
+import { useAppSelector } from "@/Store/store";
 import DashboardAdmin from "./DashboardAdmin";
 import DashboardUser from "./DashboardUser";
 
 const Dashboard = () => {
-  const store = useStore();
-  const currentUseAddress = store.currentUser?.hedera_wallet_id;
-  const currentRole = store.currentUser?.role;
+  const { currentUser } = useAppSelector(s => s.app)
+  const currentUseAddress = currentUser?.hedera_wallet_id;
+  const currentRole = currentUser?.role;
 
   const isAdmin = !!currentUseAddress && currentRole && ["ADMIN", "SUPER_ADMIN"].includes(currentRole);
 

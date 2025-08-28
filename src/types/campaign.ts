@@ -1,3 +1,5 @@
+import { CampaignStatus } from '../comman/helpers';
+
 export interface Campaign {
   id: string;
   tweet_id?: string;
@@ -18,11 +20,11 @@ export interface Campaign {
 }
 
 export enum CampaignCommands {
-  StartCampaign = "Campaign::satrt",
-  ClaimReward = "Campaign::reward-claim",
-  AdminApprovedCampaign = "Campaign::admin-approved",
-  AdminRejectedCampaign = "Campaign::admin-rejected",
-  UserNotAvalidCommand = "Campaign::not-valid-command"
+  StartCampaign = 'Campaign::satrt',
+  ClaimReward = 'Campaign::reward-claim',
+  AdminApprovedCampaign = 'Campaign::admin-approved',
+  AdminRejectedCampaign = 'Campaign::admin-rejected',
+  UserNotAvalidCommand = 'Campaign::not-valid-command',
 }
 
 export type CampaignCards = {
@@ -33,7 +35,7 @@ export type CampaignCards = {
   like_reward: number;
   quote_reward: number;
   comment_reward: number;
-  media: any[];
+  media: MediaData[];
   amount_claimed: number;
   amount_spent: number;
   name: string;
@@ -51,5 +53,13 @@ export type CampaignCards = {
   campaign_start_time: string | null;
   campaign_close_time: string | null;
   is_added_to_queue: boolean;
-  card_status: string;
+  card_status: CampaignStatus;
+};
+
+export type MediaData = {
+  media_type: string;
+  aws_location: string;
+  twitter_media_id: string;
+  owner_id: bigint;
+  campaign_id: null;
 };

@@ -1,47 +1,44 @@
-import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
-import { CampaignStatus, getCardStausText, getSymbol } from "../../../../Utilities/helpers";
-import { useStore } from "../../../../Store/StoreProvider";
-
-const RenderSymbol = (props: GridRenderCellParams<any, any, any>) => {
-  const store = useStore();
-  const entities = store.balances;
-  return <span>{props.row?.type === "HBAR" ? "HBAR" : getSymbol(entities, props.row?.fungible_token_id)}</span>;
-}
+import { CampaignStatus, getCardStausText } from '@/comman/helpers';
+import { GridColDef } from '@mui/x-data-grid';
+import { RenderAmountClaimed } from './components/RenderAmountClaimed';
+import { RenderAmountSpent } from './components/RenderAmountSpent';
+import { RenderBudget } from './components/RenderBudget';
+import { RenderSymbol } from './components/RenderSymbol';
 
 export const campaignListColumns: GridColDef[] = [
-  { field: "id", headerName: "Card No.", width: 100, align: "center" },
-  { field: "name", headerName: "Name", minWidth: 150, flex: 0.75 },
+  { field: 'id', headerName: 'Card No.', width: 100, align: 'center' },
+  { field: 'name', headerName: 'Name', minWidth: 150, flex: 0.75 },
   {
-    field: "type",
-    headerName: "Token Reward",
+    field: 'type',
+    headerName: 'Token Reward',
     minWidth: 150,
     flex: 0.75,
-    renderCell: (params) => <RenderSymbol {...params} />,
+    renderCell: params => <RenderSymbol {...params} />,
   },
   {
-    field: "campaign_budget",
-    headerName: "Allocated Budget",
+    field: 'campaign_budget',
+    headerName: 'Allocated Budget',
     minWidth: 150,
     flex: 0.45,
-    renderCell: (cellValues) => {
-      return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.campaign_budget / 1e8 : cellValues?.row?.campaign_budget / Math.pow(10, Number(cellValues?.row?.decimals))}</span>;
-    },
+    renderCell: RenderBudget,
   },
   {
-    field: "amount_spent",
-    headerName: "Amount Spent",
+    field: 'amount_spent',
+    headerName: 'Amount Spent',
     width: 150,
-    renderCell: (cellValues) => {
-      return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.amount_spent / 1e8 : cellValues?.row?.amount_spent / Math.pow(10, Number(cellValues?.row?.decimals))}</span>;
-    },
+    renderCell: RenderAmountSpent,
   },
   {
-    field: "amount_claimed",
-    headerName: "Amount Claimed",
+    field: 'amount_claimed',
+    headerName: 'Amount Claimed',
     width: 150,
-    renderCell: (cellValues) => {
-      return <span>{cellValues?.row?.type === "HBAR" ? cellValues?.row?.amount_claimed / 1e8 : cellValues?.row?.amount_claimed / Math.pow(10, Number(cellValues?.row?.decimals))}</span>;
-    },
+    renderCell: RenderAmountClaimed,
   },
-  { field: "card_status", headerName: "Status", minWidth: 150, flex: 0.75, valueGetter: ({ value }) => getCardStausText(value as CampaignStatus) },
+  {
+    field: 'card_status',
+    headerName: 'Status',
+    minWidth: 150,
+    flex: 0.75,
+    valueGetter: status => getCardStausText(status as CampaignStatus),
+  },
 ];
