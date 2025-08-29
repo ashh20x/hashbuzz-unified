@@ -35,7 +35,7 @@ pnpm-lock.yaml
 # Vite build outputs
 dist/
 dist-ssr/
-# build/
+build/
 
 # Vite cache
 .vite/

@@ -3,8 +3,6 @@
 # =============================================================================
 # Development environment with hot reload and debugging capabilities
 
-version: '3.8'
-
 services:
   # Frontend Development Server
   frontend-dev:
