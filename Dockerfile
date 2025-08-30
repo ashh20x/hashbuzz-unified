@@ -1,15 +1,17 @@
 # =============================================================================
-# HASHBUZZ FRONTEND - MULTI-STAGE DOCKER BUILD
+# HASHBUZZ FRONTEND - OPTIMIZED MULTI-STAGE DOCKER BUILD
 # =============================================================================
 # Production-ready React application with optimized build and security
 
 # =============================================================================
 # Stage 1: Dependencies Installation
 # =============================================================================
-FROM node:22-alpine AS deps
+FROM node:20-alpine AS deps
 
-# Install security updates and dumb-init for proper signal handling
-RUN apk update && apk upgrade && apk add --no-cache dumb-init
+# Install only essential packages, AWS CLI, and clean cache
+RUN apk update && apk upgrade && \
+    apk add --no-cache dumb-init aws-cli jq curl && \
+    rm -rf /var/cache/apk/*
 
 # Set working directory
 WORKDIR /app
@@ -17,25 +19,36 @@ WORKDIR /app
 # Copy package files
 COPY package.json yarn.lock* package-lock.json* ./
 
-# Install dependencies based on lock file
+# Install dependencies with optimizations
 RUN \
-  if [ -f yarn.lock ]; then yarn install --frozen-lockfile --production=false; \
-  elif [ -f package-lock.json ]; then npm ci; \
+  if [ -f yarn.lock ]; then \
+    yarn install --frozen-lockfile --production=false --network-timeout 300000 && \
+    yarn cache clean; \
+  elif [ -f package-lock.json ]; then \
+    npm ci --only=production && \
+    npm cache clean --force; \
   else echo "No lock file found" && exit 1; \
   fi
 
 # =============================================================================
 # Stage 2: Build Application
 # =============================================================================
-FROM node:22-alpine AS builder
+FROM node:20-alpine AS builder
+
+# Install build dependencies and clean cache
+RUN apk add --no-cache python3 make g++ && \
+    rm -rf /var/cache/apk/*
 
 WORKDIR /app
 
 # Copy dependencies from deps stage
 COPY --from=deps /app/node_modules ./node_modules
 
-# Copy source code
-COPY . .
+# Copy only necessary source files (build context optimization)
+COPY package.json vite.config.ts tsconfig.json ./
+COPY src ./src
+COPY public ./public
+COPY index.html ./
 
 # Build arguments for environment configuration
 ARG VITE_NETWORK=mainnet
@@ -51,53 +64,63 @@ ENV VITE_HEDERA_NETWORK_TYPE=$VITE_HEDERA_NETWORK_TYPE
 ENV VITE_ENABLE_ANALYTICS=$VITE_ENABLE_ANALYTICS
 ENV VITE_ENABLE_DEV_TOOLS=$VITE_ENABLE_DEV_TOOLS
 ENV NODE_ENV=production
+ENV NODE_OPTIONS="--max-old-space-size=2048"
 
-# Type check and build
-# RUN yarn type-check
-RUN yarn build
+# Build application with optimizations
+RUN yarn build && \
+    rm -rf node_modules && \
+    rm -rf src
 
 # =============================================================================
 # Stage 3: Production Server
 # =============================================================================
-FROM nginx:alpine AS production
+FROM nginx:1.25-alpine AS production
 
-# Install security updates
-RUN apk update && apk upgrade
+# Install security updates, AWS CLI, and remove unnecessary packages
+RUN apk update && apk upgrade && \
+    apk add --no-cache wget aws-cli jq && \
+    rm -rf /var/cache/apk/*
 
 # Create non-root user for security
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S hashbuzz -u 1001 -G nodejs
 
-# Copy built application
+# Copy built application (only build folder to match vite config)
 COPY --from=builder /app/build /usr/share/nginx/html
+
+# Copy scripts for AWS secrets management
+COPY scripts/ /app/scripts/
+RUN chmod +x /app/scripts/*.sh
 
 # Copy custom nginx configuration
 COPY nginx.conf /etc/nginx/nginx.conf
 
 # Create necessary directories and set permissions
 RUN mkdir -p /var/cache/nginx /var/log/nginx && \
-    chown -R hashbuzz:nodejs /var/cache/nginx /var/log/nginx /usr/share/nginx/html
+    chown -R hashbuzz:nodejs /var/cache/nginx /var/log/nginx /usr/share/nginx/html && \
+    chmod -R 755 /usr/share/nginx/html
 
 # Switch to non-root user
 USER hashbuzz
 
 # Expose port
-EXPOSE 80
+EXPOSE 3000
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:80/ || exit 1
+# Health check with reduced frequency
+HEALTHCHECK --interval=60s --timeout=10s --start-period=5s --retries=2 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
 
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Start with secrets management
+CMD ["/app/scripts/start.sh"]
 
 # =============================================================================
 # Stage 4: Development Server (Optional)
 # =============================================================================
-FROM node:22-alpine AS development
+FROM node:20-alpine AS development
 
-# Install dumb-init for proper signal handling
-RUN apk add --no-cache dumb-init
+# Install dumb-init, AWS CLI for secrets management, and clean cache
+RUN apk add --no-cache dumb-init aws-cli jq curl && \
+    rm -rf /var/cache/apk/*
 
 WORKDIR /app
 
@@ -107,6 +130,10 @@ COPY --from=deps /app/node_modules ./node_modules
 # Copy source code
 COPY . .
 
+# Copy scripts for AWS secrets management
+COPY scripts/ /app/scripts/
+RUN chmod +x /app/scripts/*.sh
+
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S hashbuzz -u 1001 -G nodejs && \
@@ -114,10 +141,8 @@ RUN addgroup -g 1001 -S nodejs && \
 
 USER hashbuzz
 
-# Expose development port
-EXPOSE 5173
+# Expose development port (keeping original setup)
+EXPOSE 3000
 
-# Development command
-CMD ["dumb-init", "yarn", "dev", "--host", "0.0.0.0"]
-
-CMD ["npx", "serve", "-s", "build", "-l", "3000"]
+# Development command with secrets management
+CMD ["/app/scripts/start.sh"]

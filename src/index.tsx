@@ -7,6 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import AppRouter from './AppRouter';
 import { store } from './Store/store';
 import HashbuzzWalletProvider from './Wallet/hashconnectService';
+import './index.css';
 
 const theme = createTheme();
 

@@ -108,6 +108,12 @@ settings.local.json
 *_rsa
 *_rsa.pub
 *.secret
+
+# AWS Secrets Manager configuration files (CRITICAL)
+secrets.json
+secrets.local.json
+aws-secrets.json
+.env.secrets
 *.secrets
 
 # Authentication tokens

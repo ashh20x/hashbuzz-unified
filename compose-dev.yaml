@@ -1,7 +1,22 @@
-# =============================================================================
+# ====================================================================    container_name: hashbuzz-frontend-prod
+    ports:
+      - '3002:3000'  # Production on different host port to avoid conflict
+    environment:
+      # AWS Secrets Manager Configuration
+      - NODE_ENV=production
+      - FETCH_SECRETS=true
+      - AWS_REGION=${AWS_REGION:-us-east-1}
+      - SECRET_NAME=${SECRET_NAME:-hashbuzz/frontend/secrets}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}
+    networks:
+      - hashbuzz-network====
 # HASHBUZZ FRONTEND - DEVELOPMENT DOCKER COMPOSE
 # =============================================================================
 # Development environment with hot reload and debugging capabilities
+
+version: '3.8'
 
 services:
   # Frontend Development Server
@@ -17,8 +32,8 @@ services:
         - VITE_ENABLE_DEBUG_LOGS=true
     container_name: hashbuzz-frontend-dev
     ports:
-      - '5173:5173'
-      - '5174:5174' # Alternative port
+      - '3000:3000'
+      - '3001:3000' # Alternative port for dev
     volumes:
       - .:/app
       - /app/node_modules
@@ -30,6 +45,13 @@ services:
       - VITE_ENABLE_DEV_TOOLS=true
       - VITE_ENABLE_DEBUG_LOGS=true
       - VITE_ENABLE_HOT_RELOAD=true
+      # AWS Secrets Manager Configuration
+      - FETCH_SECRETS=true
+      - AWS_REGION=${AWS_REGION:-us-east-1}
+      - SECRET_NAME=${SECRET_NAME:-hashbuzz/frontend/secrets}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}
     networks:
       - hashbuzz-network
     restart: unless-stopped
@@ -41,7 +63,7 @@ services:
           '--no-verbose',
           '--tries=1',
           '--spider',
-          'http://localhost:5173/',
+          'http://localhost:3000/',
         ]
       interval: 30s
       timeout: 10s
@@ -61,7 +83,7 @@ services:
         - VITE_ENABLE_DEV_TOOLS=false
     container_name: hashbuzz-frontend-prod
     ports:
-      - '3000:80'
+      - '3002:3000' # Production on different host port to avoid conflict
     networks:
       - hashbuzz-network
     restart: unless-stopped
@@ -75,7 +97,7 @@ services:
           '--no-verbose',
           '--tries=1',
           '--spider',
-          'http://localhost:80/health',
+          'http://localhost:3000/',
         ]
       interval: 30s
       timeout: 10s
