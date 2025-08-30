@@ -1,17 +1,4 @@
-# ====================================================================    container_name: hashbuzz-frontend-prod
-    ports:
-      - '3002:3000'  # Production on different host port to avoid conflict
-    environment:
-      # AWS Secrets Manager Configuration
-      - NODE_ENV=production
-      - FETCH_SECRETS=true
-      - AWS_REGION=${AWS_REGION:-us-east-1}
-      - SECRET_NAME=${SECRET_NAME:-hashbuzz/frontend/secrets}
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-      - AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}
-    networks:
-      - hashbuzz-network====
+# =============================================================================
 # HASHBUZZ FRONTEND - DEVELOPMENT DOCKER COMPOSE
 # =============================================================================
 # Development environment with hot reload and debugging capabilities

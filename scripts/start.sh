@@ -15,7 +15,20 @@ echo -e "${BLUE}🚀 Starting HashBuzz Frontend with Automatic Environment Setup
 
 # Step 1: Setup Docker environment automatically
 echo -e "${YELLOW}🐳 Setting up Docker environment...${NC}"
-/app/scripts/setup-docker-env.sh
+if [ -f /app/scripts/setup-docker-env.sh ]; then
+    /app/scripts/setup-docker-env.sh
+elif [ -f /app/scripts/setup-docker-env-simple.sh ]; then
+    echo -e "${YELLOW}⚠️ Using simplified environment setup...${NC}"
+    /app/scripts/setup-docker-env-simple.sh
+else
+    echo -e "${YELLOW}⚠️ No environment setup script found, using defaults...${NC}"
+    # Set default environment variables
+    export NODE_ENV=${NODE_ENV:-development}
+    export VITE_NETWORK=${VITE_NETWORK:-testnet}
+    export VITE_BASE_URL=${VITE_BASE_URL:-http://localhost:4000}
+    export VITE_ENABLE_DEV_TOOLS=${VITE_ENABLE_DEV_TOOLS:-true}
+    export VITE_ENABLE_DEBUG_LOGS=${VITE_ENABLE_DEBUG_LOGS:-true}
+fi
 
 # Step 2: Fetch secrets from AWS Secrets Manager
 if [ "$FETCH_SECRETS" = "true" ]; then
