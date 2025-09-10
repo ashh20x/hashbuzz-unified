@@ -1,4 +1,4 @@
-import { apiBase } from './apiBase'
+import { apiBase } from './apiBase';
 
 /**
  * Integration endpoints for Twitter handles and OAuth callback handling
@@ -32,7 +32,11 @@ const integrationApi = apiBase.injectEndpoints({
     }),
     handleTwitterCallback: build.mutation<
       { success: boolean; username?: string; message?: string },
-      { oauth_token: string; oauth_verifier: string  , variant:"personal" | "business"}
+      {
+        oauth_token: string;
+        oauth_verifier: string;
+        variant: 'personal' | 'business';
+      }
     >({
       query: ({ oauth_token, oauth_verifier, variant }) => ({
         url: '/api/integrations/twitter/callback',
@@ -48,7 +52,7 @@ const integrationApi = apiBase.injectEndpoints({
     }),
   }),
   overrideExisting: false,
-})
+});
 
 // Auto-generated hooks
 export const {

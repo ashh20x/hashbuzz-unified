@@ -1,5 +1,5 @@
-import { Box } from "@mui/material";
-import * as styles from "./styles";
+import { Box } from '@mui/material';
+import * as styles from './styles';
 
 interface SectionHeaderProps {
   title: string;
@@ -7,11 +7,12 @@ interface SectionHeaderProps {
 }
 
 const SectionHeader = ({ title, subtitle }: SectionHeaderProps) => {
-  return  (<Box sx={styles.header}>
-    <h1>{title}</h1>
-    <p>{subtitle}</p>
-  </Box>);
+  return (
+    <Box sx={styles.header}>
+      <h1>{title}</h1>
+      <p>{subtitle}</p>
+    </Box>
+  );
 };
-
 
 export default SectionHeader;

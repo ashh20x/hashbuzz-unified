@@ -1,5 +1,5 @@
-import { ContainerWrapper } from "../components/ContainerStyled/ContainerWrapper";
-import { InvTranPage } from "../components/Pages/InvTranPage/InvTranPage";
+import { ContainerWrapper } from '../components/ContainerStyled/ContainerWrapper';
+import { InvTranPage } from '../components/Pages/InvTranPage/InvTranPage';
 
 export const Invoice = () => {
   return (

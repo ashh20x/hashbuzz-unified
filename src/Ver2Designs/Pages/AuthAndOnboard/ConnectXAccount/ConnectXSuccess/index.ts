@@ -1,1 +1,1 @@
-export {default as ConnectXSuccess} from "./ConnectXSuccess"
+export { default as ConnectXSuccess } from './ConnectXSuccess';

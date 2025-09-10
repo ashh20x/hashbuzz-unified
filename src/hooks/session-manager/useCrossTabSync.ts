@@ -14,7 +14,6 @@ export const useCrossTabSync = (
   refreshTokenHandler: () => Promise<boolean>,
   bufferSeconds: number
 ) => {
-
   // ============================================================================
   // CROSS-TAB SYNCHRONIZATION
   // ============================================================================
@@ -27,7 +26,7 @@ export const useCrossTabSync = (
         if (newExpiry && newExpiry > Date.now()) {
           clearRefreshTimer();
           scheduleRefresh(newExpiry);
-          console.log("Cross-tab refresh detected, rescheduling timer");
+          console.log('Cross-tab refresh detected, rescheduling timer');
         }
       } else if (event.key === AUTH_STORAGE_KEYS.ACCESS_TOKEN_EXPIRY) {
         // Token expiry updated in another tab
@@ -35,9 +34,12 @@ export const useCrossTabSync = (
         if (newExpiry && newExpiry > Date.now()) {
           clearRefreshTimer();
           scheduleRefresh(newExpiry);
-          console.log("Token expiry updated in another tab");
+          console.log('Token expiry updated in another tab');
         }
-      } else if (event.key === AUTH_STORAGE_KEYS.REFRESH_LOCK && !event.newValue) {
+      } else if (
+        event.key === AUTH_STORAGE_KEYS.REFRESH_LOCK &&
+        !event.newValue
+      ) {
         // Lock released, check if we need to refresh
         const expiry = getTokenExpiry();
         if (expiry && expiry - Date.now() <= bufferSeconds * 1000) {
@@ -46,13 +48,13 @@ export const useCrossTabSync = (
       }
     };
 
-    window.addEventListener("storage", onStorageEvent);
-    return () => window.removeEventListener("storage", onStorageEvent);
+    window.addEventListener('storage', onStorageEvent);
+    return () => window.removeEventListener('storage', onStorageEvent);
   }, [
-    getTokenExpiry, 
-    clearRefreshTimer, 
+    getTokenExpiry,
+    clearRefreshTimer,
     scheduleRefresh,
     bufferSeconds,
-    refreshTokenHandler
+    refreshTokenHandler,
   ]);
 };

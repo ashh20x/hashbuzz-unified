@@ -1,2 +1,2 @@
-export {default as DashboardHeader} from "./Header";
-export {default as CertikEmblem} from "./CertikEmblem"
+export { default as DashboardHeader } from './Header';
+export { default as CertikEmblem } from './CertikEmblem';

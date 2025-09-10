@@ -1,11 +1,11 @@
-import React from "react";
-import TwitterSVG from "../../SVGR/Twitter";
-import WalletSVG from "../../SVGR/Wallet";
-import Typography from "../../Typography/Typography";
-import PrimaryButton from "../Buttons/PrimaryButton";
-import Card from "../Card/Card";
-import CheckBox from "../CheckBox/CheckBox";
-import { ContainerStyled } from "../ContainerStyled/ContainerStyled";
+import React from 'react';
+import TwitterSVG from '../../SVGR/Twitter';
+import WalletSVG from '../../SVGR/Wallet';
+import Typography from '../../Typography/Typography';
+import PrimaryButton from '../Buttons/PrimaryButton';
+import Card from '../Card/Card';
+import CheckBox from '../CheckBox/CheckBox';
+import { ContainerStyled } from '../ContainerStyled/ContainerStyled';
 import {
   ContentHeaderText,
   Connect,
@@ -13,25 +13,25 @@ import {
   Brand,
   Col,
   Row,
-} from "./ContentBox.styles";
-import { useNavigate  } from 'react-router-dom';
+} from './ContentBox.styles';
+import { useNavigate } from 'react-router-dom';
 
 export const ContentBox = () => {
   const theme = {
-    color: "#696969",
-    size: "18px",
-    weight: "600",
+    color: '#696969',
+    size: '18px',
+    weight: '600',
   };
   const secondaryTheme = {
-    color: "#696969",
-    size: "14px",
-    weight: "500",
+    color: '#696969',
+    size: '14px',
+    weight: '500',
   };
   let navigate = useNavigate();
 
   const handleStart = () => {
-    navigate('/dashboard');   
-  }
+    navigate('/dashboard');
+  };
   return (
     <ContainerStyled>
       <ContentHeaderText>
@@ -50,7 +50,7 @@ export const ContentBox = () => {
         <Wallet>
           <Typography theme={theme}>Connect your wallet</Typography>
           <Row />
-          <Card title="Connect HashPack" icon={<WalletSVG />} />
+          <Card title='Connect HashPack' icon={<WalletSVG />} />
         </Wallet>
         <Brand>
           <Typography theme={theme}>Connect your brand</Typography>
@@ -65,7 +65,7 @@ export const ContentBox = () => {
               </Typography>
             </>
           </Row>
-          <Card title="Connect Twitter" icon={<TwitterSVG />} />
+          <Card title='Connect Twitter' icon={<TwitterSVG />} />
         </Brand>
         <Col>
           <Typography theme={theme}> </Typography>
@@ -80,11 +80,11 @@ export const ContentBox = () => {
               </Typography>
             </>
           </Row>
-          <Card title="Enter Personal Twitter Handle" icon={<TwitterSVG />} />
+          <Card title='Enter Personal Twitter Handle' icon={<TwitterSVG />} />
         </Col>
       </Connect>
       <div>
-        <PrimaryButton text="Start" variant="contained" onclick={handleStart} />
+        <PrimaryButton text='Start' variant='contained' onclick={handleStart} />
       </div>
     </ContainerStyled>
   );

@@ -1,15 +1,20 @@
-import { Dialog, TableBody, TableRow } from "@mui/material";
-import { useEffect, useState } from "react";
-import { useCookies } from "react-cookie";
-import { useDappAPICall } from "../../APIConfig/dAppApiServices";
-import { displayTableHeadRow } from "../../Data/TwitterTable";
-import Typography from "../../Typography/Typography";
-import { TableSection } from "../Pages/CreateCard/CreateTwitterPage.styles";
-import { CustomRowHead, CustomTable2, CustomTableBodyCell, CustomTableHeadCell } from "../Tables/CreateTable.styles";
-import { BoxCont } from "./PreviewModal.styles";
+import { Dialog, TableBody, TableRow } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { useCookies } from 'react-cookie';
+import { useDappAPICall } from '../../APIConfig/dAppApiServices';
+import { displayTableHeadRow } from '../../Data/TwitterTable';
+import Typography from '../../Typography/Typography';
+import { TableSection } from '../Pages/CreateCard/CreateTwitterPage.styles';
+import {
+  CustomRowHead,
+  CustomTable2,
+  CustomTableBodyCell,
+  CustomTableHeadCell,
+} from '../Tables/CreateTable.styles';
+import { BoxCont } from './PreviewModal.styles';
 
 const DisplayTableModal = ({ open, setOpen, item }) => {
-  const [cookies, setCookie] = useCookies(["token"]);
+  const [cookies, setCookie] = useCookies(['token']);
   const [campaignData, setCampaignData] = useState({});
   const { dAppAPICall } = useDappAPICall();
   useEffect(() => {
@@ -23,8 +28,8 @@ const DisplayTableModal = ({ open, setOpen, item }) => {
     try {
       // const response = await APICall("/campaign/twitter-card/stats/?card_id="+item.id, "GET", null, null, false, cookies.token);
       const response = await dAppAPICall({
-        url: "campaign/stats",
-        method: "POST",
+        url: 'campaign/stats',
+        method: 'POST',
         data: {
           card_id: item.id,
         },
@@ -37,12 +42,12 @@ const DisplayTableModal = ({ open, setOpen, item }) => {
   const handleClose = () => setOpen(false);
   const theme = {
     weight: 500,
-    size: "25px",
-    color: "#000000",
-    sizeRes: "28px",
+    size: '25px',
+    color: '#000000',
+    sizeRes: '28px',
   };
 
-  const submit = (e) => {
+  const submit = e => {
     console.log(e);
   };
 
@@ -54,9 +59,9 @@ const DisplayTableModal = ({ open, setOpen, item }) => {
         style: {
           borderRadius: 11,
           padding: 0,
-          width: "85%",
+          width: '85%',
           maxWidth: 1010,
-          scrollbarWidth: "none",
+          scrollbarWidth: 'none',
         },
       }}
     >
@@ -75,11 +80,15 @@ const DisplayTableModal = ({ open, setOpen, item }) => {
                 /> */}
         <Typography theme={theme}>Campaign statistics</Typography>
         <TableSection>
-          <CustomTable2 stickyHeader aria-label="simple table">
+          <CustomTable2 stickyHeader aria-label='simple table'>
             <CustomRowHead>
               <TableRow>
-                {displayTableHeadRow.map((item) => (
-                  <CustomTableHeadCell key={item.id} align={item.align} style={{ minWidth: item.minWidth, width: item.width }}>
+                {displayTableHeadRow.map(item => (
+                  <CustomTableHeadCell
+                    key={item.id}
+                    align={item.align}
+                    style={{ minWidth: item.minWidth, width: item.width }}
+                  >
                     {item.label}
                   </CustomTableHeadCell>
                 ))}
@@ -89,7 +98,9 @@ const DisplayTableModal = ({ open, setOpen, item }) => {
               {[campaignData].map((item, index) => (
                 <TableRow>
                   <CustomTableBodyCell>{item.like_count}</CustomTableBodyCell>
-                  <CustomTableBodyCell>{item.retweet_count}</CustomTableBodyCell>
+                  <CustomTableBodyCell>
+                    {item.retweet_count}
+                  </CustomTableBodyCell>
                   <CustomTableBodyCell>{item.quote_count}</CustomTableBodyCell>
                   <CustomTableBodyCell>{item.reply_count}</CustomTableBodyCell>
                 </TableRow>

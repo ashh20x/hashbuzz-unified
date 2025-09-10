@@ -1,15 +1,14 @@
 export const cardData = [
- 
   {
-    title: "Personal Twitter Handle",
-    content: "",
-    buttonTag: "",
+    title: 'Personal Twitter Handle',
+    content: '',
+    buttonTag: '',
     isButton: false,
   },
- 
+
   {
-    title: "Status",
-    content: "",
+    title: 'Status',
+    content: '',
     buttonTag: [],
     isButton: false,
   },
@@ -21,7 +20,6 @@ export const cardData = [
 //   buttonTag: ["Top-Up", "Reimburse"],
 //   isButton: true,
 // },
-
 
 // {
 //   title: "Brand Twitter Handle",

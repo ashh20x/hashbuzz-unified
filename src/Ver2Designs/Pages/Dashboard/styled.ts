@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 export const StyledCardGenUtility = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);

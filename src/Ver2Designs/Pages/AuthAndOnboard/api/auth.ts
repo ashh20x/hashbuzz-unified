@@ -1,10 +1,16 @@
-import { apiBase } from "@/API/apiBase";
-import { Challenge, GenerateAstPayload, GnerateReseponseV2, LogoutResponse, PingResponse } from "@/types";
+import { apiBase } from '@/API/apiBase';
+import {
+  Challenge,
+  GenerateAstPayload,
+  GnerateReseponseV2,
+  LogoutResponse,
+  PingResponse,
+} from '@/types';
 
 const challengeAbortControllers = new Map<string, AbortController>();
 
 export const authApi = apiBase.injectEndpoints({
-  endpoints: (builder) => ({
+  endpoints: builder => ({
     getChallenge: builder.query<Challenge, { walletId: string }>({
       async queryFn(arg, _queryApi, _extraOptions, fetchWithBQ) {
         const { walletId } = arg;
@@ -19,8 +25,8 @@ export const authApi = apiBase.injectEndpoints({
         challengeAbortControllers.set(walletId, controller);
 
         const result = await fetchWithBQ({
-          url: "/auth/challenge",
-          method: "GET",
+          url: '/auth/challenge',
+          method: 'GET',
           params: { host: window.location.host, walletId },
           signal: controller.signal,
         });
@@ -35,22 +41,26 @@ export const authApi = apiBase.injectEndpoints({
     }),
 
     generateAuth: builder.mutation<GnerateReseponseV2, GenerateAstPayload>({
-      query: (payload) => ({ url: "/auth/generate-v2", method: "POST", body: payload }),
+      query: payload => ({
+        url: '/auth/generate-v2',
+        method: 'POST',
+        body: payload,
+      }),
     }),
     refreshToken: builder.mutation<{ message: string; ast: string }, void>({
       query: () => ({
-        url: "/auth/refresh-token",
-        method: "POST",
+        url: '/auth/refresh-token',
+        method: 'POST',
         body: {}, // Empty body since refresh token is in httpOnly cookie
       }),
     }),
     logout: builder.mutation<LogoutResponse, void>({
-      query: () => ({ url: "/auth/logout", method: "POST" }),
+      query: () => ({ url: '/auth/logout', method: 'POST' }),
     }),
     authPing: builder.mutation<PingResponse, void>({
       query: () => ({
-        url: "/auth/ping",
-        method: "GET",
+        url: '/auth/ping',
+        method: 'GET',
       }),
     }),
   }),
@@ -58,4 +68,10 @@ export const authApi = apiBase.injectEndpoints({
 });
 
 // Export hooks for usage in functional components
-export const { useLazyGetChallengeQuery, useGenerateAuthMutation, useRefreshTokenMutation, useLogoutMutation, useAuthPingMutation } = authApi;
+export const {
+  useLazyGetChallengeQuery,
+  useGenerateAuthMutation,
+  useRefreshTokenMutation,
+  useLogoutMutation,
+  useAuthPingMutation,
+} = authApi;

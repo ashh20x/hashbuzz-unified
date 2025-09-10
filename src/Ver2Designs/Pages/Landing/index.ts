@@ -1,1 +1,1 @@
-export {default as LandingV3} from "./LandingV3";
+export { default as LandingV3 } from './LandingV3';

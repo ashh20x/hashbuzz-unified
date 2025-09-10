@@ -1,15 +1,14 @@
-import Typography from "../../Typography/Typography";
-import { CardContainer, IconWrapper, TextWrapper } from "./Card.styles";
-export const Card = ({ title, icon}) => {
+import Typography from '../../Typography/Typography';
+import { CardContainer, IconWrapper, TextWrapper } from './Card.styles';
+export const Card = ({ title, icon }) => {
   const theme = {
-    color: "#696969",
-    size: "14px",
-    weight: "600",
+    color: '#696969',
+    size: '14px',
+    weight: '600',
   };
 
   return (
-   
-    <CardContainer >
+    <CardContainer>
       <IconWrapper>{icon}</IconWrapper>
       <TextWrapper>
         <Typography theme={theme}>{title}</Typography>

@@ -1,3 +1,2 @@
-
-export * from "./SectionHeader/SectionHeader";
-export * from "./OnBoardingSteps/OnBoardingSteps"
+export * from './SectionHeader/SectionHeader';
+export * from './OnBoardingSteps/OnBoardingSteps';

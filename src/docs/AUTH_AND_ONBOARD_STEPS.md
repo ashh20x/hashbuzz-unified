@@ -89,10 +89,10 @@ flowchart TD
 
     WalletPairing[Step 1: Pair Wallet]
     WalletPairing -->|Paired| AuthenticateUser
-    
+
     %% Notes for Wallet Pairing
     note3[ With Wallet connect Adapter connect with wallet and confirm pairing ] --> WalletPairing
-    
+
     AuthenticateUser[Step 2: Authenticate User]
     AuthenticateUser --> ChallengeAPICall[[API: POST /auth/challange-v2]]
     ChallengeAPICall --> CheckUserExistence{Is Existing User?}
@@ -113,7 +113,7 @@ flowchart TD
     TokenAssociationPrompt -->|No| GoToDashboard
     TokenAssociation -->|Done| GoToDashboard
 
- 
+
 
     %% Redirect from failed returning user validation
     Restart([Restart]) --> WalletPairing
@@ -222,6 +222,7 @@ flowchart TD
 ```
 
 **Key Points:**
+
 - `authStore` holds state for each step: wallet, authentication, X account, token, and current step.
 - `StepGuard` reads from `authStore` to determine if the user can proceed or needs to be redirected.
 - Actions (`PAIR_WALLET`, `AUTHENTICATE`, etc.) update the store and control step transitions.

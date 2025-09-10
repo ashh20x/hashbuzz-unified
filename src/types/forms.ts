@@ -1,5 +1,5 @@
-import { CampaignCommands } from "./campaign";
-import { CurrentUser, TokenBalances } from "./users";
+import { CampaignCommands } from './campaign';
+import { CurrentUser, TokenBalances } from './users';
 
 export interface FormFelid<T> {
   value: T;
@@ -38,7 +38,7 @@ export type CreateTransactionEntity = {
   entityId?: string;
   senderId: string;
   amount: TopupAmounts;
-  decimals?: number
+  decimals?: number;
 };
 
 export type CreateTransactionByteBody = {
@@ -49,7 +49,7 @@ export type CreateTransactionByteBody = {
 export type SetTransactionBody = {
   entity: CreateTransactionEntity;
   transactionId?: string;
-  response?:string
+  response?: string;
 };
 
 export type TopUpResponse = {
@@ -63,7 +63,7 @@ export type TopUpResponse = {
 export type reimburseAmountBody = {
   amount?: any;
   type?: any;
-  token_id?: any
+  token_id?: any;
 };
 
 export type addCampaignBody = {
@@ -71,9 +71,9 @@ export type addCampaignBody = {
   tweet_text: string;
   comment_reward: number;
   retweet_reward: number;
-  fungible_token_id?: String,
+  fungible_token_id?: String;
   like_reward: number;
-  type: String,
+  type: String;
   quote_reward: number;
   // follow_reward: follow,
   campaign_budget: number;
@@ -81,6 +81,6 @@ export type addCampaignBody = {
 };
 
 export type updateCampaignStatusBody = {
-  card_id: number,
-  campaign_command: CampaignCommands
-}
+  card_id: number;
+  campaign_command: CampaignCommands;
+};

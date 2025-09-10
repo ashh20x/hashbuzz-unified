@@ -1,1 +1,1 @@
-export {default as CreatedCampaignPreviewModal} from './PreviewModal'
+export { default as CreatedCampaignPreviewModal } from './PreviewModal';

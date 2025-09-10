@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export const TableSection = styled.div`
   display: flex;
@@ -19,15 +19,15 @@ export const ToggleButton = styled.div`
   justify-content: space-around;
   padding: 8px 2px;
   width: 30%;
-  
+
   background: #ffffff;
   box-shadow: 0px 2px 31px #efefef;
   border-radius: 30px;
-  
+
   @media screen and (max-width: 960px) {
-      width: 100%;
-      border-radius: 30px;
-      padding: 8px;
+    width: 100%;
+    border-radius: 30px;
+    padding: 8px;
     overflow: scroll;
   }
 `;

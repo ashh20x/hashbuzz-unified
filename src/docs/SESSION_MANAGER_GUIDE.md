@@ -7,31 +7,31 @@ import { useAppSessionManager } from '@/hooks/use-appSession-manager';
 
 const App = () => {
   const sessionManager = useAppSessionManager();
-  
+
   if (sessionManager.shouldShowSplash) {
     return <SplashScreen />;
   }
-  
+
   return <MainApp />;
 };
 ```
 
 ## 🔄 **Key States**
 
-| State | Description |
-|-------|-------------|
-| `shouldShowSplash` | Show loading screen during initialization |
+| State                 | Description                                    |
+| --------------------- | ---------------------------------------------- |
+| `shouldShowSplash`    | Show loading screen during initialization      |
 | `isUserAuthenticated` | User is fully authenticated (wallet + session) |
-| `hasInitialized` | Session validation completed |
-| `isRefreshing` | Token refresh in progress |
+| `hasInitialized`      | Session validation completed                   |
+| `isRefreshing`        | Token refresh in progress                      |
 
 ## ⚙️ **Configuration**
 
 ```typescript
 const sessionManager = useAppSessionManager({
-  refreshEndpoint: "/auth/refresh-token",  // API endpoint
-  bufferSeconds: 60,                       // Refresh before expiry
-  sessionExpireMinutes: 15                 // Session duration
+  refreshEndpoint: '/auth/refresh-token', // API endpoint
+  bufferSeconds: 60, // Refresh before expiry
+  sessionExpireMinutes: 15, // Session duration
 });
 ```
 
@@ -67,8 +67,9 @@ if (isRefreshing) return <TokenRefreshIndicator />;
 ## 🐛 **Debug Logs**
 
 Development mode shows logs with prefixes:
+
 - `[SESSION MANAGER]` - Main events
-- `[TOKEN REFRESH]` - Token operations  
+- `[TOKEN REFRESH]` - Token operations
 - `[WALLET SYNC]` - Wallet changes
 - `[SESSION VALIDATOR]` - Auth validation
 

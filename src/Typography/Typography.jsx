@@ -1,6 +1,6 @@
-import React from "react";
-import { ThemeProvider } from "styled-components";
-import { TypographyStyles } from "./Typography.styles";
+import React from 'react';
+import { ThemeProvider } from 'styled-components';
+import { TypographyStyles } from './Typography.styles';
 
 const Typography = ({ children, theme }) => {
   return (

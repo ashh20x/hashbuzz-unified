@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export const Wrapper = styled.div`
   display: flex;
@@ -77,7 +77,7 @@ export const ButtonWrapPrimary = styled.div`
   flex-direction: row;
   width: 70%;
   justify-content: center;
-  margin-top:12px;
+  margin-top: 12px;
   button {
     margin-right: 50px;
     margin-bottom: 0;
@@ -93,7 +93,7 @@ export const ButtonWrapPrimary = styled.div`
 `;
 export const TableSection = styled.div`
   display: flex;
-  width: 95%;  
+  width: 95%;
   overflow-y: scroll;
   scrollbar-width: none;
   &::-webkit-scrollbar {
@@ -101,7 +101,6 @@ export const TableSection = styled.div`
   }
   @media screen and (max-width: 960px) {
     overflow: scroll;
-    
   }
 `;
 export const TextWrap = styled.div`
@@ -114,7 +113,7 @@ export const TextWrap = styled.div`
 `;
 export const ErrorTextWrap = styled.div`
   display: flex;
-  color:red;
+  color: red;
   div {
     margin-right: 10px;
     white-space: nowrap;
@@ -155,81 +154,79 @@ export const CustomIframe = styled.iframe`
   }
 `;
 export const CustomCheckboxInput = styled.input`
-width:16px;
-margin-right:8px;
+  width: 16px;
+  margin-right: 8px;
 `;
 
 export const WordsWrap = styled.div`
-font-size: 18px;
-display: flex;
-width: 100%;
-justify-content: end;
-.chat-icon{
-  width: 35px;
-  height: 35px;
-  padding-right: 20px;
-  padding-top: 5px;
-  img{
-    width: 100%;
-    height: 100%;
+  font-size: 18px;
+  display: flex;
+  width: 100%;
+  justify-content: end;
+  .chat-icon {
+    width: 35px;
+    height: 35px;
+    padding-right: 20px;
+    padding-top: 5px;
+    img {
+      width: 100%;
+      height: 100%;
+    }
   }
-  
-}
 `;
 
 export const IconsWrap = styled.div`
-font-size: 18px;
-display: flex;
-width: 71%;
-justify-content: start;
-padding:2px;
-img{
-  cursor: pointer;
-
-}
+  font-size: 18px;
+  display: flex;
+  width: 71%;
+  justify-content: start;
+  padding: 2px;
+  img {
+    cursor: pointer;
+  }
 `;
 
 export const ImgWrap = styled.div`
-position: absolute;
-img{
-  cursor: pointer;
-}
+  position: absolute;
+  img {
+    cursor: pointer;
+  }
 `;
 
 export const EmoBtnWrap = styled.div`
-border: none;
-background: none;
-font-size: 16px;
-cursor:pointer
+  border: none;
+  background: none;
+  font-size: 16px;
+  cursor: pointer;
 `;
 
 export const DivWrapper = styled.div`
-display: flex;
-justify-content: center;
-margin: 3px 3px 3px 3px;
+  display: flex;
+  justify-content: center;
+  margin: 3px 3px 3px 3px;
 `;
 
 export const ContentDiv = styled.div`
-position: relative;
-width: max-content;
-img {
-  display: block;
-}
+  position: relative;
+  width: max-content;
+  img {
+    display: block;
+  }
 `;
 
 export const CloseDiv = styled.div`
-position: absolute;
-top: -4px;
-right: -4px;
-border-radius: 50%;
-color: #fff;
-border-color: #fff;
-background: red;
-width: 22px;
-height: 27px;
-cursor: pointer;
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  border-radius: 50%;
+  color: #fff;
+  border-color: #fff;
+  background: red;
+  width: 22px;
+  height: 27px;
+  cursor: pointer;
 `;
 
 export const SimpleDiv = styled.div`
-// margin: 3px 3px 3px 3px;
+  // margin: 3px 3px 3px 3px;
 `;

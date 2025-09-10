@@ -5,8 +5,8 @@ export interface MirrorNodeToken {
   created_timestamp: string;
   decimals: number;
   token_id: string;
-  freeze_status: "FROZEN" | "UNFROZEN" | "NOT_APPLICABLE";
-  kyc_status: "GRANTED" | "REVOKED" | "NOT_APPLICABLE";
+  freeze_status: 'FROZEN' | 'UNFROZEN' | 'NOT_APPLICABLE';
+  kyc_status: 'GRANTED' | 'REVOKED' | 'NOT_APPLICABLE';
 }
 
 export interface MirrorNodeLinks {

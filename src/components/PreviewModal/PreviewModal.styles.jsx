@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export const BoxCont = styled.div`
   display: flex;
@@ -176,9 +176,9 @@ export const Border = styled.div`
 
 export const Label = styled.div`
   weight: 500;
-  size: "25px";
-  color: "#000000";
-  sizeres: "28px";
+  size: '25px';
+  color: '#000000';
+  sizeres: '28px';
   width: 100%;
   text-align: center;
 `;

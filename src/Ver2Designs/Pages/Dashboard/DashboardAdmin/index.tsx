@@ -1,11 +1,11 @@
-import { Card, Box } from "@mui/material";
-import * as React from "react";
-import { cardStyle } from "../CardGenUtility";
-import { styled } from "@mui/material/styles";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import DashboardUser from "../DashboardUser";
-import AdminViews from "./AdminView";
+import { Card, Box } from '@mui/material';
+import * as React from 'react';
+import { cardStyle } from '../CardGenUtility';
+import { styled } from '@mui/material/styles';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import DashboardUser from '../DashboardUser';
+import AdminViews from './AdminView';
 
 interface StyledTabsProps {
   children?: React.ReactNode;
@@ -13,19 +13,24 @@ interface StyledTabsProps {
   onChange: (event: React.SyntheticEvent, newValue: number) => void;
 }
 
-const StyledTabs = styled((props: StyledTabsProps) => <Tabs {...props} TabIndicatorProps={{ children: <span className="MuiTabs-indicatorSpan" /> }} />)({
-  position: "absolute",
-  transform: "translateY(-100%)",
-  top: "-10px",
-  "& .MuiTabs-indicator": {
-    display: "flex",
-    justifyContent: "center",
-    backgroundColor: "transparent",
+const StyledTabs = styled((props: StyledTabsProps) => (
+  <Tabs
+    {...props}
+    TabIndicatorProps={{ children: <span className='MuiTabs-indicatorSpan' /> }}
+  />
+))({
+  position: 'absolute',
+  transform: 'translateY(-100%)',
+  top: '-10px',
+  '& .MuiTabs-indicator': {
+    display: 'flex',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
   },
-  "& .MuiTabs-indicatorSpan": {
-    maxWidth: "90%",
-    width: "100%",
-    backgroundColor: "#635ee7",
+  '& .MuiTabs-indicatorSpan': {
+    maxWidth: '90%',
+    width: '100%',
+    backgroundColor: '#635ee7',
   },
 });
 
@@ -33,21 +38,23 @@ interface StyledTabProps {
   label: string;
 }
 
-const StyledTab = styled((props: StyledTabProps) => <Tab disableRipple {...props} />)(({ theme }) => ({
-  textTransform: "none",
+const StyledTab = styled((props: StyledTabProps) => (
+  <Tab disableRipple {...props} />
+))(({ theme }) => ({
+  textTransform: 'none',
   fontWeight: theme.typography.fontWeightRegular,
   fontSize: theme.typography.pxToRem(15),
   marginRight: theme.spacing(1),
-  backgroundColor: "#E1D9FF",
+  backgroundColor: '#E1D9FF',
   border: 3,
   borderRadius: 1,
-  borderColor: "hsl(252, 100%, 88%)",
-  "&.Mui-selected": {
-    color: "#fff",
-    fontWeight: "bold",
+  borderColor: 'hsl(252, 100%, 88%)',
+  '&.Mui-selected': {
+    color: '#fff',
+    fontWeight: 'bold',
   },
-  "&.Mui-focusVisible": {
-    backgroundColor: "rgba(100, 95, 228, 0.32)",
+  '&.Mui-focusVisible': {
+    backgroundColor: 'rgba(100, 95, 228, 0.32)',
   },
 }));
 
@@ -62,7 +69,14 @@ function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
 
   return (
-    <Box sx={{ height: "calc(100% - 40px)" }} role="tabpanel" hidden={value !== index} id={`full-width-tabpanel-${index}`} aria-labelledby={`full-width-tab-${index}`} {...other}>
+    <Box
+      sx={{ height: 'calc(100% - 40px)' }}
+      role='tabpanel'
+      hidden={value !== index}
+      id={`full-width-tabpanel-${index}`}
+      aria-labelledby={`full-width-tab-${index}`}
+      {...other}
+    >
       {value === index && children}
     </Box>
   );
@@ -71,7 +85,7 @@ function TabPanel(props: TabPanelProps) {
 function a11yProps(index: number) {
   return {
     id: `full-width-tab-${index}`,
-    "aria-controls": `full-width-tabpanel-${index}`,
+    'aria-controls': `full-width-tabpanel-${index}`,
   };
 }
 
@@ -82,14 +96,21 @@ const AdminDashboard = () => {
     setValue(newValue);
   };
   return (
-    <Box sx={{ position: "relative" }}>
-      <StyledTabs value={value} onChange={handleChange} aria-label="Admin dashboard menu">
-        <StyledTab label="User Dashboard" {...a11yProps(0)} />
-        <StyledTab label="Admin Dashboard" {...a11yProps(1)} />
+    <Box sx={{ position: 'relative' }}>
+      <StyledTabs
+        value={value}
+        onChange={handleChange}
+        aria-label='Admin dashboard menu'
+      >
+        <StyledTab label='User Dashboard' {...a11yProps(0)} />
+        <StyledTab label='Admin Dashboard' {...a11yProps(1)} />
       </StyledTabs>
       <TabPanel value={value} index={1}>
-        <Box className="usersList-Table" sx={{ paddingBottom: 2, height: "100%", minHeight: 500 }}>
-          <Card elevation={0} sx={{ ...cardStyle, height: "100%" }}>
+        <Box
+          className='usersList-Table'
+          sx={{ paddingBottom: 2, height: '100%', minHeight: 500 }}
+        >
+          <Card elevation={0} sx={{ ...cardStyle, height: '100%' }}>
             <AdminViews />
           </Card>
         </Box>

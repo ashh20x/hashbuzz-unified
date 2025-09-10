@@ -14,7 +14,13 @@
         {
           "type": "p",
           "text": "Hedera Wallet ID and {b:𝕩} Handle: Collected solely to enable reward distribution. No personal information (e.g., names, addresses) is collected.",
-          "style": { "color": "black", "fontSize": "16px", "bold": false, "italic": false, "underline": false }
+          "style": {
+            "color": "black",
+            "fontSize": "16px",
+            "bold": false,
+            "italic": false,
+            "underline": false
+          }
         }
       ]
     },
@@ -24,7 +30,13 @@
         {
           "type": "p",
           "text": "Data is used exclusively for: Facilitating reward exchanges. Operating platform functionalities.",
-          "style": { "color": "black", "fontSize": "16px", "bold": false, "italic": false, "underline": false }
+          "style": {
+            "color": "black",
+            "fontSize": "16px",
+            "bold": false,
+            "italic": false,
+            "underline": false
+          }
         }
       ]
     },
@@ -34,7 +46,13 @@
         {
           "type": "p",
           "text": "Wallet IDs and {b:𝕩} handles are securely stored and not shared with third parties, except as necessary for reward exchanges. Audited smart contracts ensure secure fund management.",
-          "style": { "color": "black", "fontSize": "16px", "bold": false, "italic": false, "underline": false }
+          "style": {
+            "color": "black",
+            "fontSize": "16px",
+            "bold": false,
+            "italic": false,
+            "underline": false
+          }
         }
       ]
     },
@@ -44,7 +62,13 @@
         {
           "type": "p",
           "text": "Connecting {b:𝕩} accounts requires explicit user consent. By connecting, you agree to the collection and use of data as described.",
-          "style": { "color": "black", "fontSize": "16px", "bold": false, "italic": false, "underline": false }
+          "style": {
+            "color": "black",
+            "fontSize": "16px",
+            "bold": false,
+            "italic": false,
+            "underline": false
+          }
         }
       ]
     },
@@ -54,7 +78,13 @@
         {
           "type": "p",
           "text": "{b:Hashbuzz} implements industry-standard measures to protect data and funds.",
-          "style": { "color": "black", "fontSize": "16px", "bold": false, "italic": false, "underline": false }
+          "style": {
+            "color": "black",
+            "fontSize": "16px",
+            "bold": false,
+            "italic": false,
+            "underline": false
+          }
         }
       ]
     },
@@ -64,7 +94,13 @@
         {
           "type": "p",
           "text": "Interactions with third-party services (e.g., {b:𝕩} account integrations) are governed by their terms and policies.",
-          "style": { "color": "black", "fontSize": "16px", "bold": false, "italic": false, "underline": false }
+          "style": {
+            "color": "black",
+            "fontSize": "16px",
+            "bold": false,
+            "italic": false,
+            "underline": false
+          }
         }
       ]
     },
@@ -74,7 +110,13 @@
         {
           "type": "p",
           "text": "Users may disconnect their accounts or wallets at any time, subject to ongoing campaigns. Users retain full ownership of their data and tokens.",
-          "style": { "color": "black", "fontSize": "16px", "bold": false, "italic": false, "underline": false }
+          "style": {
+            "color": "black",
+            "fontSize": "16px",
+            "bold": false,
+            "italic": false,
+            "underline": false
+          }
         }
       ]
     },
@@ -84,7 +126,13 @@
         {
           "type": "p",
           "text": "{b:Hashbuzz} may revise this policy and notify users of significant changes.",
-          "style": { "color": "black", "fontSize": "16px", "bold": false, "italic": false, "underline": false }
+          "style": {
+            "color": "black",
+            "fontSize": "16px",
+            "bold": false,
+            "italic": false,
+            "underline": false
+          }
         }
       ]
     },
@@ -94,7 +142,13 @@
         {
           "type": "p",
           "text": "For questions or concerns, contact us at hello@hashbuzz.social.",
-          "style": { "color": "black", "fontSize": "16px", "bold": false, "italic": false, "underline": false }
+          "style": {
+            "color": "black",
+            "fontSize": "16px",
+            "bold": false,
+            "italic": false,
+            "underline": false
+          }
         }
       ]
     }

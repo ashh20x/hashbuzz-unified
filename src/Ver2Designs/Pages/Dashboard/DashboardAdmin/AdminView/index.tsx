@@ -1,9 +1,9 @@
-import { Box } from "@mui/material";
-import Tab from "@mui/material/Tab";
-import Tabs from "@mui/material/Tabs";
-import * as React from "react";
-import AdminTrailSettersView from "./AdminTrailSettersView";
-import AdminUsersViews from "./AdminUsersView";
+import { Box } from '@mui/material';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
+import * as React from 'react';
+import AdminTrailSettersView from './AdminTrailSettersView';
+import AdminUsersViews from './AdminUsersView';
 
 interface StyledTabsProps {
   children?: React.ReactNode;
@@ -23,13 +23,13 @@ const TabPanel = (props: TabPanelProps) => {
 
   return (
     <div
-      role="tabpanel"
+      role='tabpanel'
       hidden={value !== index}
       id={`admin-menu-tabpanel-${index}`}
       aria-labelledby={`admin-menu-tab-${index}`}
       {...other}
       style={{
-        width: "100%",
+        width: '100%',
       }}
     >
       {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
@@ -40,7 +40,7 @@ const TabPanel = (props: TabPanelProps) => {
 function a11yProps(index: number) {
   return {
     id: `full-width-tab-${index}`,
-    "aria-controls": `full-width-tabpanel-${index}`,
+    'aria-controls': `full-width-tabpanel-${index}`,
   };
 }
 
@@ -52,10 +52,24 @@ const AdminView = () => {
     setValue(newValue);
   };
   return (
-    <Box sx={{ flexGrow: 1, bgcolor: "background.paper", display: "flex", height: "100%" }}>
-      <Tabs orientation="vertical" variant="scrollable" value={value} onChange={handleChange} aria-label="Admin menus list" sx={{ borderRight: 1, borderColor: "divider" }}>
-        <Tab label="User List" {...a11yProps(0)} />
-        <Tab label="TrailSetters Account" {...a11yProps(1)} />
+    <Box
+      sx={{
+        flexGrow: 1,
+        bgcolor: 'background.paper',
+        display: 'flex',
+        height: '100%',
+      }}
+    >
+      <Tabs
+        orientation='vertical'
+        variant='scrollable'
+        value={value}
+        onChange={handleChange}
+        aria-label='Admin menus list'
+        sx={{ borderRight: 1, borderColor: 'divider' }}
+      >
+        <Tab label='User List' {...a11yProps(0)} />
+        <Tab label='TrailSetters Account' {...a11yProps(1)} />
       </Tabs>
       <TabPanel value={value} index={0}>
         <AdminUsersViews />

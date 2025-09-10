@@ -6,16 +6,21 @@ export interface AuthCred {
   refreshToken?: string;
 }
 
-export type user_roles = "SUPER_ADMIN" | "ADMIN" | "ANALYTICS" | "MARKETING" | "MANAGEMENT" | "USER" | "GUEST_USER";
+export type user_roles =
+  | 'SUPER_ADMIN'
+  | 'ADMIN'
+  | 'ANALYTICS'
+  | 'MARKETING'
+  | 'MANAGEMENT'
+  | 'USER'
+  | 'GUEST_USER';
 
 export type UserConfig = {
-
   contractAddress: string;
   collecterAddress: string;
   campaignDuration: number;
   campaignRewardDuration: number;
-
-}
+};
 export interface CurrentUser {
   id: number;
   username: string;
@@ -52,12 +57,11 @@ export type TokenBalances = {
 
 export type TrailSetters = {
   createdAt: string;
-  id: number,
+  id: number;
   walletId: string;
-
-}
+};
 
 export type UserPing = {
   status: boolean;
   walletId: string;
-}
+};

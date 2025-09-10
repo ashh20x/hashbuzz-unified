@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 export const LogoContainer = styled.div`
   padding-top: 5vh;
   padding-bottom: 3vh;
@@ -7,6 +7,6 @@ export const LogoContainer = styled.div`
   justify-content: center;
 
   & svg:hover {
-		// cursor: pointer;
-	}
+    // cursor: pointer;
+  }
 `;

@@ -1,9 +1,9 @@
 // components/StepGuard.tsx
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAppSelector } from "@/Store/store";
-import { OnboardingSteps } from "@/Ver2Designs/Pages/AuthAndOnboard/authStoreSlice";
-import type { RootState } from "@/Store/store";
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAppSelector } from '@/Store/store';
+import { OnboardingSteps } from '@/Ver2Designs/Pages/AuthAndOnboard/authStoreSlice';
+import type { RootState } from '@/Store/store';
 
 /**
  * StepGuard:
@@ -20,13 +20,13 @@ const STEP_ORDER: OnboardingSteps[] = [
 ];
 
 const STEP_PATHS: Record<OnboardingSteps, string> = {
-  [OnboardingSteps.PairWallet]: "/auth/pair-wallet",
-  [OnboardingSteps.SignAuthentication]: "/auth/sign-authentication",
-  [OnboardingSteps.ConnectXAccount]: "/auth/connect-x-account",
-  [OnboardingSteps.AssociateTokens]: "/auth/associate-tokens",
+  [OnboardingSteps.PairWallet]: '/auth/pair-wallet',
+  [OnboardingSteps.SignAuthentication]: '/auth/sign-authentication',
+  [OnboardingSteps.ConnectXAccount]: '/auth/connect-x-account',
+  [OnboardingSteps.AssociateTokens]: '/auth/associate-tokens',
 };
 
-const DASHBOARD_PATH = "/app/dashboard";
+const DASHBOARD_PATH = '/app/dashboard';
 
 interface StepGuardProps {
   step: OnboardingSteps;
@@ -78,7 +78,7 @@ const StepGuard: React.FC<StepGuardProps> = ({ step, children }) => {
 
   useEffect(() => {
     const nextIncompleteStep = getNextIncompleteStep();
-    
+
     // If all steps are completed, go to dashboard
     if (!nextIncompleteStep) {
       navigate(DASHBOARD_PATH);

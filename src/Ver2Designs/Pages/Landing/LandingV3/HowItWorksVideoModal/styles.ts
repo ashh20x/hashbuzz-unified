@@ -1,12 +1,11 @@
-import { SxProps, Theme } from "@mui/material";
-
+import { SxProps, Theme } from '@mui/material';
 
 export const howItWorksVideoModalContainer: SxProps<Theme> = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  bgcolor: "background.paper",
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  bgcolor: 'background.paper',
   boxShadow: 24,
   p: 2,
   borderRadius: 2,
@@ -16,14 +15,19 @@ export const howItWorksVideoModalContainer: SxProps<Theme> = {
   overflowY: 'auto',
 };
 
-export const modalContainer = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 };
+export const modalContainer = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  mb: 2,
+};
 
 export const videoIframeStyles: SxProps<Theme> = {
-  position: "absolute",
+  position: 'absolute',
   top: 0,
   left: 0,
-  width: "100%",
-  height: "100%",
+  width: '100%',
+  height: '100%',
   border: 0,
 };
 

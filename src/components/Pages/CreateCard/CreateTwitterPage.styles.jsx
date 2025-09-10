@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export const CardSection = styled.div`
   width: 100%;
@@ -12,7 +12,7 @@ export const CardSection = styled.div`
 `;
 export const TableSection = styled.div`
   display: flex;
-  border: 1px solid #BEBEBE;
+  border: 1px solid #bebebe;
   border-radius: 8px;
   width: 80%;
   height: 300px;
@@ -26,7 +26,7 @@ export const TableSection = styled.div`
   }
 `;
 export const StatusSection = styled.p`
-  font-family: "Poppins";
+  font-family: 'Poppins';
   font-style: normal;
   font-weight: 400;
   font-size: 14px;
@@ -37,15 +37,16 @@ export const StatusSection = styled.p`
 export const LinkContainer = styled.div`
   text-align: right;
   // width: 100%;
-  a{
+  a {
     position: absolute;
     right: 55px;
     top: 35px;
   }
   @media screen and (max-width: 960px) {
-    a{
+    a {
       position: inherit;
       right: 55px;
       top: 35px;
-    }  }
+    }
+  }
 `;

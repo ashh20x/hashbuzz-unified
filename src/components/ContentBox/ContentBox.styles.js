@@ -1,5 +1,5 @@
-import styled from "styled-components";
-import Theme from "../../theme/Theme";
+import styled from 'styled-components';
+import Theme from '../../theme/Theme';
 
 export const ContentBoxContainer = styled.div`
   margin: 0px 4%;
@@ -26,7 +26,7 @@ export const Connect = styled.div`
   justify-content: center;
   align-items: center;
   @media screen and (max-width: 960px) {
-      flex-direction: column;
+    flex-direction: column;
   }
 `;
 export const Wallet = styled.div`
@@ -41,13 +41,13 @@ export const Brand = styled.div`
   margin-bottom: 59px;
   align-items: center;
   margin-left: 70px;
-  @media (max-width: 960px){
+  @media (max-width: 960px) {
     margin-left: 0px;
   }
-  `;
+`;
 export const CardSpacing = styled.div`
   margin-bottom: 59px;
-  `;
+`;
 export const Col = styled.div`
   display: flex;
   flex-direction: column;
@@ -55,10 +55,10 @@ export const Col = styled.div`
   justify-content: center;
   margin-bottom: 59px;
   margin-left: 24px;
-  @media (max-width: 960px){
+  @media (max-width: 960px) {
     margin-left: 0px;
   }
-  `;
+`;
 export const Row = styled.div`
   display: flex;
   align-items: center;

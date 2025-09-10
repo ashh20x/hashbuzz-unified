@@ -1,1 +1,1 @@
-export { default } from "./TwitterCallback";
+export { default } from './TwitterCallback';

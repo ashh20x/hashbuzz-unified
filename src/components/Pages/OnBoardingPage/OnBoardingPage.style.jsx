@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export const HeaderText = styled.span`
   color: ${({ theme: { colors } }) => colors.dimgrey};
@@ -14,7 +14,7 @@ export const Connect = styled.div`
   margin: 3% 0;
   width: 30%;
   text-align: center;
-  
+
   @media screen and (max-width: 960px) {
     margin: 5% 0;
     width: 100%;

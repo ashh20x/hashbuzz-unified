@@ -1,9 +1,7 @@
-import React from 'react'
+import React from 'react';
 
 const Archives = () => {
-  return (
-    <div>Archives</div>
-  )
-}
+  return <div>Archives</div>;
+};
 
-export default Archives
+export default Archives;

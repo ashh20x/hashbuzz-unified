@@ -1,1 +1,1 @@
-export {default} from  "./ConnectXAccount";
+export { default } from './ConnectXAccount';

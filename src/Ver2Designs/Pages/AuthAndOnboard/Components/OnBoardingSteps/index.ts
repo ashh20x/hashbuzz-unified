@@ -1,1 +1,1 @@
-export {default } from './OnBoardingSteps'
+export { default } from './OnBoardingSteps';

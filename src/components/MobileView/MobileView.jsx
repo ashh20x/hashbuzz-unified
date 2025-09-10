@@ -1,13 +1,13 @@
-import React from "react";
-import LogoSVG from "../../SVGR/Logo";
-import Typography from "../../Typography/Typography";
-import { Center, Logo, TextMargins } from "./MobileView.styles";
+import React from 'react';
+import LogoSVG from '../../SVGR/Logo';
+import Typography from '../../Typography/Typography';
+import { Center, Logo, TextMargins } from './MobileView.styles';
 
 const MobileView = () => {
   const theme = {
-    color: "#696969",
-    size: "14px",
-    weight: "600",
+    color: '#696969',
+    size: '14px',
+    weight: '600',
   };
   return (
     <Center>

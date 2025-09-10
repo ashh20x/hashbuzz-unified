@@ -1,1 +1,1 @@
-export {default as BrowserExtension} from './BrowserExtension'
+export { default as BrowserExtension } from './BrowserExtension';

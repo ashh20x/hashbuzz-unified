@@ -253,6 +253,29 @@ textSecondary: '#757575' # Secondary text
 - **TypeScript**: Strict type checking enabled
 - **Conventional Commits**: Standardized commit messages
 
+### Formatting & editor setup
+
+This project enforces formatting via Prettier and linting via ESLint. Husky + lint-staged auto-run these checks on commit. To keep VS Code, Husky, and lint-staged consistent:
+
+- Install recommended VS Code extensions: Prettier - Code formatter (`esbenp.prettier-vscode`), ESLint (`dbaeumer.vscode-eslint`).
+- Ensure workspace settings (`.vscode/settings.json`) set Prettier as the default formatter and enable format on save.
+- Prettier config is in `.prettierrc` at each project folder. The settings used:
+  - `semi: true`
+  - `singleQuote: true`
+  - `tabWidth: 2`
+  - `trailingComma: es5`
+  - `printWidth: 80`
+  - `arrowParens: avoid`
+
+Quick commands:
+
+- Install dependencies: `yarn install`
+- Install husky hooks (after install): `yarn prepare`
+- Check formatting: `yarn format:check`
+- Fix formatting and lint: `yarn fix-all`
+
+If VS Code doesn't format on save, check that `prettier.requireConfig` is set to `false` in `.vscode/settings.json` or create a root `.prettierrc` to satisfy the extension.
+
 ### Component Development
 
 1. Create component in appropriate directory

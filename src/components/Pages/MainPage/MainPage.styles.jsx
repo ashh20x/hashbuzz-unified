@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export const ContentBoxContainer = styled.div`
   margin: 0px 4%;
@@ -107,5 +107,5 @@ export const CheckboxWrap = styled.div`
   }
 `;
 export const CardContainer = styled.div`
-cursor: pointer;
+  cursor: pointer;
 `;

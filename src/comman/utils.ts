@@ -6,9 +6,13 @@
 /**
  * Logs errors safely - only in development mode for security
  */
-export const logError = (error: any, message: string = "Operation failed", prefix?: string) => {
+export const logError = (
+  error: any,
+  message: string = 'Operation failed',
+  prefix?: string
+) => {
   const logMessage = prefix ? `${prefix} ${message}` : message;
-  
+
   if (process.env.NODE_ENV === 'development') {
     console.error(logMessage, error);
   } else {
@@ -47,13 +51,16 @@ export const logInfo = (message: string, data?: any, prefix?: string) => {
 /**
  * Creates a delay promise for async operations
  */
-export const delay = (ms: number): Promise<void> => 
+export const delay = (ms: number): Promise<void> =>
   new Promise(resolve => setTimeout(resolve, ms));
 
 /**
  * Validates if a timestamp is in valid future range
  */
-export const isValidFutureTimestamp = (timestamp: number, maxHours: number = 24): boolean => {
+export const isValidFutureTimestamp = (
+  timestamp: number,
+  maxHours: number = 24
+): boolean => {
   const now = Date.now();
   const maxFutureTime = now + maxHours * 60 * 60 * 1000;
   return timestamp > now && timestamp <= maxFutureTime;

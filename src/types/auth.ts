@@ -1,4 +1,4 @@
-import { CurrentUser } from "./users";
+import { CurrentUser } from './users';
 
 export type Payload = {
   url: string;

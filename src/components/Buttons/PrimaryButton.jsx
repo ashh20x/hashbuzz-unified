@@ -1,6 +1,6 @@
-import React from "react";
-import Button from "@mui/material/Button";
-import styled from "styled-components";
+import React from 'react';
+import Button from '@mui/material/Button';
+import styled from 'styled-components';
 
 const PrimaryButton = ({
   text,
@@ -44,25 +44,25 @@ export default PrimaryButton;
 
 const StyledButton = styled(Button)`
   && {
-    width: ${({ width }) => (width ? width : "215px")};
-    margin: ${({ margin }) => (margin ? margin : "0px")};
-    height: ${({ height }) => (height ? height : "56px")};
-    border-radius: ${({ radius }) => (radius ? radius : "8px")};
-    background-color: ${({ inverse }) => (inverse ? "#fff" : "#2546EB")};
-    color: ${({ colors }) => (colors ? colors : "#fff")};
+    width: ${({ width }) => (width ? width : '215px')};
+    margin: ${({ margin }) => (margin ? margin : '0px')};
+    height: ${({ height }) => (height ? height : '56px')};
+    border-radius: ${({ radius }) => (radius ? radius : '8px')};
+    background-color: ${({ inverse }) => (inverse ? '#fff' : '#2546EB')};
+    color: ${({ colors }) => (colors ? colors : '#fff')};
     border: ${({ border }) => border};
-    position: ${({ position }) => (position ? position : "none")};
-    right: ${({ right  }) => (right ? right : "10px")};
-    top: ${({ top  }) => (top ? top : "10px")};
+    position: ${({ position }) => (position ? position : 'none')};
+    right: ${({ right }) => (right ? right : '10px')};
+    top: ${({ top }) => (top ? top : '10px')};
     font-size: 15px;
     font-weight: 500;
     font-family: Poppins;
-    
-    &:hover{
-      background-color: ${({ inverse }) => (inverse ? "#fff" : "#2555EB")};
+
+    &:hover {
+      background-color: ${({ inverse }) => (inverse ? '#fff' : '#2555EB')};
     }
     @media (max-width: 960px) {
-      width: ${({ width }) => (width ? width : "100%")};
+      width: ${({ width }) => (width ? width : '100%')};
     }
   }
 `;

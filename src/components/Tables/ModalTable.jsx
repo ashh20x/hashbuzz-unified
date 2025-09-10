@@ -1,15 +1,20 @@
-import { TableBody, TableRow } from "@mui/material";
-import { BorderCellW, BorderCellG, CustomTable, CustomTableRowHead } from "./CreateTable.styles";
-import { useState, useEffect } from "react";
+import { TableBody, TableRow } from '@mui/material';
+import {
+  BorderCellW,
+  BorderCellG,
+  CustomTable,
+  CustomTableRowHead,
+} from './CreateTable.styles';
+import { useState, useEffect } from 'react';
 
 const ModalTable = ({ reply, retweet, like, quote, currentToken, type }) => {
-  const [icon, setIcon] = useState("ℏ");
+  const [icon, setIcon] = useState('ℏ');
 
   useEffect(() => {
-    setIcon(type === "HBAR" ? "ℏ" : currentToken?.[0]?.entityIcon ?? "ℏ");
+    setIcon(type === 'HBAR' ? 'ℏ' : (currentToken?.[0]?.entityIcon ?? 'ℏ'));
   }, [type, currentToken]);
   return (
-    <CustomTable stickyHeader aria-label="simple table">
+    <CustomTable stickyHeader aria-label='simple table'>
       <TableBody>
         <TableRow>
           <BorderCellW>Like</BorderCellW>

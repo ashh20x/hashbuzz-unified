@@ -1,6 +1,6 @@
-import { AuthCred, CurrentUser } from "./users";
-import { Campaign } from "./campaign";
-import React from "react";
+import { AuthCred, CurrentUser } from './users';
+import { Campaign } from './campaign';
+import React from 'react';
 
 export type ContractInfo = {
   contract_id: string;
@@ -18,7 +18,7 @@ export interface AppState {
   auth?: AuthCred;
   balances: EntityBalances[];
   contractInfo?: ContractInfo;
-  toasts: { type: "error" | "info" | "success"; message: string }[];
+  toasts: { type: 'error' | 'info' | 'success'; message: string }[];
   balanceRefreshTimer?: number | null;
 }
 
@@ -31,4 +31,4 @@ export interface EntityBalances {
   decimals?: number;
 }
 
-export type BalOperation = "topup" | "reimburse";
+export type BalOperation = 'topup' | 'reimburse';

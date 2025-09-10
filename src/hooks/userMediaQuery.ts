@@ -3,50 +3,58 @@ import { screens } from '../theme/styled';
 
 type ScreenSizes = keyof typeof screens;
 
-const getMediaQuery = (size: ScreenSizes, type: 'up' | 'down' | 'between', endSize?: ScreenSizes) => {
-    const minWidth = screens[size];
-    const maxWidth = endSize ? screens[endSize] : undefined;
+const getMediaQuery = (
+  size: ScreenSizes,
+  type: 'up' | 'down' | 'between',
+  endSize?: ScreenSizes
+) => {
+  const minWidth = screens[size];
+  const maxWidth = endSize ? screens[endSize] : undefined;
 
-    switch (type) {
-        case 'up':
-            return `(min-width: ${minWidth})`;
-        case 'down':
-            return `(max-width: ${minWidth})`;
-        case 'between':
-            if (!maxWidth) throw new Error('End size is required for between type');
-            return `(min-width: ${minWidth}) and (max-width: ${maxWidth})`;
-        default:
-            throw new Error('Invalid media query type');
-    }
+  switch (type) {
+    case 'up':
+      return `(min-width: ${minWidth})`;
+    case 'down':
+      return `(max-width: ${minWidth})`;
+    case 'between':
+      if (!maxWidth) throw new Error('End size is required for between type');
+      return `(min-width: ${minWidth}) and (max-width: ${maxWidth})`;
+    default:
+      throw new Error('Invalid media query type');
+  }
 };
 
-const useMediaLocalQuery = (size: ScreenSizes, type: 'up' | 'down' | 'between', endSize?: ScreenSizes) => {
-    const query = getMediaQuery(size, type, endSize);
+const useMediaLocalQuery = (
+  size: ScreenSizes,
+  type: 'up' | 'down' | 'between',
+  endSize?: ScreenSizes
+) => {
+  const query = getMediaQuery(size, type, endSize);
 
-    const [matches, setMatches] = React.useState(() => {
-        if (typeof window !== 'undefined') {
-            return window.matchMedia(query).matches;
-        }
-        return false; // Default value for SSR
-    });
+  const [matches, setMatches] = React.useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.matchMedia(query).matches;
+    }
+    return false; // Default value for SSR
+  });
 
-    React.useEffect(() => {
-        if (typeof window === 'undefined') {
-            return;
-        }
+  React.useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
 
-        const mediaMatch = window.matchMedia(query);
-        const handler = () => setMatches(mediaMatch.matches);
+    const mediaMatch = window.matchMedia(query);
+    const handler = () => setMatches(mediaMatch.matches);
 
-        mediaMatch.addListener(handler);
-        handler(); // Set the initial state
+    mediaMatch.addListener(handler);
+    handler(); // Set the initial state
 
-        return () => {
-            mediaMatch.removeListener(handler);
-        };
-    }, [query]);
+    return () => {
+      mediaMatch.removeListener(handler);
+    };
+  }, [query]);
 
-    return matches;
+  return matches;
 };
 
 /**
@@ -79,5 +87,3 @@ const useMediaLocalQuery = (size: ScreenSizes, type: 'up' | 'down' | 'between', 
  * @returns {boolean} A boolean indicating if the media query matches.
  */
 export default useMediaLocalQuery;
-
-

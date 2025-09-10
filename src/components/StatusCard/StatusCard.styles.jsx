@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export const CardContainer = styled.div`
   display: flex;
@@ -17,14 +17,14 @@ export const CardContainer = styled.div`
 `;
 
 export const ButtonSection = styled.div`
-    width: 120%;
-    margin-top: 3%;
-    display: flex;
-    justify-content: space-around;
+  width: 120%;
+  margin-top: 3%;
+  display: flex;
+  justify-content: space-around;
 `;
 export const Paragraph = styled.p`
-    width: 120%;
-    margin-top: 3%;
-    display: flex;
-    justify-content: space-around;
-`
+  width: 120%;
+  margin-top: 3%;
+  display: flex;
+  justify-content: space-around;
+`;

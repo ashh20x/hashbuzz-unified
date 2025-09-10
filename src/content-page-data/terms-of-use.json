@@ -14,7 +14,13 @@
         {
           "type": "p",
           "text": "Hashbuzz is a web dApp designed to facilitate reward exchanges between brands and their communities. Campaigners can incentivise Xpost campaigns, offering rewards in HBAR or approved HTS tokens.",
-          "style": { "color": "black", "fontSize": "16px", "bold": false, "italic": false, "underline": false }
+          "style": {
+            "color": "black",
+            "fontSize": "16px",
+            "bold": false,
+            "italic": false,
+            "underline": false
+          }
         }
       ]
     },
@@ -24,7 +30,13 @@
         {
           "type": "p",
           "text": "You must be at least 18 years old or the legal age of majority in your jurisdiction. By using {b:Hashbuzz}, you confirm compliance with all applicable laws and regulations.",
-          "style": { "color": "black", "fontSize": "16px", "bold": false, "italic": false, "underline": false }
+          "style": {
+            "color": "black",
+            "fontSize": "16px",
+            "bold": false,
+            "italic": false,
+            "underline": false
+          }
         }
       ]
     },
@@ -34,7 +46,13 @@
         {
           "type": "p",
           "text": "Ensure the accuracy of your account and wallet ID information. Recognise that {b:Hashbuzz} serves only as an intermediary, with rewards distributed via audited smart contracts.",
-          "style": { "color": "black", "fontSize": "16px", "bold": false, "italic": false, "underline": false }
+          "style": {
+            "color": "black",
+            "fontSize": "16px",
+            "bold": false,
+            "italic": false,
+            "underline": false
+          }
         }
       ]
     },
@@ -66,7 +84,13 @@
         {
           "type": "p",
           "text": "{b:Hashbuzz} assumes no liability for disputes between campaigners and participants. The platform does not guarantee campaign success or specific outcomes.",
-          "style": { "color": "black", "fontSize": "16px", "bold": false, "italic": false, "underline": false }
+          "style": {
+            "color": "black",
+            "fontSize": "16px",
+            "bold": false,
+            "italic": false,
+            "underline": false
+          }
         }
       ]
     },
@@ -76,7 +100,13 @@
         {
           "type": "p",
           "text": "Rewards are managed via audited smart contracts. {b:Hashbuzz} does not maintain custody of user funds beyond enabling the reward mechanism.",
-          "style": { "color": "black", "fontSize": "16px", "bold": false, "italic": false, "underline": false }
+          "style": {
+            "color": "black",
+            "fontSize": "16px",
+            "bold": false,
+            "italic": false,
+            "underline": false
+          }
         }
       ]
     },
@@ -86,7 +116,13 @@
         {
           "type": "p",
           "text": "Users are responsible for the security of their wallet credentials and {b:Hashbuzz} account details.",
-          "style": { "color": "black", "fontSize": "16px", "bold": false, "italic": false, "underline": false }
+          "style": {
+            "color": "black",
+            "fontSize": "16px",
+            "bold": false,
+            "italic": false,
+            "underline": false
+          }
         }
       ]
     },
@@ -96,7 +132,13 @@
         {
           "type": "p",
           "text": "{b:Hashbuzz} may update these terms. Users will be notified via email or platform notifications.",
-          "style": { "color": "black", "fontSize": "16px", "bold": false, "italic": false, "underline": false }
+          "style": {
+            "color": "black",
+            "fontSize": "16px",
+            "bold": false,
+            "italic": false,
+            "underline": false
+          }
         }
       ]
     },
@@ -106,7 +148,13 @@
         {
           "type": "p",
           "text": "{b:Hashbuzz} reserves the right to suspend or terminate user access for violations of these terms or other justified reasons.",
-          "style": { "color": "black", "fontSize": "16px", "bold": false, "italic": false, "underline": false }
+          "style": {
+            "color": "black",
+            "fontSize": "16px",
+            "bold": false,
+            "italic": false,
+            "underline": false
+          }
         }
       ]
     },
@@ -116,7 +164,13 @@
         {
           "type": "p",
           "text": "These Terms of Use are governed by the laws of [Insert Jurisdiction]. Users agree to resolve disputes exclusively within this jurisdiction.",
-          "style": { "color": "black", "fontSize": "16px", "bold": false, "italic": false, "underline": false }
+          "style": {
+            "color": "black",
+            "fontSize": "16px",
+            "bold": false,
+            "italic": false,
+            "underline": false
+          }
         }
       ]
     },
@@ -126,7 +180,13 @@
         {
           "type": "p",
           "text": "For any questions about these Terms, please contact us at hello@hashbuzz.social.",
-          "style": { "color": "black", "fontSize": "16px", "bold": false, "italic": false, "underline": false }
+          "style": {
+            "color": "black",
+            "fontSize": "16px",
+            "bold": false,
+            "italic": false,
+            "underline": false
+          }
         }
       ]
     }

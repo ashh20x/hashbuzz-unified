@@ -36,18 +36,18 @@ export interface SessionManagerAPI {
   setTokenExpiry: (expiryTimestamp?: number) => number;
   clearTokenExpiry: () => void;
   getTokenExpiry: () => number | null;
-  
+
   // State information
   isRefreshing: boolean;
   hasInitialized: boolean;
   isInitializing: boolean;
   isUserAuthenticated: boolean;
-  
+
   // Computed states for UI
-  readonly isLoading: boolean;          // Combined loading state for splash screen
-  readonly isAppReady: boolean;         // App is fully ready to use
-  readonly shouldShowSplash: boolean;   // Whether to show splash screen
-  
+  readonly isLoading: boolean; // Combined loading state for splash screen
+  readonly isAppReady: boolean; // App is fully ready to use
+  readonly shouldShowSplash: boolean; // Whether to show splash screen
+
   // Debug/Test functions (development only)
   forceRefresh: () => void;
 }

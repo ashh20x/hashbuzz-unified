@@ -1,1 +1,1 @@
-export {default as GuideList } from "./GuideList"
+export { default as GuideList } from './GuideList';

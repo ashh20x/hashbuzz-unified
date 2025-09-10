@@ -1,27 +1,41 @@
-import Typography from "../../Typography/Typography";
-import SecondaryButton from "../Buttons/SecondaryButton";
-import { CardContainer, ButtonSection,Paragraph } from "./StatusCard.styles";
+import Typography from '../../Typography/Typography';
+import SecondaryButton from '../Buttons/SecondaryButton';
+import { CardContainer, ButtonSection, Paragraph } from './StatusCard.styles';
 
-const StatusCard = ({ title, content, buttonTag, isButton, buttonClick,text ,isDisable}) => {
+const StatusCard = ({
+  title,
+  content,
+  buttonTag,
+  isButton,
+  buttonClick,
+  text,
+  isDisable,
+}) => {
   const TitleTheme = {
-    color: "#000",
-    size: "16px",
-    weight: "500",
+    color: '#000',
+    size: '16px',
+    weight: '500',
   };
   const ContentTheme = {
-    color: "#FDAF0D",
-    size: "24px",
-    weight: "300",
+    color: '#FDAF0D',
+    size: '24px',
+    weight: '300',
   };
   return (
-    
     <CardContainer>
       <Typography theme={TitleTheme}>{title}:</Typography>
       <Typography theme={ContentTheme}>{content}</Typography>
       <ButtonSection>
         {isButton &&
-          buttonTag.map((item) => (
-            <SecondaryButton disabled={isDisable} text={item} variant="contained" width="91px" margin="5%" onclick={()=>buttonClick(item)}/>
+          buttonTag.map(item => (
+            <SecondaryButton
+              disabled={isDisable}
+              text={item}
+              variant='contained'
+              width='91px'
+              margin='5%'
+              onclick={() => buttonClick(item)}
+            />
           ))}
       </ButtonSection>
       <Paragraph>{text}</Paragraph>
