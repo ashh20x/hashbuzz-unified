@@ -35,9 +35,9 @@ import {
   isAllowedToCmapigner,
   isAnyBalancesIsAvailable,
 } from '../../../comman/helpers';
+import { cardStyle } from '../../../components/Card/Card.styles';
 import HederaIcon from '../../../SVGR/HederaIcon';
 import { BalOperation, EntityBalances } from '../../../types';
-import { cardStyle } from './CardGenUtility';
 import TopupModal from './TopupModal';
 
 const formatBalance = (balObj: EntityBalances): string => {
@@ -320,7 +320,7 @@ const Balances = () => {
                         >
                           <ListItemAvatar>{bal?.entityIcon}</ListItemAvatar>
                           <ListItemText>
-                            {formatBalance(bal)} {bal.entitySymbol + ' '}
+                            {formatBalance(bal)} {`${bal.entitySymbol} `}
                           </ListItemText>
                           {balanceList.operation === 'reimburse' && (
                             <Typography variant='body2' color='text.secondary'>

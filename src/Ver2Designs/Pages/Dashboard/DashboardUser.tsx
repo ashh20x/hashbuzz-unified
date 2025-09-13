@@ -1,12 +1,13 @@
 import { useLazyGetTwitterBizHandleQuery } from '@/API/integration';
 import { useAppSelector } from '@/Store/store';
-import { LinkOff } from '@mui/icons-material';
+import { Close, LinkOff } from '@mui/icons-material';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import BusinessIcon from '@mui/icons-material/Business';
-import { Alert, Button, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { images } from '../../../IconsPng/image';
 import XPlatformIcon from '../../../SVGR/XPlatformIcon';
 import { getErrorMessage, isAllowedToCmapigner } from '../../../comman/helpers';
 import Balances from './Balances';
@@ -19,6 +20,7 @@ const Dashboard = () => {
   const [getTwitterBizHandle, { isLoading: isLoadingBizHandle }] =
     useLazyGetTwitterBizHandleQuery();
   const location = useLocation();
+  const [showBanner, setShowBanner] = React.useState(true);
 
   const bizHandleIntegration = React.useCallback(
     async (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -42,61 +44,104 @@ const Dashboard = () => {
   return (
     <React.Fragment>
       {errorFromState && (
-        <Alert severity='error' sx={{ mb: 2, mt: 2 }}>
-          {errorFromState}
-        </Alert>
+        <SC.StyledAlert severity='error'>{errorFromState}</SC.StyledAlert>
       )}
+
+      {/* Promo Banner */}
+      {showBanner && (
+        <SC.StyledPromoBanner>
+          {/* Left side: Image + Text */}
+          <SC.StyledBannerLeftSide>
+            <SC.StyledSpeakerImage src={images.speaker} alt='speaker_image' />
+
+            <Box>
+              <Typography variant='body2' component={SC.StyledBannerSubtitle}>
+                Tap into Web3 audiences
+              </Typography>
+              <Typography variant='h6' component={SC.StyledBannerTitle}>
+                Have a brand? Want to promote it?
+              </Typography>
+            </Box>
+          </SC.StyledBannerLeftSide>
+
+          <SC.StyledBannerRightSide>
+            <SC.StyledCampaignerButton variant='contained'>
+              Become a Campaigner
+            </SC.StyledCampaignerButton>
+            <SC.StyledCloseIconButton
+              onClick={() => setShowBanner(false)}
+              size='small'
+            >
+              <Close />
+            </SC.StyledCloseIconButton>
+          </SC.StyledBannerRightSide>
+        </SC.StyledPromoBanner>
+      )}
+
       <SC.StyledCardGenUtility>
+        {/* Hedera Account ID Card */}
         <CardGenUtility
           startIcon={
             <AccountBalanceWalletIcon color='inherit' fontSize={'inherit'} />
           }
           title={'Hedera Account ID'}
-          content={
-            <Typography variant='h5'>
-              {currentUser?.hedera_wallet_id}
-            </Typography>
-          }
+          content={{
+            texts: [
+              currentUser?.hedera_wallet_id || 'Not Connected',
+              'Make sure to fund your account with some HBARs to run campaigns',
+            ],
+          }}
         />
 
-        {/* card for personal twitter handle */}
+        {/* Personal Twitter Handle Card */}
         <CardGenUtility
-          startIcon={<XPlatformIcon color='inherit' size={40} />}
-          title={'Personal 𝕏 Account'}
-          content={
-            <Typography variant='h5'>
-              {'@' + currentUser?.personal_twitter_handle}
-            </Typography>
-          }
+          startIcon={<XPlatformIcon color='inherit' size={30} />}
+          title={'Personal ð• Account'}
+          content={{
+            image: currentUser?.profile_image_url,
+            texts: [
+              `@${currentUser?.personal_twitter_handle || 'Not Connected'}`,
+              currentUser?.name ? `${currentUser.name}` : 'Personal Account',
+            ],
+          }}
         />
 
-        {/* card for Brand twitter handle */}
+        {/* Brand Twitter Handle Card */}
         <CardGenUtility
           startIcon={<BusinessIcon color='inherit' fontSize={'inherit'} />}
-          title={'Brand 𝕏 Account'}
-          content={
-            currentUser?.business_twitter_handle ? (
-              <Typography variant='h5'>
-                {'@' + currentUser?.business_twitter_handle}
-              </Typography>
-            ) : (
-              <Button
-                endIcon={<LinkOff fontSize='inherit' />}
-                variant='outlined'
-                onClick={bizHandleIntegration}
-                loading={isLoadingBizHandle}
-                disabled={!isAllowedToCmapigner(currentUser?.role)}
-              >
-                Connect
-              </Button>
-            )
-          }
+          title={'Brand ð• Account'}
+          content={{
+            texts: currentUser?.business_twitter_handle
+              ? [
+                  `@${currentUser.business_twitter_handle}`,
+                  'Brand Account Connected',
+                ]
+              : [
+                  'Not Connected',
+                  'Connect your brand account to create campaigns',
+                ],
+          }}
         />
 
-        {/* Card for account balance */}
+        {/* Account Balance Card */}
         <Balances />
-        {/* </Grid> */}
       </SC.StyledCardGenUtility>
+
+      {/* Brand Account Connection Button (if not connected) */}
+      {!currentUser?.business_twitter_handle && (
+        <SC.StyledBrandAccountContainer>
+          <SC.StyledConnectBrandButton
+            endIcon={<LinkOff fontSize='inherit' />}
+            variant='contained'
+            onClick={bizHandleIntegration}
+            disabled={
+              isLoadingBizHandle || !isAllowedToCmapigner(currentUser?.role)
+            }
+          >
+            {isLoadingBizHandle ? 'Connecting...' : 'Connect Brand Account'}
+          </SC.StyledConnectBrandButton>
+        </SC.StyledBrandAccountContainer>
+      )}
 
       {/* Campaign List section */}
       <CampaignList />

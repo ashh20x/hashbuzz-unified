@@ -106,7 +106,7 @@ const HeaderMenu = () => {
   );
 
   return (
-    <Box sx={styles.container}>
+    <Box>
       <Tooltip title='Account Options'>
         <IconButton
           onClick={handleClick}

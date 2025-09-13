@@ -1,3 +1,4 @@
+
 # ===================================================================# TypeScript check# DUPLICATE TypeScript check section - DISABLED
 # Additional type checking for TypeScript files
 # ts_files=$(echo "$staged_files" | grep -E '\.(ts|tsx)$' || true)
