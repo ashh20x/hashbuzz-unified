@@ -18,11 +18,11 @@ contract HashbuzzStates {
     mapping(uint32 => mapping(address => bool)) public whitelistedToken;
     mapping(uint32 => address[]) internal whitelistedTokenAddresses;
 
-    mapping(address => mapping(address => mapping(uint256 => uint64)))
+    mapping(address => mapping(address => mapping(uint32 => uint256)))
         public tokenBalances;
 
     mapping(string => uint256) public campaignBalances;
-    mapping(string => mapping(address => mapping(uint256 => uint64)))
+    mapping(string => mapping(address => mapping(uint32 => uint256)))
         public tokenCampaignBalances;
 
     mapping(string => mapping(uint256 => uint256)) campaignEndTime;
@@ -50,12 +50,12 @@ contract HashbuzzStates {
     );
     event ResponseCode(int responseCode);
     event CreatedToken(address tokenAddress);
-    event FungibleTokenDeposited(address campaigner, uint64 amount);
+    event FungibleTokenDeposited(address campaigner, uint256 amount);
     event BalanceUpdated(address campaigner, uint256 updatedBalance);
     event FungibleTokenBalanceUpdated(
         address campaigner,
         address tokenId,
-        uint64 updatedBalance
+        uint256 updatedBalance
     );
     event RewardsDistributed(
         string campaignAddress,

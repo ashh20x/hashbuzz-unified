@@ -58,13 +58,13 @@ contract Transactions is HashbuzzStates, Utils {
     function addFungibleAmount(
         address campaigner,
         address tokenId,
-        uint64 tokenAmount
-    ) public onlyOwner returns (uint64) {
+        uint256 tokenAmount
+    ) public onlyOwner returns (uint256) {
         require(isCampaigner(campaigner), ERR_CAMPAIGNER_NOT_ALLOWED);
         tokenBalances[campaigner][tokenId][FUNGIBLE] += tokenAmount;
         emit FungibleTokenDeposited(campaigner, tokenAmount);
 
-        uint64 updatedBalance = tokenBalances[campaigner][tokenId][FUNGIBLE];
+        uint256 updatedBalance = tokenBalances[campaigner][tokenId][FUNGIBLE];
         emit FungibleTokenBalanceUpdated(campaigner, tokenId, updatedBalance);
         return updatedBalance;
     }
@@ -78,14 +78,14 @@ contract Transactions is HashbuzzStates, Utils {
     function reimburseBalanceForFungible(
         address tokenId,
         address campaigner,
-        uint64 amount
-    ) public onlyOwner returns (uint64) {
+        uint256 amount
+    ) public onlyOwner returns (uint256) {
         require(
             tokenBalances[campaigner][tokenId][FUNGIBLE] >= amount,
             ERR_INSUFFICIENT_BALANCE
         );
-        tokenBalances[campaigner][tokenId][FUNGIBLE] -= uint64(amount);
-        uint64 updatedBalance = tokenBalances[campaigner][tokenId][FUNGIBLE];
+        tokenBalances[campaigner][tokenId][FUNGIBLE] -= amount;
+        uint256 updatedBalance = tokenBalances[campaigner][tokenId][FUNGIBLE];
 
         emit FungibleTokenBalanceUpdated(campaigner, tokenId, updatedBalance);
         return updatedBalance;

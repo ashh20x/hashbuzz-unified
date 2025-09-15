@@ -48,8 +48,8 @@ contract Lifecycle is HashbuzzStates, Utils {
         address tokenId,
         string memory campaignAddress,
         address campaigner,
-        uint64 tokenAmount
-    ) public onlyOwner returns (uint64) {
+        uint256 tokenAmount
+    ) public onlyOwner returns (uint256) {
         require(isTokenWhitelisted(tokenId), ERR_TOKEN_NOT_WHITELISTED);
         require(
             bytes(campaignAddress).length > 0,
@@ -58,7 +58,7 @@ contract Lifecycle is HashbuzzStates, Utils {
         require(isCampaigner(campaigner), ERR_CAMPAIGNER_NOT_ALLOWED);
         require(tokenAmount > 0, ERR_TOTAL_AMOUNT_MUST_BE_GREATER_THAN_ZERO);
 
-        uint64 amount = tokenAmount;
+        uint256 amount = tokenAmount;
         require(
             tokenBalances[campaigner][tokenId][FUNGIBLE] >= amount,
             ERR_INSUFFICIENT_BALANCE
@@ -67,7 +67,7 @@ contract Lifecycle is HashbuzzStates, Utils {
         tokenBalances[campaigner][tokenId][FUNGIBLE] -= amount;
         tokenCampaignBalances[campaignAddress][tokenId][FUNGIBLE] += amount;
 
-        uint64 updatedBalance = tokenBalances[campaigner][tokenId][FUNGIBLE];
+        uint256 updatedBalance = tokenBalances[campaigner][tokenId][FUNGIBLE];
 
         if (
             tokenCampaignBalances[campaignAddress][tokenId][FUNGIBLE] == amount
@@ -178,7 +178,7 @@ contract Lifecycle is HashbuzzStates, Utils {
         address tokenId,
         address campaigner,
         string memory campaignAddress,
-        uint64 tokenTotalAmount
+        uint256 tokenTotalAmount
     ) external onlyOwner returns (uint256) {
         require(isTokenWhitelisted(tokenId), ERR_TOKEN_NOT_WHITELISTED);
         require(isCampaigner(campaigner), ERR_CAMPAIGNER_NOT_ALLOWED);
@@ -199,7 +199,7 @@ contract Lifecycle is HashbuzzStates, Utils {
         tokenCampaignBalances[campaignAddress][tokenId][
             FUNGIBLE
         ] -= tokenTotalAmount;
-        uint64 remainingBalance = tokenCampaignBalances[campaignAddress][
+        uint256 remainingBalance = tokenCampaignBalances[campaignAddress][
             tokenId
         ][FUNGIBLE];
 
@@ -222,7 +222,7 @@ contract Lifecycle is HashbuzzStates, Utils {
         address tokenId,
         string memory campaignAddress,
         address campaigner
-    ) public onlyOwner returns (uint64) {
+    ) public onlyOwner returns (uint256) {
         require(tokenId != address(0), ERR_INVALID_TOKEN_ADDRESS);
         require(
             bytes(campaignAddress).length > 0,
@@ -243,7 +243,7 @@ contract Lifecycle is HashbuzzStates, Utils {
         ][tokenId][FUNGIBLE];
         tokenCampaignBalances[campaignAddress][tokenId][FUNGIBLE] = 0;
 
-        uint64 updatedBalance = tokenBalances[campaigner][tokenId][FUNGIBLE];
+        uint256 updatedBalance = tokenBalances[campaigner][tokenId][FUNGIBLE];
         emit campaignExpired(campaignAddress, FUNGIBLE);
 
         return updatedBalance;

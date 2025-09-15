@@ -80,7 +80,7 @@ contract Utils is HashbuzzStates {
     function getFungibleTokenBalance(
         address campaigner,
         address tokenId
-    ) public view onlyOwnerOrCampaigner returns (uint64 res) {
+    ) public view onlyOwnerOrCampaigner returns (uint256 res) {
         // required token to be associated
         require(isTokenWhitelisted(tokenId), ERR_TOKEN_NOT_WHITELISTED);
         res = tokenBalances[campaigner][tokenId][FUNGIBLE];
