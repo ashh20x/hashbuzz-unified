@@ -1,0 +1,7 @@
+// Example: Place this file in your src/ directory for local feature flag overrides
+// Only used in development mode
+// Key-value pairs should match your Firebase Remote Config keys
+{
+  "enable_new_chat_ui": true,
+  "some_other_flag": false
+}

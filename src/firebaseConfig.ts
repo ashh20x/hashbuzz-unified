@@ -34,7 +34,7 @@ const firebaseConfig: FirebaseConfig = {
 
 // Initialize Firebase
 
-const app = initializeApp(firebaseConfig);
+export const app = initializeApp(firebaseConfig);
 
 // const fetchRemoteConfig = async () => {
 //     const remoteConfig = app.remoteConfig();
