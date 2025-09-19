@@ -1,8 +1,9 @@
 import { useHandleTwitterCallbackMutation } from '@/API/integration';
+import { userApi } from '@/API/user';
 import { useAppDispatch } from '@/Store/store';
 import { connectXAccount } from '@/Ver2Designs/Pages/AuthAndOnboard/authStoreSlice';
 import { Alert, Box, CircularProgress, Typography } from '@mui/material';
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
@@ -17,6 +18,18 @@ const TwitterCallback: React.FC<Props> = ({ variant = 'personal' }) => {
 
   const [handleCallback, { error }] = useHandleTwitterCallbackMutation();
 
+  // Helper function to invalidate user cache and navigate
+  const navigateWithCacheReset = useCallback(
+    (path: string, options?: Record<string, unknown>) => {
+      // Invalidate current user cache to force fresh data load
+      dispatch(
+        userApi.util.invalidateTags(['CurrentUser', 'UserData', 'TokenBalance'])
+      );
+      navigate(path, options);
+    },
+    [dispatch, navigate]
+  );
+
   useEffect(() => {
     const handleOAuthCallback = async () => {
       const searchParams = new URLSearchParams(location.search);
@@ -26,7 +39,7 @@ const TwitterCallback: React.FC<Props> = ({ variant = 'personal' }) => {
       // Check if we have the required parameters
       if (variant === 'personal' && (!oauth_token || !oauth_verifier)) {
         console.error('Missing OAuth parameters');
-        navigate('/auth/connect-x-account', {
+        navigateWithCacheReset('/auth/connect-x-account', {
           replace: true,
           state: { error: 'OAuth callback failed - missing parameters' },
         });
@@ -34,7 +47,7 @@ const TwitterCallback: React.FC<Props> = ({ variant = 'personal' }) => {
       }
       if (variant === 'business' && (!oauth_token || !oauth_verifier)) {
         console.error('Missing OAuth parameters');
-        navigate('/app/dashboard', {
+        navigateWithCacheReset('/app/dashboard', {
           replace: true,
           state: { error: 'OAuth callback failed - missing parameters' },
         });
@@ -44,8 +57,8 @@ const TwitterCallback: React.FC<Props> = ({ variant = 'personal' }) => {
       try {
         // Process the callback via API
         const result = await handleCallback({
-          oauth_token: oauth_token!,
-          oauth_verifier: oauth_verifier!,
+          oauth_token: oauth_token || '',
+          oauth_verifier: oauth_verifier || '',
           variant,
         }).unwrap();
 
@@ -54,9 +67,9 @@ const TwitterCallback: React.FC<Props> = ({ variant = 'personal' }) => {
           // Navigate to next step based on variant
           if (variant === 'personal') {
             dispatch(connectXAccount(result.username || ''));
-            navigate('/auth/associate-tokens', { replace: true });
+            navigateWithCacheReset('/auth/associate-tokens', { replace: true });
           } else if (variant === 'business') {
-            navigate('/app/dashboard', { replace: true });
+            navigateWithCacheReset('/app/dashboard', { replace: true });
             toast.success(
               `Successfully connected your business 𝕏 account${result.username ? `: @${result.username}` : ''}!`
             );
@@ -64,44 +77,54 @@ const TwitterCallback: React.FC<Props> = ({ variant = 'personal' }) => {
         } else {
           throw new Error(result.message || 'Failed to connect X account');
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('Twitter callback error:', err);
+
+        const getErrorMessage = (error: unknown): string => {
+          if (error && typeof error === 'object') {
+            const e = error as Record<string, unknown>;
+            const dataMessage =
+              e.data &&
+              typeof e.data === 'object' &&
+              (e.data as Record<string, unknown>).message;
+            const directMessage = e.message;
+
+            return (
+              (typeof dataMessage === 'string' ? dataMessage : '') ||
+              (typeof directMessage === 'string' ? directMessage : '') ||
+              'Failed to connect X account. Please try again.'
+            );
+          }
+          return 'Failed to connect X account. Please try again.';
+        };
+
+        const errorMessage = getErrorMessage(err);
+
         if (variant === 'personal') {
-          navigate('/auth/connect-x-account', {
+          navigateWithCacheReset('/auth/connect-x-account', {
             replace: true,
-            state: {
-              error:
-                err?.data?.message ||
-                err?.message ||
-                'Failed to connect X account. Please try again.',
-            },
+            state: { error: errorMessage },
           });
-          toast.error(
-            err?.data?.message ||
-              err?.message ||
-              'Failed to connect X account. Please try again.'
-          );
+          toast.error(errorMessage);
         } else {
-          navigate('/app/dashboard', {
+          navigateWithCacheReset('/app/dashboard', {
             replace: true,
-            state: {
-              error:
-                err?.data?.message ||
-                err?.message ||
-                'Failed to connect X account. Please try again.',
-            },
+            state: { error: errorMessage },
           });
-          toast.error(
-            err?.data?.message ||
-              err?.message ||
-              'Failed to connect X account. Please try again.'
-          );
+          toast.error(errorMessage);
         }
       }
     };
 
     handleOAuthCallback();
-  }, [location.search, handleCallback, dispatch, navigate, variant]);
+  }, [
+    location.search,
+    handleCallback,
+    dispatch,
+    navigate,
+    variant,
+    navigateWithCacheReset,
+  ]);
 
   return (
     <Box
