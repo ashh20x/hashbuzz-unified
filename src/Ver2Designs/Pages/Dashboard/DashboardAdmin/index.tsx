@@ -19,8 +19,8 @@ const StyledTabs = styled((props: StyledTabsProps) => (
     TabIndicatorProps={{ children: <span className='MuiTabs-indicatorSpan' /> }}
   />
 ))({
-  position: 'absolute',
-  transform: 'translateY(-100%)',
+  // position: 'absolute',
+  // transform: 'translateY(-100%)',
   top: '-10px',
   '& .MuiTabs-indicator': {
     display: 'flex',

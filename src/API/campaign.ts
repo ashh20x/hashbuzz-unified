@@ -22,6 +22,42 @@ export interface CreateCampaignResponse {
   message?: string;
 }
 
+// V201 Campaign Types
+export interface CreateCampaignDraftV201Request {
+  name: string;
+  tweet_text: string;
+  expected_engaged_users: number;
+  campaign_budget: number;
+  type: 'HBAR' | 'FUNGIBLE';
+  media: string[]; // Base64 encoded media files
+  fungible_token_id?: string;
+}
+
+export interface CreateCampaignDraftV201Response {
+  success: boolean;
+  data: {
+    campaignId: string;
+    draftId: string;
+  };
+  message?: string;
+}
+
+export interface PublishCampaignV201Request {
+  draftId: string;
+  publishData: {
+    publish_now: boolean;
+    auto_approve: boolean;
+  };
+}
+
+export interface PublishCampaignV201Response {
+  success: boolean;
+  data: {
+    campaignId: string;
+  };
+  message?: string;
+}
+
 export interface UpdateCampaignStatusRequest {
   card_id: number;
   campaign_command: string;
@@ -163,6 +199,31 @@ export const campaignApi = apiBase.injectEndpoints({
       query: () => '/api/campaign/recent-tweets',
       providesTags: ['UserData'],
     }),
+
+    // V201 Campaign Management
+    createCampaignDraftV201: builder.mutation<
+      CreateCampaignDraftV201Response,
+      CreateCampaignDraftV201Request
+    >({
+      query: draftData => ({
+        url: '/api/V201/campaign/draft',
+        method: 'POST',
+        body: draftData,
+      }),
+      invalidatesTags: ['Campaign'],
+    }),
+
+    publishCampaignV201: builder.mutation<
+      PublishCampaignV201Response,
+      PublishCampaignV201Request
+    >({
+      query: ({ draftId, publishData }) => ({
+        url: `/api/V201/campaign/publish/${draftId}`,
+        method: 'POST',
+        body: publishData,
+      }),
+      invalidatesTags: ['Campaign'],
+    }),
   }),
   overrideExisting: false,
 });
@@ -181,6 +242,8 @@ export const {
   useGetRewardDetailsQuery,
   useUploadMediaMutation,
   useGetRecentTweetsQuery,
+  useCreateCampaignDraftV201Mutation,
+  usePublishCampaignV201Mutation,
 } = campaignApi;
 
 export default campaignApi;

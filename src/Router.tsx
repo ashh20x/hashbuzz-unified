@@ -2,8 +2,8 @@ import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { ProtectedRoute } from './APIConfig/AuthGuard';
 import StepGuard from './components/StepGuard';
 import {
+  CampaignCreatorWrapper,
   ContentPage,
-  CreateCampaignContainer,
   Dashboard,
   PageNotfound,
 } from './Ver2Designs';
@@ -89,7 +89,7 @@ const router = createBrowserRouter([
       { index: true, element: <Navigate to='/dashboard' replace /> },
       { path: 'dashboard', element: <Dashboard /> },
       // { path: "campaign", element: <Template /> },
-      { path: 'create-campaign', element: <CreateCampaignContainer /> },
+      { path: 'create-campaign', element: <CampaignCreatorWrapper /> },
 
       // Uncomment and add these routes as needed:
       // { path: "invoice", element: <Invoice /> },

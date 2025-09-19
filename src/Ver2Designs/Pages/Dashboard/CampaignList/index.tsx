@@ -32,9 +32,9 @@ import {
   GridTreeNodeWithRender,
 } from '@mui/x-data-grid';
 import { uniqBy } from 'lodash';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Countdown from 'react-countdown';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { CampaignStatus } from '../../../../comman/helpers';
 import DetailsModal from '../../../../components/PreviewModal/DetailsModal';
@@ -106,6 +106,7 @@ const getCampaignCommand = (status: CampaignStatus): CampaignCommands => {
 
 const CampaignList = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useAppDispatch();
 
   // Redux state
@@ -146,6 +147,34 @@ const CampaignList = () => {
 
   const [updateCampaignStatus] = useUpdateCampaignStatusMutation();
   const [updateAdminStatus] = useApproveCampaignMutation();
+
+  // Handle refresh parameter from URL
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    if (searchParams.get('refresh') === 'true') {
+      // Refresh campaign list
+      refetchCampaigns();
+      if (isAdmin) {
+        refetchPending();
+      }
+      refetchClaims();
+
+      // Clean up the URL by removing the refresh parameter
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.delete('refresh');
+      window.history.replaceState(
+        {},
+        document.title,
+        newUrl.pathname + newUrl.search
+      );
+    }
+  }, [
+    location.search,
+    refetchCampaigns,
+    refetchPending,
+    refetchClaims,
+    isAdmin,
+  ]);
 
   const handleTabChange = useCallback(
     (tab: TabsLabel) => {
