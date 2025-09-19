@@ -11,20 +11,19 @@ const Footer = () => {
           <Grid size={{ xs: 12, md: 10 }}>
             <HashbuzzLogoMainTransparent height={46} />
             <Box component='p' sx={{ mt: 1, mb: 2 }}>
-              Design amazing digital experiences that create more happy in the
-              world.
+              Turning attention into shared value.
             </Box>
             <Box
               component='ul'
               sx={{ display: 'flex', gap: 2, listStyle: 'none', p: 0, m: 0 }}
             >
               <li>
-                <Link href='/terms-of-use' underline='hover'>
+                <Link href='/https://hashbuzz.gitbook.io/whitepaper/disclaimers/terms-of-use' underline='hover'>
                   Terms & Conditions
                 </Link>
               </li>
               <li>
-                <Link href='/privacy-policy' underline='hover'>
+                <Link href='/https://hashbuzz.gitbook.io/whitepaper/disclaimers/privacy-policy' underline='hover'>
                   Privacy Policy
                 </Link>
               </li>
