@@ -20,6 +20,15 @@ contract Lifecycle is HashbuzzStates, Utils {
         address campaigner,
         uint256 amount
     ) public onlyOwner returns (uint256) {
+        require(
+            bytes(campaignAddress).length > 0,
+            ERR_INVALID_CAMPAIGN_ADDRESS
+        );
+        require(amount > 0, ERR_TOTAL_AMOUNT_MUST_BE_GREATER_THAN_ZERO);
+        require(
+            bytes(campaignAddress).length > 0,
+            ERR_INVALID_CAMPAIGN_ADDRESS
+        );
         require(isCampaigner(campaigner), ERR_CAMPAIGNER_NOT_ALLOWED);
         require(balances[campaigner] >= amount, ERR_INSUFFICIENT_BALANCE);
 
@@ -50,6 +59,8 @@ contract Lifecycle is HashbuzzStates, Utils {
         address campaigner,
         uint256 tokenAmount
     ) public onlyOwner returns (uint256) {
+        require(tokenId != address(0), ERR_INVALID_TOKEN_ADDRESS);
+        require(isTokenWhitelisted(tokenId), ERR_TOKEN_NOT_WHITELISTED);
         require(isTokenWhitelisted(tokenId), ERR_TOKEN_NOT_WHITELISTED);
         require(
             bytes(campaignAddress).length > 0,

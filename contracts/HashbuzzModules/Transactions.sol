@@ -36,6 +36,7 @@ contract Transactions is HashbuzzStates, Utils {
         bool deposit
     ) public onlyOwner returns (uint256) {
         require(campaigner != address(0), ERR_INVALID_CAMPAIGN_ADDRESS);
+        require(amount > 0, ERR_TOTAL_AMOUNT_MUST_BE_GREATER_THAN_ZERO);
         require(isCampaigner(campaigner), ERR_CAMPAIGNER_NOT_ALLOWED);
 
         if (deposit) {
@@ -51,16 +52,20 @@ contract Transactions is HashbuzzStates, Utils {
 
     /**
      * @dev Fungible token added to the campaigner account.
-     * @param campaigner Address soliduty address
-     * @param tokenId Address tokenId solidity address
-     * @param tokenAmount amount added to the cmapaigner account
+     * @param campaigner Address of the campaigner
+     * @param tokenId Token ID address
+     * @param tokenAmount Amount added to the campaigner account
      */
     function addFungibleAmount(
         address campaigner,
         address tokenId,
         uint256 tokenAmount
     ) public onlyOwner returns (uint256) {
+        require(campaigner != address(0), ERR_INVALID_CAMPAIGN_ADDRESS);
+        require(tokenId != address(0), ERR_INVALID_TOKEN_ADDRESS);
+        require(tokenAmount > 0, ERR_TOTAL_AMOUNT_MUST_BE_GREATER_THAN_ZERO);
         require(isCampaigner(campaigner), ERR_CAMPAIGNER_NOT_ALLOWED);
+        require(isTokenWhitelisted(tokenId), ERR_TOKEN_NOT_WHITELISTED);
         tokenBalances[campaigner][tokenId][FUNGIBLE] += tokenAmount;
         emit FungibleTokenDeposited(campaigner, tokenAmount);
 
@@ -70,20 +75,26 @@ contract Transactions is HashbuzzStates, Utils {
     }
 
     /**
-     * @dev This is function used for the  Reimbersing the cmapaigner balance
+     * @dev This function is used for reimbursing the campaigner balance
      * @param tokenId  Token solidity address
-     * @param campaigner Campainer Address
-     * @param amount  Total amount campaigner wanted to reinverse
+     * @param campaigner Campaigner Address
+     * @param amount  Total amount campaigner wanted to reimburse
      */
-    function reimburseBalanceForFungible(
+    function reimburseCampaigner(
         address tokenId,
         address campaigner,
         uint256 amount
     ) public onlyOwner returns (uint256) {
+        require(campaigner != address(0), ERR_INVALID_CAMPAIGN_ADDRESS);
+        require(tokenId != address(0), ERR_INVALID_TOKEN_ADDRESS);
+        require(amount > 0, ERR_TOTAL_AMOUNT_MUST_BE_GREATER_THAN_ZERO);
+        require(isCampaigner(campaigner), ERR_CAMPAIGNER_NOT_ALLOWED);
+        require(isTokenWhitelisted(tokenId), ERR_TOKEN_NOT_WHITELISTED);
         require(
             tokenBalances[campaigner][tokenId][FUNGIBLE] >= amount,
             ERR_INSUFFICIENT_BALANCE
         );
+
         tokenBalances[campaigner][tokenId][FUNGIBLE] -= amount;
         uint256 updatedBalance = tokenBalances[campaigner][tokenId][FUNGIBLE];
 

@@ -19,6 +19,7 @@ contract Utils is HashbuzzStates {
         address tokenAddress,
         bool isWhitelisted
     ) public onlyOwner {
+        require(tokenAddress != address(0), ERR_INVALID_TOKEN_ADDRESS);
         if (isWhitelisted && !whitelistedToken[FUNGIBLE][tokenAddress]) {
             // Add to whitelist if not already whitelisted
             whitelistedToken[FUNGIBLE][tokenAddress] = true;
@@ -73,15 +74,17 @@ contract Utils is HashbuzzStates {
     }
 
     /**
-     *
-     * @param campaigner Address of the campaigner'solidity address
-     * @param tokenId Solidity address used for the account
+     * @dev Retrieves the balance of a fungible token for a specific campaigner.
+     * @param campaigner Address of the campaigner's solidity address.
+     * @param tokenId Solidity address used for the account.
+     * @return res The balance of the fungible token.
      */
     function getFungibleTokenBalance(
         address campaigner,
         address tokenId
     ) public view onlyOwnerOrCampaigner returns (uint256 res) {
-        // required token to be associated
+        require(tokenId != address(0), ERR_INVALID_TOKEN_ADDRESS);
+        require(campaigner != address(0), ERR_INVALID_CAMPAIGN_ADDRESS);
         require(isTokenWhitelisted(tokenId), ERR_TOKEN_NOT_WHITELISTED);
         res = tokenBalances[campaigner][tokenId][FUNGIBLE];
     }
@@ -96,14 +99,18 @@ contract Utils is HashbuzzStates {
         res = balances[campaigner];
     }
 
-    /** Campaign Specific balance for the cmapigners */
+    /** Campaign Specific balance for the campaigners */
     /**
-     * @dev Balance holded by the user to see.
+     * @dev Balance held by the user to see.
      * @param campaignAddress Solidity address of the campaigner.
      */
     function getCampaignBalance(
         string memory campaignAddress
     ) public view onlyOwnerOrCampaigner returns (uint256) {
+        require(
+            bytes(campaignAddress).length > 0,
+            ERR_INVALID_CAMPAIGN_ADDRESS
+        );
         return campaignBalances[campaignAddress];
     }
 }
