@@ -1,4 +1,4 @@
-import { useGetTokenBalancesQuery } from '@/API/user';
+import { useGetCurrentUserQuery, useGetTokenBalancesQuery } from '@/API/user';
 import { TokenBalances } from '@/types';
 import { useCallback } from 'react';
 
@@ -27,12 +27,13 @@ export interface UseBudgetValidationReturn {
   isLoading: boolean;
 }
 
-// Minimum balance to keep for fees (in tinybars for HBAR)
-const MINIMUM_HBAR_RESERVE = 5 * 100_000_000; // 5 HBAR in tinybars
+// Minimum balance to keep for fees (in HBAR for HBAR, in token units for tokens)
+const MINIMUM_HBAR_RESERVE = 5; // 5 HBAR
 const MINIMUM_TOKEN_RESERVE = 1; // 1 token unit
 
 export const useBudgetValidation = (): UseBudgetValidationReturn => {
   const { data: tokenBalances, isLoading } = useGetTokenBalancesQuery();
+  const { data: currentUser } = useGetCurrentUserQuery();
 
   // Get user balance for a specific token type
   const getUserBalance = useCallback(
@@ -40,14 +41,9 @@ export const useBudgetValidation = (): UseBudgetValidationReturn => {
       if (!tokenBalances) return 0;
 
       if (tokenType === 'HBAR') {
-        // Find HBAR balance
-        const hbarToken = tokenBalances.find(
-          (token: TokenBalances) =>
-            token.token_id === 'HBAR' ||
-            token.token_symbol === 'HBAR' ||
-            token.token_id === '0.0.0'
-        );
-        return hbarToken?.available_balance || 0;
+        // available_budget is in tinybars, convert to HBAR
+        const hbarTinybars = currentUser?.available_budget || 0;
+        return hbarTinybars / 100_000_000; // Convert tinybars to HBAR
       } else if (tokenId) {
         // Find specific fungible token balance
         const selectedToken = tokenBalances.find(
@@ -58,7 +54,7 @@ export const useBudgetValidation = (): UseBudgetValidationReturn => {
 
       return 0;
     },
-    [tokenBalances]
+    [tokenBalances, currentUser?.available_budget]
   );
 
   // Validate budget amount
@@ -111,7 +107,7 @@ export const useBudgetValidation = (): UseBudgetValidationReturn => {
       if (budget > maxBudget) {
         const reserveAmount =
           tokenType === 'HBAR'
-            ? `${(reserve / 100_000_000).toFixed(2)} HBAR`
+            ? `${reserve.toFixed(2)} HBAR`
             : `${reserve} tokens`;
 
         return {

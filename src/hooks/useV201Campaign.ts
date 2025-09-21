@@ -2,7 +2,7 @@ import {
   useCreateCampaignDraftV201Mutation,
   usePublishCampaignV201Mutation,
 } from '@/API/campaign';
-import { useGetTokenBalancesQuery } from '@/API/user';
+import { useGetCurrentUserQuery, useGetTokenBalancesQuery } from '@/API/user';
 import { TokenBalances } from '@/types';
 import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -93,6 +93,7 @@ export const useV201Campaign = (): UseV201CampaignReturn => {
     usePublishCampaignV201Mutation();
   const { data: tokenBalances, isLoading: isLoadingTokens } =
     useGetTokenBalancesQuery();
+  const { data: currentUser } = useGetCurrentUserQuery();
 
   const isLoading = isDraftLoading || isPublishLoading;
 
@@ -106,11 +107,9 @@ export const useV201Campaign = (): UseV201CampaignReturn => {
   // Get user balance for current type
   const getUserBalance = useCallback((): number => {
     if (formData.type === 'HBAR') {
-      // Find HBAR balance
-      const hbarToken = tokenBalances?.find(
-        token => token.token_id === 'HBAR' || token.token_symbol === 'HBAR'
-      );
-      return hbarToken?.available_balance || 0;
+      // available_budget is in tinybars, convert to HBAR
+      const hbarTinybars = currentUser?.available_budget || 0;
+      return hbarTinybars / 100_000_000; // Convert tinybars to HBAR
     } else if (formData.fungible_token_id) {
       // Find selected fungible token balance
       const selectedToken = tokenBalances?.find(
@@ -119,7 +118,12 @@ export const useV201Campaign = (): UseV201CampaignReturn => {
       return selectedToken?.available_balance || 0;
     }
     return 0;
-  }, [formData.type, formData.fungible_token_id, tokenBalances]);
+  }, [
+    formData.type,
+    formData.fungible_token_id,
+    tokenBalances,
+    currentUser?.available_budget,
+  ]);
 
   // Get maximum budget user can set (80% of available balance for safety)
   const getMaxBudget = useCallback((): number => {

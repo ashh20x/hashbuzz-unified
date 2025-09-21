@@ -51,10 +51,13 @@ export const useBalancesSync = () => {
 
         if (topup) {
           const currentUserUpdated = await getCurrentUser().unwrap();
-          availableBudget = currentUserUpdated.available_budget;
+          // available_budget is in tinybars, convert to HBAR
+          availableBudget = currentUserUpdated.available_budget / 100_000_000;
           dispatch(updateCurrentUser(currentUserUpdated));
         } else {
-          availableBudget = Number(currentUser?.available_budget);
+          // available_budget is in tinybars, convert to HBAR
+          availableBudget =
+            Number(currentUser?.available_budget || 0) / 100_000_000;
         }
 
         const balances: EntityBalances[] = [

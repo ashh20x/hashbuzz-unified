@@ -21,8 +21,9 @@
  * @version 3.0.0 - Modular Architecture Upgrade
  */
 
-import { useAppSelector } from '@/Store/store';
+import { useAppDispatch, useAppSelector } from '@/Store/store';
 import { useEffect } from 'react';
+import { setAuthStatus } from '../Store/appStatusSlice';
 import { SESSION_DEFAULTS } from './session-manager/constants';
 import type {
   SessionManagerAPI,
@@ -44,9 +45,11 @@ export const useAppSessionManager = ({
   bufferSeconds = SESSION_DEFAULTS.BUFFER_SECONDS,
   sessionExpireMinutes = SESSION_DEFAULTS.SESSION_EXPIRE_MINUTES,
 }: UseAppSessionManagerProps = {}): SessionManagerAPI => {
+  console.warn('[SESSION MANAGER V3] Hook called - Starting initialization...');
   // ============================================================================
   // REDUX STATE
   // ============================================================================
+  const dispatch = useAppDispatch();
 
   const {
     wallet: { isPaired },
@@ -116,18 +119,30 @@ export const useAppSessionManager = ({
    * Session initialization effect
    */
   useEffect(() => {
+    console.log('[SESSION MANAGER V3] Initialization effect triggered', {
+      hasInitialized: sessionValidator.hasInitialized,
+      isInitializing: sessionValidator.isInitializing,
+      delay: SESSION_DEFAULTS.INITIALIZATION_DELAY_MS,
+    });
+
     if (!sessionValidator.hasInitialized && !sessionValidator.isInitializing) {
+      console.log(
+        '[SESSION MANAGER V3] Starting session validation with timer...'
+      );
       const timer = setTimeout(() => {
+        console.log(
+          '[SESSION MANAGER V3] Timer fired, calling validateSession...'
+        );
         sessionValidator.validateSession();
       }, SESSION_DEFAULTS.INITIALIZATION_DELAY_MS);
 
-      return () => clearTimeout(timer);
+      return () => {
+        console.log('[SESSION MANAGER V3] Cleaning up timer');
+        clearTimeout(timer);
+      };
     }
-  }, [
-    sessionValidator.hasInitialized,
-    sessionValidator.isInitializing,
-    sessionValidator.validateSession,
-  ]);
+  }, []);
+  // Run only once on mount to avoid dependency issues
 
   /**
    * Token association synchronization effect
@@ -166,6 +181,17 @@ export const useAppSessionManager = ({
   const shouldShowSplash =
     !sessionValidator.hasInitialized || sessionValidator.isInitializing;
 
+  // Dispatch app status to Redux for compatibility with existing components
+  useEffect(() => {
+    dispatch(
+      setAuthStatus({
+        isLoading,
+        isAppReady,
+        shouldShowSplash,
+      })
+    );
+  }, [dispatch, isLoading, isAppReady, shouldShowSplash]);
+
   return {
     // Token management
     refreshToken: tokenManager.refreshToken,
@@ -183,6 +209,9 @@ export const useAppSessionManager = ({
     isLoading,
     isAppReady,
     shouldShowSplash,
+
+    // Debug/Test functions (development only)
+    forceRefresh: tokenManager.forceRefresh,
   } as const;
 };
 

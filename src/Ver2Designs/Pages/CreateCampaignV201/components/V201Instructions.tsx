@@ -35,7 +35,7 @@ const V201Instructions: React.FC<V201InstructionsProps> = ({
 }) => {
   const formatBalance = (amount: number): string => {
     if (tokenType === 'HBAR') {
-      return `${(amount / 100_000_000).toFixed(2)} ℏ`;
+      return `${amount.toFixed(2)} ℏ`;
     }
     return `${amount.toLocaleString()} ${tokenSymbol || 'tokens'}`;
   };

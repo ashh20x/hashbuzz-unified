@@ -34,6 +34,40 @@ const baseQueryWithReauth: BaseQueryFn<
   unknown,
   FetchBaseQueryError
 > = async (args, api, extraOptions) => {
+  const AUTH_REQUIRED_ENDPOINTS = [
+    '/api/users',
+    '/api/campaign',
+    '/api/admin',
+    '/api/transaction',
+    '/auth/logout',
+    '/auth/refresh-token',
+    '/auth/admin-login',
+  ];
+
+  // Public endpoints that don't require authentication
+  const PUBLIC_ENDPOINTS = [
+    '/auth/challenge',
+    '/auth/generate',
+    '/auth/generate-v2',
+    '/auth/twitter-return',
+    '/auth/business-twitter-return',
+    '/auth/csrf-token',
+    '/auth/ping',
+    '/api/health',
+    '/logs',
+  ];
+
+  // Check if endpoint requires authentication
+  const requiresAuth = (url: string): boolean => {
+    // Check if it's a public endpoint
+    if (PUBLIC_ENDPOINTS.some(endpoint => url.includes(endpoint))) {
+      return false;
+    }
+
+    // Check if it's an auth-required endpoint
+    return AUTH_REQUIRED_ENDPOINTS.some(endpoint => url.includes(endpoint));
+  };
+
   const baseQuery = fetchBaseQuery({
     baseUrl:
       (import.meta as unknown as { env: Record<string, string> }).env
@@ -53,7 +87,13 @@ const baseQueryWithReauth: BaseQueryFn<
   });
 
   // Execute the initial request
-  let result = await baseQuery(args, api, extraOptions);
+  const result = await baseQuery(args, api, extraOptions);
+
+  // For public endpoints, return immediately without auth error handling
+  const url = typeof args === 'string' ? args : args.url;
+  if (!requiresAuth(url)) {
+    return result;
+  }
 
   // Check for auth errors in the response and log them appropriately
   if (result.error) {

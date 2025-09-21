@@ -137,8 +137,14 @@ export const useTokenManager = (
         {
           secondsUntilRefresh: Math.max(0, Math.round(msUntilRefresh / 1000)),
           expiry: new Date(expiryTs),
+          bufferSeconds,
+          currentTime: new Date(),
         },
         '[TOKEN REFRESH]'
+      );
+
+      console.warn(
+        `[TOKEN REFRESH] Scheduling refresh in ${Math.max(0, Math.round(msUntilRefresh / 1000))} seconds`
       );
 
       if (msUntilRefresh <= 0) {
@@ -162,12 +168,20 @@ export const useTokenManager = (
 
       // Simple timer - no complex visibility handling here
       refreshTimerRef.current = window.setTimeout(async () => {
+        console.warn('[TOKEN REFRESH] Timer triggered - attempting refresh');
         if (document.visibilityState === 'visible') {
+          console.warn(
+            '[TOKEN REFRESH] Tab is visible, refreshing immediately'
+          );
           await refreshTokenHandler();
         } else {
+          console.warn('[TOKEN REFRESH] Tab is hidden, waiting for visibility');
           // Wait for tab to become visible
           const onVisible = async () => {
             if (document.visibilityState === 'visible') {
+              console.warn(
+                '[TOKEN REFRESH] Tab became visible, refreshing now'
+              );
               document.removeEventListener('visibilitychange', onVisible);
               await refreshTokenHandler();
             }
@@ -185,9 +199,11 @@ export const useTokenManager = (
   // ============================================================================
 
   const refreshTokenHandler = useCallback(async (): Promise<boolean> => {
+    console.warn('[TOKEN REFRESH] refreshTokenHandler called');
     logDebug('Attempting token refresh', undefined, '[TOKEN REFRESH]');
 
     if (isRefreshingRef.current || !acquireRefreshLock()) {
+      console.warn('[TOKEN REFRESH] Refresh already in progress or locked');
       logDebug(
         'Refresh already in progress or locked',
         undefined,
@@ -284,8 +300,14 @@ export const useTokenManager = (
   ]);
 
   const startTokenRefreshTimer = useCallback(() => {
+    console.warn('[TOKEN REFRESH] startTokenRefreshTimer called');
     const expiry = getTokenExpiry();
     const hasAccessToken = getCookieByName('access_token');
+
+    console.warn('[TOKEN REFRESH] Timer start check:', {
+      expiry: expiry ? new Date(expiry) : null,
+      hasAccessToken: !!hasAccessToken,
+    });
 
     // Clear any existing timer first
     clearRefreshTimer();
@@ -295,6 +317,9 @@ export const useTokenManager = (
       const bufferTime = bufferSeconds * 1000;
 
       if (timeUntilExpiry <= bufferTime) {
+        console.warn(
+          '[TOKEN REFRESH] Token expires soon, refreshing immediately'
+        );
         logInfo(
           'Token expires soon, refreshing immediately',
           undefined,
@@ -302,9 +327,14 @@ export const useTokenManager = (
         );
         refreshTokenHandler();
       } else {
+        console.warn(
+          '[TOKEN REFRESH] Scheduling refresh for expiry:',
+          new Date(expiry)
+        );
         scheduleRefresh(expiry);
       }
     } else if (!hasAccessToken) {
+      console.warn('[TOKEN REFRESH] No access token, clearing expiry');
       logDebug(
         'No access token, clearing expiry',
         undefined,

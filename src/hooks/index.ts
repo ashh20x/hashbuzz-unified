@@ -1,3 +1,3 @@
-export * from './use-appSession-manager';
+export { useAppSessionManager } from './session-manager';
 export * from './useRemoteConfig';
 export * from './userMediaQuery';

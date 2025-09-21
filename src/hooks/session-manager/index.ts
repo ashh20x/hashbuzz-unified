@@ -19,7 +19,7 @@ export type {
 export { AUTH_STORAGE_KEYS, LOG_PREFIXES, SESSION_DEFAULTS } from './constants';
 
 // Individual modules (for advanced usage)
-export { useWalletSync } from '../../comman/useWalletSync';
+// export { useWalletSync } from '../../comman/';
 export { useCrossTabSync } from './useCrossTabSync';
 export { useSessionValidator } from './useSessionValidator';
 export { useTabVisibilityManager } from './useTabVisibilityManager';

@@ -219,7 +219,9 @@ const TopupModal = ({ data, open, onClose, operation }: TopupModalProps) => {
       const newBalances: EntityBalances[] = [
         {
           ...INITIAL_HBAR_BALANCE_ENTITY,
-          entityBalance: (currentUser?.available_budget ?? 0 / 1e8).toFixed(4),
+          entityBalance: ((currentUser?.available_budget ?? 0) / 1e8).toFixed(
+            4
+          ),
           entityId: currentUser?.hedera_wallet_id ?? '',
         },
         ...balancesData.map(d => ({
