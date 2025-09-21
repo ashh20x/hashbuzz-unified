@@ -29,8 +29,8 @@ export interface CreateCampaignDraftV201Request {
   expected_engaged_users: number;
   campaign_budget: number;
   type: 'HBAR' | 'FUNGIBLE';
-  media: string[]; // Base64 encoded media files
   fungible_token_id?: string;
+  // Note: media files are handled via FormData, not as part of this interface
 }
 
 export interface CreateCampaignDraftV201Response {
@@ -43,11 +43,9 @@ export interface CreateCampaignDraftV201Response {
 }
 
 export interface PublishCampaignV201Request {
-  draftId: string;
-  publishData: {
-    publish_now: boolean;
-    auto_approve: boolean;
-  };
+  campaignId: number;
+  campaignDuration?: number;
+  anyFinalComment?: string;
 }
 
 export interface PublishCampaignV201Response {
@@ -203,12 +201,12 @@ export const campaignApi = apiBase.injectEndpoints({
     // V201 Campaign Management
     createCampaignDraftV201: builder.mutation<
       CreateCampaignDraftV201Response,
-      CreateCampaignDraftV201Request
+      FormData
     >({
-      query: draftData => ({
+      query: formData => ({
         url: '/api/V201/campaign/draft',
         method: 'POST',
-        body: draftData,
+        body: formData,
       }),
       invalidatesTags: ['Campaign'],
     }),
@@ -217,10 +215,10 @@ export const campaignApi = apiBase.injectEndpoints({
       PublishCampaignV201Response,
       PublishCampaignV201Request
     >({
-      query: ({ draftId, publishData }) => ({
-        url: `/api/V201/campaign/publish/${draftId}`,
+      query: data => ({
+        url: `/api/V201/campaign/publish`,
         method: 'POST',
-        body: publishData,
+        body: data,
       }),
       invalidatesTags: ['Campaign'],
     }),

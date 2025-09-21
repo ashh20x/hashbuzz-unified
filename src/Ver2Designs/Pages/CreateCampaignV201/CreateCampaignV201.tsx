@@ -389,7 +389,7 @@ const CreateCampaignV201: React.FC<CreateCampaignV201Props> = ({ onBack }) => {
                 <input
                   type='file'
                   multiple
-                  accept='image/*,video/*'
+                  accept='image/*'
                   onChange={handleMediaUpload}
                   style={{ display: 'none' }}
                 />
@@ -398,7 +398,7 @@ const CreateCampaignV201: React.FC<CreateCampaignV201Props> = ({ onBack }) => {
                   Click to upload media files
                 </Typography>
                 <Typography variant='body2' color='text.secondary'>
-                  Images and videos up to 10MB each. Maximum 5 files.
+                  Images up to 10MB each. Maximum 2 files.
                 </Typography>
               </Box>
 
@@ -406,7 +406,7 @@ const CreateCampaignV201: React.FC<CreateCampaignV201Props> = ({ onBack }) => {
               {formData.media.length > 0 && (
                 <Box sx={{ mt: 2 }}>
                   <Typography variant='subtitle2' gutterBottom>
-                    Selected Files ({formData.media.length}/5):
+                    Selected Files ({formData.media.length}/2):
                   </Typography>
                   <Grid container spacing={2}>
                     {formData.media.map((file, index) => (

@@ -1,6 +1,7 @@
 import {
   useGetCampaignsQuery,
   useGetRewardDetailsQuery,
+  usePublishCampaignV201Mutation,
   useUpdateCampaignStatusMutation,
 } from '@/API/campaign';
 import {
@@ -38,6 +39,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { CampaignStatus } from '../../../../comman/helpers';
 import DetailsModal from '../../../../components/PreviewModal/DetailsModal';
+import { useRemoteConfig } from '../../../../hooks';
 import { CampaignCards, CampaignCommands, UserConfig } from '../../../../types';
 import AssociateModal from '../AssociateModal';
 import AdminActionButtons from './AdminActionButtons';
@@ -108,6 +110,10 @@ const CampaignList = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useAppDispatch();
+  const campaignV201Enabled = useRemoteConfig('campaign_v201') as boolean;
+  const [publishCampaign] = usePublishCampaignV201Mutation();
+
+  console.log({ campaignV201Enabled });
 
   // Redux state
   const { currentUser, balances } = useAppSelector(s => s.app);
@@ -216,10 +222,31 @@ const CampaignList = () => {
           campaign_command,
         };
 
-        const response = await updateCampaignStatus(data).unwrap();
-        if (response) {
-          refetchCampaigns();
-          toast.success(response.message);
+        console.log({
+          data,
+          campaign_command,
+          valid:
+            campaignV201Enabled &&
+            campaign_command === CampaignCommands.StartCampaign,
+        });
+
+        if (
+          campaignV201Enabled &&
+          campaign_command === CampaignCommands.StartCampaign
+        ) {
+          console.log({ data, campaign_command });
+          await publishCampaign({
+            campaignId: values.id,
+            anyFinalComment: `command: ${campaign_command}`,
+          });
+          toast.success('Campaign publishing sequence is started successfully');
+          return;
+        } else {
+          const response = await updateCampaignStatus(data).unwrap();
+          if (response) {
+            refetchCampaigns();
+            toast.success(response.message);
+          }
         }
       } catch (error: unknown) {
         console.error(error);
@@ -230,7 +257,12 @@ const CampaignList = () => {
         );
       }
     },
-    [updateCampaignStatus, refetchCampaigns]
+    [
+      updateCampaignStatus,
+      refetchCampaigns,
+      campaignV201Enabled,
+      publishCampaign,
+    ]
   );
 
   const handleAdminAction = useCallback(

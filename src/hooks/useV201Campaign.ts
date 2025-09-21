@@ -96,6 +96,13 @@ export const useV201Campaign = (): UseV201CampaignReturn => {
 
   const isLoading = isDraftLoading || isPublishLoading;
 
+  // Reset form to initial state
+  const resetForm = useCallback(() => {
+    setFormData(initialFormData);
+    setErrors({});
+    setSavedDraftId(null);
+  }, []);
+
   // Get user balance for current type
   const getUserBalance = useCallback((): number => {
     if (formData.type === 'HBAR') {
@@ -153,7 +160,16 @@ export const useV201Campaign = (): UseV201CampaignReturn => {
       if (files) {
         const fileArray = Array.from(files);
 
-        // Validate file sizes (max 10MB per file)
+        // Validate maximum number of files (backend allows 2)
+        if (fileArray.length > 2) {
+          setErrors(prev => ({
+            ...prev,
+            media: `Too many files selected. Maximum 2 files allowed, but ${fileArray.length} were selected.`,
+          }));
+          return;
+        }
+
+        // Validate file sizes (max 10MB per file, matching backend limit)
         const maxSize = 10 * 1024 * 1024; // 10MB
         const oversizedFiles = fileArray.filter(file => file.size > maxSize);
 
@@ -165,8 +181,8 @@ export const useV201Campaign = (): UseV201CampaignReturn => {
           return;
         }
 
-        // Validate file types (images and videos)
-        const allowedTypes = ['image/', 'video/'];
+        // Validate file types (only images allowed by backend)
+        const allowedTypes = ['image/'];
         const invalidFiles = fileArray.filter(
           file => !allowedTypes.some(type => file.type.startsWith(type))
         );
@@ -174,7 +190,7 @@ export const useV201Campaign = (): UseV201CampaignReturn => {
         if (invalidFiles.length > 0) {
           setErrors(prev => ({
             ...prev,
-            media: `Invalid file types: ${invalidFiles.map(f => f.name).join(', ')}. Only images and videos are allowed.`,
+            media: `Invalid file types: ${invalidFiles.map(f => f.name).join(', ')}. Only images are allowed.`,
           }));
           return;
         }
@@ -271,33 +287,35 @@ export const useV201Campaign = (): UseV201CampaignReturn => {
     }
 
     try {
-      // Convert files to base64 strings for API
-      const mediaStrings: string[] = [];
-      for (const file of formData.media) {
-        const base64 = await new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result as string);
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        });
-        mediaStrings.push(base64);
+      // Create FormData for file uploads (same as legacy campaign)
+      const formDataPayload = new FormData();
+
+      // Add form fields
+      formDataPayload.append('name', formData.name);
+      formDataPayload.append('tweet_text', formData.tweet_text);
+      formDataPayload.append(
+        'expected_engaged_users',
+        formData.expected_engaged_users.toString()
+      );
+      formDataPayload.append(
+        'campaign_budget',
+        formData.campaign_budget.toString()
+      );
+      formDataPayload.append('type', formData.type);
+
+      if (formData.type === 'FUNGIBLE' && formData.fungible_token_id) {
+        formDataPayload.append('fungible_token_id', formData.fungible_token_id);
       }
 
-      const draftPayload = {
-        name: formData.name,
-        tweet_text: formData.tweet_text,
-        expected_engaged_users: formData.expected_engaged_users,
-        campaign_budget: formData.campaign_budget,
-        type: formData.type,
-        media: mediaStrings,
-        fungible_token_id:
-          formData.type === 'FUNGIBLE' ? formData.fungible_token_id : undefined,
-      };
+      // Add media files directly (not as base64)
+      formData.media.forEach((file: File) => {
+        formDataPayload.append('media', file);
+      });
 
-      const result = await createDraft(draftPayload).unwrap();
+      const result = await createDraft(formDataPayload).unwrap();
 
-      if (result.success && result.data.draftId) {
-        setSavedDraftId(result.data.draftId);
+      if (result.success && result.data.campaignId) {
+        setSavedDraftId(result.data.campaignId);
         toast.success(
           '✅ Campaign draft saved successfully! You can now publish it.',
           {
@@ -309,6 +327,8 @@ export const useV201Campaign = (): UseV201CampaignReturn => {
             draggable: true,
           }
         );
+        resetForm();
+        navigate('app/dashboard');
       } else {
         toast.error(result.message || 'Failed to save campaign draft', {
           position: 'top-right',
@@ -316,18 +336,66 @@ export const useV201Campaign = (): UseV201CampaignReturn => {
         });
       }
     } catch (error: unknown) {
-      console.error('Failed to publish campaign:', error);
+      console.error('Failed to save campaign draft:', error);
       const err = error as {
-        data?: { message?: string };
+        data?: { message?: string; error?: string; status?: number };
         message?: string;
         status?: number;
       };
 
-      // Extract error message
+      // Extract error message and specific error type
       const errorMessage =
         err?.data?.message ||
         err?.message ||
-        'Failed to publish campaign. Please try again.';
+        'Failed to save campaign draft. Please try again.';
+      const errorType = err?.data?.error;
+
+      // Handle specific file upload errors with targeted messages
+      if (
+        errorType === 'FILE_TOO_LARGE' ||
+        errorMessage.includes('File too large')
+      ) {
+        toast.error(
+          '📁 One or more files exceed the 10MB size limit. Please choose smaller files.',
+          {
+            position: 'top-right',
+            autoClose: 6000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          }
+        );
+        return;
+      }
+
+      if (
+        errorType === 'TOO_MANY_FILES' ||
+        errorMessage.includes('Too many files')
+      ) {
+        toast.error(
+          '📁 You can upload a maximum of 2 files. Please remove some files and try again.',
+          {
+            position: 'top-right',
+            autoClose: 6000,
+          }
+        );
+        return;
+      }
+
+      if (
+        errorType === 'UNEXPECTED_FILE_FIELD' ||
+        errorMessage.includes('Unexpected file')
+      ) {
+        toast.error(
+          '📁 Invalid file upload format. Please try uploading your files again.',
+          {
+            position: 'top-right',
+            autoClose: 6000,
+          }
+        );
+        return;
+      }
 
       // Check for specific Twitter API errors and provide targeted feedback
       if (errorMessage.includes('TWITTER_AUTH_EXPIRED')) {
@@ -425,7 +493,14 @@ export const useV201Campaign = (): UseV201CampaignReturn => {
         });
       }
     }
-  }, [formData, validateForm, createDraft]);
+  }, [
+    formData,
+    validateForm,
+    createDraft,
+    setSavedDraftId,
+    navigate,
+    resetForm,
+  ]);
 
   // Publish campaign
   const publishCampaignAction = useCallback(async (): Promise<void> => {
@@ -441,11 +516,9 @@ export const useV201Campaign = (): UseV201CampaignReturn => {
 
     try {
       const result = await publishCampaignMutation({
-        draftId: savedDraftId,
-        publishData: {
-          publish_now: true,
-          auto_approve: false,
-        },
+        campaignId: parseInt(savedDraftId.toString()),
+        campaignDuration: 30, // Default 30 days
+        anyFinalComment: 'Published via V201 interface',
       }).unwrap();
 
       if (result.success) {
@@ -481,13 +554,6 @@ export const useV201Campaign = (): UseV201CampaignReturn => {
       toast.error(errorMessage);
     }
   }, [savedDraftId, validateForm, publishCampaignMutation, navigate]);
-
-  // Reset form to initial state
-  const resetForm = useCallback(() => {
-    setFormData(initialFormData);
-    setErrors({});
-    setSavedDraftId(null);
-  }, []);
 
   return {
     // Form state

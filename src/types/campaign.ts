@@ -20,7 +20,7 @@ export interface Campaign {
 }
 
 export enum CampaignCommands {
-  StartCampaign = 'Campaign::satrt',
+  StartCampaign = 'Campaign::start',
   ClaimReward = 'Campaign::reward-claim',
   AdminApprovedCampaign = 'Campaign::admin-approved',
   AdminRejectedCampaign = 'Campaign::admin-rejected',
