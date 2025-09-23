@@ -15,11 +15,25 @@ const OnBoardingSteps = () => {
   return (
     <Stack component='aside' sx={styles.sideBar}>
       <Box sx={styles.sideBarLogoContainer}>
-        <Link to='/'>
+        <Link to='/' style={{ display: 'flex', alignItems: 'center' }}>
           <HashbuzzLogoMainTransparent height={46} />
         </Link>
-        {isSmDevice && <p>Complete these steps to get started with Hashbuzz</p>}
+        {isSmDevice && (
+          <Box
+            component='p'
+            sx={{
+              background: 'linear-gradient(135deg, #5265ff 0%, #667eea 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              fontWeight: 600,
+            }}
+          >
+            Complete these steps to get started with Hashbuzz
+          </Box>
+        )}
       </Box>
+
       <Box flex={1} sx={styles.stepsList}>
         <ul>
           <li
@@ -28,16 +42,18 @@ const OnBoardingSteps = () => {
               getActiveClassName(OnboardingSteps.SignAuthentication)
             }
           >
-            <span className='list-bullet'>1</span>
-            <span className='list-name'>Connect Wallet</span>
+            <Box className='list-bullet'>1</Box>
+            <Box className='list-name'>Connect Wallet</Box>
           </li>
+
           <li className={getActiveClassName(OnboardingSteps.ConnectXAccount)}>
-            <span className='list-bullet'>2</span>
-            <span className='list-name'>Connect 𝕏 account </span>
+            <Box className='list-bullet'>2</Box>
+            <Box className='list-name'>Link 𝕏 account</Box>
           </li>
+
           <li className={getActiveClassName(OnboardingSteps.AssociateTokens)}>
-            <span className='list-bullet'>3</span>
-            <span className='list-name'>Associate reward tokens</span>
+            <Box className='list-bullet'>3</Box>
+            <Box className='list-name'>Associate reward tokens</Box>
           </li>
         </ul>
       </Box>

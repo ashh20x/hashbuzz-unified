@@ -4,7 +4,7 @@ export const sideBar: SxProps<Theme> = {
   width: {
     xs: '100%',
     sm: '100%',
-    md: '392px',
+    md: '380px',
   },
   paddingLeft: {
     xs: '2rem',

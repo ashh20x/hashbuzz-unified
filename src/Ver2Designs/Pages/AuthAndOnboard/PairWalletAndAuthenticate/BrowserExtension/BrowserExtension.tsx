@@ -3,6 +3,7 @@ import { useAccountId, useWallet } from '@buidlerlabs/hashgraph-react-wallets';
 import { HWCConnector } from '@buidlerlabs/hashgraph-react-wallets/connectors';
 import { Link } from '@mui/icons-material';
 import { Alert, Box, Button } from '@mui/material';
+import useResponsive from '../../../../../hooks/use-responsive';
 import { walletPaired } from '../../authStoreSlice';
 import { Guide } from '../data';
 import { GuideList } from '../GuideList';
@@ -13,6 +14,7 @@ const BrowserExtension = () => {
     useWallet(HWCConnector);
   const { data: accountId } = useAccountId();
   const dispatch = useAppDispatch();
+  const { isMobile } = useResponsive();
 
   const handleConnect = async () => {
     try {
@@ -20,7 +22,7 @@ const BrowserExtension = () => {
       if (session.isConnected) {
         dispatch(walletPaired(accountId));
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(error.message);
     }
   };
@@ -41,10 +43,13 @@ const BrowserExtension = () => {
         </Alert>
       ) : (
         <Box
-          sx={styles.connectWalletBtnContainer}
-          display='flex'
-          alignItems='center'
-          justifyContent='flex-end'
+          sx={{
+            ...styles.connectWalletBtnContainer,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: { xs: 'center', sm: 'flex-end' },
+            width: { xs: '100%', sm: 'auto' },
+          }}
           className='connectIcon'
         >
           <Button
@@ -52,6 +57,7 @@ const BrowserExtension = () => {
             variant='contained'
             startIcon={<Link />}
             onClick={handleConnect}
+            fullWidth={isMobile}
           >
             Connect Wallet
           </Button>

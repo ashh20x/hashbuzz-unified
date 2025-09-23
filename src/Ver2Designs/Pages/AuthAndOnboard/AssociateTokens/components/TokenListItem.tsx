@@ -1,5 +1,9 @@
-import { CheckCircle, CheckCircleOutlineOutlined } from '@mui/icons-material';
-import { Box, Button } from '@mui/material';
+import {
+  CheckCircle,
+  CheckCircleOutlineOutlined,
+  TokenOutlined,
+} from '@mui/icons-material';
+import { Box, Button, Typography, Skeleton, Chip, Fade } from '@mui/material';
 import { useGetTokenQuery } from '../../../../../API/mirrorNodeAPI';
 import { AccountTokensResponse } from '../../../../../types/mirrorTypes';
 import { ConnectedToken } from '../../authStoreSlice';
@@ -22,36 +26,87 @@ const TokenListItem = ({
     t => t.token_id === token.token.token_id
   );
 
+  const handleAssociate = () => {
+    if (!isAlreadyAssociated && onAssociate) {
+      onAssociate(token);
+    }
+  };
+
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <Box sx={styled.TokenListItemStyles}>
+        <Box className='tokenIcons'>
+          <Skeleton variant='circular' width={52} height={52} />
+        </Box>
+        <Box className='tokenDetails' sx={{ flex: 1, ml: 2 }}>
+          <Skeleton variant='text' width='60%' height={24} />
+          <Skeleton variant='text' width='80%' height={20} sx={{ mt: 0.5 }} />
+        </Box>
+        <Box className='linkOrStatus'>
+          <Skeleton variant='rounded' width={120} height={40} />
+        </Box>
+      </Box>
+    );
   }
+
   return (
-    <Box key={token.token.token_id} sx={styled.TokenListItemStyles}>
-      <Box className='tokenIIcons'>
-        <span>{data?.symbol}</span>
-      </Box>
-      <Box className='tokenDetails'>
-        <p>{token.token.token_id}</p>
-        <span>{data?.name}</span>
-      </Box>
-      <Box className='linkOrStatus'>
-        <Button
-          startIcon={
-            isAlreadyAssociated ? (
-              <CheckCircle />
+    <Fade in timeout={300}>
+      <Box sx={styled.TokenListItemStyles}>
+        <Box className='tokenIcons'>
+          <Box className='tokenIconWrapper'>
+            {data?.symbol ? (
+              <Typography className='tokenSymbol'>
+                {data.symbol.substring(0, 3)}
+              </Typography>
             ) : (
-              <CheckCircleOutlineOutlined />
-            )
-          }
-          variant='outlined'
-          disabled={!!isAlreadyAssociated}
-          color='primary'
-          onCanPlay={() => onAssociate?.(token)}
-        >
-          Associated
-        </Button>
+              <TokenOutlined className='fallbackIcon' />
+            )}
+          </Box>
+          {isAlreadyAssociated && (
+            <Box className='associatedBadge'>
+              <CheckCircle fontSize='small' />
+            </Box>
+          )}
+        </Box>
+
+        <Box className='tokenDetails'>
+          <Typography variant='h6' className='tokenName'>
+            {data?.name || 'Unknown Token'}
+          </Typography>
+          <Typography variant='body2' className='tokenId'>
+            ID: {token.token.token_id}
+          </Typography>
+          {data?.symbol && (
+            <Chip
+              label={data.symbol}
+              size='small'
+              variant='outlined'
+              className='tokenSymbolChip'
+            />
+          )}
+        </Box>
+
+        <Box className='linkOrStatus'>
+          <Button
+            startIcon={
+              isAlreadyAssociated ? (
+                <CheckCircle />
+              ) : (
+                <CheckCircleOutlineOutlined />
+              )
+            }
+            variant={isAlreadyAssociated ? 'contained' : 'outlined'}
+            disabled={!!isAlreadyAssociated}
+            color={isAlreadyAssociated ? 'success' : 'primary'}
+            onClick={handleAssociate}
+            sx={styled.associateButton}
+            size='large'
+          >
+            {isAlreadyAssociated ? 'Associated' : 'Associate'}
+          </Button>
+        </Box>
       </Box>
-    </Box>
+    </Fade>
   );
 };
 

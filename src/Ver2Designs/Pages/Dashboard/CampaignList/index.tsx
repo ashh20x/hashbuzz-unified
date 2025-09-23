@@ -15,17 +15,9 @@ import {
   useApproveCampaignMutation,
   useGetPendingCampaignsQuery,
 } from '@/Ver2Designs/Admin/api/admin';
-import InfoIcon from '@mui/icons-material/Info';
+import AddIcon from '@mui/icons-material/Add';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import {
-  Box,
-  Button,
-  Card,
-  CircularProgress,
-  Divider,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { CircularProgress } from '@mui/material';
 import {
   DataGrid,
   GridColDef,
@@ -33,7 +25,11 @@ import {
   GridTreeNodeWithRender,
 } from '@mui/x-data-grid';
 import { uniqBy } from 'lodash';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+
+// import { useCallback, useEffect, useMemo, useState } from 'react';
+
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
 import Countdown from 'react-countdown';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -47,6 +43,29 @@ import CampaignCardDetailModal from './CampaignCardDetailModal';
 import { campaignListColumnsAdmin } from './CampaignListColumnsAdmin';
 import TabNavigation, { TabsLabel } from './TabNavigationComponent';
 import { campaignListColumns } from './campaignListCoulmns';
+import {
+  ActionBar,
+  ActionButtonsContainer,
+  ButtonGroup,
+  CampaignCard,
+  CampaignContainer,
+  ChatGPTLink,
+  DataGridWrapper,
+  DataSection,
+  Divider,
+  HeaderContent,
+  HeaderSection,
+  InfoBanner,
+  InfoIcon,
+  InfoText,
+  LoadingContainer,
+  PrimaryActionButton,
+  PrimaryButton,
+  SecondaryActionButton,
+  SecondaryButton,
+  TabSection,
+  dataGridStyles,
+} from './styles';
 
 const isButtonDisabled = (campaignStats: CampaignStatus, approve: boolean) => {
   const disabledStatuses = new Set([
@@ -56,8 +75,7 @@ const isButtonDisabled = (campaignStats: CampaignStatus, approve: boolean) => {
     CampaignStatus.CampaignRunning,
     CampaignStatus.ApprovalPending,
   ]);
-  const isDisabled = disabledStatuses.has(campaignStats) || !approve;
-  return isDisabled;
+  return disabledStatuses.has(campaignStats) || !approve;
 };
 
 const getButtonLabel = (
@@ -115,6 +133,9 @@ const CampaignList = () => {
 
   console.log({ campaignV201Enabled });
 
+  // Use ref to prevent infinite loops
+  const isUpdatingRef = useRef(false);
+
   // Redux state
   const { currentUser, balances } = useAppSelector(s => s.app);
   const { activeTab, modalData, open, openAssociateModal, previewCard } =
@@ -135,9 +156,10 @@ const CampaignList = () => {
     isFetching: campaignsFetching,
     refetch: refetchCampaigns,
   } = useGetCampaignsQuery({
-    page: paginationModel.page + 1, // Backend expects 1-based page
+    page: paginationModel.page + 1,
     limit: paginationModel.pageSize,
   });
+
   const {
     data: pendingCampaigns = [],
     isLoading: pendingLoading,
@@ -145,6 +167,7 @@ const CampaignList = () => {
   } = useGetPendingCampaignsQuery(undefined, {
     skip: !isAdmin,
   });
+
   const {
     data: calimRewardsData,
     isLoading: claimLoading,
@@ -182,24 +205,39 @@ const CampaignList = () => {
     isAdmin,
   ]);
 
+  // Memoize stable values to prevent dependency issues
+  const stableBalances = useMemo(() => balances, [balances]);
+  const stableCampaignData = useMemo(
+    () => campaignResponse?.data,
+    [campaignResponse?.data]
+  );
+  const stableUserConfig = useMemo(
+    () => currentUser?.config,
+    [currentUser?.config]
+  );
+
   const handleTabChange = useCallback(
     (tab: TabsLabel) => {
+      if (isUpdatingRef.current) return;
       dispatch(setActiveTab(tab));
     },
     [dispatch]
   );
 
-  const handleTemplate = () => {
+  const handleTemplate = useCallback(() => {
     navigate('/app/create-campaign');
-  };
+  }, [navigate]);
 
   const handleCard = useCallback(
     async (_id: number) => {
+      if (isUpdatingRef.current) return;
       try {
-        // TODO: Implement card engagement query
+        isUpdatingRef.current = true;
         dispatch(setOpen(true));
       } catch (error) {
         console.error(error);
+      } finally {
+        isUpdatingRef.current = false;
       }
     },
     [dispatch]
@@ -207,7 +245,9 @@ const CampaignList = () => {
 
   const handleClick = useCallback(
     async (values: CampaignCards) => {
+      if (isUpdatingRef.current) return;
       try {
+        isUpdatingRef.current = true;
         const campaign_command = getCampaignCommand(
           values?.card_status as CampaignStatus
         );
@@ -255,6 +295,8 @@ const CampaignList = () => {
             ? (error as { message?: string }).message
             : 'Failed to update campaign status'
         );
+      } finally {
+        isUpdatingRef.current = false;
       }
     },
     [
@@ -277,7 +319,9 @@ const CampaignList = () => {
         GridTreeNodeWithRender
       >
     ) => {
+      if (isUpdatingRef.current) return;
       try {
+        isUpdatingRef.current = true;
         const data = {
           approve: Boolean(command === CampaignCommands.AdminApprovedCampaign),
           id: cellValues?.row?.id,
@@ -289,14 +333,16 @@ const CampaignList = () => {
       } catch (err) {
         console.error(err);
         toast.error('Failed to update admin status');
+      } finally {
+        isUpdatingRef.current = false;
       }
     },
     [updateAdminStatus, refetchPending, refetchCampaigns]
   );
 
-  const handleCreateCampaignDisability = useCallback(() => {
-    const entityBal = Boolean(balances.find(b => +b.entityBalance > 0));
-    const runningCampaigns = campaignResponse?.data?.some(
+  const handleCreateCampaignDisability = useMemo(() => {
+    const entityBal = Boolean(stableBalances?.find(b => +b.entityBalance > 0));
+    const runningCampaigns = stableCampaignData?.some(
       (campaign: CampaignCards) =>
         [
           CampaignStatus.CampaignRunning,
@@ -306,13 +352,17 @@ const CampaignList = () => {
     return (
       !entityBal || runningCampaigns || !currentUser?.business_twitter_handle
     );
-  }, [currentUser, campaignResponse?.data, balances]);
+  }, [
+    currentUser?.business_twitter_handle,
+    stableCampaignData,
+    stableBalances,
+  ]);
 
-  const handleCardsRefresh = () => {
+  const handleCardsRefresh = useCallback(() => {
     refetchCampaigns();
     refetchPending();
     refetchClaims();
-  };
+  }, [refetchCampaigns, refetchPending, refetchClaims]);
 
   // Use campaignResponse.data directly for DataGrid rows
   const campaignRows = useMemo(() => {
@@ -332,8 +382,7 @@ const CampaignList = () => {
     }));
   }, [campaignResponse]);
 
-  // Column definitions with actions
-
+  // Column definitions with actions - memoize with stable dependencies
   const columns: GridColDef[] = useMemo(
     () => [
       ...campaignListColumns,
@@ -342,11 +391,16 @@ const CampaignList = () => {
         headerName: 'Actions',
         width: 200,
         renderCell: cellValues => (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Button
-              variant='contained'
-              color='primary'
-              size='small'
+          <ActionButtonsContainer>
+            <PrimaryActionButton
+              className={
+                isButtonDisabled(
+                  cellValues.row.card_status,
+                  cellValues.row.approve
+                )
+                  ? 'disabled'
+                  : ''
+              }
               disabled={isButtonDisabled(
                 cellValues.row.card_status,
                 cellValues.row.approve
@@ -356,21 +410,19 @@ const CampaignList = () => {
               {getButtonLabel(
                 cellValues.row.card_status,
                 cellValues.row.campaign_start_time,
-                currentUser?.config
+                stableUserConfig
               )}
-            </Button>
-            <Button
-              variant='outlined'
-              size='small'
+            </PrimaryActionButton>
+            <SecondaryActionButton
               onClick={() => handleCard(cellValues.row.id)}
             >
-              <InfoIcon />
-            </Button>
-          </Box>
+              <InfoIcon fontSize='small' />
+            </SecondaryActionButton>
+          </ActionButtonsContainer>
         ),
       },
     ],
-    [currentUser?.config, handleClick, handleCard]
+    [stableUserConfig, handleClick, handleCard]
   );
 
   const ADMINCOLUMNS: GridColDef[] = useMemo(
@@ -392,32 +444,30 @@ const CampaignList = () => {
     [handleAdminAction, dispatch]
   );
 
-  const getRows = useCallback(() => {
+  const getRows = useMemo(() => {
     if (activeTab === 'pending' && isAdmin) {
       return uniqBy(pendingCampaigns, 'id');
     }
     if (activeTab === 'claimRewards') {
       return uniqBy(calimRewardsData?.rewardDetails, 'id');
     }
-    // Use campaignRows directly for paginated data
     return campaignRows;
   }, [activeTab, isAdmin, pendingCampaigns, calimRewardsData, campaignRows]);
 
-  const getColumns = useCallback(() => {
+  const getColumns = useMemo(() => {
     if (activeTab === 'pending' && isAdmin) {
       return ADMINCOLUMNS;
     }
     return columns;
   }, [activeTab, isAdmin, ADMINCOLUMNS, columns]);
 
-  const getTotalRowsCount = useCallback(() => {
+  const getTotalRowsCount = useMemo(() => {
     if (activeTab === 'pending' && isAdmin) {
       return pendingCampaigns.length;
     }
     if (activeTab === 'claimRewards') {
       return calimRewardsData?.rewardDetails.length || 0;
     }
-    // Use backend-provided total for paginated data
     return campaignResponse?.pagination?.total || 0;
   }, [
     activeTab,
@@ -428,128 +478,97 @@ const CampaignList = () => {
   ]);
 
   const isLoading = campaignsLoading || pendingLoading || claimLoading;
-  // Use isFetching for more responsive loading on page change
   const isGridLoading = campaignsFetching || pendingLoading || claimLoading;
 
   return (
-    <Box>
-      <Box
-        sx={{
-          marginTop: 4,
-          marginBottom: 2,
-          backgroundColor: 'white',
-          border: 1,
-          borderColor: 'rgba(224, 224, 224, 1)',
-        }}
-        elevation={0}
-        component={Card}
-      >
-        <Box sx={{ p: 2 }}>
-          <Stack
-            direction={{ xs: 'column', sm: 'column', md: 'row' }}
-            spacing={{ xs: 2, sm: 2 }}
-            justifyContent='space-between'
-            alignItems={{ xs: 'left', sm: 'left', md: 'center' }}
-          >
-            <Stack direction={'row'}>
-              <Box sx={{ marginRight: 1 }}>
+    <CampaignContainer>
+      <CampaignCard>
+        {/* Header Section */}
+        <HeaderSection>
+          <HeaderContent>
+            {/* Info Banner */}
+            <InfoBanner>
+              <InfoIcon>
                 <InfoOutlinedIcon />
-              </Box>
-              <Typography sx={{ maxWidth: 700 }} variant='caption'>
+              </InfoIcon>
+              <InfoText>
                 In the current beta phase, please note that only one campaign
                 can be run at a time. Each initiated campaign will automatically
                 end 1 hour after its start. We plan to incrementally ease these
                 restrictions in the future. Also, be informed that your balance
                 can be used without any limits across different campaigns.
-              </Typography>
-            </Stack>
-            {isAdmin && (
-              <Button
-                size='large'
-                variant='contained'
-                disableElevation
-                onClick={() => dispatch(setOpenAssociateModal(true))}
-              >
-                Associate
-              </Button>
+              </InfoText>
+            </InfoBanner>
+
+            {/* Action Bar */}
+            <ActionBar>
+              <TabSection>
+                <TabNavigation
+                  activeTab={activeTab}
+                  setActiveTab={handleTabChange}
+                  isAdmin={!!isAdmin}
+                  handleCardsRefresh={handleCardsRefresh}
+                />
+              </TabSection>
+
+              <ButtonGroup>
+                {isAdmin && (
+                  <SecondaryButton
+                    onClick={() => dispatch(setOpenAssociateModal(true))}
+                  >
+                    Associate
+                  </SecondaryButton>
+                )}
+
+                <ChatGPTLink
+                  href='https://chat.openai.com/g/g-cGD9GbBPY-hashbuzz'
+                  target='_blank'
+                  rel='noreferrer'
+                >
+                  Connect with ChatGPT
+                </ChatGPTLink>
+
+                <PrimaryButton
+                  disabled={handleCreateCampaignDisability}
+                  onClick={handleTemplate}
+                >
+                  <AddIcon fontSize='small' />
+                  Create Campaign
+                </PrimaryButton>
+              </ButtonGroup>
+            </ActionBar>
+          </HeaderContent>
+        </HeaderSection>
+
+        <Divider />
+
+        {/* Data Section */}
+        <DataSection>
+          <DataGridWrapper>
+            {isLoading ? (
+              <LoadingContainer>
+                <CircularProgress size={32} />
+              </LoadingContainer>
+            ) : (
+              <DataGrid
+                rows={getRows}
+                rowCount={getTotalRowsCount || 0}
+                columns={getColumns}
+                pageSizeOptions={[5, 10, 20]}
+                paginationMode='server'
+                paginationModel={paginationModel}
+                onPaginationModelChange={setPaginationModel}
+                loading={isGridLoading}
+                disableRowSelectionOnClick
+                autoHeight={false}
+                sx={dataGridStyles}
+              />
             )}
-            <Button
-              component='a'
-              href='https://chat.openai.com/g/g-cGD9GbBPY-hashbuzz'
-              target='_blank'
-              rel='noreferrer'
-              sx={{
-                textDecoration: 'none',
-                fontSize: '16px',
-                color: 'white',
-                backgroundColor: '#10A37F',
-                borderRadius: '4px',
-                padding: '10px',
-                textAlign: 'center',
-                '&:hover': {
-                  backgroundColor: '#0e8c6b',
-                },
-              }}
-            >
-              CONNECT WITH CHATGPT
-            </Button>
-            <Button
-              size='large'
-              variant='contained'
-              disableElevation
-              disabled={handleCreateCampaignDisability()}
-              onClick={handleTemplate}
-            >
-              Create Campaign
-            </Button>
-          </Stack>
-          <TabNavigation
-            activeTab={activeTab}
-            setActiveTab={handleTabChange}
-            isAdmin={!!isAdmin}
-            handleCardsRefresh={handleCardsRefresh}
-          />
-        </Box>
+          </DataGridWrapper>
+        </DataSection>
+      </CampaignCard>
 
-        <Divider sx={{ borderColor: 'rgba(224, 224, 224, 1)' }} />
-        <Box sx={{ height: 400, position: 'relative' }}>
-          {isLoading ? (
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100%',
-              }}
-            >
-              <CircularProgress />
-            </Box>
-          ) : (
-            <DataGrid
-              rows={getRows()}
-              rowCount={getTotalRowsCount() || 0}
-              columns={getColumns()}
-              pageSizeOptions={[5, 10, 20]}
-              paginationMode='server'
-              paginationModel={paginationModel}
-              onPaginationModelChange={setPaginationModel}
-              loading={isGridLoading}
-              sx={{
-                '& .MuiDataGrid-cell': {
-                  borderColor: 'rgba(224, 224, 224, 1)',
-                },
-                '& .MuiDataGrid-columnHeaders': {
-                  borderColor: 'rgba(224, 224, 224, 1)',
-                },
-                '& .MuiDataGrid-footerContainer': {
-                  borderColor: 'rgba(224, 224, 224, 1)',
-                },
-              }}
-            />
-          )}
-        </Box>
-      </Box>
-
+      {/* Modals */}
       <DetailsModal
         open={open}
         setOpen={(isOpen: boolean) => dispatch(setOpen(isOpen))}
@@ -566,7 +585,7 @@ const CampaignList = () => {
         open={openAssociateModal}
         onClose={() => dispatch(setOpenAssociateModal(false))}
       />
-    </Box>
+    </CampaignContainer>
   );
 };
 

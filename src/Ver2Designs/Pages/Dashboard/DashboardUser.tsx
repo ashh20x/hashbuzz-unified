@@ -13,6 +13,7 @@ import { getErrorMessage, isAllowedToCmapigner } from '../../../comman/helpers';
 import Balances from './Balances';
 import CampaignList from './CampaignList';
 import { CardGenUtility } from './CardGenUtility';
+import PromoHistory from './PromoHistory';
 import * as SC from './styled';
 
 const Dashboard = () => {
@@ -142,6 +143,9 @@ const Dashboard = () => {
           </SC.StyledConnectBrandButton>
         </SC.StyledBrandAccountContainer>
       )}
+
+      {/* promo and reward History */}
+      <PromoHistory />
 
       {/* Campaign List section */}
       <CampaignList />

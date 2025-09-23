@@ -5,7 +5,7 @@ export const header: SxProps<Theme> = {
   flexDirection: 'column',
   '& h1': {
     fontSize: '1.5rem',
-    lineHeight: 1.64,
+    lineHeight: 1.54,
     fontWeight: 600,
     color: '#262626',
     letterSpacing: '2%',

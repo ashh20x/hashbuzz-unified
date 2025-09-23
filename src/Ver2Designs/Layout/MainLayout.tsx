@@ -30,13 +30,14 @@ const MainLayout = () => {
       <Container
         maxWidth='xl'
         sx={{
-          // backgroundColor: '#F5F6FF',
+          // backgroundColor: '#F5F6FF'
           minHeight: '100vh',
           paddingTop: 10,
           [theme.breakpoints.up('sm')]: {
             display: 'grid',
             gridTemplateRows: 'auto 1fr',
-            height: '100vh',
+            height: '100%',
+
             gridGap: '12px',
           },
         }}

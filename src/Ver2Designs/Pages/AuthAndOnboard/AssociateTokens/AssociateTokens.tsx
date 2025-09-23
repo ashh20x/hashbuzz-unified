@@ -12,7 +12,7 @@ const AssociateTokens = () => {
     wallet: { address },
     token: { tokens },
   } = useAppSelector(state => state.auth.userAuthAndOnBoardSteps);
-  const { data: accountTokens } = useGetAccountTokensQuery(address, {
+  const { data: accountTokens } = useGetAccountTokensQuery(address as string, {
     skip: !address,
   });
   const dispatch = useAppDispatch();

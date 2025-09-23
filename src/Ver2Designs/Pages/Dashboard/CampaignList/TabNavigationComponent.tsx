@@ -1,5 +1,6 @@
-import { Box, Button, IconButton } from '@mui/material';
-import RefreshICon from '@mui/icons-material/Cached';
+import RefreshIcon from '@mui/icons-material/Cached';
+import { Box, Button, Tooltip } from '@mui/material';
+import { RefreshButton } from './styles';
 
 export type TabsLabel = 'all' | 'pending' | 'claimRewards';
 
@@ -44,13 +45,14 @@ const TabNavigation = ({
       </Button>
     )}
     <Box sx={{ marginLeft: 'auto' }}>
-      <IconButton
-        aria-label='Update Cards list'
-        title='Update campaign cards'
-        onClick={handleCardsRefresh}
-      >
-        <RefreshICon fontSize='inherit' />
-      </IconButton>
+      <Tooltip title='Refresh campaign data' arrow placement='top'>
+        <RefreshButton
+          aria-label='Update Cards list'
+          onClick={handleCardsRefresh}
+        >
+          <RefreshIcon fontSize='inherit' />
+        </RefreshButton>
+      </Tooltip>
     </Box>
   </div>
 );
