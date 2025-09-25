@@ -82,7 +82,7 @@ contract Utils is HashbuzzStates {
     function getFungibleTokenBalance(
         address campaigner,
         address tokenId
-    ) public view onlyOwnerOrCampaigner returns (uint256 res) {
+    ) public view returns (uint256 res) {
         require(tokenId != address(0), ERR_INVALID_TOKEN_ADDRESS);
         require(campaigner != address(0), ERR_INVALID_CAMPAIGN_ADDRESS);
         require(isTokenWhitelisted(tokenId), ERR_TOKEN_NOT_WHITELISTED);
@@ -106,7 +106,7 @@ contract Utils is HashbuzzStates {
      */
     function getCampaignBalance(
         string memory campaignAddress
-    ) public view onlyOwnerOrCampaigner returns (uint256) {
+    ) public view returns (uint256) {
         require(
             bytes(campaignAddress).length > 0,
             ERR_INVALID_CAMPAIGN_ADDRESS
