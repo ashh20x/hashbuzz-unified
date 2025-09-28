@@ -10,6 +10,7 @@ import { toast } from 'react-toastify';
 import { images } from '../../../IconsPng/image';
 import XPlatformIcon from '../../../SVGR/XPlatformIcon';
 import { getErrorMessage, isAllowedToCmapigner } from '../../../comman/helpers';
+import { useRemoteConfig } from '../../../hooks';
 import Balances from './Balances';
 import CampaignList from './CampaignList';
 import { CardGenUtility } from './CardGenUtility';
@@ -22,6 +23,7 @@ const Dashboard = () => {
     useLazyGetTwitterBizHandleQuery();
   const location = useLocation();
   const [showBanner, setShowBanner] = React.useState(true);
+  const shouldShowRedesignDashboard = useRemoteConfig('dashboard_redesign');
 
   const bizHandleIntegration = React.useCallback(
     async (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -145,9 +147,7 @@ const Dashboard = () => {
       )}
 
       {/* promo and reward History */}
-      <PromoHistory />
-
-      {/* Campaign List section */}
+      {shouldShowRedesignDashboard && <PromoHistory />}
       <CampaignList />
     </React.Fragment>
   );

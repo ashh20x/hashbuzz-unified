@@ -41,6 +41,7 @@ export const initRemoteConfig = async (): Promise<void> => {
         campaign_v201: false,
         enable_new_chat_ui: false,
         some_other_flag: false,
+        dashboard_redesign: false,
       };
 
       // Set fetch settings

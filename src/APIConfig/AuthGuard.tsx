@@ -1,4 +1,5 @@
 import { RootState, useAppSelector } from '@/Store/store';
+import { useSessionManager } from '@/contexts';
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 
@@ -10,15 +11,20 @@ export const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const location = useLocation();
+  const sessionManager = useSessionManager();
 
   const { wallet, auth, xAccount, token } = useAppSelector(
     (state: RootState) => state.auth.userAuthAndOnBoardSteps
   );
   const { isAppReady } = useAppSelector(s => s.appStatus);
 
-  // Wait for app to be ready before making any routing decisions
-  if (!isAppReady) {
-    // Always render a fallback spinner while waiting for app readiness
+  // Since cookies are httpOnly, we can't detect them client-side
+  // Always wait for session manager to complete initialization and ping validation
+  const isSessionValidating =
+    sessionManager.isLoading && sessionManager.hasInitialized;
+
+  // Wait for app to be ready AND session validation to complete before making routing decisions
+  if (!isAppReady || isSessionValidating) {
     return (
       <div
         style={{
@@ -28,7 +34,9 @@ export const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
           height: '100vh',
         }}
       >
-        <span>Loading...</span>
+        <span>
+          {isSessionValidating ? 'Validating session...' : 'Loading...'}
+        </span>
       </div>
     );
   }
@@ -87,9 +95,31 @@ export const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
 export const RedirectIfAuthenticated: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
+  const sessionManager = useSessionManager();
   const { wallet, auth, xAccount, token } = useAppSelector(
     (state: RootState) => state.auth.userAuthAndOnBoardSteps
   );
+
+  // Since cookies are httpOnly, we can't detect them client-side
+  // Always wait for session manager to complete initialization and ping validation
+  const isSessionValidating =
+    sessionManager.isLoading && sessionManager.hasInitialized;
+
+  // Wait for session validation to complete
+  if (isSessionValidating) {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+        }}
+      >
+        <span>Validating session...</span>
+      </div>
+    );
+  }
 
   // Check if user has started any onboarding process
   const hasStartedOnboarding =
@@ -107,7 +137,7 @@ export const RedirectIfAuthenticated: React.FC<{
 
   // If fully onboarded, redirect to dashboard
   if (isFullyOnboarded) {
-    return <Navigate to='/dashboard' replace />;
+    return <Navigate to='/app/dashboard' replace />;
   }
 
   // If in middle of onboarding, redirect to appropriate step

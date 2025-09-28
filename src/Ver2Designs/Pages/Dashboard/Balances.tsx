@@ -142,11 +142,13 @@ const Balances = () => {
           const tokenBalance = accountBal?.tokens.find(
             t => t.token_id === entity.entityId
           );
-          tokenBalance && tokenBalance.balance > 0
-            ? setTopupModalData(entity)
-            : toast.warning(
-                `Paired account have insufficient token balance for the token ${entity?.entityIcon}.`
-              );
+          if (tokenBalance && tokenBalance.balance > 0) {
+            setTopupModalData(entity);
+          } else {
+            toast.warning(
+              `Paired account have insufficient token balance for the token ${entity?.entityIcon}.`
+            );
+          }
         }
       }
       setBalanceList(_d => ({ ..._d, open: false }));
@@ -312,23 +314,27 @@ const Balances = () => {
                 <Paper>
                   <ClickAwayListener onClickAway={handleCloseEntityList}>
                     <MenuList id='entityList-for-topup' autoFocusItem>
-                      {balances!.map((bal, index) => (
-                        <MenuItem
-                          key={index}
-                          disabled={!isAllowedToCmapigner(currentUser?.role)}
-                          onClick={event => handleMenuItemClick(event, index)}
-                        >
-                          <ListItemAvatar>{bal?.entityIcon}</ListItemAvatar>
-                          <ListItemText>
-                            {formatBalance(bal)} {`${bal.entitySymbol} `}
-                          </ListItemText>
-                          {balanceList.operation === 'reimburse' && (
-                            <Typography variant='body2' color='text.secondary'>
-                              (max)
-                            </Typography>
-                          )}
-                        </MenuItem>
-                      ))}
+                      {balances &&
+                        balances.map((bal, index) => (
+                          <MenuItem
+                            key={index}
+                            disabled={!isAllowedToCmapigner(currentUser?.role)}
+                            onClick={event => handleMenuItemClick(event, index)}
+                          >
+                            <ListItemAvatar>{bal?.entityIcon}</ListItemAvatar>
+                            <ListItemText>
+                              {formatBalance(bal)} {`${bal.entitySymbol} `}
+                            </ListItemText>
+                            {balanceList.operation === 'reimburse' && (
+                              <Typography
+                                variant='body2'
+                                color='text.secondary'
+                              >
+                                (max)
+                              </Typography>
+                            )}
+                          </MenuItem>
+                        ))}
                     </MenuList>
                   </ClickAwayListener>
                 </Paper>

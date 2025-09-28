@@ -1,6 +1,11 @@
 import { getCookieByName } from '@/comman/helpers';
-import { AUTH_STORAGE_KEYS } from '@/hooks/session-manager/constants';
 import React, { useEffect, useState } from 'react';
+
+const STORAGE_KEYS = {
+  ACCESS_TOKEN_EXPIRY: 'access_token_expiry',
+  DEVICE_ID: 'device_id',
+  LAST_TOKEN_REFRESH: 'last_token_refresh',
+} as const;
 
 const TokenRefreshDebugger: React.FC = () => {
   const [tokenInfo, setTokenInfo] = useState<{
@@ -17,12 +22,8 @@ const TokenRefreshDebugger: React.FC = () => {
 
   const updateTokenInfo = () => {
     const hasAccessToken = !!getCookieByName('access_token');
-    const storedExpiry = localStorage.getItem(
-      AUTH_STORAGE_KEYS.ACCESS_TOKEN_EXPIRY
-    );
-    const lastRefresh = localStorage.getItem(
-      AUTH_STORAGE_KEYS.LAST_TOKEN_REFRESH
-    );
+    const storedExpiry = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN_EXPIRY);
+    const lastRefresh = localStorage.getItem(STORAGE_KEYS.LAST_TOKEN_REFRESH);
 
     const expiry = storedExpiry ? Number(storedExpiry) : null;
     const timeUntilExpiry = expiry ? expiry - Date.now() : 0;
@@ -45,11 +46,17 @@ const TokenRefreshDebugger: React.FC = () => {
 
   const forceRefresh = () => {
     // Access the session manager from window (if available in development)
-    if (typeof window !== 'undefined' && (window as any).sessionManager) {
-      console.log('Forcing token refresh via sessionManager');
-      (window as any).sessionManager.forceRefresh();
+    if (
+      typeof window !== 'undefined' &&
+      (window as { sessionManager?: { forceRefresh: () => void } })
+        .sessionManager
+    ) {
+      console.warn('Forcing token refresh via sessionManager');
+      (
+        window as { sessionManager: { forceRefresh: () => void } }
+      ).sessionManager.forceRefresh();
     } else {
-      console.log('sessionManager not available on window');
+      console.warn('sessionManager not available on window');
     }
   };
 

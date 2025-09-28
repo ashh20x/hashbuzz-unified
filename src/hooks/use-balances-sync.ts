@@ -1,4 +1,5 @@
 import {
+  useGetCurrentUserQuery,
   useLazyGetCurrentUserQuery,
   useLazyGetTokenBalancesQuery,
 } from '@/API/user';
@@ -22,7 +23,8 @@ const INITIAL_HBAR_BALANCE_ENTITY: EntityBalances = {
 };
 
 export const useBalancesSync = () => {
-  const { currentUser, balanceRefreshTimer } = useAppSelector(s => s.app);
+  const { balanceRefreshTimer } = useAppSelector(s => s.app);
+  const { data: currentUser } = useGetCurrentUserQuery();
   const [getTokenBalances] = useLazyGetTokenBalancesQuery();
   const [getCurrentUser] = useLazyGetCurrentUserQuery();
   const [balanceQueryTimer, setBalanceQueryTimer] =
@@ -52,12 +54,11 @@ export const useBalancesSync = () => {
         if (topup) {
           const currentUserUpdated = await getCurrentUser().unwrap();
           // available_budget is in tinybars, convert to HBAR
-          availableBudget = currentUserUpdated.available_budget / 100_000_000;
+          availableBudget = currentUserUpdated.available_budget;
           dispatch(updateCurrentUser(currentUserUpdated));
         } else {
           // available_budget is in tinybars, convert to HBAR
-          availableBudget =
-            Number(currentUser?.available_budget || 0) / 100_000_000;
+          availableBudget = Number(currentUser?.available_budget || 0);
         }
 
         const balances: EntityBalances[] = [
@@ -237,6 +238,7 @@ export const useBalancesSync = () => {
     };
   }, [
     balanceRefreshTimer,
+    balanceQueryTimer,
     checkAndUpdateEntityBalances,
     clearRefreshTimer,
     dispatch,
