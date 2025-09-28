@@ -4,7 +4,6 @@ import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import * as React from 'react';
 import { cardStyle } from '../../../../components/Card/Card.styles';
-import DashboardUser from '../DashboardUser';
 import AdminViews from './AdminView';
 
 interface StyledTabsProps {
@@ -115,9 +114,9 @@ const AdminDashboard = () => {
           </Card>
         </Box>
       </TabPanel>
-      <TabPanel value={value} index={0}>
+      {/* <TabPanel value={value} index={0}>
         <DashboardUser />
-      </TabPanel>
+      </TabPanel> */}
     </Box>
   );
 };

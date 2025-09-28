@@ -4,7 +4,8 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import LeaderboardIcon from '@mui/icons-material/Leaderboard';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Box, Typography, useMediaQuery, useTheme } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import HashbuzzLogo from '../../SVGR/HashbuzzLogo';
 import HeaderMenu from './HeaderMenu';
 import * as SC from './styled';
@@ -13,15 +14,34 @@ const Header = () => {
   const { currentUser } = useAppSelector(s => s.app);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const [active, setActive] = useState<'dashboard' | 'leaderboard'>(
     'dashboard'
   );
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // Update active state based on current route
+  useEffect(() => {
+    const path = location.pathname;
+    if (path.includes('/app/dashboard') || path === '/app') {
+      setActive('dashboard');
+    } else if (path.includes('/app/leaderboard')) {
+      setActive('leaderboard');
+    }
+  }, [location.pathname]);
+
   const handleMenuItemClick = (item: 'dashboard' | 'leaderboard') => {
     setActive(item);
     setMobileMenuOpen(false);
+
+    // Navigate to the appropriate route
+    if (item === 'dashboard') {
+      navigate('/app/dashboard');
+    } else if (item === 'leaderboard') {
+      navigate('/app/leaderboard');
+    }
   };
 
   const toggleMobileMenu = () => {
@@ -55,7 +75,7 @@ const Header = () => {
                 {menuItems.map(item => (
                   <SC.StyledMenuButton
                     key={item.key}
-                    onClick={() => setActive(item.key)}
+                    onClick={() => handleMenuItemClick(item.key)}
                     startIcon={item.icon}
                     $isActive={active === item.key}
                   >

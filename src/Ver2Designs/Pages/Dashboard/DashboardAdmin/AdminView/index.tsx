@@ -1,5 +1,4 @@
 import { Box } from '@mui/material';
-import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import * as React from 'react';
 import AdminTrailSettersView from './AdminTrailSettersView';
@@ -68,8 +67,8 @@ const AdminView = () => {
         aria-label='Admin menus list'
         sx={{ borderRight: 1, borderColor: 'divider' }}
       >
-        <Tab label='User List' {...a11yProps(0)} />
-        <Tab label='TrailSetters Account' {...a11yProps(1)} />
+        {/* <Tab label='User List' {...a11yProps(0)} />
+        <Tab label='TrailSetters Accou' {...a11yProps(1)} /> */}
       </Tabs>
       <TabPanel value={value} index={0}>
         <AdminUsersViews />
