@@ -95,7 +95,7 @@ contract Utils is HashbuzzStates {
      */
     function getHbarBalance(
         address campaigner
-    ) public view onlyOwnerOrCampaigner returns (uint256 res) {
+    ) public view  returns (uint256 res) {
         res = balances[campaigner];
     }
 
