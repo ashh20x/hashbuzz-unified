@@ -231,6 +231,7 @@ contract Lifecycle is HashbuzzStates, Utils {
         address campaigner
     ) public onlyOwner returns (uint256) {
         require(tokenId != address(0), ERR_INVALID_TOKEN_ADDRESS);
+        require(isTokenWhitelisted(tokenId), ERR_TOKEN_NOT_WHITELISTED);
         require(
             bytes(campaignAddress).length > 0,
             ERR_INVALID_CAMPAIGN_ADDRESS
