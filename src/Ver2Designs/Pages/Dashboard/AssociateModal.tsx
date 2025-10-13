@@ -31,7 +31,7 @@ type CurrentFormState = {
   tokendata: string;
   token_type: string;
   token_symbol: string;
-  decimals: Number;
+  decimals: number;
 };
 
 const FORM_INITIAL_STATE: CurrentFormState = {

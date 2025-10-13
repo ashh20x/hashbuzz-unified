@@ -71,9 +71,9 @@ export type addCampaignBody = {
   tweet_text: string;
   comment_reward: number;
   retweet_reward: number;
-  fungible_token_id?: String;
+  fungible_token_id?: string;
   like_reward: number;
-  type: String;
+  type: string;
   quote_reward: number;
   // follow_reward: follow,
   campaign_budget: number;

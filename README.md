@@ -4,8 +4,8 @@ A modern React-based frontend application for the Hashbuzz decentralized social 
 
 ## � Documentation
 
-- **[🚀 Complete Deployment Guide](./DEPLOYMENT_GUIDE.md)** - Docker, AWS, Production deployment
-- **[👨‍💻 Developer Onboarding](./DEVELOPER_ONBOARDING.md)** - Getting started for new developers
+- **[🚀 Complete Deployment Guide](docs/DEPLOYMENT_GUIDE.md)** - Docker, AWS, Production deployment
+- **[👨‍💻 Developer Onboarding](docs/DEVELOPER_ONBOARDING.md)** - Getting started for new developers
 - **[🤝 Contributing Guidelines](./CONTRIBUTING.md)** - How to contribute to the project
 
 ## �🚀 Quick Start

@@ -212,7 +212,7 @@ export const AdminUsersViews = () => {
                     color='error'
                     disabled={
                       isLoadingPersonal ||
-                      !Boolean(userInview?.personal_twitter_handle)
+                      !userInview?.personal_twitter_handle
                     }
                     sx={{ marginLeft: 2 }}
                     onClick={() =>
@@ -233,7 +233,7 @@ export const AdminUsersViews = () => {
                     color='error'
                     disabled={
                       isLoadingBusiness ||
-                      !Boolean(userInview?.business_twitter_handle)
+                      !userInview?.business_twitter_handle
                     }
                     sx={{ marginLeft: 2 }}
                     onClick={() =>

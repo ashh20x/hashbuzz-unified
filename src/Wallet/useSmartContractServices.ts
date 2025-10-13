@@ -118,8 +118,8 @@ export const useSmartContractServices = () => {
         const updateBalanceTransaction = {
           success: true,
           response: {
-            transactionId: transactionId,
-            accountId: accountId, // Use the original accountId since we can't access it from signedTx
+            transactionId,
+            accountId, // Use the original accountId since we can't access it from signedTx
             signature: null, // Signature is not available in this format
           },
         };

@@ -218,7 +218,7 @@ Material-UI theme configuration with custom colors, typography, and spacing.
 
 For branching, PRs, and how to resolve merge conflicts by rebasing onto `master`, see the Git workflow guide:
 
-- [Git workflow: branch from `master` and resolve PR conflicts by rebasing](./docs/GIT_WORKFLOW.md)
+- [Git workflow: branch from `master` and resolve PR conflicts by rebasing](GIT_WORKFLOW.md)
 
 ### Daily Development Process
 
