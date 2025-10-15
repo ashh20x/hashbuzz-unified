@@ -95,14 +95,14 @@ contract Utils is HashbuzzStates {
      */
     function getHbarBalance(
         address campaigner
-    ) public view  returns (uint256 res) {
+    ) public view returns (uint256 res) {
         res = balances[campaigner];
     }
 
     /** Campaign Specific balance for the campaigners */
     /**
-     * @dev Balance held by the user to see.
-     * @param campaignAddress Solidity address of the campaigner.
+     * @dev Balance alloted to the camppaign to see.
+     * @param campaignAddress campaign string id.
      */
     function getCampaignBalance(
         string memory campaignAddress
@@ -112,5 +112,26 @@ contract Utils is HashbuzzStates {
             ERR_INVALID_CAMPAIGN_ADDRESS
         );
         return campaignBalances[campaignAddress];
+    }
+
+    /** Campaign Specific balance for the campaigners */
+    /**
+     * @dev Token balance held by the campaign.
+     * @param campaignAddress Campaign string ID.
+     * @param tokenId Solidity address of the token.
+     * @return res The balance of the fungible token for the campaign.
+     */
+    function getFungibleCampaignBalance(
+        string memory campaignAddress,
+        address tokenId
+    ) public view returns (uint256 res) {
+        require(
+            bytes(campaignAddress).length > 0,
+            ERR_INVALID_CAMPAIGN_ADDRESS
+        );
+        require(tokenId != address(0), ERR_INVALID_TOKEN_ADDRESS);
+        require(isTokenWhitelisted(tokenId), ERR_TOKEN_NOT_WHITELISTED);
+
+        res = tokenCampaignBalances[campaignAddress][tokenId][FUNGIBLE];
     }
 }
