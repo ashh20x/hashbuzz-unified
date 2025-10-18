@@ -6,7 +6,7 @@
  */
 
 import { useAppSessionManager } from '@/hooks';
-import React from 'react';
+import React, { useRef } from 'react';
 import {
   SessionManagerContext,
   SessionManagerType,
@@ -16,6 +16,14 @@ import {
 export const SessionManagerProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
+  // CRITICAL: Track if provider has already initialized to prevent re-initialization on re-renders
+  const providerInitializedRef = useRef(false);
+
+  if (!providerInitializedRef.current) {
+    console.warn('[SessionManagerProvider] First initialization');
+    providerInitializedRef.current = true;
+  }
+
   // Create a single instance of the session manager
   const sessionManager = useAppSessionManager();
 

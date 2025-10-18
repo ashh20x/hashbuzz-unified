@@ -3,11 +3,15 @@ import {
   Add as AddIcon,
   ArrowBack as ArrowBackIcon,
   CheckCircle as CheckCircleIcon,
+  Close as CloseIcon,
   Delete as DeleteIcon,
+  Image as ImageIcon,
   Publish as PublishIcon,
   RadioButtonChecked as RadioButtonCheckedIcon,
   RadioButtonUnchecked as RadioButtonUncheckedIcon,
   Save as SaveIcon,
+  Upload as UploadIcon,
+  OndemandVideo as VideoIcon,
 } from '@mui/icons-material';
 import {
   Alert,
@@ -15,6 +19,7 @@ import {
   Button,
   Card,
   CardContent,
+  CardMedia,
   Chip,
   Collapse,
   FormControl,
@@ -31,6 +36,8 @@ import {
   Select,
   SelectChangeEvent,
   Stack,
+  Tab,
+  Tabs,
   TextField,
   Typography,
 } from '@mui/material';
@@ -92,6 +99,13 @@ const CreateQuestCampaign: React.FC<CreateQuestCampaignProps> = ({
   const [budgetValidation, setBudgetValidation] =
     useState<BudgetValidationResult | null>(null);
 
+  // Media state
+  const [mediaTab, setMediaTab] = useState<'image' | 'video'>('image');
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]); // Preview URLs
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]); // Actual File objects
+  const [youtubeUrl, setYoutubeUrl] = useState<string>('');
+  const [youtubeEmbedUrl, setYoutubeEmbedUrl] = useState<string>('');
+
   // Handle adding new option
   const handleAddOption = () => {
     if (options.length >= 6) {
@@ -149,6 +163,96 @@ const CreateQuestCampaign: React.FC<CreateQuestCampaignProps> = ({
     setBudgetValidation(validation);
   };
 
+  // Media handling functions
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files) return;
+
+    // Limit to 4 images
+    if (uploadedImages.length + files.length > 4) {
+      toast.error('Maximum 4 images allowed');
+      return;
+    }
+
+    const fileArray = Array.from(files);
+    const validFiles: File[] = [];
+
+    // Convert files to data URLs for preview and collect valid files
+    fileArray.forEach(file => {
+      if (!file.type.startsWith('image/')) {
+        toast.error(`${file.name} is not an image file`);
+        return;
+      }
+
+      validFiles.push(file);
+
+      const reader = new FileReader();
+      reader.onload = e => {
+        const result = e.target?.result;
+        if (result && typeof result === 'string') {
+          setUploadedImages(prev => [...prev, result]);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Store actual File objects
+    setUploadedFiles(prev => [...prev, ...validFiles]);
+  };
+
+  const handleRemoveImage = (index: number) => {
+    setUploadedImages(prev => prev.filter((_, i) => i !== index));
+    setUploadedFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const extractYouTubeId = (url: string): string | null => {
+    const patterns = [
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/,
+      /youtube\.com\/embed\/([^&\n?#]+)/,
+    ];
+
+    for (const pattern of patterns) {
+      const match = url.match(pattern);
+      if (match && match[1]) {
+        return match[1];
+      }
+    }
+    return null;
+  };
+
+  const handleYouTubeUrlChange = (value: string) => {
+    setYoutubeUrl(value);
+
+    if (value.trim()) {
+      const videoId = extractYouTubeId(value);
+      if (videoId) {
+        setYoutubeEmbedUrl(`https://www.youtube.com/embed/${videoId}`);
+      } else {
+        setYoutubeEmbedUrl('');
+        if (value.length > 10) {
+          toast.error('Invalid YouTube URL');
+        }
+      }
+    } else {
+      setYoutubeEmbedUrl('');
+    }
+  };
+
+  const handleMediaTabChange = (
+    _event: React.SyntheticEvent,
+    newValue: 'image' | 'video'
+  ) => {
+    setMediaTab(newValue);
+    // Clear the other tab's data when switching
+    if (newValue === 'image') {
+      setYoutubeUrl('');
+      setYoutubeEmbedUrl('');
+    } else {
+      setUploadedImages([]);
+      setUploadedFiles([]);
+    }
+  };
+
   // Validate quest form
   const validateQuestForm = (): boolean => {
     // Check if all options have text
@@ -171,10 +275,20 @@ const CreateQuestCampaign: React.FC<CreateQuestCampaignProps> = ({
   const handleSaveDraft = async () => {
     if (!validateQuestForm()) return;
 
+    // Prepare media data based on selected tab
+    // For images: use File objects, for YouTube: send URL as string (will be handled separately)
+    const mediaData: File[] | string[] =
+      mediaTab === 'image'
+        ? uploadedFiles
+        : youtubeEmbedUrl
+          ? [youtubeEmbedUrl]
+          : [];
+
     await saveDraft({
       ...formData,
       question_options: options.map(opt => opt.text),
       correct_answer_index: correctAnswerIndex,
+      media: mediaData,
     });
   };
 
@@ -182,10 +296,19 @@ const CreateQuestCampaign: React.FC<CreateQuestCampaignProps> = ({
   const handlePublish = async () => {
     if (!validateQuestForm()) return;
 
+    // Prepare media data based on selected tab
+    const mediaData: File[] | string[] =
+      mediaTab === 'image'
+        ? uploadedFiles
+        : youtubeEmbedUrl
+          ? [youtubeEmbedUrl]
+          : [];
+
     await publishCampaign({
       ...formData,
       question_options: options.map(opt => opt.text),
       correct_answer_index: correctAnswerIndex,
+      media: mediaData,
     });
   };
 
@@ -435,6 +558,187 @@ const CreateQuestCampaign: React.FC<CreateQuestCampaignProps> = ({
                     {options[correctAnswerIndex].text}
                   </Typography>
                 </Alert>
+              )}
+            </Paper>
+
+            {/* Media Section (Optional) */}
+            <Paper elevation={0} sx={{ p: 3, bgcolor: 'grey.50' }}>
+              <Typography variant='h6' gutterBottom>
+                Media (Optional)
+              </Typography>
+              <Typography variant='body2' color='text.secondary' sx={{ mb: 2 }}>
+                Add images or a YouTube video to make your quest more engaging
+              </Typography>
+
+              <Tabs
+                value={mediaTab}
+                onChange={handleMediaTabChange}
+                sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}
+              >
+                <Tab
+                  icon={<ImageIcon />}
+                  iconPosition='start'
+                  label='Upload Images'
+                  value='image'
+                />
+                <Tab
+                  icon={<VideoIcon />}
+                  iconPosition='start'
+                  label='YouTube Video'
+                  value='video'
+                />
+              </Tabs>
+
+              {/* Image Upload Tab */}
+              {mediaTab === 'image' && (
+                <Box>
+                  <Button
+                    variant='outlined'
+                    component='label'
+                    startIcon={<UploadIcon />}
+                    disabled={uploadedImages.length >= 4}
+                    sx={{ mb: 2 }}
+                  >
+                    Upload Image
+                    <input
+                      type='file'
+                      hidden
+                      accept='image/*'
+                      multiple
+                      onChange={handleImageUpload}
+                    />
+                  </Button>
+                  <Typography
+                    variant='caption'
+                    display='block'
+                    color='text.secondary'
+                    sx={{ mb: 2 }}
+                  >
+                    Maximum 4 images allowed. Supported formats: JPG, PNG, GIF
+                  </Typography>
+
+                  {uploadedImages.length > 0 && (
+                    <Box
+                      sx={{
+                        display: 'grid',
+                        gridTemplateColumns: {
+                          xs: '1fr',
+                          sm: '1fr 1fr',
+                          md: 'repeat(4, 1fr)',
+                        },
+                        gap: 2,
+                      }}
+                    >
+                      {uploadedImages.map((image, index) => (
+                        <Card key={index}>
+                          <CardMedia
+                            component='img'
+                            height='140'
+                            image={image}
+                            alt={`Uploaded ${index + 1}`}
+                            sx={{ objectFit: 'cover' }}
+                          />
+                          <Box sx={{ p: 1, textAlign: 'center' }}>
+                            <IconButton
+                              size='small'
+                              color='error'
+                              onClick={() => handleRemoveImage(index)}
+                            >
+                              <CloseIcon fontSize='small' />
+                            </IconButton>
+                          </Box>
+                        </Card>
+                      ))}
+                    </Box>
+                  )}
+
+                  {uploadedImages.length === 0 && (
+                    <Alert severity='info'>
+                      <Typography variant='body2'>
+                        No images uploaded yet. Click "Upload Image" to add
+                        media.
+                      </Typography>
+                    </Alert>
+                  )}
+                </Box>
+              )}
+
+              {/* YouTube Video Tab */}
+              {mediaTab === 'video' && (
+                <Box>
+                  <TextField
+                    label='YouTube Video URL'
+                    value={youtubeUrl}
+                    onChange={e => handleYouTubeUrlChange(e.target.value)}
+                    placeholder='https://www.youtube.com/watch?v=...'
+                    fullWidth
+                    helperText='Paste a YouTube video URL to embed it in your quest'
+                    sx={{ mb: 2 }}
+                  />
+
+                  {youtubeEmbedUrl && (
+                    <Paper elevation={2} sx={{ p: 2, bgcolor: 'black' }}>
+                      <Box
+                        sx={{
+                          position: 'relative',
+                          paddingBottom: '56.25%', // 16:9 aspect ratio
+                          height: 0,
+                          overflow: 'hidden',
+                        }}
+                      >
+                        <iframe
+                          src={youtubeEmbedUrl}
+                          title='YouTube video preview'
+                          style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width: '100%',
+                            height: '100%',
+                            border: 'none',
+                          }}
+                          allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+                          allowFullScreen
+                        />
+                      </Box>
+                      <Stack
+                        direction='row'
+                        justifyContent='space-between'
+                        alignItems='center'
+                        sx={{ mt: 2 }}
+                      >
+                        <Typography variant='caption' color='white'>
+                          Preview
+                        </Typography>
+                        <Button
+                          size='small'
+                          color='error'
+                          variant='outlined'
+                          onClick={() => handleYouTubeUrlChange('')}
+                        >
+                          Remove Video
+                        </Button>
+                      </Stack>
+                    </Paper>
+                  )}
+
+                  {!youtubeEmbedUrl && youtubeUrl && (
+                    <Alert severity='warning'>
+                      <Typography variant='body2'>
+                        Invalid YouTube URL. Please enter a valid YouTube video
+                        link.
+                      </Typography>
+                    </Alert>
+                  )}
+
+                  {!youtubeUrl && (
+                    <Alert severity='info'>
+                      <Typography variant='body2'>
+                        Enter a YouTube URL above to preview the video
+                      </Typography>
+                    </Alert>
+                  )}
+                </Box>
               )}
             </Paper>
 

@@ -2,6 +2,7 @@ export * from './auth';
 export * from './balances';
 export * from './campaign';
 export * from './forms';
+export * from './quest';
 export * from './state';
 export * from './token';
 export * from './transaction';

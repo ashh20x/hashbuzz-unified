@@ -42,6 +42,8 @@ const baseQueryWithReauth: BaseQueryFn<
     '/auth/logout',
     '/auth/refresh-token',
     '/auth/admin-login',
+    '/api/V201/quest',
+    '/api/V201/campaign',
   ];
 
   // Public endpoints that don't require authentication
@@ -162,6 +164,7 @@ export const apiBase = createApi({
     'Campaign',
     'TokenBalance',
     'Transaction',
+    'Quest',
   ],
   endpoints: () => ({}),
 });

@@ -1,11 +1,12 @@
 import {
-  useCreateCampaignDraftV201Mutation,
-  usePublishCampaignV201Mutation,
-} from '@/API/campaign';
+  useDraftQuestCampaignMutation,
+  usePublishQuestCampaignMutation,
+} from '@/API/quest';
 import { useGetTokenBalancesQuery } from '@/API/user';
 import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { useAppSelector } from '../Store/store';
 
 // Token balance type from balances.ts
 interface TokenBalance {
@@ -26,6 +27,7 @@ export interface QuestCampaignFormData {
   campaign_budget: number;
   type: 'HBAR' | 'FUNGIBLE';
   fungible_token_id?: string;
+  media?: string[] | File[];
 }
 
 // Form validation errors
@@ -87,6 +89,8 @@ const initialFormData: QuestCampaignFormData = {
 export const useQuestCampaign = (): UseQuestCampaignReturn => {
   const navigate = useNavigate();
 
+  const currentUser = useAppSelector(state => state.app.currentUser);
+
   // Form state
   const [formData, setFormData] =
     useState<QuestCampaignFormData>(initialFormData);
@@ -95,9 +99,9 @@ export const useQuestCampaign = (): UseQuestCampaignReturn => {
 
   // API hooks
   const [createDraft, { isLoading: isDraftLoading }] =
-    useCreateCampaignDraftV201Mutation();
+    useDraftQuestCampaignMutation();
   const [publishCampaignMutation, { isLoading: isPublishLoading }] =
-    usePublishCampaignV201Mutation();
+    usePublishQuestCampaignMutation();
   const { data: tokenBalances, isLoading: isLoadingTokens } =
     useGetTokenBalancesQuery();
 
@@ -164,25 +168,25 @@ export const useQuestCampaign = (): UseQuestCampaignReturn => {
 
   // Get user balance for selected token type
   const getUserBalance = useCallback((): number => {
-    if (!tokenBalances || tokenBalances.length === 0) return 0;
-
     if (formData.type === 'HBAR') {
-      const hbarBalance = tokenBalances.find(
-        (token: unknown) => (token as TokenBalance).token_id === 'HBAR'
-      );
-      return hbarBalance
-        ? Number((hbarBalance as unknown as TokenBalance).balance)
-        : 0;
-    } else {
-      const selectedToken = tokenBalances.find(
-        (token: unknown) =>
-          (token as TokenBalance).token_id === formData.fungible_token_id
-      );
-      return selectedToken
-        ? Number((selectedToken as unknown as TokenBalance).balance)
-        : 0;
+      const hbarBalance = currentUser?.available_budget;
+
+      return hbarBalance ? hbarBalance / 1e8 : 0;
     }
-  }, [tokenBalances, formData.type, formData.fungible_token_id]);
+    if (!tokenBalances || tokenBalances.length === 0) return 0;
+    const selectedToken = tokenBalances.find(
+      (token: unknown) =>
+        (token as TokenBalance).token_id === formData.fungible_token_id
+    );
+    return selectedToken
+      ? Number((selectedToken as unknown as TokenBalance).balance)
+      : 0;
+  }, [
+    tokenBalances,
+    formData.type,
+    formData.fungible_token_id,
+    currentUser?.available_budget,
+  ]);
 
   // Get maximum recommended budget (80% of balance)
   const getMaxBudget = useCallback((): number => {
@@ -199,47 +203,37 @@ export const useQuestCampaign = (): UseQuestCampaignReturn => {
       }
 
       try {
-        // TODO: Implement Quest Campaign API endpoints
-        // For now, use V201 endpoints as placeholder
-        const formDataObj = new FormData();
-        formDataObj.append('name', formData.name);
-        formDataObj.append('tweet_text', formData.question);
-        formDataObj.append(
-          'expected_engaged_users',
-          String(formData.expected_engaged_users)
-        );
-        formDataObj.append('campaign_budget', String(formData.campaign_budget));
-        formDataObj.append('type', formData.type);
+        // Get correct answer text from question_options array
+        const correctAnswer =
+          additionalData?.question_options &&
+          additionalData.correct_answer_index !== undefined &&
+          additionalData.correct_answer_index !== null
+            ? additionalData.question_options[
+                additionalData.correct_answer_index
+              ]
+            : '';
 
-        if (formData.type === 'FUNGIBLE' && formData.fungible_token_id) {
-          formDataObj.append('fungible_token_id', formData.fungible_token_id);
-        }
+        // Prepare request data
+        const requestData = {
+          name: formData.name,
+          tweet_text: formData.question,
+          expected_engaged_users: formData.expected_engaged_users,
+          campaign_budget: formData.campaign_budget,
+          type: formData.type,
+          fungible_token_id:
+            formData.type === 'FUNGIBLE'
+              ? formData.fungible_token_id
+              : undefined,
+          options: additionalData?.question_options || [],
+          correct_answers: correctAnswer,
+          media: (additionalData?.media as File[] | undefined) || [],
+        };
 
-        // Add quest-specific data
-        if (additionalData?.question_options) {
-          formDataObj.append(
-            'question_options',
-            JSON.stringify(additionalData.question_options)
-          );
-        }
-        if (additionalData?.correct_answer_index !== undefined) {
-          formDataObj.append(
-            'correct_answer_index',
-            String(additionalData.correct_answer_index)
-          );
-        }
+        const result = await createDraft(requestData).unwrap();
 
-        const result = await createDraft(formDataObj).unwrap();
-
-        if (result) {
-          const draftId =
-            (result as unknown as { campaignId?: string; draftId?: string })
-              .campaignId ||
-            (result as unknown as { campaignId?: string; draftId?: string })
-              .draftId ||
-            'saved';
-          setSavedDraftId(draftId);
-          toast.success('Quest draft saved successfully!');
+        if (result?.data?.questId) {
+          setSavedDraftId(result.data.questId);
+          toast.success(result.message || 'Quest draft saved successfully!');
         }
       } catch (error: unknown) {
         console.error('Error saving draft:', error);
@@ -277,22 +271,21 @@ export const useQuestCampaign = (): UseQuestCampaignReturn => {
         return;
       }
 
+      // Check if draft was saved first
+      if (!savedDraftId) {
+        toast.error('Please save a draft before publishing');
+        return;
+      }
+
       try {
-        // TODO: Implement Quest Campaign publish endpoint
-        // For now, use savedDraftId as campaignId
-        const publishPayload = {
-          campaignId: Number(savedDraftId) || 1,
-          campaignDuration: 7,
-          anyFinalComment: JSON.stringify({
-            question_options: additionalData.question_options,
-            correct_answer_index: additionalData.correct_answer_index,
-          }),
-        };
+        const result = await publishCampaignMutation({
+          questId: savedDraftId,
+        }).unwrap();
 
-        const result = await publishCampaignMutation(publishPayload).unwrap();
-
-        if (result) {
-          toast.success('Quest campaign published successfully!');
+        if (result?.data) {
+          toast.success(
+            result.message || 'Quest campaign published successfully!'
+          );
           resetForm();
           // Navigate to campaigns list or detail page
           setTimeout(() => {

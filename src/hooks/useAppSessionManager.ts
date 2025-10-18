@@ -26,6 +26,7 @@ import {
   useRefreshTokenMutation,
 } from '@/Ver2Designs/Pages/AuthAndOnboard/api/auth';
 import { getCookieByName } from '@/comman/helpers';
+import { SessionInitSingleton } from '@/utils/SessionInitSingleton';
 import { useAccountId, useWallet } from '@buidlerlabs/hashgraph-react-wallets';
 import { HWCConnector } from '@buidlerlabs/hashgraph-react-wallets/connectors';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -54,7 +55,7 @@ const CONFIG = {
   SESSION_EXPIRE_MINUTES: 15, // 15 minutes default session
   CROSS_TAB_SYNC_KEY: 'hashbuzz_session_sync',
   PING_RETRY_DELAY: 2000, // 2 seconds
-  MAX_PING_RETRIES: 3,
+  MAX_PING_RETRIES: 1,
   WALLET_THROTTLE_MS: 1000, // 1 second wallet update throttle
 } as const;
 
@@ -397,6 +398,25 @@ export const useAppSessionManager = ({
    * Initialize session on app startup
    */
   const initializeSession = useCallback(async () => {
+    // CRITICAL: Check singleton first to prevent duplicate initialization across StrictMode remounts
+    if (
+      SessionInitSingleton.isInitializing() ||
+      SessionInitSingleton.hasInitialized()
+    ) {
+      console.warn(
+        '[SESSION MANAGER] Already initialized or initializing (singleton check) - skipping'
+      );
+      return;
+    }
+
+    // Mark as started in singleton
+    if (!SessionInitSingleton.startInitialization()) {
+      console.warn(
+        '[SESSION MANAGER] Failed to start initialization (race condition) - skipping'
+      );
+      return;
+    }
+
     try {
       console.warn('[SESSION MANAGER] Initializing session...');
       setSessionState(prev => ({ ...prev, isLoading: true, error: null }));
@@ -453,6 +473,9 @@ export const useAppSessionManager = ({
           hasInitialized: true,
           error: null,
         });
+
+        // Mark as completed in singleton
+        SessionInitSingleton.completeInitialization();
         return;
       }
 
@@ -486,6 +509,9 @@ export const useAppSessionManager = ({
                 ? null
                 : 'Session validation failed after refresh',
             });
+
+            // Mark as completed in singleton
+            SessionInitSingleton.completeInitialization();
             return;
           } else {
             console.warn('[SESSION MANAGER] Token refresh failed');
@@ -504,6 +530,9 @@ export const useAppSessionManager = ({
         hasInitialized: true,
         error: null,
       });
+
+      // Mark as completed in singleton
+      SessionInitSingleton.completeInitialization();
     } catch (error) {
       console.error('[SESSION MANAGER] Session initialization failed:', error);
       setSessionState({
@@ -513,6 +542,9 @@ export const useAppSessionManager = ({
         hasInitialized: true,
         error: error instanceof Error ? error.message : 'Initialization failed',
       });
+
+      // Mark as completed even on error to allow retry
+      SessionInitSingleton.completeInitialization();
     }
   }, [pingSession, performTokenRefresh, bufferSeconds]);
 
@@ -557,6 +589,9 @@ export const useAppSessionManager = ({
         hasInitialized: true,
         error: null,
       });
+
+      // Reset singleton to allow re-initialization after logout
+      SessionInitSingleton.reset();
     } catch (error) {
       console.error('[SESSION MANAGER] Logout error:', error);
     }

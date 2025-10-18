@@ -131,8 +131,6 @@ const CampaignList = () => {
   const campaignV201Enabled = useRemoteConfig('campaign_v201') as boolean;
   const [publishCampaign] = usePublishCampaignV201Mutation();
 
-  console.log({ campaignV201Enabled });
-
   // Use ref to prevent infinite loops
   const isUpdatingRef = useRef(false);
 
@@ -223,6 +221,10 @@ const CampaignList = () => {
     },
     [dispatch]
   );
+
+  const handleQuestClick = useCallback(() => {
+    navigate('/app/create-quest');
+  }, [navigate]);
 
   const handleTemplate = useCallback(() => {
     navigate('/app/create-campaign');
@@ -534,6 +536,13 @@ const CampaignList = () => {
                 >
                   <AddIcon fontSize='small' />
                   Create Campaign
+                </PrimaryButton>
+                <PrimaryButton
+                  disabled={handleCreateCampaignDisability}
+                  onClick={handleQuestClick}
+                >
+                  <AddIcon fontSize='small' />
+                  Create Quest
                 </PrimaryButton>
               </ButtonGroup>
             </ActionBar>
