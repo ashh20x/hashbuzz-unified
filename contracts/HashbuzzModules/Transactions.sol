@@ -80,7 +80,7 @@ contract Transactions is HashbuzzStates, Utils {
      * @param campaigner Campaigner Address
      * @param amount  Total amount campaigner wanted to reimburse
      */
-    function reimburseCampaigner(
+    function reimburseBalanceForFungible(
         address tokenId,
         address campaigner,
         uint256 amount
