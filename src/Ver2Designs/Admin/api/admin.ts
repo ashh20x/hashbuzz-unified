@@ -325,11 +325,6 @@ export const adminApi = apiBase.injectEndpoints({
       }),
     }),
 
-    // System health and monitoring
-    getSystemHealth: builder.query<Record<string, unknown>, void>({
-      query: () => '/api/admin/system/health',
-    }),
-
     getDatabaseStats: builder.query<Record<string, unknown>, void>({
       query: () => '/api/admin/system/database-stats',
     }),
@@ -391,7 +386,6 @@ export const {
   useGetSystemStatsQuery,
   useGetUserStatsQuery,
   useGetCampaignStatsQuery,
-  useGetSystemHealthQuery,
   useGetDatabaseStatsQuery,
   useGetPerformanceMetricsQuery,
 

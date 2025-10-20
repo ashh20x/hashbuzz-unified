@@ -49,6 +49,11 @@ const UsersLIstCol: GridColDef[] = [
     minWidth: 200,
   },
   {
+    field: 'business_twitter_handle',
+    headerName: 'Business X account',
+    minWidth: 200,
+  },
+  {
     field: 'hedera_wallet_id',
     headerName: 'Wallet Id',
     minWidth: 200,
@@ -211,8 +216,7 @@ export const AdminUsersViews = () => {
                     size='small'
                     color='error'
                     disabled={
-                      isLoadingPersonal ||
-                      !userInview?.personal_twitter_handle
+                      isLoadingPersonal || !userInview?.personal_twitter_handle
                     }
                     sx={{ marginLeft: 2 }}
                     onClick={() =>
@@ -232,8 +236,7 @@ export const AdminUsersViews = () => {
                     size='small'
                     color='error'
                     disabled={
-                      isLoadingBusiness ||
-                      !userInview?.business_twitter_handle
+                      isLoadingBusiness || !userInview?.business_twitter_handle
                     }
                     sx={{ marginLeft: 2 }}
                     onClick={() =>

@@ -30,7 +30,8 @@ export interface DraftQuestRequest {
   campaign_budget: number;
   type: QuestType;
   fungible_token_id?: string;
-  media?: File[];
+  media?: File[]; // For image file uploads
+  youtube_url?: string; // For YouTube video URLs
   options?: string[]; // Optional - for quiz-type quests
   correct_answers?: string; // Optional - for quiz-type quests
 }

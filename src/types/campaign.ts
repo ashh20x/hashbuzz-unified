@@ -54,7 +54,13 @@ export type CampaignCards = {
   campaign_close_time: string | null;
   is_added_to_queue: boolean;
   card_status: CampaignStatus;
+  campaign_type: string | null;
 };
+
+export enum campaignTypes {
+  Quest = 'quest',
+  Awareness = 'awareness',
+}
 
 export type MediaData = {
   media_type: string;

@@ -57,7 +57,12 @@ export const questApi = apiBase.injectEndpoints({
           formData.append('correct_answers', body.correct_answers);
         }
 
-        // Append media files
+        // Append YouTube URL if provided (as single string, not array)
+        if (body.youtube_url) {
+          formData.append('youtube_url', body.youtube_url);
+        }
+
+        // Append media files (images)
         if (body.media && body.media.length > 0) {
           body.media.forEach((file: File) => {
             formData.append('media', file);
@@ -65,7 +70,7 @@ export const questApi = apiBase.injectEndpoints({
         }
 
         return {
-          url: '/api/v201/quest/draft',
+          url: '/api/V201/quest/draft',
           method: 'POST',
           body: formData,
         };
@@ -82,8 +87,9 @@ export const questApi = apiBase.injectEndpoints({
       PublishQuestRequest
     >({
       query: ({ questId }) => ({
-        url: `/api/v201/quest/${questId}/publish`,
+        url: `/api/V201/quest/publish`,
         method: 'POST',
+        body: { questId },
       }),
       invalidatesTags: (_result, _error, { questId }) => [
         'Quest',
@@ -101,7 +107,7 @@ export const questApi = apiBase.injectEndpoints({
       string
     >({
       query: questId => ({
-        url: `/api/v201/quest/${questId}/state`,
+        url: `/api/V201/quest/${questId}/state`,
         method: 'GET',
       }),
       providesTags: (_result, _error, questId) => [
@@ -118,7 +124,7 @@ export const questApi = apiBase.injectEndpoints({
       string
     >({
       query: questId => ({
-        url: `/api/v201/quest/${questId}/submissions`,
+        url: `/api/V201/quest/${questId}/submissions`,
         method: 'GET',
       }),
       providesTags: (_result, _error, questId) => [
@@ -135,7 +141,7 @@ export const questApi = apiBase.injectEndpoints({
       GradeQuestRequest
     >({
       query: ({ questId, ...body }) => ({
-        url: `/api/v201/quest/${questId}/grade`,
+        url: `/api/V201/quest/${questId}/grade`,
         method: 'POST',
         body,
       }),
@@ -154,7 +160,7 @@ export const questApi = apiBase.injectEndpoints({
       string
     >({
       query: questId => ({
-        url: `/api/v201/quest/${questId}/close`,
+        url: `/api/V201/quest/${questId}/close`,
         method: 'POST',
       }),
       invalidatesTags: (_result, _error, questId) => [
@@ -176,7 +182,7 @@ export const questApi = apiBase.injectEndpoints({
         const limit = params?.limit ?? 10;
 
         return {
-          url: '/api/v201/quest/all',
+          url: '/api/V201/quest/all',
           method: 'GET',
           params: { page, limit },
         };
@@ -202,7 +208,7 @@ export const questApi = apiBase.injectEndpoints({
       string
     >({
       query: questId => ({
-        url: `/api/v201/quest/${questId}`,
+        url: `/api/V201/quest/${questId}`,
         method: 'GET',
       }),
       providesTags: (_result, _error, questId) => [

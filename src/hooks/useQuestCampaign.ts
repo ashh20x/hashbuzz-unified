@@ -226,7 +226,18 @@ export const useQuestCampaign = (): UseQuestCampaignReturn => {
               : undefined,
           options: additionalData?.question_options || [],
           correct_answers: correctAnswer,
-          media: (additionalData?.media as File[] | undefined) || [],
+          // Handle media: if it's File array, send as media; if string (YouTube URL), send as youtube_url
+          media:
+            Array.isArray(additionalData?.media) &&
+            additionalData.media.length > 0 &&
+            additionalData.media[0] instanceof File
+              ? (additionalData.media as File[])
+              : undefined,
+          youtube_url:
+            Array.isArray(additionalData?.media) &&
+            typeof additionalData.media[0] === 'string'
+              ? additionalData.media[0]
+              : undefined,
         };
 
         const result = await createDraft(requestData).unwrap();

@@ -56,6 +56,61 @@ export interface PublishCampaignV201Response {
   message?: string;
 }
 
+// Admin Campaign List Types
+export interface AdminCampaignListItem {
+  id: string;
+  name: string;
+  campaign_status: string;
+  campaign_type: string;
+  campaign_budget: string;
+  owner_id: string;
+  created_at: string;
+  updated_at: string;
+  owner: {
+    user_name: string;
+    email: string;
+  };
+}
+
+export interface AdminCampaignListRequest {
+  page?: number;
+  limit?: number;
+  status?: string;
+  campaignType?: string;
+}
+
+export interface AdminCampaignListResponse {
+  success: boolean;
+  data: {
+    campaigns: AdminCampaignListItem[];
+    pagination: {
+      currentPage: number;
+      totalPages: number;
+      totalItems: number;
+      itemsPerPage: number;
+    };
+  };
+  message?: string;
+}
+
+// Campaign Log Types
+export interface CampaignLogEntry {
+  id: string;
+  campaign_id: string;
+  status: string;
+  message: string;
+  data: Record<string, unknown> | null;
+  created_at: string;
+}
+
+export interface CampaignLogsResponse {
+  success: boolean;
+  data: {
+    logs: CampaignLogEntry[];
+  };
+  message?: string;
+}
+
 export interface UpdateCampaignStatusRequest {
   card_id: number;
   campaign_command: string;
@@ -222,6 +277,36 @@ export const campaignApi = apiBase.injectEndpoints({
       }),
       invalidatesTags: ['Campaign'],
     }),
+
+    // Admin Endpoints
+    getAdminCampaignList: builder.query<
+      AdminCampaignListResponse,
+      AdminCampaignListRequest | void
+    >({
+      query: (params = {}) => {
+        const searchParams = new URLSearchParams();
+        const p = params || {};
+        if ('page' in p && p.page) searchParams.set('page', p.page.toString());
+        if ('limit' in p && p.limit)
+          searchParams.set('limit', p.limit.toString());
+        if ('status' in p && p.status) searchParams.set('status', p.status);
+        if ('campaignType' in p && p.campaignType)
+          searchParams.set('campaignType', p.campaignType);
+
+        return {
+          url: `/api/V201/campaign/admin/list?${searchParams.toString()}`,
+          method: 'GET',
+        };
+      },
+      providesTags: ['Campaign'],
+    }),
+
+    getCampaignLogs: builder.query<CampaignLogsResponse, string>({
+      query: campaignId => ({
+        url: `/api/V201/campaign/admin/${campaignId}/logs`,
+        method: 'GET',
+      }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -242,6 +327,10 @@ export const {
   useGetRecentTweetsQuery,
   useCreateCampaignDraftV201Mutation,
   usePublishCampaignV201Mutation,
+  useGetAdminCampaignListQuery,
+  useLazyGetAdminCampaignListQuery,
+  useGetCampaignLogsQuery,
+  useLazyGetCampaignLogsQuery,
 } = campaignApi;
 
 export default campaignApi;

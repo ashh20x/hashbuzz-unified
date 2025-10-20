@@ -8,24 +8,27 @@ import RemoteConfigLoader from './RemoteConfigLoader';
 import SplashScreen from './SplashScreen';
 import { store } from './Store/store';
 import HashbuzzWalletProvider from './Wallet/hashconnectService';
+import ErrorBoundary from './components/ErrorBoundary';
 
 const theme = createTheme();
 
 const App: React.FC = () => {
   return (
     <React.StrictMode>
-      <Suspense fallback={<SplashScreen message='Loading application...' />}>
-        <Provider store={store}>
-          <HashbuzzWalletProvider>
-            <ThemeProvider theme={theme}>
-              <RemoteConfigLoader>
-                <AppRouter />
-              </RemoteConfigLoader>
-            </ThemeProvider>
-          </HashbuzzWalletProvider>
-        </Provider>
-        <ToastContainer />
-      </Suspense>
+      <ErrorBoundary>
+        <Suspense fallback={<SplashScreen message='Loading application...' />}>
+          <Provider store={store}>
+            <HashbuzzWalletProvider>
+              <ThemeProvider theme={theme}>
+                <RemoteConfigLoader>
+                  <AppRouter />
+                </RemoteConfigLoader>
+              </ThemeProvider>
+            </HashbuzzWalletProvider>
+          </Provider>
+          <ToastContainer />
+        </Suspense>
+      </ErrorBoundary>
     </React.StrictMode>
   );
 };

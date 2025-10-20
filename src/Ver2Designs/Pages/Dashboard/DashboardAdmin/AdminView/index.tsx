@@ -1,15 +1,10 @@
-import { Box } from '@mui/material';
+import { Box, Tab } from '@mui/material';
 import Tabs from '@mui/material/Tabs';
 import * as React from 'react';
+import AdminCampaignsView from './AdminCampaignsView';
+import AdminMonitoringView from './AdminMonitoringView';
 import AdminTrailSettersView from './AdminTrailSettersView';
 import AdminUsersViews from './AdminUsersView';
-
-interface StyledTabsProps {
-  children?: React.ReactNode;
-  value: number;
-  onChange: (event: React.SyntheticEvent, newValue: number) => void;
-}
-
 interface TabPanelProps {
   children?: React.ReactNode;
   dir?: string;
@@ -67,14 +62,22 @@ const AdminView = () => {
         aria-label='Admin menus list'
         sx={{ borderRight: 1, borderColor: 'divider' }}
       >
-        {/* <Tab label='User List' {...a11yProps(0)} />
-        <Tab label='TrailSetters Accou' {...a11yProps(1)} /> */}
+        <Tab label='User List' {...a11yProps(0)} />
+        <Tab label='TrailSetters Accou' {...a11yProps(1)} />
+        <Tab label='Monitoring' {...a11yProps(2)} />
+        <Tab label='Campaigns' {...a11yProps(3)} />
       </Tabs>
       <TabPanel value={value} index={0}>
         <AdminUsersViews />
       </TabPanel>
       <TabPanel value={value} index={1}>
         <AdminTrailSettersView />
+      </TabPanel>
+      <TabPanel value={value} index={2}>
+        <AdminMonitoringView />
+      </TabPanel>
+      <TabPanel value={value} index={3}>
+        <AdminCampaignsView />
       </TabPanel>
     </Box>
   );
