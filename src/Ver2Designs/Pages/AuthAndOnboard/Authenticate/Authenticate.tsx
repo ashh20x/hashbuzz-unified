@@ -1,5 +1,6 @@
 import { apiBase } from '@/API/apiBase';
 import PrimaryButtonV2 from '@/components/Buttons/PrimaryButtonV2';
+import { useSessionManager } from '@/contexts/useSessionManager';
 import WalletDispalyIcon from '@/IconsPng/walletDisplayIcon.png';
 import { useAppDispatch } from '@/Store/store';
 import SuccessStepIcon from '@/SVGR/SuccessStepIcon';
@@ -15,7 +16,11 @@ import { Buffer } from 'buffer';
 import { useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { useGenerateAuthMutation, useLazyGetChallengeQuery } from '../api/auth';
-import { authenticated, connectXAccount } from '../authStoreSlice';
+import {
+  authenticated,
+  connectXAccount,
+  setTokenExpiry,
+} from '../authStoreSlice';
 import SectionHeader from '../Components/SectionHeader';
 import * as styles from './styles';
 
@@ -23,6 +28,7 @@ const Authenticate = () => {
   const { data: accountId } = useAccountId();
   const { isConnected, signer } = useWallet(HWCConnector);
   const dispatch = useAppDispatch();
+  const sessionManager = useSessionManager();
 
   // Use query to get challenge with 30-second caching
   const [getChallenge, { isLoading: isChallengeLoading }] =
@@ -70,13 +76,24 @@ const Authenticate = () => {
       }).unwrap();
 
       if (authResponse) {
-        // Set token expiry in localStorage - session manager will pick it up automatically
-        const expiryTime = new Date().getTime() + 15 * 60 * 1000; // 15 minutes from now
-        console.warn(
-          '[AUTHENTICATE] Setting token expiry manually:',
-          new Date(expiryTime)
-        );
-        localStorage.setItem('access_token_expiry', String(expiryTime));
+        // Use backend's expiresAt timestamp and dispatch to Redux
+        if (authResponse.expiresAt) {
+          console.warn(
+            '[AUTHENTICATE] Backend token expiry:',
+            new Date(authResponse.expiresAt).toISOString(),
+            `(${Math.round((authResponse.expiresAt - Date.now()) / 1000)}s from now)`
+          );
+
+          // Dispatch to Redux store
+          dispatch(setTokenExpiry(authResponse.expiresAt));
+
+          // Start automatic token refresh via SessionManager
+          if (sessionManager?.startTokenRefresh) {
+            sessionManager.startTokenRefresh(authResponse.expiresAt);
+          }
+        } else {
+          console.error('[AUTHENTICATE] Backend did not return expiresAt!');
+        }
 
         // Clear RTK Query cache to prevent cross-user data contamination
         dispatch(apiBase.util.resetApiState());

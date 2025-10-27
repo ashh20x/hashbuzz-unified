@@ -28,7 +28,7 @@ export type TokenAssociation = {
 
 interface UserAuthAndOnBoardSteps {
   wallet: { isPaired: boolean; address?: string };
-  auth: { isAuthenticated: boolean };
+  auth: { isAuthenticated: boolean; tokenExpiresAt?: number };
   xAccount: { isConnected: boolean; handle?: string };
   token: TokenAssociation;
   currentStep: OnboardingSteps;
@@ -38,6 +38,7 @@ export interface AuthState {
   currentStep: OnboardingSteps;
   isSmDeviceModalOpen?: boolean;
   userAuthAndOnBoardSteps: UserAuthAndOnBoardSteps;
+  tokenExpiresAt?: number; // Backend-provided token expiry timestamp
 }
 
 const initialAuthState: UserAuthAndOnBoardSteps = {
@@ -120,6 +121,10 @@ const authSlice = createSlice({
       });
       state.userAuthAndOnBoardSteps.token.allAssociated = true;
     },
+    setTokenExpiry: (state, action: PayloadAction<number | undefined>) => {
+      state.tokenExpiresAt = action.payload;
+      state.userAuthAndOnBoardSteps.auth.tokenExpiresAt = action.payload;
+    },
 
     resetAuth: () => initialState,
   },
@@ -133,6 +138,7 @@ export const {
   setTokens,
   setTokenAssociation,
   markAllTokensAssociated,
+  setTokenExpiry,
   resetAuth,
 } = authSlice.actions;
 export default authSlice.reducer;

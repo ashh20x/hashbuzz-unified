@@ -41,6 +41,13 @@ export type GnerateReseponseV2 = {
   message: string;
   auth: boolean;
   user: CurrentUser;
+  expiresAt?: number; // Token expiration timestamp (milliseconds)
+};
+
+export type RefreshTokenResponse = {
+  message: string;
+  ast: string;
+  expiresAt: number; // Token expiration timestamp (milliseconds)
 };
 
 export type PingResponse = {

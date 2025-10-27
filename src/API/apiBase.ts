@@ -4,6 +4,7 @@ import {
   type BaseQueryFn,
   type FetchArgs,
   type FetchBaseQueryError,
+  type QueryReturnValue,
 } from '@reduxjs/toolkit/query/react';
 import { getCookieByName } from '../comman/helpers';
 import { AuthError } from '../types/auth';
@@ -27,6 +28,12 @@ function getOrCreateDeviceId(): string {
   }
   return deviceId;
 }
+
+// Track refresh token requests to prevent multiple simultaneous refreshes
+let isRefreshing = false;
+let refreshPromise: Promise<
+  QueryReturnValue<unknown, FetchBaseQueryError>
+> | null = null;
 
 // Enhanced base query with refresh token handling and auth error processing
 const baseQueryWithReauth: BaseQueryFn<
@@ -89,12 +96,101 @@ const baseQueryWithReauth: BaseQueryFn<
   });
 
   // Execute the initial request
-  const result = await baseQuery(args, api, extraOptions);
+  let result = await baseQuery(args, api, extraOptions);
 
   // For public endpoints, return immediately without auth error handling
   const url = typeof args === 'string' ? args : args.url;
   if (!requiresAuth(url)) {
     return result;
+  }
+
+  // Check if we got a 401 Unauthorized error
+  const is401Error = result.error?.status === 401;
+  const errorData = result.error?.data as
+    | { error?: { description?: string } }
+    | undefined;
+  const isTokenInvalid =
+    errorData?.error?.description === AuthError.AUTH_TOKEN_INVALID ||
+    errorData?.error?.description === AuthError.AUTH_TOKEN_NOT_PRESENT;
+
+  // If token is invalid and it's not the refresh endpoint itself, try to refresh
+  if (is401Error && isTokenInvalid && !url.includes('/auth/refresh-token')) {
+    console.warn('[RTK Query] Token invalid, attempting refresh...');
+
+    try {
+      // If already refreshing, wait for the existing refresh to complete
+      if (isRefreshing && refreshPromise) {
+        console.warn('[RTK Query] Refresh already in progress, waiting...');
+        await refreshPromise;
+      } else {
+        // Start a new refresh
+        isRefreshing = true;
+        refreshPromise = Promise.resolve(
+          baseQuery(
+            {
+              url: '/auth/refresh-token',
+              method: 'POST',
+              body: {},
+            },
+            api,
+            extraOptions
+          )
+        );
+
+        const refreshResult = await refreshPromise;
+
+        if (!refreshResult || refreshResult.error) {
+          console.error(
+            '[RTK Query] Token refresh failed:',
+            refreshResult?.error
+          );
+
+          // Refresh failed - logout and reload
+          console.warn('[RTK Query] Logging out user and reloading page...');
+
+          // Clear cookies
+          document.cookie =
+            'access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+          document.cookie =
+            'refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+
+          // Clear localStorage
+          localStorage.clear();
+
+          // Reload the page to reset application state
+          window.location.reload();
+
+          return result; // Return original error
+        }
+
+        console.warn(
+          '[RTK Query] Token refreshed successfully, retrying request...'
+        );
+      }
+
+      // Token refreshed successfully, retry the original request
+      result = await baseQuery(args, api, extraOptions);
+    } catch (error) {
+      console.error('[RTK Query] Error during token refresh:', error);
+
+      // Refresh failed - logout and reload
+      console.warn('[RTK Query] Logging out user and reloading page...');
+
+      // Clear cookies
+      document.cookie =
+        'access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      document.cookie =
+        'refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+
+      // Clear localStorage
+      localStorage.clear();
+
+      // Reload the page to reset application state
+      window.location.reload();
+    } finally {
+      isRefreshing = false;
+      refreshPromise = null;
+    }
   }
 
   // Check for auth errors in the response and log them appropriately
@@ -103,14 +199,14 @@ const baseQueryWithReauth: BaseQueryFn<
       | { error?: { description?: string } }
       | undefined;
 
-    // Handle server auth errors - just log and return, let TokenRefreshProvider handle refresh
+    // Handle server auth errors
     if (errorData?.error?.description) {
       const authErrorCode = errorData.error.description as string;
 
       switch (authErrorCode) {
         case AuthError.AUTH_TOKEN_INVALID:
           console.warn(
-            'Auth error: Access token invalid - TokenRefreshProvider will handle refresh'
+            'Auth error: Access token invalid after refresh attempt'
           );
           break;
 

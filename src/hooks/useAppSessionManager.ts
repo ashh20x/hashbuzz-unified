@@ -19,6 +19,7 @@ import {
   connectXAccount,
   markAllTokensAssociated,
   resetAuth,
+  setTokenExpiry,
   walletPaired,
 } from '@/Ver2Designs/Pages/AuthAndOnboard';
 import {
@@ -60,7 +61,6 @@ const CONFIG = {
 } as const;
 
 const STORAGE_KEYS = {
-  ACCESS_TOKEN_EXPIRY: 'access_token_expiry',
   DEVICE_ID: 'device_id',
   LAST_TOKEN_REFRESH: 'last_token_refresh',
 } as const;
@@ -76,30 +76,6 @@ const getOrCreateDeviceId = (): string => {
     localStorage.setItem(STORAGE_KEYS.DEVICE_ID, deviceId);
   }
   return deviceId;
-};
-
-const getTokenExpiry = (): number | null => {
-  const expiry = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN_EXPIRY);
-  return expiry ? parseInt(expiry, 10) : null;
-};
-
-const setTokenExpiry = (sessionExpireMinutes: number): number => {
-  const expiryTime = Date.now() + sessionExpireMinutes * 60 * 1000;
-  localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN_EXPIRY, expiryTime.toString());
-  localStorage.setItem(STORAGE_KEYS.LAST_TOKEN_REFRESH, Date.now().toString());
-  return expiryTime;
-};
-
-const clearTokenExpiry = (): void => {
-  localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN_EXPIRY);
-  localStorage.removeItem(STORAGE_KEYS.LAST_TOKEN_REFRESH);
-};
-
-const isTokenExpiringSoon = (bufferSeconds: number): boolean => {
-  const expiry = getTokenExpiry();
-  if (!expiry) return true;
-
-  return Date.now() + bufferSeconds * 1000 >= expiry;
 };
 
 // ============================================================================
@@ -131,7 +107,7 @@ export const useAppSessionManager = ({
   // Redux state
   const {
     wallet: { isPaired },
-    auth: { isAuthenticated: _isAuthenticated },
+    auth: { isAuthenticated: _isAuthenticated, tokenExpiresAt },
   } = useAppSelector(s => s.auth.userAuthAndOnBoardSteps);
 
   // Wallet hooks
@@ -212,8 +188,18 @@ export const useAppSessionManager = ({
       const result = await refreshTokenMutation().unwrap();
       console.warn('[SESSION MANAGER] Token refresh successful:', result);
 
-      // Update token expiry and schedule next refresh
-      const newExpiry = setTokenExpiry(sessionExpireMinutes);
+      // Update token expiry - use backend's expiresAt if available, otherwise calculate locally
+      const newExpiry =
+        result.expiresAt || Date.now() + sessionExpireMinutes * 60 * 1000;
+
+      // Store the expiry time in Redux
+      dispatch(setTokenExpiry(newExpiry));
+
+      // Store last refresh timestamp (keep in localStorage as it's not needed in Redux)
+      localStorage.setItem(
+        STORAGE_KEYS.LAST_TOKEN_REFRESH,
+        Date.now().toString()
+      );
 
       // Clear existing timer and set new one
       if (refreshTimerRef.current) {
@@ -246,7 +232,9 @@ export const useAppSessionManager = ({
       console.error('[SESSION MANAGER] Token refresh failed:', error);
 
       // On refresh failure, logout user
-      console.error('[SESSION MANAGER] Refresh failed, logging out user');
+      console.error(
+        '[SESSION MANAGER] Refresh failed, logging out user and reloading page'
+      );
 
       // Clear refresh timer
       if (refreshTimerRef.current) {
@@ -254,8 +242,9 @@ export const useAppSessionManager = ({
         refreshTimerRef.current = null;
       }
 
-      // Clear local storage
-      clearTokenExpiry();
+      // Clear token expiry from Redux and localStorage
+      dispatch(setTokenExpiry(undefined));
+      localStorage.removeItem(STORAGE_KEYS.LAST_TOKEN_REFRESH);
 
       // Reset Redux state
       dispatch(resetAuth());
@@ -276,6 +265,15 @@ export const useAppSessionManager = ({
         hasInitialized: true,
         error: 'Token refresh failed',
       });
+
+      // Clear cookies
+      document.cookie =
+        'access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      document.cookie =
+        'refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+
+      // Reload page to clear all state and redirect to login
+      window.location.reload();
 
       return false;
     } finally {
@@ -452,10 +450,10 @@ export const useAppSessionManager = ({
           '[SESSION MANAGER] Ping successful - session restored from httpOnly cookies'
         );
 
-        // Schedule refresh timer if needed
-        const expiry = getTokenExpiry();
-        if (expiry) {
-          const nextRefreshTime = expiry - bufferSeconds * 1000 - Date.now();
+        // Schedule refresh timer if needed (use Redux state)
+        if (tokenExpiresAt) {
+          const nextRefreshTime =
+            tokenExpiresAt - bufferSeconds * 1000 - Date.now();
           if (nextRefreshTime > 0) {
             console.warn(
               `[SESSION MANAGER] Scheduling refresh in ${Math.round(nextRefreshTime / 1000)}s`
@@ -485,8 +483,10 @@ export const useAppSessionManager = ({
           '[SESSION MANAGER] Ping failed but found client-side cookies, checking if token refresh needed...'
         );
 
-        // Check if token is expiring and try refresh
-        const shouldRefresh = isTokenExpiringSoon(bufferSeconds);
+        // Check if token is expiring and try refresh (use Redux state)
+        const shouldRefresh = tokenExpiresAt
+          ? Date.now() + bufferSeconds * 1000 >= tokenExpiresAt
+          : true; // If no expiry time, assume expired
 
         if (shouldRefresh) {
           console.warn(
@@ -546,7 +546,7 @@ export const useAppSessionManager = ({
       // Mark as completed even on error to allow retry
       SessionInitSingleton.completeInitialization();
     }
-  }, [pingSession, performTokenRefresh, bufferSeconds]);
+  }, [pingSession, performTokenRefresh, bufferSeconds, tokenExpiresAt]);
 
   /**
    * Logout user and cleanup session
@@ -567,8 +567,9 @@ export const useAppSessionManager = ({
         walletThrottleRef.current = null;
       }
 
-      // Clear local storage
-      clearTokenExpiry();
+      // Clear token expiry from Redux and localStorage
+      dispatch(setTokenExpiry(undefined));
+      localStorage.removeItem(STORAGE_KEYS.LAST_TOKEN_REFRESH);
 
       // Reset Redux state
       dispatch(resetAuth());
@@ -720,7 +721,12 @@ export const useAppSessionManager = ({
           '[SESSION MANAGER] Tab became visible, checking session...'
         );
 
-        if (isTokenExpiringSoon(bufferSeconds)) {
+        // Check if token is expiring soon using Redux state
+        const isExpiringSoon = tokenExpiresAt
+          ? Date.now() + bufferSeconds * 1000 >= tokenExpiresAt
+          : true;
+
+        if (isExpiringSoon) {
           performTokenRefresh();
         }
       }
@@ -729,7 +735,12 @@ export const useAppSessionManager = ({
     document.addEventListener('visibilitychange', handleVisibilityChange);
     return () =>
       document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, [sessionState.isAuthenticated, performTokenRefresh, bufferSeconds]);
+  }, [
+    sessionState.isAuthenticated,
+    bufferSeconds,
+    performTokenRefresh,
+    tokenExpiresAt,
+  ]);
 
   // ============================================================================
   // LIFECYCLE EFFECTS
@@ -807,11 +818,49 @@ export const useAppSessionManager = ({
       pingSession,
       retryInitialization: initializeSession,
 
+      // Token expiry management with backend synchronization
+      startTokenRefresh: (expiresAt: number) => {
+        console.warn(
+          '[SESSION MANAGER] Starting token refresh from backend expiresAt:',
+          new Date(expiresAt).toISOString()
+        );
+
+        // Store the expiry time in Redux
+        dispatch(setTokenExpiry(expiresAt));
+
+        // Store last refresh timestamp (keep in localStorage as it's not needed in Redux)
+        localStorage.setItem(
+          STORAGE_KEYS.LAST_TOKEN_REFRESH,
+          Date.now().toString()
+        );
+
+        // Clear existing timer
+        if (refreshTimerRef.current) {
+          clearTimeout(refreshTimerRef.current);
+        }
+
+        // Calculate when to refresh (with buffer)
+        const now = Date.now();
+        const timeUntilExpiry = expiresAt - now;
+        const nextRefreshTime = timeUntilExpiry - bufferSeconds * 1000;
+
+        if (nextRefreshTime > 0) {
+          console.warn(
+            `[SESSION MANAGER] Scheduling refresh in ${Math.round(nextRefreshTime / 1000)}s (${Math.round(timeUntilExpiry / 1000)}s until expiry)`
+          );
+          refreshTimerRef.current = setTimeout(() => {
+            performTokenRefresh();
+          }, nextRefreshTime);
+        } else {
+          console.warn(
+            '[SESSION MANAGER] Token already expired or expiring soon, refreshing immediately'
+          );
+          performTokenRefresh();
+        }
+      },
+
       // Legacy compatibility for existing components
       forceRefresh: performTokenRefresh,
-      setTokenExpiry: () => setTokenExpiry(sessionExpireMinutes),
-      clearTokenExpiry,
-      getTokenExpiry,
     }),
     [
       sessionState.isAuthenticated,
@@ -824,7 +873,8 @@ export const useAppSessionManager = ({
       logout,
       pingSession,
       initializeSession,
-      sessionExpireMinutes,
+      bufferSeconds,
+      dispatch,
     ]
   );
 };
