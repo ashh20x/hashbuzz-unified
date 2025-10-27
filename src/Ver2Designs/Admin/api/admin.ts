@@ -1,12 +1,15 @@
 import { apiBase } from '@/API/apiBase';
 import type {
   AdminLoginResponse,
+  AdminTransaction,
   AdminUpdatePassword,
   AllTokensQuery,
   CampaignCards,
   ContractInfo,
   CurrentUser,
   TrailSetters,
+  TransactionFilters,
+  TransactionStats,
   UpdatePasswordResponse,
 } from '@/types';
 
@@ -33,6 +36,54 @@ export const adminApi = apiBase.injectEndpoints({
         url: '/auth/admin/update-password',
         method: 'PATCH',
         body,
+      }),
+    }),
+
+    // Transaction management endpoints
+    getAllTransactions: builder.query<
+      { transactions: AdminTransaction[]; count: number },
+      TransactionFilters
+    >({
+      query: ({ page = 1, limit = 10, status, type, network } = {}) => {
+        const params = new URLSearchParams();
+        params.append('page', page.toString());
+        params.append('limit', limit.toString());
+        if (status) params.append('status', status);
+        if (type) params.append('type', type);
+        if (network) params.append('network', network);
+
+        return {
+          url: `/api/admin/transactions?${params.toString()}`,
+          method: 'GET',
+        };
+      },
+    }),
+
+    getTransactionStats: builder.query<TransactionStats, void>({
+      query: () => ({
+        url: '/api/admin/transactions/stats',
+        method: 'GET',
+      }),
+    }),
+
+    updateTransactionStatus: builder.mutation<
+      { success: boolean; message: string },
+      { id: string; status: string }
+    >({
+      query: ({ id, status }) => ({
+        url: `/api/admin/transactions/${id}/status`,
+        method: 'PUT',
+        body: { status },
+      }),
+    }),
+
+    retryTransaction: builder.mutation<
+      { success: boolean; message: string },
+      { id: string }
+    >({
+      query: ({ id }) => ({
+        url: `/api/admin/transactions/${id}/retry`,
+        method: 'POST',
       }),
     }),
 

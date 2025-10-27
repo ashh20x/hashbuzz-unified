@@ -4,6 +4,7 @@ import * as React from 'react';
 import AdminCampaignsView from './AdminCampaignsView';
 import AdminMonitoringView from './AdminMonitoringView';
 import AdminTrailSettersView from './AdminTrailSettersView';
+import AdminTransactionsView from './AdminTransactionsView';
 import AdminUsersViews from './AdminUsersView';
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -66,6 +67,7 @@ const AdminView = () => {
         <Tab label='TrailSetters Accou' {...a11yProps(1)} />
         <Tab label='Monitoring' {...a11yProps(2)} />
         <Tab label='Campaigns' {...a11yProps(3)} />
+        <Tab label='Transactions' {...a11yProps(4)} />
       </Tabs>
       <TabPanel value={value} index={0}>
         <AdminUsersViews />
@@ -78,6 +80,9 @@ const AdminView = () => {
       </TabPanel>
       <TabPanel value={value} index={3}>
         <AdminCampaignsView />
+      </TabPanel>
+      <TabPanel value={value} index={4}>
+        <AdminTransactionsView />
       </TabPanel>
     </Box>
   );
