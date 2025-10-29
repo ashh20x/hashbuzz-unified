@@ -56,17 +56,32 @@ const AssociateModal = ({ open, onClose }: TopupModalProps) => {
 
   const getTokenInfo = async (tokenId: string) => {
     try {
-      const tokenInfoReq = await getToken(tokenId).unwrap();
-      const tokenInfo = tokenInfoReq.data;
+      const tokenInfo = await getToken(tokenId).unwrap();
+      
+      // Add null checks to prevent undefined errors
+      if (!tokenInfo) {
+        console.error('No token info received for token ID:', tokenId);
+        toast.error('Failed to fetch token information');
+        return;
+      }
+
+      // Ensure required fields exist before accessing them
+      if (!tokenInfo.symbol) {
+        console.error('Token symbol not found in response:', tokenInfo);
+        toast.error('Invalid token data: missing symbol');
+        return;
+      }
+
       setFormData(prev => ({
         ...prev,
         token_symbol: tokenInfo.symbol,
         token_type:
           tokenInfo.type === 'FUNGIBLE_COMMON' ? 'fungible' : 'nonfungible',
-        decimals: Number(tokenInfo.decimals),
+        decimals: Number(tokenInfo.decimals || 0),
       }));
     } catch (err) {
       console.error('Failed to fetch token info:', err);
+      toast.error('Failed to fetch token information');
     }
   };
 

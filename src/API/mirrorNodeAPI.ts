@@ -1,6 +1,8 @@
 import { BalanceResponse } from '@/types';
-import { AccountTokensResponse } from '@/types/mirrorTypes';
-import { TokenInfo } from '@hashgraph/sdk';
+import {
+  AccountTokensResponse,
+  MirrorNodeTokenDetails,
+} from '@/types/mirrorTypes';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { AccountInfoJson } from 'node_modules/@hashgraph/sdk/lib/account/AccountInfo';
 
@@ -61,7 +63,7 @@ export const mirrorNodeApi = createApi({
     }),
 
     // Token endpoints
-    getToken: builder.query<TokenInfo, string>({
+    getToken: builder.query<MirrorNodeTokenDetails, string>({
       query: tokenId => `/api/v1/tokens/${tokenId}`,
       providesTags: ['Token'],
     }),
