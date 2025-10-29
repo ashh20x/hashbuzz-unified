@@ -58,6 +58,7 @@ const CONFIG = {
   PING_RETRY_DELAY: 2000, // 2 seconds
   MAX_PING_RETRIES: 1,
   WALLET_THROTTLE_MS: 1000, // 1 second wallet update throttle
+  VISIBILITY_CHANGE_THROTTLE_MS: 2000, // 2 seconds throttle for mobile background/foreground
 } as const;
 
 const STORAGE_KEYS = {
@@ -158,6 +159,7 @@ export const useAppSessionManager = ({
   const retryCountRef = useRef<number>(0);
   const walletThrottleRef = useRef<NodeJS.Timeout | null>(null);
   const lastWalletStatusRef = useRef<string>('');
+  const visibilityChangeThrottleRef = useRef<NodeJS.Timeout | null>(null);
 
   // ============================================================================
   // INTERNAL TOKEN REFRESH FUNCTION
@@ -713,6 +715,11 @@ export const useAppSessionManager = ({
 
   useEffect(() => {
     const handleVisibilityChange = () => {
+      // Throttle visibility changes to prevent rapid fire on mobile background/foreground
+      if (visibilityChangeThrottleRef.current) {
+        return; // Still throttling, ignore this event
+      }
+
       if (
         document.visibilityState === 'visible' &&
         sessionState.isAuthenticated
@@ -721,13 +728,40 @@ export const useAppSessionManager = ({
           '[SESSION MANAGER] Tab became visible, checking session...'
         );
 
+        // Set throttle to prevent rapid consecutive calls (mobile optimization)
+        visibilityChangeThrottleRef.current = setTimeout(() => {
+          visibilityChangeThrottleRef.current = null;
+        }, CONFIG.VISIBILITY_CHANGE_THROTTLE_MS);
+
+        // Only check/refresh if we have a valid token expiry timestamp
+        // This prevents unnecessary refreshes on mobile background/foreground switches
+        if (!tokenExpiresAt) {
+          console.warn(
+            '[SESSION MANAGER] No token expiry timestamp available, skipping refresh check'
+          );
+          return;
+        }
+
         // Check if token is expiring soon using Redux state
-        const isExpiringSoon = tokenExpiresAt
-          ? Date.now() + bufferSeconds * 1000 >= tokenExpiresAt
-          : true;
+        const isExpiringSoon =
+          Date.now() + bufferSeconds * 1000 >= tokenExpiresAt;
 
         if (isExpiringSoon) {
+          console.warn('[SESSION MANAGER] Token expiring soon, refreshing...', {
+            tokenExpiresAt: new Date(tokenExpiresAt).toISOString(),
+            timeUntilExpiry: (tokenExpiresAt - Date.now()) / 1000,
+            bufferSeconds,
+          });
           performTokenRefresh();
+        } else {
+          console.warn(
+            '[SESSION MANAGER] Token not expiring soon, no refresh needed',
+            {
+              tokenExpiresAt: new Date(tokenExpiresAt).toISOString(),
+              timeUntilExpiry: (tokenExpiresAt - Date.now()) / 1000,
+              bufferSeconds,
+            }
+          );
         }
       }
     };
@@ -772,6 +806,9 @@ export const useAppSessionManager = ({
       }
       if (walletThrottleRef.current) {
         clearTimeout(walletThrottleRef.current);
+      }
+      if (visibilityChangeThrottleRef.current) {
+        clearTimeout(visibilityChangeThrottleRef.current);
       }
     };
   }, []);
