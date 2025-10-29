@@ -5,6 +5,7 @@ import { BotExceptionsScreen } from '../../../../../components/Pages/AdminScreen
 import AdminCampaignsView from './AdminCampaignsView';
 import AdminMonitoringView from './AdminMonitoringView';
 import AdminTrailSettersView from './AdminTrailSettersView';
+import AdminTransactionsView from './AdminTransactionsView';
 import AdminUsersViews from './AdminUsersView';
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -68,6 +69,7 @@ const AdminView = () => {
         <Tab label='Monitoring' {...a11yProps(2)} />
         <Tab label='Campaigns' {...a11yProps(3)} />
         <Tab label='Bot Exceptions' {...a11yProps(4)} />
+        <Tab label='Transactions' {...a11yProps(5)} />
       </Tabs>
       <TabPanel value={value} index={0}>
         <AdminUsersViews />
@@ -83,6 +85,9 @@ const AdminView = () => {
       </TabPanel>
       <TabPanel value={value} index={4}>
         <BotExceptionsScreen />
+      </TabPanel>
+      <TabPanel value={value} index={5}>
+        <AdminTransactionsView />
       </TabPanel>
     </Box>
   );
