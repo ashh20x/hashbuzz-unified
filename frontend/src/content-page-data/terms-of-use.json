@@ -1,0 +1,194 @@
+{
+  "title": "Terms of Use",
+  "subtitle": "Welcome to {b:Hashbuzz}. By accessing or using our platform, you agree to comply with and be bound by these Terms of Use. If you do not agree, please refrain from using the platform.",
+  "meta": {
+    "title": "Terms of Use",
+    "description": "This is a description for the terms of use page.",
+    "keywords": "terms, use, page",
+    "effectDate": "30/11/2024"
+  },
+  "sections": [
+    {
+      "heading": "Platform Overview",
+      "content": [
+        {
+          "type": "p",
+          "text": "Hashbuzz is a web dApp designed to facilitate reward exchanges between brands and their communities. Campaigners can incentivise Xpost campaigns, offering rewards in HBAR or approved HTS tokens.",
+          "style": {
+            "color": "black",
+            "fontSize": "16px",
+            "bold": false,
+            "italic": false,
+            "underline": false
+          }
+        }
+      ]
+    },
+    {
+      "heading": "User Eligibility",
+      "content": [
+        {
+          "type": "p",
+          "text": "You must be at least 18 years old or the legal age of majority in your jurisdiction. By using {b:Hashbuzz}, you confirm compliance with all applicable laws and regulations.",
+          "style": {
+            "color": "black",
+            "fontSize": "16px",
+            "bold": false,
+            "italic": false,
+            "underline": false
+          }
+        }
+      ]
+    },
+    {
+      "heading": "User Responsibilities",
+      "content": [
+        {
+          "type": "p",
+          "text": "Ensure the accuracy of your account and wallet ID information. Recognise that {b:Hashbuzz} serves only as an intermediary, with rewards distributed via audited smart contracts.",
+          "style": {
+            "color": "black",
+            "fontSize": "16px",
+            "bold": false,
+            "italic": false,
+            "underline": false
+          }
+        }
+      ]
+    },
+    {
+      "heading": "Prohibited Activities",
+      "content": [
+        {
+          "type": "ul",
+          "items": [
+            {
+              "text": "Use the platform for fraudulent or illegal purposes.",
+              "style": { "bold": false, "italic": false, "underline": false }
+            },
+            {
+              "text": "Violate intellectual property rights.",
+              "style": { "bold": false, "italic": false, "underline": false }
+            },
+            {
+              "text": "Interfere with the platform’s operations or security.",
+              "style": { "bold": false, "italic": false, "underline": false }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "Platform Disclaimer",
+      "content": [
+        {
+          "type": "p",
+          "text": "{b:Hashbuzz} assumes no liability for disputes between campaigners and participants. The platform does not guarantee campaign success or specific outcomes.",
+          "style": {
+            "color": "black",
+            "fontSize": "16px",
+            "bold": false,
+            "italic": false,
+            "underline": false
+          }
+        }
+      ]
+    },
+    {
+      "heading": "Reward Distribution",
+      "content": [
+        {
+          "type": "p",
+          "text": "Rewards are managed via audited smart contracts. {b:Hashbuzz} does not maintain custody of user funds beyond enabling the reward mechanism.",
+          "style": {
+            "color": "black",
+            "fontSize": "16px",
+            "bold": false,
+            "italic": false,
+            "underline": false
+          }
+        }
+      ]
+    },
+    {
+      "heading": "Account Security",
+      "content": [
+        {
+          "type": "p",
+          "text": "Users are responsible for the security of their wallet credentials and {b:Hashbuzz} account details.",
+          "style": {
+            "color": "black",
+            "fontSize": "16px",
+            "bold": false,
+            "italic": false,
+            "underline": false
+          }
+        }
+      ]
+    },
+    {
+      "heading": "Modifications to Terms",
+      "content": [
+        {
+          "type": "p",
+          "text": "{b:Hashbuzz} may update these terms. Users will be notified via email or platform notifications.",
+          "style": {
+            "color": "black",
+            "fontSize": "16px",
+            "bold": false,
+            "italic": false,
+            "underline": false
+          }
+        }
+      ]
+    },
+    {
+      "heading": "Termination of Use",
+      "content": [
+        {
+          "type": "p",
+          "text": "{b:Hashbuzz} reserves the right to suspend or terminate user access for violations of these terms or other justified reasons.",
+          "style": {
+            "color": "black",
+            "fontSize": "16px",
+            "bold": false,
+            "italic": false,
+            "underline": false
+          }
+        }
+      ]
+    },
+    {
+      "heading": "Governing Law",
+      "content": [
+        {
+          "type": "p",
+          "text": "These Terms of Use are governed by the laws of [Insert Jurisdiction]. Users agree to resolve disputes exclusively within this jurisdiction.",
+          "style": {
+            "color": "black",
+            "fontSize": "16px",
+            "bold": false,
+            "italic": false,
+            "underline": false
+          }
+        }
+      ]
+    },
+    {
+      "heading": "Contact Us",
+      "content": [
+        {
+          "type": "p",
+          "text": "For any questions about these Terms, please contact us at hello@hashbuzz.social.",
+          "style": {
+            "color": "black",
+            "fontSize": "16px",
+            "bold": false,
+            "italic": false,
+            "underline": false
+          }
+        }
+      ]
+    }
+  ]
+}

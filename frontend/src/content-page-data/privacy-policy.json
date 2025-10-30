@@ -1,0 +1,156 @@
+{
+  "title": "Privacy Policy",
+  "subtitle": "{b:Hashbuzz} is committed to protecting your privacy. This Privacy Policy explains how we handle user data.",
+  "meta": {
+    "title": "Privacy Policy",
+    "description": "This is a description for the privacy policy page.",
+    "keywords": "privacy, policy, page",
+    "effectDate": "30/11/2024"
+  },
+  "sections": [
+    {
+      "heading": "Information We Collect",
+      "content": [
+        {
+          "type": "p",
+          "text": "Hedera Wallet ID and {b:𝕩} Handle: Collected solely to enable reward distribution. No personal information (e.g., names, addresses) is collected.",
+          "style": {
+            "color": "black",
+            "fontSize": "16px",
+            "bold": false,
+            "italic": false,
+            "underline": false
+          }
+        }
+      ]
+    },
+    {
+      "heading": "Purpose of Data Collection",
+      "content": [
+        {
+          "type": "p",
+          "text": "Data is used exclusively for: Facilitating reward exchanges. Operating platform functionalities.",
+          "style": {
+            "color": "black",
+            "fontSize": "16px",
+            "bold": false,
+            "italic": false,
+            "underline": false
+          }
+        }
+      ]
+    },
+    {
+      "heading": "Data Handling and Security",
+      "content": [
+        {
+          "type": "p",
+          "text": "Wallet IDs and {b:𝕩} handles are securely stored and not shared with third parties, except as necessary for reward exchanges. Audited smart contracts ensure secure fund management.",
+          "style": {
+            "color": "black",
+            "fontSize": "16px",
+            "bold": false,
+            "italic": false,
+            "underline": false
+          }
+        }
+      ]
+    },
+    {
+      "heading": "User Consent",
+      "content": [
+        {
+          "type": "p",
+          "text": "Connecting {b:𝕩} accounts requires explicit user consent. By connecting, you agree to the collection and use of data as described.",
+          "style": {
+            "color": "black",
+            "fontSize": "16px",
+            "bold": false,
+            "italic": false,
+            "underline": false
+          }
+        }
+      ]
+    },
+    {
+      "heading": "Security Measures",
+      "content": [
+        {
+          "type": "p",
+          "text": "{b:Hashbuzz} implements industry-standard measures to protect data and funds.",
+          "style": {
+            "color": "black",
+            "fontSize": "16px",
+            "bold": false,
+            "italic": false,
+            "underline": false
+          }
+        }
+      ]
+    },
+    {
+      "heading": "Third-Party Integrations",
+      "content": [
+        {
+          "type": "p",
+          "text": "Interactions with third-party services (e.g., {b:𝕩} account integrations) are governed by their terms and policies.",
+          "style": {
+            "color": "black",
+            "fontSize": "16px",
+            "bold": false,
+            "italic": false,
+            "underline": false
+          }
+        }
+      ]
+    },
+    {
+      "heading": "User Rights",
+      "content": [
+        {
+          "type": "p",
+          "text": "Users may disconnect their accounts or wallets at any time, subject to ongoing campaigns. Users retain full ownership of their data and tokens.",
+          "style": {
+            "color": "black",
+            "fontSize": "16px",
+            "bold": false,
+            "italic": false,
+            "underline": false
+          }
+        }
+      ]
+    },
+    {
+      "heading": "Updates to Privacy Policy",
+      "content": [
+        {
+          "type": "p",
+          "text": "{b:Hashbuzz} may revise this policy and notify users of significant changes.",
+          "style": {
+            "color": "black",
+            "fontSize": "16px",
+            "bold": false,
+            "italic": false,
+            "underline": false
+          }
+        }
+      ]
+    },
+    {
+      "heading": "Contact Information",
+      "content": [
+        {
+          "type": "p",
+          "text": "For questions or concerns, contact us at hello@hashbuzz.social.",
+          "style": {
+            "color": "black",
+            "fontSize": "16px",
+            "bold": false,
+            "italic": false,
+            "underline": false
+          }
+        }
+      ]
+    }
+  ]
+}
