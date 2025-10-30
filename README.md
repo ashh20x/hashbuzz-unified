@@ -205,10 +205,6 @@ See individual component documentation for development guidelines:
 - Frontend: React 18 with Material-UI design system  
 - Contracts: Solidity best practices with Hedera patterns
 
-## 📄 License
-
-This project is developed for hackathon submission and educational purposes.
-
 ---
 
 **HashBuzz Team** - Building the future of social media marketing on Hedera Hashgraph
