@@ -1,12 +1,57 @@
-# Hashbuzz Frontend
+# HashBuzz Frontend
 
-A modern React-based frontend application for the Hashbuzz decentralized social media platform built on Hedera Hashgraph. This application provides an intuitive interface for campaign management, social media integration, and blockchain interactions.
+A modern React-based frontend application for the HashBuzz decentralized social media platform built on Hedera Hashgraph. This application provides an intuitive interface for campaign management, social media integration, and blockchain interactions.
 
-## � Documentation
+## 📚 Documentation
 
-- **[🚀 Complete Deployment Guide](docs/DEPLOYMENT_GUIDE.md)** - Docker, AWS, Production deployment
+- **[🚀 TECHNICAL DOCUMENTATION](./TECHNICAL_DOCUMENTATION.md)** - **Complete setup guide for judges & evaluators**
+- **[� ENVIRONMENT SETUP](./ENVIRONMENT_SETUP.md)** - **Quick reference for environment variables & API keys**
+- **[�🚀 Complete Deployment Guide](docs/DEPLOYMENT_GUIDE.md)** - Docker, AWS, Production deployment
 - **[👨‍💻 Developer Onboarding](docs/DEVELOPER_ONBOARDING.md)** - Getting started for new developers
+- **[🛡️ Error Boundary Guide](docs/ERROR_BOUNDARY_GUIDE.md)** - Error handling implementation
 - **[🤝 Contributing Guidelines](./CONTRIBUTING.md)** - How to contribute to the project
+
+## ⚡ Quick Start for Judges & Evaluators
+
+> **New to HashBuzz?** → **[Start with TECHNICAL_DOCUMENTATION.md](./TECHNICAL_DOCUMENTATION.md)** for complete setup with environment variables, data flow diagrams, and testing instructions.
+
+### 🚀 Fastest Setup (Docker)
+
+```bash
+# 1. Clone the repository
+git clone <repository-url>
+cd hashbuzz
+
+# 2. Setup environment files
+cp dApp-backend/.env.example dApp-backend/.env
+cp frontend/.env.example frontend/.env
+
+# 3. Edit environment files with your API keys
+# See TECHNICAL_DOCUMENTATION.md for detailed configuration
+
+# 4. Start complete stack
+cd dApp-backend
+docker compose --profile dev up -d
+
+# 5. Start frontend
+cd ../frontend
+npm install && npm run dev
+
+# 6. Access application
+# Frontend: http://localhost:3000
+# Backend API: http://localhost:4000
+# Database Admin: http://localhost:5555
+```
+
+### ✅ Verification
+
+```bash
+# Check backend health
+curl http://localhost:4000/health
+
+# Check frontend
+open http://localhost:3000
+```
 
 ## �🚀 Quick Start
 
