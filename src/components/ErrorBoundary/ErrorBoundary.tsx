@@ -126,7 +126,7 @@ class ErrorBoundary extends Component<Props, State> {
       },
       userAgent: navigator.userAgent,
       url: window.location.href,
-      buildVersion: import.meta.env?.VITE_APP_VERSION || 'unknown',
+      buildVersion: import.meta.env.VITE_APP_VERSION || 'unknown',
       ...this.getUserSessionInfo(),
     };
 

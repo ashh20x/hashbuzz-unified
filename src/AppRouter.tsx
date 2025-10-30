@@ -1,6 +1,6 @@
 import React from 'react';
 import AppContent from './AppContent';
-import ErrorBoundary from './components/ErrorBoundary';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { SessionManagerProvider } from './contexts';
 
 const AppRouter: React.FC = () => {
