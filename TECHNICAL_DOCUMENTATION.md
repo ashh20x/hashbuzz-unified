@@ -680,12 +680,12 @@ HEDERA_NETWORK=testnet
 HEDERA_MIRROR_NODE_URL="https://testnet.mirrornode.hedera.com"
 
 # Hedera Account Keys (from Hedera Portal)
-HEDERA_OPERATOR_ID="0.0.1234567"
-HEDERA_OPERATOR_KEY="302e020100300506032b6570042204..."
+HEDERA_OPERATOR_ID="0.0.YOUR_ACCOUNT_ID"
+HEDERA_OPERATOR_KEY="YOUR_HEDERA_PRIVATE_KEY"
 
 # Alternative Operator Config
-OPERATOR_ID="0.0.1234567"
-OPERATOR_PRIVATE_KEY="302e020100300506032b6570042204..."
+OPERATOR_ID="0.0.YOUR_ACCOUNT_ID"
+OPERATOR_PRIVATE_KEY="YOUR_HEDERA_PRIVATE_KEY"
 
 # =============================================================================
 # REQUIRED - Twitter API Configuration
@@ -718,8 +718,8 @@ Create `/smart-contracts/.env` based on `.env.example`:
 # REQUIRED - Hedera Network Configuration
 # =============================================================================
 HEDERA_NETWORK=testnet
-HEDERA_OPERATOR_ID="0.0.1234567"
-HEDERA_OPERATOR_KEY="302e020100300506032b6570042204..."
+HEDERA_OPERATOR_ID="0.0.YOUR_ACCOUNT_ID"
+HEDERA_OPERATOR_KEY="YOUR_HEDERA_PRIVATE_KEY"
 
 # =============================================================================
 # REQUIRED - Mirror Node Configuration
@@ -899,13 +899,13 @@ Before configuring environment variables, you need to obtain API keys from exter
    - Go to project settings
    - Add allowed domains:
      - `localhost:3000`
-     - `127.0.0.1:3000`
+     - `localhost:3000`
    - Note down your **Project ID** → Use as `VITE_PROJECT_ID`
 
 4. **Test WalletConnect Integration**
    ```bash
    # The Project ID should be a UUID format like:
-   # 12345678-1234-5678-9012-123456789012
+   # xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
    echo "VITE_PROJECT_ID=your-project-id-here" >> frontend/.env
    ```
 
@@ -953,7 +953,7 @@ Before configuring environment variables, you need to obtain API keys from exter
    - Verify balance on [HashScan Testnet](https://hashscan.io/testnet)
 
 3. **Get Account Credentials**
-   - Account ID format: `0.0.123456` → Use as `HEDERA_ACCOUNT_ID`
+   - Account ID format: `0.0.XXXXXX` → Use as `HEDERA_ACCOUNT_ID`
    - Private Key (DER format) → Use as `HEDERA_PRIVATE_KEY`
 
 #### **Step 5: Environment Configuration**
@@ -1232,7 +1232,7 @@ curl -X GET http://localhost:4000/api/V201/quest/all
 curl -X GET http://localhost:4000/api/V201/campaigns/all
 curl -X POST http://localhost:4000/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"accountAddress": "0.0.123456"}'
+  -d '{"accountAddress": "0.0.YOUR_ACCOUNT_ID"}'
 ```
 
 ---
@@ -1942,28 +1942,28 @@ curl -H "Authorization: Bearer $TWITTER_BEARER_TOKEN" \
 
 #### **Main Campaign Contract**
 ```
-Contract ID: 0.0.5089474
+Contract ID: 0.0.CONTRACT_ID_1
 Contract Name: HashBuzzCampaign
 Description: Core campaign management and reward distribution
-Deployment Date: 2024-10-31
+Deployment: Hedera Testnet
 Solidity Version: 0.8.19
 ```
 
 #### **Token Management Contract**
 ```
-Contract ID: 0.0.5089475
+Contract ID: 0.0.CONTRACT_ID_2
 Contract Name: HashBuzzTokenManager
 Description: HTS token operations and user balance management
-Deployment Date: 2024-10-31
+Deployment: Hedera Testnet
 Solidity Version: 0.8.19
 ```
 
 #### **Quest System Contract**
 ```
-Contract ID: 0.0.5089476
+Contract ID: 0.0.CONTRACT_ID_3
 Contract Name: HashBuzzQuestSystem
 Description: Quest-based campaigns with Q&A functionality
-Deployment Date: 2024-10-31
+Deployment: Hedera Testnet
 Solidity Version: 0.8.19
 ```
 
@@ -1971,30 +1971,30 @@ Solidity Version: 0.8.19
 
 #### **HBUZZ Reward Token**
 ```
-Token ID: 0.0.5089480
+Token ID: 0.0.TOKEN_ID_1
 Token Name: HashBuzz Token
 Token Symbol: HBUZZ
 Token Type: Fungible Token (HTS)
 Decimals: 8
 Max Supply: 1,000,000,000 HBUZZ
-Treasury Account: 0.0.5089472
+Treasury Account: 0.0.TREASURY_ACCOUNT
 ```
 
 #### **HBUZZ-NFT Campaign Badges**
 ```
-Token ID: 0.0.5089481
+Token ID: 0.0.TOKEN_ID_2
 Token Name: HashBuzz Campaign Badges
 Token Symbol: HBUZZ-NFT
 Token Type: Non-Fungible Token (HTS)
 Max Supply: Unlimited
-Treasury Account: 0.0.5089472
+Treasury Account: 0.0.TREASURY_ACCOUNT
 ```
 
 ### 📝 HCS Topic IDs
 
 #### **Campaign Events Topic**
 ```
-Topic ID: 0.0.5089485
+Topic ID: 0.0.TOPIC_ID_1
 Topic Name: hashbuzz-campaign-events
 Description: Campaign creation, updates, and completion events
 Submit Key: Required (Campaign Contract)
@@ -2002,7 +2002,7 @@ Submit Key: Required (Campaign Contract)
 
 #### **User Activity Topic**
 ```
-Topic ID: 0.0.5089486
+Topic ID: 0.0.TOPIC_ID_2
 Topic Name: hashbuzz-user-activity
 Description: User participation, rewards, and engagement tracking
 Submit Key: Required (Backend Service)
@@ -2010,7 +2010,7 @@ Submit Key: Required (Backend Service)
 
 #### **System Notifications Topic**
 ```
-Topic ID: 0.0.5089487
+Topic ID: 0.0.TOPIC_ID_3
 Topic Name: hashbuzz-notifications
 Description: System-wide notifications and announcements
 Submit Key: Required (Admin Account)
@@ -2022,7 +2022,7 @@ Submit Key: Required (Admin Account)
 
 **Main Platform Account (Treasury)**
 ```
-Account ID: 0.0.5089472
+Account ID: 0.0.TREASURY_ACCOUNT
 Description: Primary treasury and contract management account
 HBAR Balance: ~1000 ℏ (for contract operations)
 Associated Tokens: HBUZZ, HBUZZ-NFT
@@ -2030,7 +2030,7 @@ Associated Tokens: HBUZZ, HBUZZ-NFT
 
 **Backend Service Account**
 ```
-Account ID: 0.0.5089473
+Account ID: 0.0.SERVICE_ACCOUNT
 Description: Backend service account for automated operations
 HBAR Balance: ~500 ℏ (for transaction fees)
 Associated Tokens: HBUZZ
@@ -2038,7 +2038,7 @@ Associated Tokens: HBUZZ
 
 **Campaign Distribution Account**
 ```
-Account ID: 0.0.5089474
+Account ID: 0.0.DISTRIBUTION_ACCOUNT
 Description: Automated reward distribution account
 HBAR Balance: ~200 ℏ (for distribution transactions)
 Associated Tokens: HBUZZ, HBUZZ-NFT
@@ -2048,7 +2048,7 @@ Associated Tokens: HBUZZ, HBUZZ-NFT
 
 **Demo Creator Account**
 ```
-Account ID: 0.0.5089477
+Account ID: 0.0.DEMO_CREATOR_ID
 Description: Sample campaign creator for demonstrations
 HBAR Balance: ~100 ℏ
 Associated Tokens: HBUZZ, HBUZZ-NFT
@@ -2056,7 +2056,7 @@ Associated Tokens: HBUZZ, HBUZZ-NFT
 
 **Demo Participant Account**
 ```
-Account ID: 0.0.5089478
+Account ID: 0.0.DEMO_PARTICIPANT_ID
 Description: Sample campaign participant for testing
 HBAR Balance: ~50 ℏ
 Associated Tokens: HBUZZ
@@ -2065,23 +2065,23 @@ Associated Tokens: HBUZZ
 ### 🔗 Verification Links
 
 **View on HashScan Testnet:**
-- **Main Contract**: [0.0.5089474](https://hashscan.io/testnet/contract/0.0.5089474)
-- **HBUZZ Token**: [0.0.5089480](https://hashscan.io/testnet/token/0.0.5089480)
-- **Platform Account**: [0.0.5089472](https://hashscan.io/testnet/account/0.0.5089472)
+- **Main Contract**: Use your deployed contract ID
+- **HBUZZ Token**: Use your deployed token ID
+- **Platform Account**: Use your treasury account ID
 
 **Mirror Node API Endpoints:**
 ```bash
 # Contract information
-curl "https://testnet.mirrornode.hedera.com/api/v1/contracts/0.0.5089474"
+curl "https://testnet.mirrornode.hedera.com/api/v1/contracts/0.0.YOUR_CONTRACT_ID"
 
 # Token information
-curl "https://testnet.mirrornode.hedera.com/api/v1/tokens/0.0.5089480"
+curl "https://testnet.mirrornode.hedera.com/api/v1/tokens/0.0.YOUR_TOKEN_ID"
 
 # Account balance
-curl "https://testnet.mirrornode.hedera.com/api/v1/accounts/0.0.5089472"
+curl "https://testnet.mirrornode.hedera.com/api/v1/accounts/0.0.YOUR_ACCOUNT_ID"
 
 # Topic messages
-curl "https://testnet.mirrornode.hedera.com/api/v1/topics/0.0.5089485/messages"
+curl "https://testnet.mirrornode.hedera.com/api/v1/topics/0.0.YOUR_TOPIC_ID/messages"
 ```
 
 ### 📊 Network Configuration
@@ -2093,9 +2093,9 @@ MIRROR_NODE_URL=https://testnet.mirrornode.hedera.com
 HASHSCAN_URL=https://hashscan.io/testnet
 
 # Contract Addresses for Environment Files
-HEDERA_CONTRACT_ID=0.0.5089474
-HEDERA_TOKEN_ID=0.0.5089480
-HEDERA_TREASURY_ID=0.0.5089472
+HEDERA_CONTRACT_ID=0.0.YOUR_CONTRACT_ID
+HEDERA_TOKEN_ID=0.0.YOUR_TOKEN_ID
+HEDERA_TREASURY_ID=0.0.YOUR_TREASURY_ID
 ```
 
 ### ⚠️ Important Notes
@@ -2112,11 +2112,11 @@ Add these to your `backend/.env` file:
 ```bash
 # Hedera Testnet Configuration
 HEDERA_NETWORK=testnet
-HEDERA_CONTRACT_ID=0.0.5089474
-HEDERA_TOKEN_ID=0.0.5089480
-HEDERA_TREASURY_ID=0.0.5089472
-HEDERA_TOPIC_CAMPAIGNS=0.0.5089485
-HEDERA_TOPIC_USERS=0.0.5089486
+HEDERA_CONTRACT_ID=0.0.YOUR_CONTRACT_ID
+HEDERA_TOKEN_ID=0.0.YOUR_TOKEN_ID
+HEDERA_TREASURY_ID=0.0.YOUR_TREASURY_ID
+HEDERA_TOPIC_CAMPAIGNS=0.0.YOUR_TOPIC_ID_1
+HEDERA_TOPIC_USERS=0.0.YOUR_TOPIC_ID_2
 ```
 
 For testing campaign functionality, you can use the demo accounts or create new ones via the Hedera Portal.

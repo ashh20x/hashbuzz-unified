@@ -52,8 +52,8 @@ VITE_FIREBASE_API_KEY=your-firebase-api-key-here
 VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
 VITE_FIREBASE_PROJECT_ID=your-project-id-here
 VITE_FIREBASE_STORAGE_BUCKET=your-project.firebasestorage.app
-VITE_FIREBASE_MESSAGING_SENDER_ID=123456789012
-VITE_FIREBASE_APP_ID=1:123456789012:web:abcdef123456
+VITE_FIREBASE_MESSAGING_SENDER_ID=123456789
+VITE_FIREBASE_APP_ID=1:123456789:web:abcdef123456
 VITE_FIREBASE_MEASUREMENT_ID=G-MEASUREMENT_ID_HERE
 
 # Session & Token Configuration
@@ -154,18 +154,15 @@ REFRESH_TOKEN_EXPIRES_IN=7d
 Create `smart-contracts/.env` with the following configuration:
 
 ```bash
-# Hedera Network Configuration
-HEDERA_NETWORK=testnet
-HEDERA_ACCOUNT_ID=0.0.123456
-HEDERA_PRIVATE_KEY=302e020100300506...
+HEDERA_ACCOUNT_ID=0.0.YOUR_ACCOUNT_ID
+HEDERA_PRIVATE_KEY=YOUR_HEDERA_PRIVATE_KEY
 
-# Contract Deployment Configuration
-GAS_LIMIT=1000000
-CONTRACT_CONSTRUCTOR_PARAMS=param1,param2
+# Testnet Mirror Node
+MIRROR_NODE=https://testnet.mirrornode.hedera.com
 
-# Testing Configuration
-TEST_ACCOUNT_ID=0.0.654321
-TEST_PRIVATE_KEY=302e020100300506...
+# Test Account (Optional)
+TEST_ACCOUNT_ID=0.0.TEST_ACCOUNT_ID
+TEST_PRIVATE_KEY=YOUR_TEST_PRIVATE_KEY
 ```
 
 ## 🔑 How to Obtain API Keys and Credentials
@@ -250,20 +247,20 @@ TEST_PRIVATE_KEY=302e020100300506...
 3. **Configure Project Settings**
    - **Allowed Domains**: Add these for local development:
      - `localhost:3000`
-     - `127.0.0.1:3000`
+     - `0.0.XXXXXX:3000`
      - `localhost` (general)
    - **Redirect URIs**: Add if needed:
      - `http://localhost:3000`
 
 4. **Get Project ID**
    - Copy your **Project ID** from the dashboard
-   - Format looks like: `12345678-1234-5678-9012-123456789012`
+   - Format looks like: `xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`
    - Use this as `VITE_PROJECT_ID` in frontend/.env
 
 5. **Test WalletConnect Setup**
    ```bash
    # Verify Project ID format (should be UUID)
-   echo "VITE_PROJECT_ID=12345678-1234-5678-9012-123456789012" >> frontend/.env
+   echo "VITE_PROJECT_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" >> frontend/.env
    ```
 
 6. **Important Notes**:
@@ -321,7 +318,7 @@ TEST_PRIVATE_KEY=302e020100300506...
    - Navigate to testnet section
    - Click "Create Testnet Account"
    - **Important**: Save the generated credentials immediately:
-     - **Account ID**: Format `0.0.123456` → Use as `HEDERA_ACCOUNT_ID`
+     - **Account ID**: Format `0.0.XXXXXX` → Use as `HEDERA_ACCOUNT_ID`
      - **Private Key**: Long DER-encoded string → Use as `HEDERA_PRIVATE_KEY`
 
 3. **Fund Testnet Account**
