@@ -43,10 +43,10 @@ Explain how Hedera s low, predictable fees, high throughput, or ABFT finality di
 **Video Demo:**
 [Youtube link](https://www.youtube.com/watch?v=WhHRjytDD_A)
 
+**Smart Contract Audit:**
+[Report](hackathon-files/Ahmed_certificate.pdf)
 
 ---
-**Quick setup**
-This unified repository contains the complete HashBuzz platform for hackathon submission, combining three previously separate components with preserved commit history.
 > **⚡ 10-Minute Setup**: Get HashBuzz running locally in under 10 minutes with our [Quick Setup Guide](#-10-minute-quick-setup)
 
 
@@ -129,6 +129,10 @@ HashBuzz is a revolutionary social media campaign platform built on Hedera Hashg
       ▼                     ▼                    ▼                    ▼                    ▼
 localhost:3000      localhost:4000        0.0.CONTRACT      testnet.hedera.com     testnet.mirrornode
 ```
+
+### Communication Flow
+
+![alt text](hackathon-files/hashbuzz-logo.png)
 
 ### 📁 Environment File Structure
 
