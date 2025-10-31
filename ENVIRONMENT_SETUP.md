@@ -628,7 +628,7 @@ For quick testing and evaluation, ensure these **essential** components are conf
 
 - **[TECHNICAL_DOCUMENTATION.md](./TECHNICAL_DOCUMENTATION.md)** - Complete setup and development guide
 - **[Frontend README](./frontend/README.md)** - Frontend-specific documentation
-- **[Backend README](./backend/README.md)** - Backend API documentation
+- **[Backend README](./backend/ReadMe.md)** - Backend API documentation
 - **[Smart Contracts README](./smart-contracts/README.md)** - Contract deployment guide
 
 ---

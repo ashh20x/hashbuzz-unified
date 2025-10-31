@@ -109,7 +109,7 @@ MIRROR_NODE_URL=https://testnet.mirrornode.hedera.com
 | **[📋 TECHNICAL_DOCUMENTATION.md](./TECHNICAL_DOCUMENTATION.md)** | Complete setup, architecture, and development guide | **Start here** for full platform setup |
 | **[🛠️ ENVIRONMENT_SETUP.md](./ENVIRONMENT_SETUP.md)** | Detailed environment variable configuration | When configuring API keys and credentials |
 | **[🚀 Frontend README](./frontend/README.md)** | Frontend-specific setup and development | Frontend development and customization |
-| **[⚙️ Backend README](./backend/README.md)** | Backend API documentation and architecture | Backend development and API integration |
+| **[⚙️ Backend README](./backend/ReadMe.md)** | Backend API documentation and architecture | Backend development and API integration |
 | **[⛓️ Smart Contracts README](./smart-contracts/README.md)** | Contract deployment and blockchain integration | Smart contract development and deployment |
 
 ### 🎯 Documentation Quick Navigation
@@ -127,7 +127,7 @@ MIRROR_NODE_URL=https://testnet.mirrornode.hedera.com
 
 #### **For Development Work**
 1. Review [System Architecture](./TECHNICAL_DOCUMENTATION.md#️-system-architecture) - Understand data flow
-2. Check [V201 Backend Architecture](./backend/README.md) - New modular backend structure
+2. Check [V201 Backend Architecture](./backend/ReadMe.md) - New modular backend structure
 3. Follow [Development Workflow](./TECHNICAL_DOCUMENTATION.md#-development-workflow-setup) - VS Code setup and tools
 
 ### 🆔 Deployed Hedera Testnet Resources
@@ -380,7 +380,7 @@ docker-compose --profile dev up -d
 
 ## 📖 Documentation
 
-- `backend/README.md` - Backend setup and API documentation
+- `backend/ReadMe.md` - Backend setup and API documentation
 - `frontend/README.md` - Frontend development guide
 - `smart-contracts/README.md` - Contract deployment instructions
 - `backend/docs/` - Technical documentation and guides

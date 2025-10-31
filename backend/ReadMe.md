@@ -735,7 +735,7 @@ docker stats
 
 For more detailed Docker information, see:
 
-- **[DOCKER_README.md](./DOCKER_README.md)** - Comprehensive Docker usage guide
+- **[DOCKER_QUICK_START.md](./docs/DOCKER_QUICK_START.md)** - Comprehensive Docker usage guide
 - **[DOCKER_QUICKSTART.md](./DOCKER_QUICKSTART.md)** - Step-by-step quick start guide
 - **[.env.example](./.env.example)** - Complete environment variable reference
 
