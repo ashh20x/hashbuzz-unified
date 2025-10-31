@@ -139,15 +139,6 @@ cp backend/.env.example backend/.env      # Database, APIs, Hedera config
 # ⚠️ SECURITY WARNING: Never commit real credentials to version control
 ```
 
-
-## 📖 Documentation
-
-- `backend/ReadMe.md` - Backend setup and API documentation
-- `frontend/README.md` - Frontend development guide
-- `smart-contracts/README.md` - Contract deployment instructions
-- `backend/docs/` - Technical documentation and guides
-
-
 ---
 
 **HashBuzz Team** - Building the future of social media marketing on Hedera Hashgraph
