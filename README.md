@@ -104,7 +104,8 @@ HashBuzz is a revolutionary social media campaign platform built on Hedera Hashg
 
 | Document | Purpose | When to Use |
 |----------|---------|-------------|
-| **[📋 TECHNICAL_DOCUMENTATION.md](./TECHNICAL_DOCUMENTATION.md)** | Complete setup, architecture, and development guide | **Start here** for full platform setup |
+| **[📋 TECHNICAL_DOCUMENTATION.md](./TECHNICAL_DOCUMENTATION.md)** | Complete setup, architecture, and development guide | **Start here** for full platform setup | 
+|**[HEDERA_AND_HASHBUZZ.md](./HEDERA_AND_HASHBUZZ.md)**| A heigh level overview of commination between hashbuzz component and Hedera network | full platform setup|
 | **[🛠️ ENVIRONMENT_SETUP.md](./ENVIRONMENT_SETUP.md)** | Detailed environment variable configuration | When configuring API keys and credentials |
 | **[🚀 Frontend README](./frontend/README.md)** | Frontend-specific setup and development | Frontend development and customization |
 | **[⚙️ Backend README](./backend/ReadMe.md)** | Backend API documentation and architecture | Backend development and API integration |
