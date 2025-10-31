@@ -18,7 +18,12 @@ frontend/build/
 **/.env.development.local
 **/.env.test.local
 **/.env.production.local
-backend/.env*
+# Keep .env.example files for templates
+backend/.env
+backend/.env.local
+backend/.env.development.local
+backend/.env.test.local
+backend/.env.production.local
 frontend/secrets.json
 
 # Logs
@@ -91,7 +96,6 @@ backend/uploades/
 backend/public/uploads/
 backend/logs/
 backend/dist/
-backend/.env*
 backend/session-sec.js
 
 # Frontend specific
@@ -99,14 +103,24 @@ frontend/dist/
 frontend/build/
 frontend/.vite/
 frontend/secrets.json
-frontend/.env*
+# Keep .env.example files for templates
+frontend/.env
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
 
 # Smart contracts
 smart-contracts/artifacts/
 smart-contracts/cache/
 smart-contracts/typechain/
 smart-contracts/deployments/
-smart-contracts/.env*
+# Keep .env.example files for templates
+smart-contracts/.env
+smart-contracts/.env.local
+smart-contracts/.env.development.local
+smart-contracts/.env.test.local
+smart-contracts/.env.production.local
 
 # IDE files
 **/.vscode/

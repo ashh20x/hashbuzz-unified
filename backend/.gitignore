@@ -15,7 +15,6 @@ pnpm-lock.yaml
 # === ENVIRONMENT & CONFIGURATION ===
 # Environment variables (keep all .env files out of version control)
 .env
-.env.*
 .env.local
 .env.development
 .env.test
